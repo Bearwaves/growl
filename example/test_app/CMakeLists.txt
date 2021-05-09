@@ -1,0 +1,21 @@
+cmake_minimum_required (VERSION 3.0)
+
+project(growl-test-app)
+
+set(SOURCES
+	"src/test_app.cpp"
+	)
+
+
+set(HEADERS
+	"src/test_app_game.h"
+	)
+
+set(GROWL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PAT} "${GROWL_PATH}/cmake/")
+include(GrowlProject)
+
+add_subdirectory(${GROWL_PATH} ${CMAKE_CURRENT_BINARY_DIR}/growl)
+
+add_executable(growl-test-app ${SOURCES} ${HEADERS})
+target_link_libraries(growl-test-app ${GROWL_LIBS})
