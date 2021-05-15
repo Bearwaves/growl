@@ -12,7 +12,7 @@ set(HEADERS
 	)
 
 set(GROWL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PAT} "${GROWL_PATH}/cmake/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GROWL_PATH}/cmake/")
 include(GrowlProject)
 
 add_subdirectory(${GROWL_PATH} ${CMAKE_CURRENT_BINARY_DIR}/growl)
