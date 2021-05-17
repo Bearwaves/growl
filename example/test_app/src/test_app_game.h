@@ -4,7 +4,6 @@
 
 namespace Growl {
 
-class TestAppGame : Game {
-};
+class TestAppGame : Game {};
 
-}
+} // namespace Growl
