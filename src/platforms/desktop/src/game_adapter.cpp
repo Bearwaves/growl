@@ -11,7 +11,6 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game)
 
 	m_api->systemInternal = std::make_shared<DummySystemAPI>();
 	m_api->graphicsInternal = std::make_shared<DummyGraphicsAPI>();
-	m_api->assign();
 	m_game->m_api = m_api;
 	m_game->create();
 }

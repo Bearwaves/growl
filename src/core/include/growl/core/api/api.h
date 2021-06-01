@@ -13,13 +13,16 @@ class API {
 	friend class GameAdapter;
 
 public:
-	SystemAPI* system;
-	GraphicsAPI* graphics;
+	SystemAPI* system() {
+		return systemInternal.get();
+	}
+	GraphicsAPI* graphics() {
+		return graphicsInternal.get();
+	}
 
 private:
 	std::shared_ptr<SystemAPIInternal> systemInternal;
 	std::shared_ptr<GraphicsAPIInternal> graphicsInternal;
-	void assign();
 };
 
 } // namespace Growl

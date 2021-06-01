@@ -9,7 +9,7 @@ void TestAppGame::create() {
 }
 
 void TestAppGame::render() {
-	getAPI().graphics->clear(0, 0, 0);
+	getAPI().graphics()->clear(0, 0, 0);
 }
 
 void TestAppGame::resize(const int width, const int height) {}
