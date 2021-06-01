@@ -3,7 +3,7 @@
 #include <growl/plugins/dummy/dummy_system.h>
 #include <iostream>
 
-using namespace Growl;
+using Growl::GameAdapter;
 
 GameAdapter::GameAdapter(std::unique_ptr<Game> game)
 	: m_api(std::make_shared<API>()), m_game(std::move(game)) {

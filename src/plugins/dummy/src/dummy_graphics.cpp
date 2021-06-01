@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-using namespace Growl;
+using Growl::DummyGraphicsAPI;
 
 void DummyGraphicsAPI::create() {}
 

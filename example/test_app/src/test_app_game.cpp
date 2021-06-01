@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-using namespace Growl;
+using Growl::TestAppGame;
 
 void TestAppGame::create() {
 	std::cout << "Game create" << std::endl;

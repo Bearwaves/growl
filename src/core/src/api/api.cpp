@@ -1,6 +1,6 @@
 #include <growl/core/api/api.h>
 
-using namespace Growl;
+using Growl::API;
 
 void API::assign() {
 	if (systemInternal) {

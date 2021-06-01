@@ -1,6 +1,6 @@
 #include <growl/plugins/dummy/dummy_system.h>
 
-using namespace Growl;
+using Growl::DummySystemAPI;
 
 void DummySystemAPI::create() {}
 

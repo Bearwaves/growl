@@ -2,9 +2,7 @@
 #include <growl/platforms/desktop/game_adapter.h>
 #include <memory>
 
-using namespace Growl;
-
 int main() {
-	auto adapter = GameAdapter{std::make_unique<TestAppGame>()};
+	auto adapter = Growl::GameAdapter{std::make_unique<Growl::TestAppGame>()};
 	adapter.run();
 }
