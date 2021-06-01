@@ -21,8 +21,8 @@ public:
 	}
 
 private:
-	std::shared_ptr<SystemAPIInternal> systemInternal;
-	std::shared_ptr<GraphicsAPIInternal> graphicsInternal;
+	std::unique_ptr<SystemAPIInternal> systemInternal;
+	std::unique_ptr<GraphicsAPIInternal> graphicsInternal;
 };
 
 } // namespace Growl

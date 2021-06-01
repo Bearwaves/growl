@@ -26,7 +26,7 @@ protected:
 	API& getAPI();
 
 private:
-	std::shared_ptr<API> m_api;
+	API* m_api;
 };
 
 } // namespace Growl

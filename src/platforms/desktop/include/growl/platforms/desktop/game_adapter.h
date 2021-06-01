@@ -14,7 +14,7 @@ public:
 	void run();
 
 private:
-	std::shared_ptr<API> m_api;
+	std::unique_ptr<API> m_api;
 	std::unique_ptr<Game> m_game;
 };
 
