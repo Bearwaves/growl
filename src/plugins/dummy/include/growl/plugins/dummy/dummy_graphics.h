@@ -6,7 +6,7 @@ namespace Growl {
 
 class DummyGraphicsAPI : public GraphicsAPIInternal {
 public:
-	void create() override;
+	void init() override;
 	void dispose() override;
 	void clear(float r, float g, float b) override;
 };

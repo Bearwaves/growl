@@ -4,7 +4,7 @@
 
 using Growl::DummyGraphicsAPI;
 
-void DummyGraphicsAPI::create() {}
+void DummyGraphicsAPI::init() {}
 
 void DummyGraphicsAPI::dispose() {}
 

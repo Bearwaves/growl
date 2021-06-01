@@ -13,9 +13,9 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game)
 	m_api->graphicsInternal = std::make_unique<DummyGraphicsAPI>();
 	m_game->m_api = m_api.get();
 
-	m_api->systemInternal->create();
-	m_api->graphicsInternal->create();
-	m_game->create();
+	m_api->systemInternal->init();
+	m_api->graphicsInternal->init();
+	m_game->init();
 }
 
 GameAdapter::~GameAdapter() {

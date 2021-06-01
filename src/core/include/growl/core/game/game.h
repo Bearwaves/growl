@@ -15,7 +15,7 @@ public:
 	explicit Game() = default;
 	virtual ~Game() = default;
 
-	virtual void create() = 0;
+	virtual void init() = 0;
 	virtual void render() = 0;
 	virtual void resize(const int width, const int height) = 0;
 

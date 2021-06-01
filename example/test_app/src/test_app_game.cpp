@@ -4,8 +4,8 @@
 
 using Growl::TestAppGame;
 
-void TestAppGame::create() {
-	std::cout << "Game create" << std::endl;
+void TestAppGame::init() {
+	std::cout << "Game starting up!" << std::endl;
 }
 
 void TestAppGame::render() {

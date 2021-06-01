@@ -12,7 +12,7 @@ class APIInternal {
 public:
 	virtual ~APIInternal() {}
 
-	virtual void create() = 0;
+	virtual void init() = 0;
 	virtual void dispose() = 0;
 };
 

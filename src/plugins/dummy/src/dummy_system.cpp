@@ -7,7 +7,7 @@ using Growl::DummySystemAPI;
 // Fuck it. Signal handling in C++ is mad.
 volatile bool dummy_running = true;
 
-void DummySystemAPI::create() {
+void DummySystemAPI::init() {
 	signal(SIGINT, [](int signal) { dummy_running = false; });
 }
 
