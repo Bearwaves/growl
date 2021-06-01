@@ -3,11 +3,18 @@ project(growl-core)
 include_directories("include")
 
 set(SOURCES
-	"src/game.cpp"
+	"src/api/api.cpp"
+
+	"src/game/game.cpp"
 	)
 
 set(HEADERS
-	"include/growl/core/game.h"
+	"include/growl/core/api/api.h"
+	"include/growl/core/api/api_internal.h"
+	"include/growl/core/api/system_api.h"
+	"include/growl/core/api/graphics_api.h"
+
+	"include/growl/core/game/game.h"
 	)
 
 add_library(growl-core ${SOURCES} ${HEADERS})

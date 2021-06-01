@@ -2,9 +2,9 @@
 
 namespace Growl {
 
-class Game {
+class SystemAPI {
 public:
-	void start();
+	virtual ~SystemAPI() {}
 };
 
 } // namespace Growl
