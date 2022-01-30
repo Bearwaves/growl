@@ -4,7 +4,6 @@ include_directories(
 	"include"
 	"../../core/include"
 	"../../plugins/dummy/include"
-	"../../plugins/sdl2/include"
 	)
 
 set(SOURCES

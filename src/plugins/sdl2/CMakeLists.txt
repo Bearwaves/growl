@@ -6,6 +6,7 @@ find_Package(SDL2 REQUIRED)
 include_directories("include" "../../core/include" ${SDL2_INCLUDE_DIR})
 
 set(SOURCES
+	"src/sdl_plugin.cpp"
 	"src/sdl_system.cpp"
 	"src/sdl_window.cpp"
 	)

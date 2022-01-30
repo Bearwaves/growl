@@ -1,11 +1,11 @@
 #include <growl/core/graphics/window.h>
 #include <growl/platforms/desktop/game_adapter.h>
-#include <growl/plugins/sdl2/sdl_system.h>
 #include <iostream>
 
 using Growl::API;
 using Growl::GameAdapter;
 
+void initSDL2Plugin(API& api);
 void initMetalPlugin(API& api);
 
 GameAdapter::GameAdapter(
@@ -15,7 +15,7 @@ GameAdapter::GameAdapter(
 	, m_window_config(std::move(windowConfig)) {
 	std::cout << "Desktop adapter created" << std::endl;
 
-	m_api->systemInternal = std::make_unique<SDL2SystemAPI>();
+	initSDL2Plugin(*m_api);
 	initMetalPlugin(*m_api);
 	m_game->m_api = m_api.get();
 
