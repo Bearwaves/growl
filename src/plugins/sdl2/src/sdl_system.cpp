@@ -1,20 +1,30 @@
 #include <SDL.h>
 #include <assert.h>
 #include <growl/plugins/sdl2/sdl_system.h>
+#include <growl/plugins/sdl2/sdl_window.h>
+#include <iostream>
 
 using Growl::SDL2SystemAPI;
+using Growl::Window;
 
 void SDL2SystemAPI::init() {
 	assert(SDL_WasInit(SDL_INIT_VIDEO) == 0);
 
+	running = true;
+}
+
+std::shared_ptr<Window>
+SDL2SystemAPI::createWindow(const WindowConfig& config) {
 	int flags = SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_ALLOW_HIGHDPI;
 	flags |= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
-	SDL_Window* win = SDL_CreateWindow(
-		"GAME", // creates a window
-		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000, 1000, flags);
+	SDL_Window* win =
+		SDL_CreateWindow(config.getTitle().c_str(),
+						 config.isCentred() ? SDL_WINDOWPOS_CENTERED : 0,
+						 config.isCentred() ? SDL_WINDOWPOS_CENTERED : 0,
+						 config.getWidth(), config.getHeight(), flags);
 
-	running = true;
+	return std::make_shared<SDL2Window>(win);
 }
 
 void SDL2SystemAPI::tick() {

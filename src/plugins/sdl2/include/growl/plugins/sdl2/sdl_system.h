@@ -1,6 +1,7 @@
 #pragma once
 
 #include <growl/core/api/api.h>
+#include <memory>
 
 namespace Growl {
 
@@ -10,6 +11,8 @@ public:
 	void tick() override;
 	void dispose() override;
 	bool isRunning() override;
+	virtual std::shared_ptr<Window>
+	createWindow(const WindowConfig& config) override;
 
 private:
 	bool running;

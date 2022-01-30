@@ -5,6 +5,7 @@ include_directories(
 	"../../core/include"
 	"../../plugins/dummy/include"
 	"../../plugins/sdl2/include"
+	"../../plugins/metal/include"
 	)
 
 set(SOURCES
@@ -20,4 +21,5 @@ target_link_libraries(growl-platform-desktop
 	growl-core
 	growl-plugin-dummy
 	growl-plugin-sdl2
+	growl-plugin-metal
 	)
