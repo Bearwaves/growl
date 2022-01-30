@@ -5,15 +5,13 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_DEBUG_POSTFIX "_d")
 
 set(GROWL_INCLUDE_DIRS
 	${GROWL_PATH}/src/core/include
 	)
 
 set(GROWL_LIBS
-	optimized growl-core
-	debug growl-core_d
+	growl-core
 	)
 
 set(GROWL_INCLUDE_DIRS
