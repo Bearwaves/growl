@@ -9,10 +9,13 @@ namespace Growl {
 class GameAdapter;
 
 class API {
-
 	friend class GameAdapter;
 
 public:
+	enum class Type { System, Graphics };
+
+	void addAPI(Type pluginType, APIInternal* internal);
+
 	SystemAPI* system() {
 		return systemInternal.get();
 	}

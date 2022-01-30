@@ -3,6 +3,7 @@ project(growl-core)
 include_directories("include")
 
 set(SOURCES
+	"src/api/api.cpp"
 	"src/game/game.cpp"
 	)
 
