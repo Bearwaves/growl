@@ -19,6 +19,8 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game)
 }
 
 GameAdapter::~GameAdapter() {
+	m_api->graphicsInternal->dispose();
+	m_api->systemInternal->dispose();
 	std::cout << "Adapter destroyed" << std::endl;
 }
 
