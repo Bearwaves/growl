@@ -2,7 +2,8 @@
 
 using Growl::MetalGraphicsAPI;
 
-MetalGraphicsAPI::MetalGraphicsAPI(SystemAPI& system) : system{system} {}
+MetalGraphicsAPI::MetalGraphicsAPI(SystemAPI& system)
+	: system{system} {}
 
 void MetalGraphicsAPI::init() {}
 

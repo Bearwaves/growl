@@ -4,6 +4,8 @@ TabWidth: 4
 IndentWidth: 4
 AccessModifierOffset: -4
 BreakBeforeBraces: Attach
+BreakConstructorInitializers: BeforeComma
+AlignAfterOpenBracket: AlwaysBreak
 AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: false

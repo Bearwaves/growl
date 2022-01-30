@@ -6,7 +6,10 @@ namespace Growl {
 class WindowConfig {
 public:
 	WindowConfig(std::string title, int width, int height, bool centred = true)
-		: title{title}, width{width}, height{height}, centred{centred} {}
+		: title{title}
+		, width{width}
+		, height{height}
+		, centred{centred} {}
 	std::string getTitle() const {
 		return title;
 	}

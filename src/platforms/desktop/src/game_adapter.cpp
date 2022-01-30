@@ -6,10 +6,11 @@
 
 using Growl::GameAdapter;
 
-GameAdapter::GameAdapter(std::unique_ptr<Game> game,
-						 std::unique_ptr<WindowConfig> windowConfig)
-	: m_api(std::make_unique<API>()), m_game(std::move(game)),
-	  m_window_config(std::move(windowConfig)) {
+GameAdapter::GameAdapter(
+	std::unique_ptr<Game> game, std::unique_ptr<WindowConfig> windowConfig)
+	: m_api(std::make_unique<API>())
+	, m_game(std::move(game))
+	, m_window_config(std::move(windowConfig)) {
 	std::cout << "Desktop adapter created" << std::endl;
 
 	m_api->systemInternal = std::make_unique<SDL2SystemAPI>();
