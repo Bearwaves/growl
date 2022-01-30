@@ -11,6 +11,8 @@ void DummySystemAPI::init() {
 	signal(SIGINT, [](int signal) { dummy_running = false; });
 }
 
+void DummySystemAPI::tick() {}
+
 void DummySystemAPI::dispose() {}
 
 bool DummySystemAPI::isRunning() {

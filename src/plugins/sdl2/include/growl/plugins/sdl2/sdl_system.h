@@ -4,12 +4,15 @@
 
 namespace Growl {
 
-class DummySystemAPI : public SystemAPIInternal {
+class SDL2SystemAPI : public SystemAPIInternal {
 public:
 	void init() override;
+	void tick() override;
 	void dispose() override;
 	bool isRunning() override;
-	void tick() override;
+
+private:
+	bool running;
 };
 
 } // namespace Growl
