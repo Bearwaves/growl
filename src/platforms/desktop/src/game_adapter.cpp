@@ -8,8 +8,7 @@ using Growl::GameAdapter;
 void initSDL2Plugin(API& api);
 void initMetalPlugin(API& api);
 
-GameAdapter::GameAdapter(
-	std::unique_ptr<Game> game, std::unique_ptr<WindowConfig> windowConfig)
+GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig windowConfig)
 	: m_api(std::make_unique<API>())
 	, m_game(std::move(game))
 	, m_window_config(std::move(windowConfig)) {
@@ -32,7 +31,7 @@ GameAdapter::~GameAdapter() {
 
 void GameAdapter::run() {
 	std::cout << "Run!" << std::endl;
-	m_api->graphicsInternal->setWindow(*m_window_config);
+	m_api->graphicsInternal->setWindow(m_window_config);
 	while (m_api->systemInternal->isRunning()) {
 		m_api->system()->tick();
 		m_api->graphicsInternal->begin();

@@ -6,6 +6,6 @@
 int main() {
 	auto adapter = Growl::GameAdapter{
 		std::make_unique<Growl::TestAppGame>(),
-		std::make_unique<Growl::WindowConfig>("Test App", 500, 500, true)};
+		Growl::WindowConfig{"Test App", 500, 500, true}};
 	adapter.run();
 }

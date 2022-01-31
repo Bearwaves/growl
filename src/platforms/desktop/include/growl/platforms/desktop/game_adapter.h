@@ -10,16 +10,14 @@ class Game;
 
 class GameAdapter {
 public:
-	explicit GameAdapter(
-		std::unique_ptr<Game> game,
-		std::unique_ptr<WindowConfig> windowwConfig);
+	explicit GameAdapter(std::unique_ptr<Game> game, WindowConfig windowConfig);
 	~GameAdapter();
 	void run();
 
 private:
 	std::unique_ptr<API> m_api;
 	std::unique_ptr<Game> m_game;
-	std::unique_ptr<WindowConfig> m_window_config;
+	WindowConfig m_window_config;
 };
 
 } // namespace Growl
