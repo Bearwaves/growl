@@ -5,5 +5,5 @@ using Growl::API;
 using Growl::SDL2SystemAPI;
 
 void initSDL2Plugin(API& api) {
-	api.addSystemAPI(new SDL2SystemAPI{});
+	api.addSystemAPI(std::make_unique<SDL2SystemAPI>());
 }

@@ -19,8 +19,8 @@ public:
 		return graphicsInternal.get();
 	}
 
-	void addSystemAPI(SystemAPIInternal* internal);
-	void addGraphicsAPI(GraphicsAPIInternal* internal);
+	void addSystemAPI(std::unique_ptr<SystemAPIInternal> internal);
+	void addGraphicsAPI(std::unique_ptr<GraphicsAPIInternal> internal);
 
 private:
 	std::unique_ptr<SystemAPIInternal> systemInternal;
