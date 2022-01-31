@@ -12,16 +12,15 @@ class API {
 	friend class GameAdapter;
 
 public:
-	enum class Type { System, Graphics };
-
-	void addAPI(Type pluginType, APIInternal* internal);
-
 	SystemAPI* system() {
 		return systemInternal.get();
 	}
 	GraphicsAPI* graphics() {
 		return graphicsInternal.get();
 	}
+
+	void addSystemAPI(SystemAPIInternal* internal);
+	void addGraphicsAPI(GraphicsAPIInternal* internal);
 
 private:
 	std::unique_ptr<SystemAPIInternal> systemInternal;
