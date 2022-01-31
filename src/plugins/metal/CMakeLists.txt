@@ -1,6 +1,6 @@
 project(growl-plugin-metal)
 
-include_directories("include" "../../core/include" ${SDL2_INCLUDE_DIR})
+include_directories("../../core/include" ${SDL2_INCLUDE_DIR})
 
 set(SOURCES
 	"src/metal_plugin.mm"
@@ -8,7 +8,7 @@ set(SOURCES
 	)
 
 set(HEADERS
-	"include/growl/plugins/metal/metal_graphics.h"
+	"src/metal_graphics.h"
 	)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -x objective-c++")

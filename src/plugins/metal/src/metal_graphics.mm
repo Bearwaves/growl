@@ -1,5 +1,5 @@
+#include "metal_graphics.h"
 #include <SDL.h>
-#include <growl/plugins/metal/metal_graphics.h>
 #include <iostream>
 
 using Growl::MetalGraphicsAPI;

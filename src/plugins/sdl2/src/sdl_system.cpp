@@ -1,7 +1,7 @@
+#include "sdl_system.h"
+#include "sdl_window.h"
 #include <SDL.h>
 #include <assert.h>
-#include <growl/plugins/sdl2/sdl_system.h>
-#include <growl/plugins/sdl2/sdl_window.h>
 #include <iostream>
 
 using Growl::SDL2SystemAPI;

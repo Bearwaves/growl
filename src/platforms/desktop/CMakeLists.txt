@@ -3,7 +3,6 @@ project(growl-platform-desktop)
 include_directories(
 	"include"
 	"../../core/include"
-	"../../plugins/dummy/include"
 	)
 
 set(SOURCES
@@ -17,7 +16,6 @@ set(HEADERS
 add_library(growl-platform-desktop ${SOURCES} ${HEADERS})
 target_link_libraries(growl-platform-desktop
 	growl-core
-	growl-plugin-dummy
 	growl-plugin-sdl2
 	growl-plugin-metal
 	)
