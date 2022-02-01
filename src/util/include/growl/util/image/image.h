@@ -1,22 +1,19 @@
 #pragma once
 
 #include <cstddef>
+#include <iostream>
 #include <string>
 
 namespace Growl {
 
 class Image {
+
 public:
-	explicit Image(int width, int height, int channels, unsigned char* raw)
+	Image(int width, int height, int channels, unsigned char* raw)
 		: width{width}
 		, height{height}
 		, channels{channels}
-		, raw{raw} {}
-	~Image();
-	Image(const Image&) = delete;
-	Image& operator=(const Image&) = delete;
-	Image(Image&&) = delete;
-	Image& operator=(Image&&) = delete;
+		, raw{StbiImage{raw}} {}
 
 	int getWidth() const {
 		return width;
@@ -32,7 +29,13 @@ private:
 	int width;
 	int height;
 	int channels;
-	unsigned char* raw;
+
+	class StbiDeleter {
+	public:
+		void operator()(unsigned char* data) const;
+	};
+	using StbiImage = std::unique_ptr<unsigned char[], StbiDeleter>;
+	StbiImage raw;
 };
 
 Image loadImageFromFile(std::string filePath);
