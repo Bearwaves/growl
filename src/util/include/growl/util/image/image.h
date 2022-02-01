@@ -13,6 +13,11 @@ public:
 		, channels{channels}
 		, raw{raw} {}
 	~Image();
+	Image(const Image&) = delete;
+	Image& operator=(const Image&) = delete;
+	Image(Image&&) = delete;
+	Image& operator=(Image&&) = delete;
+
 	int getWidth() const {
 		return width;
 	}
