@@ -8,10 +8,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(GROWL_INCLUDE_DIRS
 	${GROWL_PATH}/src/core/include
+	${GROWL_PATH}/src/util/include
 	)
 
 set(GROWL_LIBS
 	growl-core
+	growl-util
 	)
 
 set(GROWL_INCLUDE_DIRS
