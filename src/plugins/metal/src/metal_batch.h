@@ -23,8 +23,8 @@ private:
 	id<MTLCommandBuffer> command_buffer;
 	id<MTLTexture> surface;
 	id<MTLRenderCommandEncoder> encoder;
-	MTLRenderPassDescriptor* renderPassDescriptor();
 	MetalShader* shader;
+	MTLRenderPassDescriptor* renderPassDescriptor();
 };
 
 } // namespace Growl

@@ -15,10 +15,13 @@ void TestAppGame::init() {
 }
 
 void TestAppGame::render() {
-	getAPI().graphics()->clear(1, 0, 0);
+	getAPI().graphics()->clear(0.64, 0.56, 0.51);
 	auto batch = getAPI().graphics()->createBatch();
 	batch->begin();
-	batch->draw(texture.get(), 0, 0, 1, 1);
+	batch->draw(texture.get(), 0 + 500, 0, 500, 500);
+	batch->draw(texture.get(), 0, 0, 500, 500);
+	batch->draw(texture.get(), 0, 500, 500, 500);
+	batch->draw(texture.get(), 500, 500, 500, 500);
 	batch->end();
 }
 

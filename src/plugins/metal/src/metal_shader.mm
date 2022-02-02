@@ -20,6 +20,9 @@ MetalShader::MetalShader(id<MTLDevice> device) {
 MetalShader::~MetalShader() {
 	[vertex_func release];
 	[fragment_func release];
+	if (descriptor) {
+		[descriptor release];
+	}
 }
 
 void MetalShader::bind(
