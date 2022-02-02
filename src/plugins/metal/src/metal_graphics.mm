@@ -1,8 +1,12 @@
 #include "metal_graphics.h"
+#include "metal_batch.h"
+#include "metal_texture.h"
 #include <SDL.h>
 #include <iostream>
 
 using Growl::MetalGraphicsAPI;
+using Growl::Texture;
+using Growl::Batch;
 
 MetalGraphicsAPI::MetalGraphicsAPI(SystemAPI& system)
 	: system{system} {}
@@ -34,6 +38,7 @@ void MetalGraphicsAPI::setWindow(WindowConfig& config) {
 	swap_chain.pixelFormat = MTLPixelFormatBGRA8Unorm;
 	device = swap_chain.device;
 	command_queue = [device newCommandQueue];
+	default_shader = std::make_unique<MetalShader>(device);
 }
 
 void MetalGraphicsAPI::clear(float r, float g, float b) {
@@ -47,4 +52,49 @@ void MetalGraphicsAPI::clear(float r, float g, float b) {
 	id<MTLRenderCommandEncoder> encoder =
 		[command_buffer renderCommandEncoderWithDescriptor:pass];
 	[encoder endEncoding];
+}
+
+std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(Image* image) {
+	auto textureDescriptor = [MTLTextureDescriptor
+		texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
+									 width:image->getWidth()
+									height:image->getHeight()
+								 mipmapped:false];
+	auto metalTexture = [device newTextureWithDescriptor:textureDescriptor];
+	NSUInteger bytesPerRow = image->getChannels() * image->getWidth();
+	MTLRegion region = {
+		{0, 0, 0},
+		{static_cast<NSUInteger>(image->getWidth()),
+		 static_cast<NSUInteger>(image->getHeight()), 1}};
+	Byte* imageBytes = image->getRaw();
+	[metalTexture replaceRegion:region
+					mipmapLevel:0
+					  withBytes:imageBytes
+					bytesPerRow:bytesPerRow];
+
+	MTLSamplerDescriptor* samplerDescriptor =
+		[[MTLSamplerDescriptor alloc] init];
+	samplerDescriptor.maxAnisotropy = 1;
+	auto filter = image->useFiltering() ? MTLSamplerMinMagFilterLinear
+										: MTLSamplerMinMagFilterNearest;
+	samplerDescriptor.minFilter = filter;
+	samplerDescriptor.magFilter = filter;
+	samplerDescriptor.mipFilter = image->useFiltering()
+									  ? MTLSamplerMipFilterLinear
+									  : MTLSamplerMipFilterNearest;
+	auto addressMode = MTLSamplerAddressModeClampToEdge;
+	samplerDescriptor.sAddressMode = addressMode;
+	samplerDescriptor.rAddressMode = addressMode;
+	samplerDescriptor.tAddressMode = addressMode;
+	samplerDescriptor.lodMinClamp = 0;
+	samplerDescriptor.lodMaxClamp = FLT_MAX;
+	auto sampler = [device newSamplerStateWithDescriptor:samplerDescriptor];
+	[samplerDescriptor release];
+
+	return std::make_unique<MetalTexture>(metalTexture, sampler);
+}
+
+std::unique_ptr<Batch> MetalGraphicsAPI::createBatch() {
+	return std::make_unique<MetalBatch>(
+		command_buffer, surface.texture, default_shader.get());
 }

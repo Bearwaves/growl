@@ -4,12 +4,12 @@
 
 using Growl::Image;
 
-Image Growl::loadImageFromFile(std::string filePath) {
+std::unique_ptr<Image> Growl::loadImageFromFile(std::string filePath) {
 	int width, height, channels;
 	unsigned char* img =
 		stbi_load(filePath.c_str(), &width, &height, &channels, 0);
 	assert(img != nullptr);
-	return Image{width, height, channels, img};
+	return std::make_unique<Image>(width, height, channels, img);
 }
 
 void Image::StbiDeleter::operator()(unsigned char* data) const {

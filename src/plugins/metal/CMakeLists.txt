@@ -5,10 +5,16 @@ include_directories("../../core/include" ${SDL2_INCLUDE_DIR})
 set(SOURCES
 	"src/metal_plugin.mm"
 	"src/metal_graphics.mm"
+	"src/metal_texture.mm"
+	"src/metal_batch.mm"
+	"src/metal_shader.mm"
 	)
 
 set(HEADERS
 	"src/metal_graphics.h"
+	"src/metal_texture.h"
+	"src/metal_batch.h"
+	"src/metal_shader.h"
 	)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -x objective-c++")

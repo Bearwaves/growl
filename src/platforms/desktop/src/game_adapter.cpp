@@ -20,7 +20,6 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig windowConfig)
 
 	m_api->systemInternal->init();
 	m_api->graphicsInternal->init();
-	m_game->init();
 }
 
 GameAdapter::~GameAdapter() {
@@ -30,8 +29,9 @@ GameAdapter::~GameAdapter() {
 }
 
 void GameAdapter::run() {
-	std::cout << "Run!" << std::endl;
 	m_api->graphicsInternal->setWindow(m_window_config);
+	m_game->init();
+	std::cout << "Run!" << std::endl;
 	while (m_api->systemInternal->isRunning()) {
 		m_api->system()->tick();
 		m_api->graphicsInternal->begin();

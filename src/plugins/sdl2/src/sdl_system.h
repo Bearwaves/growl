@@ -11,7 +11,7 @@ public:
 	void tick() override;
 	void dispose() override;
 	bool isRunning() override;
-	virtual std::shared_ptr<Window>
+	virtual std::unique_ptr<Window>
 	createWindow(const WindowConfig& config) override;
 
 private:

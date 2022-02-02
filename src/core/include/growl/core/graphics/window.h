@@ -32,6 +32,7 @@ private:
 
 class Window {
 public:
+	virtual ~Window() = default;
 	virtual void* getNative() const = 0;
 };
 

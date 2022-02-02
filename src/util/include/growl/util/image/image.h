@@ -24,6 +24,12 @@ public:
 	int getChannels() const {
 		return channels;
 	}
+	unsigned char* getRaw() const {
+		return raw.get();
+	}
+	bool useFiltering() const {
+		return true;
+	}
 
 private:
 	int width;
@@ -38,5 +44,5 @@ private:
 	StbiImage raw;
 };
 
-Image loadImageFromFile(std::string filePath);
+std::unique_ptr<Image> loadImageFromFile(std::string filePath);
 } // namespace Growl

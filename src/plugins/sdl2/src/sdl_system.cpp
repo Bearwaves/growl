@@ -13,7 +13,7 @@ void SDL2SystemAPI::init() {
 	running = true;
 }
 
-std::shared_ptr<Window>
+std::unique_ptr<Window>
 SDL2SystemAPI::createWindow(const WindowConfig& config) {
 	int flags = SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_ALLOW_HIGHDPI;
 	flags |= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
@@ -24,7 +24,7 @@ SDL2SystemAPI::createWindow(const WindowConfig& config) {
 		config.isCentred() ? SDL_WINDOWPOS_CENTERED : 0, config.getWidth(),
 		config.getHeight(), flags);
 
-	return std::make_shared<SDL2Window>(win);
+	return std::make_unique<SDL2Window>(win);
 }
 
 void SDL2SystemAPI::tick() {
