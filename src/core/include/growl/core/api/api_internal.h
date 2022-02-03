@@ -27,10 +27,6 @@ public:
 	virtual void setWindow(WindowConfig& windowDescriptor) = 0;
 	virtual void begin() = 0;
 	virtual void end() = 0;
-
-	void setDeltaTime(double delta) {
-		deltaTime = delta;
-	}
 };
 
 } // namespace Growl

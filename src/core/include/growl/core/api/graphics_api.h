@@ -10,8 +10,6 @@ namespace Growl {
 
 class GraphicsAPI {
 
-	friend class GraphicsAPIInternal;
-
 public:
 	virtual ~GraphicsAPI() {}
 	double getDeltaTime() {
@@ -21,7 +19,7 @@ public:
 	virtual std::unique_ptr<Texture> createTexture(Image* image) = 0;
 	virtual std::unique_ptr<Batch> createBatch() = 0;
 
-private:
+protected:
 	double deltaTime = 0;
 };
 

@@ -2,16 +2,21 @@
 #include "metal_batch.h"
 #include "metal_texture.h"
 #include <SDL.h>
+#include <chrono>
 #include <iostream>
 
 using Growl::MetalGraphicsAPI;
 using Growl::Texture;
 using Growl::Batch;
+using std::chrono::duration;
+using std::chrono::seconds;
 
 MetalGraphicsAPI::MetalGraphicsAPI(SystemAPI& system)
 	: system{system} {}
 
-void MetalGraphicsAPI::init() {}
+void MetalGraphicsAPI::init() {
+	last_render = high_resolution_clock::now();
+}
 
 void MetalGraphicsAPI::dispose() {}
 
@@ -19,6 +24,9 @@ void MetalGraphicsAPI::begin() {
 	pool = [[NSAutoreleasePool alloc] init];
 	surface = [swap_chain nextDrawable];
 	command_buffer = [command_queue commandBuffer];
+	auto tp = high_resolution_clock::now();
+	deltaTime = duration<double, seconds::period>(tp - last_render).count();
+	last_render = tp;
 }
 
 void MetalGraphicsAPI::end() {

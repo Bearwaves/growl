@@ -3,9 +3,13 @@
 #include "metal_shader.h"
 #include <Metal/Metal.h>
 #include <QuartzCore/CAMetalLayer.h>
+#include <chrono>
 #include <growl/core/api/api.h>
 #include <growl/core/api/system_api.h>
 #include <memory>
+
+using std::chrono::high_resolution_clock;
+using std::chrono::time_point;
 
 namespace Growl {
 
@@ -31,6 +35,7 @@ private:
 	NSAutoreleasePool* pool;
 	id<MTLCommandBuffer> command_buffer;
 	std::unique_ptr<MetalShader> default_shader;
+	time_point<high_resolution_clock> last_render;
 };
 
 } // namespace Growl
