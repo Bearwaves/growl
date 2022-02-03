@@ -18,6 +18,8 @@ public:
 private:
 	std::unique_ptr<Texture> texture;
 	std::unique_ptr<Image> image;
+	double counter = 0;
+	constexpr const static float SPEED = 2;
 };
 
 } // namespace Growl

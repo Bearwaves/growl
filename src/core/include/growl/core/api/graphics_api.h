@@ -9,11 +9,20 @@
 namespace Growl {
 
 class GraphicsAPI {
+
+	friend class GraphicsAPIInternal;
+
 public:
 	virtual ~GraphicsAPI() {}
+	double getDeltaTime() {
+		return deltaTime;
+	}
 	virtual void clear(float r, float g, float b) = 0;
 	virtual std::unique_ptr<Texture> createTexture(Image* image) = 0;
 	virtual std::unique_ptr<Batch> createBatch() = 0;
+
+private:
+	double deltaTime = 0;
 };
 
 } // namespace Growl
