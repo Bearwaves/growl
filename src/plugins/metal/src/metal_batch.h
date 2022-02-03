@@ -17,7 +17,8 @@ public:
 		, shader{shader} {}
 	void begin() override;
 	void end() override;
-	void draw(Texture* texture, int x, int y, int width, int height) override;
+	void draw(
+		Texture* texture, float x, float y, float width, float height) override;
 
 private:
 	id<MTLCommandBuffer> command_buffer;

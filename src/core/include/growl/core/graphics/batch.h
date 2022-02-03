@@ -10,7 +10,7 @@ public:
 	virtual void begin() = 0;
 	virtual void end() = 0;
 	virtual void
-	draw(Texture* texture, int x, int y, int width, int height) = 0;
+	draw(Texture* texture, float x, float y, float width, float height) = 0;
 };
 
 } // namespace Growl
