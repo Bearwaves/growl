@@ -13,3 +13,4 @@ _deps
 build/
 build_xcode/
 .cache/
+.DS_Store

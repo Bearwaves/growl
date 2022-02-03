@@ -8,6 +8,7 @@ using Growl::MetalBatch;
 void MetalBatch::begin() {
 	encoder = [command_buffer
 		renderCommandEncoderWithDescriptor:renderPassDescriptor()];
+	shader->bind(surface, encoder);
 }
 
 void MetalBatch::end() {
@@ -17,7 +18,6 @@ void MetalBatch::end() {
 void MetalBatch::draw(
 	Texture* texture, float x, float y, float width, float height) {
 	auto tex = static_cast<MetalTexture*>(texture);
-	shader->bind(surface, encoder);
 	tex->bind(encoder);
 	float halfWidth = surface.width / 2.f;
 	float halfHeight = surface.height / 2.f;
