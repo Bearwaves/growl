@@ -9,3 +9,5 @@ set(HEADERS
 	)
 
 add_library(growl-contrib ${SOURCES} ${HEADERS})
+add_subdirectory(glm)
+target_link_libraries(growl-contrib glm::glm)

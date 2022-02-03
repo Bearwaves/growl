@@ -1,0 +1,3 @@
+[submodule "src/contrib/glm"]
+	path = src/contrib/glm
+	url = git@github.com:g-truc/glm.git
