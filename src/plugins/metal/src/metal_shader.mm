@@ -63,6 +63,10 @@ NSString* const MetalShader::DEFAULT_SHADER = @R"(
 #include <metal_stdlib>
 using namespace metal;
 
+struct ConstantBlock {
+	float4x4 mvp;
+};
+
 struct VertexIn {
 	float2 position;
 	float2 vertPos;
@@ -74,14 +78,15 @@ struct VertexOut {
 };
 
 vertex VertexOut vertex_func (
-	const device VertexIn* vertex_array [[ buffer(0) ]],
+	constant ConstantBlock& constant_block [[ buffer(0) ]],
+	const device VertexIn* vertex_array [[ buffer(1) ]],
 	unsigned int vid [[ vertex_id ]]
 ) {
 	VertexIn v = vertex_array[vid];
 
 	VertexOut outVertex = VertexOut();
 	outVertex.texCoord0 = v.vertPos;
-	outVertex.position = float4(v.position, 0, 1);
+	outVertex.position = constant_block.mvp * float4(v.position, 0, 1);
 
 	return outVertex;
 }

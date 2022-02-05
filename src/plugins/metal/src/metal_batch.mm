@@ -9,28 +9,26 @@ void MetalBatch::begin() {
 	encoder = [command_buffer
 		renderCommandEncoderWithDescriptor:renderPassDescriptor()];
 	shader->bind(surface, encoder);
+	[encoder setVertexBuffer:constant_buffer offset:0 atIndex:0];
 }
 
 void MetalBatch::end() {
 	[encoder endEncoding];
+	[constant_buffer release];
 }
 
 void MetalBatch::draw(
 	Texture* texture, float x, float y, float width, float height) {
 	auto tex = static_cast<MetalTexture*>(texture);
 	tex->bind(encoder);
-	float halfWidth = surface.width / 2.f;
-	float halfHeight = surface.height / 2.f;
-	float left = (x - halfWidth) / halfWidth;
-	float right = left + (width / halfWidth);
-	float top = -(y - halfHeight) / halfHeight;
-	float bottom = top - (height / halfHeight);
-	float quadVertexData[] = {right, bottom, 1.f, 1.f, left,  bottom, 0.f, 1.f,
-							  left,	 top,	 0.f, 0.f, right, bottom, 1.f, 1.f,
-							  left,	 top,	 0.f, 0.f, right, top,	  1.f, 0.f};
+	float right = x + width;
+	float bottom = y + height;
+	float quadVertexData[] = {right, bottom, 1.f, 1.f, x,	  bottom, 0.f, 1.f,
+							  x,	 y,		 0.f, 0.f, right, bottom, 1.f, 1.f,
+							  x,	 y,		 0.f, 0.f, right, y,	  1.f, 0.f};
 	[encoder setVertexBytes:quadVertexData
 					 length:6 * 4 * sizeof(float)
-					atIndex:0];
+					atIndex:1];
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
 				vertexStart:0
 				vertexCount:6];

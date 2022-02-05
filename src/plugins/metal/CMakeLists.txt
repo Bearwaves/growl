@@ -26,5 +26,6 @@ find_library(QUARTZ_LIBRARY QuartzCore)
 target_link_libraries(
 	growl-plugin-metal
 	growl-core
+	growl-contrib
 	${FOUNDATION_LIBRARY} ${METAL_LIBRARY} ${QUARTZ_LIBRARY}
 	)

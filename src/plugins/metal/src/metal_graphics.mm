@@ -3,6 +3,8 @@
 #include "metal_texture.h"
 #include <SDL.h>
 #include <chrono>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/mat4x4.hpp>
 #include <iostream>
 
 using Growl::MetalGraphicsAPI;
@@ -103,6 +105,11 @@ std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(Image* image) {
 }
 
 std::unique_ptr<Batch> MetalGraphicsAPI::createBatch() {
+	auto projection = glm::ortho<float>(
+		0, surface.texture.width, surface.texture.height, 0, 1, -1);
+	auto buffer = [device newBufferWithBytes:&projection
+									  length:sizeof(projection)
+									 options:MTLResourceStorageModeShared];
 	return std::make_unique<MetalBatch>(
-		command_buffer, surface.texture, default_shader.get());
+		command_buffer, surface.texture, default_shader.get(), buffer);
 }

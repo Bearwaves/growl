@@ -11,10 +11,11 @@ class MetalBatch : public Batch {
 public:
 	MetalBatch(
 		id<MTLCommandBuffer> command_buffer, id<MTLTexture> surface,
-		MetalShader* shader)
+		MetalShader* shader, id<MTLBuffer> constant_buffer)
 		: command_buffer{command_buffer}
 		, surface{surface}
-		, shader{shader} {}
+		, shader{shader}
+		, constant_buffer{constant_buffer} {}
 	void begin() override;
 	void end() override;
 	void draw(
@@ -26,6 +27,7 @@ private:
 	id<MTLRenderCommandEncoder> encoder;
 	MetalShader* shader;
 	MTLRenderPassDescriptor* renderPassDescriptor();
+	id<MTLBuffer> constant_buffer;
 };
 
 } // namespace Growl
