@@ -96,8 +96,6 @@ fragment float4 pixel_func (
 	texture2d<float> tex0 [[ texture(0) ]],
 	sampler sampler0 [[ sampler(0) ]]
 ) {
-	float4 col = tex0.sample(sampler0, v.texCoord0);
-	//return float4(v.texCoord0.xy, 0, 1);
-	return col;
+	return tex0.sample(sampler0, v.texCoord0);
 }
 )";
