@@ -1,7 +1,6 @@
 #include <chrono>
 #include <growl/core/graphics/window.h>
 #include <growl/platforms/desktop/game_adapter.h>
-#include <iostream>
 
 using Growl::API;
 using Growl::GameAdapter;
@@ -13,7 +12,6 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig windowConfig)
 	: m_api(std::make_unique<API>())
 	, m_game(std::move(game))
 	, m_window_config(std::move(windowConfig)) {
-	std::cout << "Desktop adapter created" << std::endl;
 
 	initSDL2Plugin(*m_api);
 	initMetalPlugin(*m_api);
@@ -21,18 +19,19 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig windowConfig)
 
 	m_api->systemInternal->init();
 	m_api->graphicsInternal->init();
+	m_api->system()->log("GameAdapter", "Desktop adapter created");
 }
 
 GameAdapter::~GameAdapter() {
+	m_api->system()->log("GameAdapter", "Desktop adapter destroying");
 	m_api->graphicsInternal->dispose();
 	m_api->systemInternal->dispose();
-	std::cout << "Adapter destroyed" << std::endl;
 }
 
 void GameAdapter::run() {
 	m_api->graphicsInternal->setWindow(m_window_config);
 	m_game->init();
-	std::cout << "Run!" << std::endl;
+	m_api->system()->log("GameAdapter", "Run!");
 	while (m_api->systemInternal->isRunning()) {
 		m_api->system()->tick();
 		m_api->graphicsInternal->begin();

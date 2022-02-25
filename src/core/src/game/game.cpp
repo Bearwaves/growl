@@ -1,5 +1,4 @@
 #include "growl/core/game/game.h"
-#include <iostream>
 
 using Growl::API;
 using Growl::Game;

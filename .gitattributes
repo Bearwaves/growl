@@ -1,3 +1,2 @@
-src/contrib/stb_image/stb_image.h linguist-vendored
-src/contrib/glm/** linguist-vendored
+src/contrib/** linguist-vendored
 cmake/FindSDL2.cmake linguist-vendored

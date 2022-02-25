@@ -1,6 +1,5 @@
 #include "metal_batch.h"
 #include "metal_texture.h"
-#include <iostream>
 #include <memory>
 
 using Growl::MetalBatch;

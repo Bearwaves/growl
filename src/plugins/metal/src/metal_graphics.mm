@@ -5,7 +5,6 @@
 #include <chrono>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/mat4x4.hpp>
-#include <iostream>
 
 using Growl::MetalGraphicsAPI;
 using Growl::Texture;

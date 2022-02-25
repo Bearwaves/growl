@@ -8,6 +8,8 @@ set(SOURCES
 	)
 
 set(HEADERS
+	"include/growl/core/log.h"
+
 	"include/growl/core/api/api.h"
 	"include/growl/core/api/api_internal.h"
 	"include/growl/core/api/system_api.h"
