@@ -5,7 +5,7 @@ using Growl::TestAppGame;
 void TestAppGame::init() {
 	getAPI().system()->setLogLevel(LogLevel::DEBUG);
 	getAPI().system()->log("TestAppGame", "Game starting up!");
-	image = loadImageFromFile("/home/joel/Code/Bearwaves/feud/java/android/"
+	image = loadImageFromFile("/Users/joel/Code/Bearwaves/feud/java/android/"
 							  "assets/gfx/decorations.png");
 	getAPI().system()->log(
 		LogLevel::DEBUG, "TestAppGame", "Got image! W {}, H {}, Ch {}",

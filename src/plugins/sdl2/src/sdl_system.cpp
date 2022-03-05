@@ -15,7 +15,7 @@ void SDL2SystemAPI::init() {
 
 std::unique_ptr<Window>
 SDL2SystemAPI::createWindow(const WindowConfig& config) {
-	int flags = SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_ALLOW_HIGHDPI;
+	int flags = SDL_WINDOW_INPUT_FOCUS;
 	flags |= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
 
 	SDL_Window* win = SDL_CreateWindow(
