@@ -1,7 +1,7 @@
 project(growl-plugin-sdl2)
 
 set(SDL2_BUILDING_LIBRARY 1)
-find_Package(SDL2 REQUIRED)
+find_package(SDL2 REQUIRED)
 
 include_directories("../../core/include" ${SDL2_INCLUDE_DIR})
 

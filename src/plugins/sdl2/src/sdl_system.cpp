@@ -1,4 +1,5 @@
 #include "sdl_system.h"
+#include "SDL_log.h"
 #include "sdl_window.h"
 #include <assert.h>
 
@@ -15,7 +16,7 @@ void SDL2SystemAPI::init() {
 std::unique_ptr<Window>
 SDL2SystemAPI::createWindow(const WindowConfig& config) {
 	int flags = SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_ALLOW_HIGHDPI;
-	flags |= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+	flags |= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
 
 	SDL_Window* win = SDL_CreateWindow(
 		config.getTitle().c_str(),
@@ -62,6 +63,7 @@ SDL_LogPriority SDL2SystemAPI::getLogPriority(LogLevel logLevel) {
 	case LogLevel::FATAL:
 		return SDL_LOG_PRIORITY_CRITICAL;
 	}
+	return SDL_LOG_PRIORITY_VERBOSE;
 }
 
 bool SDL2SystemAPI::isRunning() {

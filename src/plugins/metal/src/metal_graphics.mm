@@ -2,7 +2,6 @@
 #include "metal_batch.h"
 #include "metal_texture.h"
 #include <SDL.h>
-#include <chrono>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/mat4x4.hpp>
 

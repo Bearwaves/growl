@@ -5,7 +5,7 @@ using Growl::TestAppGame;
 void TestAppGame::init() {
 	getAPI().system()->setLogLevel(LogLevel::DEBUG);
 	getAPI().system()->log("TestAppGame", "Game starting up!");
-	image = loadImageFromFile("/Users/joel/Code/Bearwaves/feud/java/android/"
+	image = loadImageFromFile("/home/joel/Code/Bearwaves/feud/java/android/"
 							  "assets/gfx/decorations.png");
 	getAPI().system()->log(
 		LogLevel::DEBUG, "TestAppGame", "Got image! W {}, H {}, Ch {}",
@@ -15,6 +15,7 @@ void TestAppGame::init() {
 
 void TestAppGame::render() {
 	counter += getAPI().graphics()->getDeltaTime();
+	frames++;
 	getAPI().graphics()->clear(0.64, 0.56, 0.51);
 	auto batch = getAPI().graphics()->createBatch();
 	float progress =
@@ -24,7 +25,9 @@ void TestAppGame::render() {
 	batch->draw(texture.get(), 500 - (500 * progress), 500, 500, 500);
 	batch->end();
 	if (counter > SPEED * 2) {
+		getAPI().system()->log("TestAppGame", "FPS: {:05f}", frames / counter);
 		counter -= SPEED * 2;
+		frames = 0;
 	}
 }
 

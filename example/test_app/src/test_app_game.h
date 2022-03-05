@@ -20,6 +20,7 @@ private:
 	std::unique_ptr<Image> image;
 	double counter = 0;
 	constexpr const static float SPEED = 2;
+	int frames = 0;
 };
 
 } // namespace Growl

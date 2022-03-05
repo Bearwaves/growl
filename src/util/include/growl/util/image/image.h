@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <iostream>
+#include <memory>
 #include <string>
 
 namespace Growl {
