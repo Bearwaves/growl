@@ -7,7 +7,7 @@ using Growl::Image;
 std::unique_ptr<Image> Growl::loadImageFromFile(std::string filePath) {
 	int width, height, channels;
 	unsigned char* img =
-		stbi_load(filePath.c_str(), &width, &height, &channels, 0);
+		stbi_load(filePath.c_str(), &width, &height, &channels, 4);
 	assert(img != nullptr);
 	return std::make_unique<Image>(width, height, channels, img);
 }
