@@ -1,2 +1,2 @@
-src/contrib/**/* linguist-vendored
+**/contrib/**/* linguist-vendored
 cmake/FindSDL2.cmake linguist-vendored
