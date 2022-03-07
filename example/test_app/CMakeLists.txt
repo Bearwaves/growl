@@ -7,7 +7,6 @@ set(SOURCES
 	"src/test_app_game.cpp"
 	)
 
-
 set(HEADERS
 	"src/test_app_game.h"
 	)

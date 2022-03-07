@@ -1,0 +1,3 @@
+#define GIT_REV @GIT_REV@@GIT_DIFF@
+#define STRINGIFY(s) #s
+#define Growl_VERSION STRINGIFY(GIT_REV)

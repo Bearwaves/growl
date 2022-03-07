@@ -6,6 +6,8 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+include(version)
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(GROWL_METAL 1)
 	add_definitions(-DGROWL_METAL)
