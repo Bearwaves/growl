@@ -1,5 +1,5 @@
 #pragma once
 
 extern "C" {
-	extern const char* Growl_VERSION;
+extern const char* Growl_VERSION;
 }
