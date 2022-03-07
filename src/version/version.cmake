@@ -32,3 +32,19 @@ else()
 	string(STRIP "${GIT_TAG}" GIT_TAG)
 	string(STRIP "${GIT_BRANCH}" GIT_BRANCH)
 endif()
+
+message(STATUS "Got version: ${GIT_REV}${GIT_DIFF}")
+
+set(VERSION "const char* Growl_VERSION=\"${GIT_REV}${GIT_DIFF}\";")
+
+set(VERSION_PATH "${CMAKE_CURRENT_SOURCE_DIR}/version.cpp")
+
+if(EXISTS ${VERSION_PATH})
+	file(READ ${VERSION_PATH} VERSION_)
+else()
+	set(VERSION_ "")
+endif()
+
+if (NOT "${VERSION}" STREQUAL "${VERSION_}")
+	file(WRITE ${VERSION_PATH} "${VERSION}")
+endif()
