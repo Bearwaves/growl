@@ -33,8 +33,8 @@ int main(int argc, char** argv) {
 
 	cout << "┏━━━━━━━━━━━┓" << endl;
 	cout << "┃" << style::bold << "   GROWL   " << style::reset << "┃ "
-		 << style::bold << Growl_VERSION
-		 << style::reset << " https://github.com/Bearwaves/growl" << endl;
+		 << style::bold << Growl_VERSION << style::reset
+		 << " https://github.com/Bearwaves/growl" << endl;
 	cout << "┗━━━━━━━━━━━┛" << endl;
 	CLI11_PARSE(app, argc, argv);
 	return 0;
