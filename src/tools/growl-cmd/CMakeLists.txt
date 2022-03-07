@@ -10,7 +10,6 @@ set(SOURCES
 	"src/assets.cpp"
 	)
 
-
 set(HEADERS
 	"src/version.h"
 	"contrib/CLI11.hpp"
