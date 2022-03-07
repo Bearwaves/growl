@@ -67,9 +67,9 @@ std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(Image* image) {
 		texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
 									 width:image->getWidth()
 									height:image->getHeight()
-								 mipmapped:false];
+								 mipmapped:true];
 	auto metalTexture = [device newTextureWithDescriptor:textureDescriptor];
-	NSUInteger bytesPerRow = image->getChannels() * image->getWidth();
+	NSUInteger bytesPerRow = 4 * image->getWidth();
 	MTLRegion region = {
 		{0, 0, 0},
 		{static_cast<NSUInteger>(image->getWidth()),
@@ -79,6 +79,12 @@ std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(Image* image) {
 					mipmapLevel:0
 					  withBytes:imageBytes
 					bytesPerRow:bytesPerRow];
+
+	auto buf = [command_queue commandBuffer];
+	auto blitEncoder = [buf blitCommandEncoder];
+	[blitEncoder generateMipmapsForTexture:metalTexture];
+	[blitEncoder endEncoding];
+	[buf commit];
 
 	MTLSamplerDescriptor* samplerDescriptor =
 		[[MTLSamplerDescriptor alloc] init];
