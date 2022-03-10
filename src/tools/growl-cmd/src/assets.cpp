@@ -47,7 +47,7 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 		}
 		std::vector<uint8_t> out_buf;
 		if (!fpng::fpng_encode_image_to_memory(
-				img, width, height, 4, out_buf)) {
+				img, width, height, 4, out_buf, fpng::FPNG_ENCODE_SLOWER)) {
 			cout << fg::red << "Failed to encode image." << style::reset
 				 << endl;
 			exit(1);
@@ -61,7 +61,8 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 	}
 	size = outfile.tellp();
 	outfile.write(
-		reinterpret_cast<const char*>(&resourceMap), resourceMap.size());
+		reinterpret_cast<const char*>(resourceMap.dump().c_str()),
+		resourceMap.dump().size());
 	outfile.seekp(0);
 	outfile.write(reinterpret_cast<const char*>(&size), sizeof(size));
 }
