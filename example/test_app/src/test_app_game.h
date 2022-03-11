@@ -2,7 +2,7 @@
 
 #include <growl/core/game/game.h>
 #include <growl/core/graphics/texture.h>
-#include <growl/util/image/image.h>
+#include <growl/util/resources/image.h>
 #include <memory>
 
 namespace Growl {

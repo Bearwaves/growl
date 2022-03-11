@@ -7,7 +7,7 @@ set(SOURCES
 	)
 
 set(HEADERS
-	"include/growl/util/image/image.h"
+	"include/growl/util/resources/image.h"
 	)
 
 add_library(growl-util ${SOURCES} ${HEADERS})

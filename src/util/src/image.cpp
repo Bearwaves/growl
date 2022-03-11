@@ -1,4 +1,4 @@
-#include "../include/growl/util/image/image.h"
+#include "../include/growl/util/resources/image.h"
 #include "../../contrib/stb_image/stb_image.h"
 #include <cassert>
 
