@@ -3,7 +3,7 @@ project(growl-contrib)
 add_subdirectory(glm)
 add_subdirectory(json)
 
-set(CMAKE_CXX_FLAGS "-msse4.1 -mpclmul")
+set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
 
 set(SOURCES
 	"fmt/format.cpp"
