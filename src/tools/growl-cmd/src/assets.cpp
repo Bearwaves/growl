@@ -10,10 +10,10 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-using Growl::AssetsBundle;
 using Growl::AssetsBundleMapInfo;
 using Growl::AssetsBundleVersion;
 using Growl::AssetsMap;
+using Growl::AssetType;
 using nlohmann::json;
 using rang::fg;
 using rang::style;
@@ -30,7 +30,8 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 
 	AssetsMap resourceMap;
 
-	std::ofstream outfile(output, std::ios::binary | std::ios::out);
+	std::ofstream outfile(
+		output, std::ios::binary | std::ios::out | std::ios::trunc);
 	AssetsBundleVersion version = Growl::ASSETS_BUNDLE_LATEST_VERSION;
 	outfile.write(reinterpret_cast<const char*>(&version), sizeof(version));
 	AssetsBundleMapInfo info{0, 0};
@@ -60,7 +61,7 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 			exit(1);
 		}
 		unsigned int ptr = outfile.tellp();
-		resourceMap[resolved_path] = {ptr, out_buf.size()};
+		resourceMap[resolved_path] = {ptr, out_buf.size(), AssetType::Image};
 		outfile.write(
 			reinterpret_cast<const char*>(out_buf.data()), out_buf.size());
 		std::cout << "Included " << style::bold << resolved_path.string()
@@ -87,7 +88,8 @@ void listAssets(std::string assetsBundle) {
 	auto assetsMap = assetsBundleResult.get().getAssetsMap();
 	cout << "Found " << style::bold << assetsMap.size() << style::reset
 		 << " assets." << endl;
-	for (auto [asset, _] : assetsMap) {
-		cout << " • " << asset << endl;
+	for (auto [asset, info] : assetsMap) {
+		cout << " • [" << style::bold << Growl::getAssetTypeName(info.type)
+			 << style::reset << "] " << asset << endl;
 	}
 }

@@ -33,10 +33,20 @@ Result<AssetsBundle> Growl::loadAssetsBundle(std::string filePath) noexcept {
 }
 
 void Growl::to_json(json& j, const AssetInfo& r) {
-	j = json{{"position", r.position}, {"size", r.size}};
+	j = json{{"position", r.position}, {"size", r.size}, {"typ", r.type}};
 }
 
 void Growl::from_json(const json& j, AssetInfo& r) {
 	j.at("position").get_to(r.position);
 	j.at("size").get_to(r.size);
+	j.at("typ").get_to(r.type);
+}
+
+std::string Growl::getAssetTypeName(AssetType type) {
+	switch (type) {
+	case AssetType::Image:
+		return "Image";
+	default:
+		return "Unknown";
+	}
 }

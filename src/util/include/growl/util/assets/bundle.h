@@ -15,6 +15,10 @@ typedef uint64_t AssetsBundleVersion;
 
 constexpr AssetsBundleVersion ASSETS_BUNDLE_LATEST_VERSION = 1;
 
+enum class AssetType : uint64_t { Unknown, Image };
+
+std::string getAssetTypeName(AssetType type);
+
 struct AssetsBundleMapInfo {
 	uint64_t position;
 	uint64_t size;
@@ -23,6 +27,7 @@ struct AssetsBundleMapInfo {
 struct AssetInfo {
 	uint64_t position;
 	uint64_t size;
+	AssetType type;
 };
 
 void to_json(json& j, const AssetInfo& r);
