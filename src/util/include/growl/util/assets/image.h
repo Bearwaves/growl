@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace Growl {
 
@@ -17,6 +18,12 @@ public:
 		, channels{channels}
 		, raw{StbiImage{raw}} {}
 
+	Image(int width, int height, int channels, std::vector<unsigned char> data)
+		: width{width}
+		, height{height}
+		, channels{channels}
+		, data{data} {}
+
 	int getWidth() const {
 		return width;
 	}
@@ -26,8 +33,11 @@ public:
 	int getChannels() const {
 		return channels;
 	}
-	unsigned char* getRaw() const {
-		return raw.get();
+	const unsigned char* getRaw() const {
+		if (raw) {
+			return raw.get();
+		}
+		return data.data();
 	}
 	bool useFiltering() const {
 		return true;
@@ -37,6 +47,7 @@ private:
 	int width;
 	int height;
 	int channels;
+	std::vector<unsigned char> data;
 
 	class StbiDeleter {
 	public:
@@ -47,4 +58,5 @@ private:
 };
 
 Result<Image> loadImageFromFile(std::string filePath);
+Result<Image> loadImageFromMemory(const unsigned char* address, uint64_t size);
 } // namespace Growl

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "image.h"
 #include <cstdint>
 #include <fstream>
 #include <growl/util/error.h>
@@ -44,6 +45,8 @@ public:
 	AssetsMap& getAssetsMap() {
 		return assetsMap;
 	}
+
+	Result<Image> getImage(std::string name) noexcept;
 
 private:
 	std::ifstream file;

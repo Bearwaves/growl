@@ -11,7 +11,7 @@ Error TestAppGame::init() {
 	if (bundleResult.hasError()) {
 		return std::move(bundleResult.error());
 	}
-	Result<Image> imageResult = loadImageFromFile("../assets/gfx/cat.jpg");
+	Result<Image> imageResult = bundleResult.get().getImage("gfx/cat.jpg");
 	if (imageResult.hasError()) {
 		return std::move(imageResult.error());
 	}
