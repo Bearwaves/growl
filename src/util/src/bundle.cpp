@@ -2,6 +2,7 @@
 #include "../include/growl/util/assets/error.h"
 #include "growl/util/assets/image.h"
 #include <cstdint>
+#include <memory>
 #include <stdexcept>
 #include <vector>
 
@@ -18,6 +19,10 @@ using Growl::Result;
 Result<AssetsBundle> Growl::loadAssetsBundle(std::string filePath) noexcept {
 	std::ifstream file;
 	file.open(filePath, std::ios::binary | std::ios::in);
+	if (file.fail()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to open file " + filePath + "; does it exist?"));
+	}
 	AssetsBundleVersion version;
 	file.read(reinterpret_cast<char*>(&version), sizeof(version));
 	AssetsBundleMapInfo mapInfo;
