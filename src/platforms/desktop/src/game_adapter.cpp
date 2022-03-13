@@ -1,6 +1,8 @@
 #include <chrono>
 #include <growl/core/graphics/window.h>
+#include <growl/core/log.h>
 #include <growl/platforms/desktop/game_adapter.h>
+#include <iostream>
 
 using Growl::API;
 using Growl::GameAdapter;
@@ -22,8 +24,17 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig windowConfig)
 #endif
 	m_game->m_api = m_api.get();
 
-	m_api->systemInternal->init();
-	m_api->graphicsInternal->init();
+	if (auto err = m_api->systemInternal->init(); err) {
+		std::cout << "Failed to init system API: " << err.get()->message()
+				  << std::endl;
+		exit(1);
+	}
+	if (auto err = m_api->graphicsInternal->init(); err) {
+		m_api->system()->log(
+			LogLevel::FATAL, "GameAdapter", "Failed to init graphics API: {}",
+			err.get()->message());
+		exit(2);
+	}
 	m_api->system()->log("GameAdapter", "Desktop adapter created");
 }
 
@@ -35,7 +46,12 @@ GameAdapter::~GameAdapter() {
 
 void GameAdapter::run() {
 	m_api->graphicsInternal->setWindow(m_window_config);
-	m_game->init();
+	if (auto err = m_game->init(); err) {
+		m_api->system()->log(
+			LogLevel::FATAL, "GameAdapter", "Failed to init game: {}",
+			err.get()->message());
+		return;
+	}
 	m_api->system()->log("GameAdapter", "Run!");
 	while (m_api->systemInternal->isRunning()) {
 		m_api->system()->tick();

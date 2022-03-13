@@ -12,7 +12,7 @@ class TestAppGame : public Game {
 public:
 	explicit TestAppGame() = default;
 	virtual ~TestAppGame();
-	void init() override;
+	Error init() override;
 	void render() override;
 	void resize(const int width, const int height) override;
 

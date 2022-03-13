@@ -1,6 +1,7 @@
 #pragma once
 
 #include <growl/core/api/api.h>
+#include <growl/util/error.h>
 #include <memory>
 
 namespace Growl {
@@ -15,7 +16,7 @@ public:
 	explicit Game() = default;
 	virtual ~Game() = default;
 
-	virtual void init() = 0;
+	virtual Error init() = 0;
 	virtual void render() = 0;
 	virtual void resize(const int width, const int height) = 0;
 

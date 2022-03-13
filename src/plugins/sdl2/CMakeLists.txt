@@ -13,6 +13,7 @@ set(SOURCES
 	)
 
 set(HEADERS
+	"src/sdl_error.h"
 	"src/sdl_system.h"
 	"src/sdl_window.h"
 	)

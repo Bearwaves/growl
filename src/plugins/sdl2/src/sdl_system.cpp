@@ -1,16 +1,22 @@
 #include "sdl_system.h"
 #include "SDL_log.h"
+#include "sdl_error.h"
 #include "sdl_window.h"
 #include <assert.h>
+#include <memory>
 
+using Growl::Error;
 using Growl::SDL2SystemAPI;
 using Growl::Window;
 
-void SDL2SystemAPI::init() {
-	assert(SDL_WasInit(SDL_INIT_VIDEO) == 0);
+Error SDL2SystemAPI::init() {
+	if (SDL_WasInit(SDL_INIT_VIDEO) != 0) {
+		return std::make_unique<SDL2Error>(SDL_GetError());
+	}
 	SDL_LogSetPriority(SDL_LOG_CATEGORY_CUSTOM, SDL_LOG_PRIORITY_INFO);
 
 	running = true;
+	return nullptr;
 }
 
 std::unique_ptr<Window>

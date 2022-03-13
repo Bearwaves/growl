@@ -10,6 +10,7 @@
 #include <memory>
 
 using Growl::Batch;
+using Growl::Error;
 using Growl::OpenGLGraphicsAPI;
 using Growl::Texture;
 using std::chrono::duration;
@@ -18,8 +19,9 @@ using std::chrono::seconds;
 OpenGLGraphicsAPI::OpenGLGraphicsAPI(SystemAPI& system)
 	: system{system} {}
 
-void OpenGLGraphicsAPI::init() {
+Error OpenGLGraphicsAPI::init() {
 	last_render = high_resolution_clock::now();
+	return nullptr;
 }
 
 void OpenGLGraphicsAPI::dispose() {

@@ -8,7 +8,7 @@ namespace Growl {
 
 class SDL2SystemAPI : public SystemAPIInternal {
 public:
-	void init() override;
+	Error init() override;
 	void tick() override;
 	void dispose() override;
 	bool isRunning() override;

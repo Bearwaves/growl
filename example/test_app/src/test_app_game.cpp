@@ -1,22 +1,22 @@
 #include "test_app_game.h"
 
+using Growl::Error;
 using Growl::TestAppGame;
 
-void TestAppGame::init() {
+Error TestAppGame::init() {
 	getAPI().system()->setLogLevel(LogLevel::DEBUG);
 	getAPI().system()->log("TestAppGame", "Game starting up!");
 	Result<Image> imageResult = loadImageFromFile("../assets/gfx/cat.jpg");
 	if (imageResult.hasError()) {
-		getAPI().system()->log(
-			LogLevel::ERROR, "TestAppGame", "Failed to load image: {}",
-			imageResult.error()->message());
-		std::terminate();
+		return std::move(imageResult.error());
 	}
 	image = std::move(imageResult.get());
 	getAPI().system()->log(
 		LogLevel::DEBUG, "TestAppGame", "Got image! W {}, H {}, Ch {}",
 		image->getWidth(), image->getHeight(), image->getChannels());
 	texture = getAPI().graphics()->createTexture(*image);
+
+	return nullptr;
 }
 
 void TestAppGame::render() {

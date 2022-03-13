@@ -13,7 +13,7 @@ namespace Growl {
 class OpenGLGraphicsAPI : public GraphicsAPIInternal {
 public:
 	explicit OpenGLGraphicsAPI(SystemAPI& system);
-	void init() override;
+	Error init() override;
 	void dispose() override;
 	void begin() override;
 	void end() override;

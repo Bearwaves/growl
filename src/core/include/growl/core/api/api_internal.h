@@ -2,6 +2,7 @@
 
 #include "graphics_api.h"
 #include "system_api.h"
+#include <growl/util/error.h>
 
 namespace Growl {
 
@@ -12,7 +13,7 @@ class APIInternal {
 public:
 	virtual ~APIInternal() {}
 
-	virtual void init() = 0;
+	virtual Error init() = 0;
 	virtual void dispose() = 0;
 };
 
