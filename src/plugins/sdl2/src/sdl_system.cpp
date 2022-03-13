@@ -39,9 +39,11 @@ SDL2SystemAPI::createWindow(const WindowConfig& config) {
 
 void SDL2SystemAPI::tick() {
 	SDL_Event event;
-	SDL_PollEvent(&event);
-	if (event.type == SDL_QUIT) {
-		running = false;
+	while (SDL_PollEvent(&event)) {
+		if (event.type == SDL_QUIT) {
+			log("SDL2SystemAPI", "Got stop signal");
+			running = false;
+		}
 	}
 }
 
