@@ -4,6 +4,7 @@
 #include <growl/core/graphics/texture.h>
 #include <growl/util/resources/image.h>
 #include <memory>
+#include <optional>
 
 namespace Growl {
 
@@ -17,7 +18,7 @@ public:
 
 private:
 	std::unique_ptr<Texture> texture;
-	std::unique_ptr<Image> image;
+	std::optional<Image> image;
 	double counter = 0;
 	constexpr const static float SPEED = 2;
 	int frames = 0;

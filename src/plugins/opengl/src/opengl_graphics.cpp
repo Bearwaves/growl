@@ -50,7 +50,7 @@ void OpenGLGraphicsAPI::clear(float r, float g, float b) {
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-std::unique_ptr<Texture> OpenGLGraphicsAPI::createTexture(Image* image) {
+std::unique_ptr<Texture> OpenGLGraphicsAPI::createTexture(const Image& image) {
 	unsigned int textureID;
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
@@ -62,8 +62,8 @@ std::unique_ptr<Texture> OpenGLGraphicsAPI::createTexture(Image* image) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glTexImage2D(
-		GL_TEXTURE_2D, 0, GL_RGBA, image->getWidth(), image->getHeight(), 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, image->getRaw());
+		GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, image.getRaw());
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 

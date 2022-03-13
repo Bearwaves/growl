@@ -5,11 +5,18 @@ using Growl::TestAppGame;
 void TestAppGame::init() {
 	getAPI().system()->setLogLevel(LogLevel::DEBUG);
 	getAPI().system()->log("TestAppGame", "Game starting up!");
-	image = loadImageFromFile("../assets/gfx/cat.jpg");
+	Result<Image> imageResult = loadImageFromFile("../assets/gfx/cat.jpg");
+	if (imageResult.hasError()) {
+		getAPI().system()->log(
+			LogLevel::ERROR, "TestAppGame", "Failed to load image: {}",
+			imageResult.error()->message());
+		std::terminate();
+	}
+	image = std::move(imageResult.get());
 	getAPI().system()->log(
 		LogLevel::DEBUG, "TestAppGame", "Got image! W {}, H {}, Ch {}",
 		image->getWidth(), image->getHeight(), image->getChannels());
-	texture = getAPI().graphics()->createTexture(image.get());
+	texture = getAPI().graphics()->createTexture(*image);
 }
 
 void TestAppGame::render() {

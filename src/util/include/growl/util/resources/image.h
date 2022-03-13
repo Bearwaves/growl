@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../error.h"
 #include <cstddef>
 #include <iostream>
 #include <memory>
@@ -45,5 +46,5 @@ private:
 	StbiImage raw;
 };
 
-std::unique_ptr<Image> loadImageFromFile(std::string filePath);
+Result<Image> loadImageFromFile(std::string filePath);
 } // namespace Growl

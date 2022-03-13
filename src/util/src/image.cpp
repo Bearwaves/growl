@@ -1,15 +1,24 @@
 #include "../include/growl/util/resources/image.h"
 #include "../../contrib/stb_image/stb_image.h"
-#include <cassert>
 
+using Growl::BaseError;
 using Growl::Image;
+using Growl::Result;
 
-std::unique_ptr<Image> Growl::loadImageFromFile(std::string filePath) {
+struct imageLoadError : BaseError {
+	std::string message() override {
+		return "Failed to load image from file";
+	}
+};
+
+Result<Image> Growl::loadImageFromFile(std::string filePath) {
 	int width, height, channels;
 	unsigned char* img =
 		stbi_load(filePath.c_str(), &width, &height, &channels, 4);
-	assert(img != nullptr);
-	return std::make_unique<Image>(width, height, channels, img);
+	if (img == nullptr) {
+		return Error(std::make_unique<imageLoadError>());
+	}
+	return Image(width, height, channels, img);
 }
 
 void Image::StbiDeleter::operator()(unsigned char* data) const {

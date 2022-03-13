@@ -7,6 +7,8 @@ set(SOURCES
 	)
 
 set(HEADERS
+	"include/growl/util/error.h"
+
 	"include/growl/util/resources/image.h"
 	)
 
