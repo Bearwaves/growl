@@ -25,7 +25,7 @@ public:
 class GraphicsAPIInternal : public GraphicsAPI, public APIInternal {
 public:
 	virtual ~GraphicsAPIInternal() {}
-	virtual void setWindow(WindowConfig& windowDescriptor) = 0;
+	virtual Error setWindow(WindowConfig& windowDescriptor) = 0;
 	virtual void begin() = 0;
 	virtual void end() = 0;
 };

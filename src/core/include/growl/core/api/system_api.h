@@ -3,6 +3,7 @@
 #include "../../../../../contrib/fmt/color.h"
 #include "../../../../../contrib/fmt/core.h"
 #include "../log.h"
+#include <growl/util/error.h>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -17,7 +18,7 @@ public:
 	virtual ~SystemAPI() {}
 	virtual bool isRunning() = 0;
 	virtual void tick() = 0;
-	virtual std::unique_ptr<Window>
+	virtual Result<std::unique_ptr<Window>>
 	createWindow(const WindowConfig& window) = 0;
 
 	template <class... Args>

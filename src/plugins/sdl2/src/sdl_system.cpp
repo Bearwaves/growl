@@ -6,6 +6,7 @@
 #include <memory>
 
 using Growl::Error;
+using Growl::Result;
 using Growl::SDL2SystemAPI;
 using Growl::Window;
 
@@ -19,7 +20,7 @@ Error SDL2SystemAPI::init() {
 	return nullptr;
 }
 
-std::unique_ptr<Window>
+Result<std::unique_ptr<Window>>
 SDL2SystemAPI::createWindow(const WindowConfig& config) {
 	int flags = SDL_WINDOW_INPUT_FOCUS;
 	flags |= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
@@ -29,8 +30,11 @@ SDL2SystemAPI::createWindow(const WindowConfig& config) {
 		config.isCentred() ? SDL_WINDOWPOS_CENTERED : 0,
 		config.isCentred() ? SDL_WINDOWPOS_CENTERED : 0, config.getWidth(),
 		config.getHeight(), flags);
+	if (win == nullptr) {
+		return Error(std::make_unique<SDL2Error>(SDL_GetError()));
+	}
 
-	return std::make_unique<SDL2Window>(win);
+	return std::unique_ptr<Window>(std::make_unique<SDL2Window>(win));
 }
 
 void SDL2SystemAPI::tick() {

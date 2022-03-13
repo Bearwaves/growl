@@ -38,13 +38,19 @@ void OpenGLGraphicsAPI::end() {
 	SDL_GL_SwapWindow(static_cast<SDL_Window*>(window->getNative()));
 }
 
-void OpenGLGraphicsAPI::setWindow(WindowConfig& config) {
-	window = system.createWindow(config);
+Error OpenGLGraphicsAPI::setWindow(WindowConfig& config) {
+	auto windowResult = system.createWindow(config);
+	if (windowResult.hasError()) {
+		return std::move(windowResult.error());
+	}
+	window = std::move(windowResult.get());
 	context =
 		SDL_GL_CreateContext(static_cast<SDL_Window*>(window->getNative()));
 	glViewport(0, 0, config.getWidth(), config.getHeight());
 	default_shader = std::make_unique<OpenGLShader>(*this);
 	setupDebugCallback();
+
+	return nullptr;
 }
 
 void OpenGLGraphicsAPI::clear(float r, float g, float b) {

@@ -45,7 +45,12 @@ GameAdapter::~GameAdapter() {
 }
 
 void GameAdapter::run() {
-	m_api->graphicsInternal->setWindow(m_window_config);
+	if (auto err = m_api->graphicsInternal->setWindow(m_window_config); err) {
+		m_api->system()->log(
+			LogLevel::FATAL, "GameAdapter", "Failed to create window: {}",
+			err.get()->message());
+		return;
+	}
 	if (auto err = m_game->init(); err) {
 		m_api->system()->log(
 			LogLevel::FATAL, "GameAdapter", "Failed to init game: {}",

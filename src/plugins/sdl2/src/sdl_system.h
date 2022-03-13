@@ -12,7 +12,7 @@ public:
 	void tick() override;
 	void dispose() override;
 	bool isRunning() override;
-	virtual std::unique_ptr<Window>
+	virtual Result<std::unique_ptr<Window>>
 	createWindow(const WindowConfig& config) override;
 	void setLogLevel(LogLevel logLevel) override;
 

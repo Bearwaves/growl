@@ -17,7 +17,7 @@ public:
 	void dispose() override;
 	void begin() override;
 	void end() override;
-	void setWindow(WindowConfig& windowConfig) override;
+	Error setWindow(WindowConfig& windowConfig) override;
 	void clear(float r, float g, float b) override;
 	std::unique_ptr<Texture> createTexture(const Image& image) override;
 	std::unique_ptr<Batch> createBatch() override;
