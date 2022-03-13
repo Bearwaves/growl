@@ -62,19 +62,19 @@ void MetalGraphicsAPI::clear(float r, float g, float b) {
 	[encoder endEncoding];
 }
 
-std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(Image* image) {
+std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(const Image& image) {
 	auto textureDescriptor = [MTLTextureDescriptor
 		texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
-									 width:image->getWidth()
-									height:image->getHeight()
+									 width:image.getWidth()
+									height:image.getHeight()
 								 mipmapped:true];
 	auto metalTexture = [device newTextureWithDescriptor:textureDescriptor];
-	NSUInteger bytesPerRow = 4 * image->getWidth();
+	NSUInteger bytesPerRow = 4 * image.getWidth();
 	MTLRegion region = {
 		{0, 0, 0},
-		{static_cast<NSUInteger>(image->getWidth()),
-		 static_cast<NSUInteger>(image->getHeight()), 1}};
-	Byte* imageBytes = image->getRaw();
+		{static_cast<NSUInteger>(image.getWidth()),
+		 static_cast<NSUInteger>(image.getHeight()), 1}};
+	Byte* imageBytes = image.getRaw();
 	[metalTexture replaceRegion:region
 					mipmapLevel:0
 					  withBytes:imageBytes
@@ -89,11 +89,11 @@ std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(Image* image) {
 	MTLSamplerDescriptor* samplerDescriptor =
 		[[MTLSamplerDescriptor alloc] init];
 	samplerDescriptor.maxAnisotropy = 1;
-	auto filter = image->useFiltering() ? MTLSamplerMinMagFilterLinear
-										: MTLSamplerMinMagFilterNearest;
+	auto filter = image.useFiltering() ? MTLSamplerMinMagFilterLinear
+									   : MTLSamplerMinMagFilterNearest;
 	samplerDescriptor.minFilter = filter;
 	samplerDescriptor.magFilter = filter;
-	samplerDescriptor.mipFilter = image->useFiltering()
+	samplerDescriptor.mipFilter = image.useFiltering()
 									  ? MTLSamplerMipFilterLinear
 									  : MTLSamplerMipFilterNearest;
 	auto addressMode = MTLSamplerAddressModeClampToEdge;

@@ -22,7 +22,7 @@ public:
 	void end() override;
 	void setWindow(WindowConfig& windowConfig) override;
 	void clear(float r, float g, float b) override;
-	std::unique_ptr<Texture> createTexture(Image* image) override;
+	std::unique_ptr<Texture> createTexture(const Image& image) override;
 	std::unique_ptr<Batch> createBatch() override;
 
 private:
