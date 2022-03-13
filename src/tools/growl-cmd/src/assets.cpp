@@ -4,11 +4,16 @@
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <growl/util/assets/bundle.h>
 #include <iostream>
 #include <map>
 #include <nlohmann/json.hpp>
 #include <string>
 
+using Growl::AssetsBundle;
+using Growl::AssetsBundleMapInfo;
+using Growl::AssetsBundleVersion;
+using Growl::AssetsMap;
 using nlohmann::json;
 using rang::fg;
 using rang::style;
@@ -23,11 +28,13 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 	cout << "Building assets in " << style::bold << assets_dir << style::reset
 		 << " to " << style::bold << output << style::reset << "." << endl;
 
-	json resourceMap;
+	AssetsMap resourceMap;
 
 	std::ofstream outfile(output, std::ios::binary | std::ios::out);
-	uint64_t size = 0;
-	outfile.write(reinterpret_cast<const char*>(&size), sizeof(size));
+	AssetsBundleVersion version = Growl::ASSETS_BUNDLE_LATEST_VERSION;
+	outfile.write(reinterpret_cast<const char*>(&version), sizeof(version));
+	AssetsBundleMapInfo info{0, 0};
+	outfile.write(reinterpret_cast<const char*>(&info), sizeof(info));
 
 	for (const auto& entry : recursive_directory_iterator(assets_dir)) {
 		if (!is_regular_file(entry)) {
@@ -59,10 +66,28 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 		std::cout << "Included " << style::bold << resolved_path.string()
 				  << style::reset << "." << endl;
 	}
-	size = outfile.tellp();
+	info.position = outfile.tellp();
+	json resourceMapJson = resourceMap;
+	auto resourceMapEncoded = resourceMapJson.dump();
+	info.size = resourceMapEncoded.size();
 	outfile.write(
-		reinterpret_cast<const char*>(resourceMap.dump().c_str()),
-		resourceMap.dump().size());
-	outfile.seekp(0);
-	outfile.write(reinterpret_cast<const char*>(&size), sizeof(size));
+		reinterpret_cast<const char*>(resourceMapEncoded.c_str()),
+		resourceMapEncoded.size());
+	outfile.seekp(sizeof(version));
+	outfile.write(reinterpret_cast<const char*>(&info), sizeof(info));
+}
+
+void listAssets(std::string assetsBundle) {
+	auto assetsBundleResult = Growl::loadAssetsBundle(assetsBundle);
+	if (assetsBundleResult.hasError()) {
+		cout << fg::red << "Failed to load asset bundle: "
+			 << assetsBundleResult.error()->message() << style::reset << endl;
+		exit(1);
+	}
+	auto assetsMap = assetsBundleResult.get().getAssetsMap();
+	cout << "Found " << style::bold << assetsMap.size() << style::reset
+		 << " assets." << endl;
+	for (auto [asset, _] : assetsMap) {
+		cout << " • " << asset << endl;
+	}
 }

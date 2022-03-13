@@ -3,7 +3,7 @@
 #include "../graphics/batch.h"
 #include "../graphics/texture.h"
 #include "../graphics/window.h"
-#include <growl/util/resources/image.h>
+#include <growl/util/assets/image.h>
 #include <memory>
 
 namespace Growl {

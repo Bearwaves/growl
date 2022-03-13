@@ -1,4 +1,4 @@
-#include "../include/growl/util/resources/image.h"
+#include "../include/growl/util/assets/image.h"
 #include "../../contrib/stb_image/stb_image.h"
 
 using Growl::BaseError;

@@ -1,4 +1,5 @@
 #include "test_app_game.h"
+#include <growl/util/assets/bundle.h>
 
 using Growl::Error;
 using Growl::TestAppGame;
@@ -6,6 +7,10 @@ using Growl::TestAppGame;
 Error TestAppGame::init() {
 	getAPI().system()->setLogLevel(LogLevel::DEBUG);
 	getAPI().system()->log("TestAppGame", "Game starting up!");
+	Result<AssetsBundle> bundleResult = loadAssetsBundle("./assets.growl");
+	if (bundleResult.hasError()) {
+		return std::move(bundleResult.error());
+	}
 	Result<Image> imageResult = loadImageFromFile("../assets/gfx/cat.jpg");
 	if (imageResult.hasError()) {
 		return std::move(imageResult.error());

@@ -2,7 +2,7 @@
 
 #include <growl/core/game/game.h>
 #include <growl/core/graphics/texture.h>
-#include <growl/util/resources/image.h>
+#include <growl/util/assets/image.h>
 #include <memory>
 #include <optional>
 
