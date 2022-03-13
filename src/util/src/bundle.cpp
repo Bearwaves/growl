@@ -23,12 +23,11 @@ Result<AssetsBundle> Growl::loadAssetsBundle(std::string filePath) noexcept {
 	AssetsBundleMapInfo mapInfo;
 	file.read(reinterpret_cast<char*>(&mapInfo), sizeof(mapInfo));
 	file.seekg(mapInfo.position);
-	std::vector<char> resourceMapJson;
-	resourceMapJson.reserve(mapInfo.size);
+	std::string resourceMapJson(mapInfo.size, '\0');
 	file.read(resourceMapJson.data(), mapInfo.size);
 	AssetsMap resourceMap;
 	try {
-		resourceMap = json::parse(std::string(resourceMapJson.data()));
+		resourceMap = json::parse(resourceMapJson);
 	} catch (std::exception& e) {
 		return Error(std::make_unique<AssetsError>(
 			"Failed to load assets map JSON: " + std::string(e.what())));
