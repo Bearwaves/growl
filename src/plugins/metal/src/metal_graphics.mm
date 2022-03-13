@@ -5,6 +5,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/mat4x4.hpp>
 
+using Growl::Error;
 using Growl::MetalGraphicsAPI;
 using Growl::Texture;
 using Growl::Batch;
@@ -14,8 +15,9 @@ using std::chrono::seconds;
 MetalGraphicsAPI::MetalGraphicsAPI(SystemAPI& system)
 	: system{system} {}
 
-void MetalGraphicsAPI::init() {
+Error MetalGraphicsAPI::init() {
 	last_render = high_resolution_clock::now();
+	return nullptr;
 }
 
 void MetalGraphicsAPI::dispose() {}
@@ -35,8 +37,12 @@ void MetalGraphicsAPI::end() {
 	[pool release];
 }
 
-void MetalGraphicsAPI::setWindow(WindowConfig& config) {
-	window = system.createWindow(config);
+Error MetalGraphicsAPI::setWindow(WindowConfig& config) {
+	auto windowResult = system.createWindow(config);
+	if (windowResult.hasError()) {
+		return std::move(windowResult.error());
+	}
+	window = std::move(windowResult.get());
 	SDL_Window* nativeWindow = static_cast<SDL_Window*>(window->getNative());
 	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal");
 	SDL_Renderer* renderer =
@@ -47,6 +53,7 @@ void MetalGraphicsAPI::setWindow(WindowConfig& config) {
 	device = swap_chain.device;
 	command_queue = [device newCommandQueue];
 	default_shader = std::make_unique<MetalShader>(device);
+	return nullptr;
 }
 
 void MetalGraphicsAPI::clear(float r, float g, float b) {
@@ -74,7 +81,7 @@ std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(const Image& image) {
 		{0, 0, 0},
 		{static_cast<NSUInteger>(image.getWidth()),
 		 static_cast<NSUInteger>(image.getHeight()), 1}};
-	Byte* imageBytes = image.getRaw();
+	const Byte* imageBytes = image.getRaw();
 	[metalTexture replaceRegion:region
 					mipmapLevel:0
 					  withBytes:imageBytes
