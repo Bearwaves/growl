@@ -5,6 +5,7 @@ include_directories("include")
 set(SOURCES
 	"src/api/api.cpp"
 	"src/game/game.cpp"
+	"src/input/processor.cpp"
 	)
 
 set(HEADERS
@@ -20,6 +21,9 @@ set(HEADERS
 	"include/growl/core/graphics/batch.h"
 	"include/growl/core/graphics/texture.h"
 	"include/growl/core/graphics/window.h"
+
+	"include/growl/core/input/event.h"
+	"include/growl/core/input/processor.h"
 	)
 
 add_library(growl-core ${SOURCES} ${HEADERS})

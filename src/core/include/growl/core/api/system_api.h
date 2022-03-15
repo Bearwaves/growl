@@ -3,6 +3,7 @@
 #include "../../../../../contrib/fmt/color.h"
 #include "../../../../../contrib/fmt/core.h"
 #include "../log.h"
+#include <growl/core/input/processor.h>
 #include <growl/util/error.h>
 #include <memory>
 #include <string>
@@ -20,6 +21,9 @@ public:
 	virtual void tick() = 0;
 	virtual Result<std::unique_ptr<Window>>
 	createWindow(const WindowConfig& window) = 0;
+	virtual void setInputProcessor(InputProcessor* processor) {
+		inputProcessor = processor;
+	}
 
 	template <class... Args>
 	void
@@ -39,6 +43,7 @@ public:
 protected:
 	virtual void
 	logInternal(LogLevel logLevel, std::string tag, std::string formatted) = 0;
+	InputProcessor* inputProcessor;
 };
 
 } // namespace Growl

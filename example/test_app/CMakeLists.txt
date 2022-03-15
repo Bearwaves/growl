@@ -5,10 +5,12 @@ project(growl-test-app)
 set(SOURCES
 	"src/test_app.cpp"
 	"src/test_app_game.cpp"
+	"src/input.cpp"
 	)
 
 set(HEADERS
 	"src/test_app_game.h"
+	"src/input.h"
 	)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic")

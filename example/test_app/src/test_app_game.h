@@ -6,6 +6,8 @@
 #include <memory>
 #include <optional>
 
+#include "input.h"
+
 namespace Growl {
 
 class TestAppGame : public Game {
@@ -18,6 +20,7 @@ public:
 
 private:
 	std::unique_ptr<Texture> texture;
+	std::unique_ptr<InputHandler> input;
 	std::optional<Image> image;
 	double counter = 0;
 	constexpr const static float SPEED = 2;

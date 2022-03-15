@@ -5,6 +5,8 @@ using Growl::Error;
 using Growl::TestAppGame;
 
 Error TestAppGame::init() {
+	input = std::make_unique<InputHandler>(getAPI().system());
+	getAPI().system()->setInputProcessor(input.get());
 	getAPI().system()->setLogLevel(LogLevel::DEBUG);
 	getAPI().system()->log("TestAppGame", "Game starting up!");
 	Result<AssetsBundle> bundleResult = loadAssetsBundle("./assets.growl");
@@ -32,7 +34,9 @@ void TestAppGame::render() {
 	float progress =
 		counter < SPEED ? counter / SPEED : (2 * SPEED - counter) / SPEED;
 	batch->begin();
-	batch->draw(texture.get(), 0 + (500 * progress), 0, 500, 500);
+	batch->draw(
+		texture.get(), input->getMouseX() - 100, input->getMouseY() - 100, 200,
+		200);
 	batch->draw(texture.get(), 500 - (500 * progress), 500, 500, 500);
 	batch->end();
 	if (counter > SPEED * 2) {

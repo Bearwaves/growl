@@ -6,6 +6,7 @@
 #include <memory>
 
 using Growl::Error;
+using Growl::InputEvent;
 using Growl::Result;
 using Growl::SDL2SystemAPI;
 using Growl::Window;
@@ -40,9 +41,18 @@ SDL2SystemAPI::createWindow(const WindowConfig& config) {
 void SDL2SystemAPI::tick() {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
-		if (event.type == SDL_QUIT) {
+		switch (event.type) {
+		case SDL_QUIT: {
 			log("SDL2SystemAPI", "Got stop signal");
 			running = false;
+			break;
+		}
+		case SDL_MOUSEMOTION:
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONUP:
+		case SDL_MOUSEWHEEL:
+			handleMouseEvent(event);
+			break;
 		}
 	}
 }
@@ -78,6 +88,11 @@ SDL_LogPriority SDL2SystemAPI::getLogPriority(LogLevel logLevel) {
 	return SDL_LOG_PRIORITY_VERBOSE;
 }
 
-bool SDL2SystemAPI::isRunning() {
-	return running;
+void SDL2SystemAPI::handleMouseEvent(SDL_Event event) {
+	if (inputProcessor) {
+		InputEvent e(
+			InputEventType::MOUSE,
+			InputMouseEvent(event.motion.x, event.motion.y));
+		inputProcessor->onEvent(e);
+	}
 }
