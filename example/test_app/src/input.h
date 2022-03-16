@@ -12,6 +12,8 @@ public:
 
 	void onMouseEvent(InputMouseEvent& event) override;
 
+	void onKeyboardEvent(InputKeyboardEvent& event) override;
+
 	int getMouseX() {
 		return mouseX;
 	}

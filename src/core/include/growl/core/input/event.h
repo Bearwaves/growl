@@ -1,5 +1,6 @@
 #pragma once
 
+#include "keyboard.h"
 #include <growl/util/error.h>
 #include <string>
 #include <variant>
@@ -14,8 +15,6 @@ enum class InputEventType {
 	CONTROLLER,
 	CUSTOM
 };
-
-class InputKeyboardEvent {};
 
 class InputMouseEvent {
 public:

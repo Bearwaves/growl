@@ -3,10 +3,13 @@
 #include "sdl_error.h"
 #include "sdl_window.h"
 #include <assert.h>
+#include <growl/core/input/event.h>
 #include <memory>
 
 using Growl::Error;
 using Growl::InputEvent;
+using Growl::Key;
+using Growl::KeyEventType;
 using Growl::Result;
 using Growl::SDL2SystemAPI;
 using Growl::Window;
@@ -53,6 +56,10 @@ void SDL2SystemAPI::tick() {
 		case SDL_MOUSEWHEEL:
 			handleMouseEvent(event);
 			break;
+		case SDL_KEYDOWN:
+		case SDL_KEYUP:
+			handleKeyboardEvent(event);
+			break;
 		}
 	}
 }
@@ -88,11 +95,47 @@ SDL_LogPriority SDL2SystemAPI::getLogPriority(LogLevel logLevel) {
 	return SDL_LOG_PRIORITY_VERBOSE;
 }
 
-void SDL2SystemAPI::handleMouseEvent(SDL_Event event) {
+void SDL2SystemAPI::handleMouseEvent(SDL_Event& event) {
 	if (inputProcessor) {
 		InputEvent e(
 			InputEventType::MOUSE,
 			InputMouseEvent(event.motion.x, event.motion.y));
 		inputProcessor->onEvent(e);
+	}
+}
+
+void SDL2SystemAPI::handleKeyboardEvent(SDL_Event& event) {
+	if (inputProcessor) {
+
+		InputEvent e(
+			InputEventType::KEYBOARD,
+			InputKeyboardEvent(getKeyEventType(event.key), getKey(event.key)));
+		inputProcessor->onEvent(e);
+	}
+}
+
+KeyEventType SDL2SystemAPI::getKeyEventType(SDL_KeyboardEvent& event) {
+	switch (event.type) {
+	case SDL_KEYDOWN:
+		return KeyEventType::KeyDown;
+	case SDL_KEYUP:
+		return KeyEventType::KeyUp;
+	default:
+		return KeyEventType::Unknown;
+	}
+}
+
+Key SDL2SystemAPI::getKey(SDL_KeyboardEvent& event) {
+	switch (event.keysym.scancode) {
+	case SDL_SCANCODE_UP:
+		return Key::ArrowUp;
+	case SDL_SCANCODE_DOWN:
+		return Key::ArrowDown;
+	case SDL_SCANCODE_LEFT:
+		return Key::ArrowLeft;
+	case SDL_SCANCODE_RIGHT:
+		return Key::ArrowRight;
+	default:
+		return Key::Unknown;
 	}
 }

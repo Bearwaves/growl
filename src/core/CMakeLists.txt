@@ -24,6 +24,7 @@ set(HEADERS
 
 	"include/growl/core/input/event.h"
 	"include/growl/core/input/processor.h"
+	"include/growl/core/input/keyboard.h"
 	)
 
 add_library(growl-core ${SOURCES} ${HEADERS})
