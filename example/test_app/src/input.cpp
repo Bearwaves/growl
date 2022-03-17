@@ -7,21 +7,35 @@ using Growl::InputHandler;
 void InputHandler::onMouseEvent(InputMouseEvent& event) {
 	mouseX = event.mouseX;
 	mouseY = event.mouseY;
-	system->log(
-		LogLevel::DEBUG, "InputHandler", "Got mouse event! ({},{})", mouseX,
-		mouseY);
 }
 
 void InputHandler::onKeyboardEvent(InputKeyboardEvent& event) {
 	switch (event.type) {
 	case KeyEventType::Unknown:
-		system->log(LogLevel::DEBUG, "InputHandler", "Got unknown key event!");
+		system->log(LogLevel::WARN, "InputHandler", "Got unknown key event!");
 		break;
 	case KeyEventType::KeyDown:
-		system->log(LogLevel::DEBUG, "InputHandler", "Got key down event!");
-		break;
 	case KeyEventType::KeyUp:
-		system->log(LogLevel::DEBUG, "InputHandler", "Got key up event!");
+		switch (event.key) {
+		case Key::ArrowUp:
+		case Key::LetterW:
+			up = event.type == KeyEventType::KeyDown;
+			break;
+		case Key::ArrowDown:
+		case Key::LetterS:
+			down = event.type == KeyEventType::KeyDown;
+			break;
+		case Key::ArrowLeft:
+		case Key::LetterA:
+			left = event.type == KeyEventType::KeyDown;
+			break;
+		case Key::ArrowRight:
+		case Key::LetterD:
+			right = event.type == KeyEventType::KeyDown;
+			break;
+		default:
+			break;
+		}
 		break;
 	}
 }

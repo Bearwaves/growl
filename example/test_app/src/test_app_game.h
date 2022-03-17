@@ -23,8 +23,10 @@ private:
 	std::unique_ptr<InputHandler> input;
 	std::optional<Image> image;
 	double counter = 0;
-	constexpr const static float SPEED = 2;
+	constexpr const static float SPEED = 500; // px/s
 	int frames = 0;
+	float catX;
+	float catY;
 };
 
 } // namespace Growl

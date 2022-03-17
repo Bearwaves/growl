@@ -22,10 +22,30 @@ public:
 		return mouseY;
 	}
 
+	bool upPressed() {
+		return up;
+	}
+
+	bool downPressed() {
+		return down;
+	}
+
+	bool leftPressed() {
+		return left;
+	}
+
+	bool rightPressed() {
+		return right;
+	}
+
 private:
 	SystemAPI* system;
 	int mouseX;
 	int mouseY;
+	bool up;
+	bool down;
+	bool left;
+	bool right;
 };
 
 } // namespace Growl

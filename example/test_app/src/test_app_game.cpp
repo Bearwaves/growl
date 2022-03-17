@@ -29,15 +29,17 @@ Error TestAppGame::init() {
 void TestAppGame::render() {
 	counter += getAPI().graphics()->getDeltaTime();
 	frames++;
+	catX += getAPI().graphics()->getDeltaTime() * SPEED *
+			(input->leftPressed() ? -1 : (input->rightPressed() ? 1 : 0));
+	catY += getAPI().graphics()->getDeltaTime() * SPEED *
+			(input->upPressed() ? -1 : (input->downPressed() ? 1 : 0));
 	getAPI().graphics()->clear(0.64, 0.56, 0.51);
 	auto batch = getAPI().graphics()->createBatch();
-	float progress =
-		counter < SPEED ? counter / SPEED : (2 * SPEED - counter) / SPEED;
 	batch->begin();
 	batch->draw(
 		texture.get(), input->getMouseX() - 100, input->getMouseY() - 100, 200,
 		200);
-	batch->draw(texture.get(), 500 - (500 * progress), 500, 500, 500);
+	batch->draw(texture.get(), catX, catY, 500, 500);
 	batch->end();
 	if (counter > SPEED * 2) {
 		getAPI().system()->log("TestAppGame", "FPS: {:05f}", frames / counter);

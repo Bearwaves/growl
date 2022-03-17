@@ -8,8 +8,6 @@
 
 using Growl::Error;
 using Growl::InputEvent;
-using Growl::Key;
-using Growl::KeyEventType;
 using Growl::Result;
 using Growl::SDL2SystemAPI;
 using Growl::Window;
@@ -101,41 +99,5 @@ void SDL2SystemAPI::handleMouseEvent(SDL_Event& event) {
 			InputEventType::MOUSE,
 			InputMouseEvent{event.motion.x, event.motion.y});
 		inputProcessor->onEvent(e);
-	}
-}
-
-void SDL2SystemAPI::handleKeyboardEvent(SDL_Event& event) {
-	if (inputProcessor) {
-
-		InputEvent e(
-			InputEventType::KEYBOARD,
-			InputKeyboardEvent{getKeyEventType(event.key), getKey(event.key)});
-		inputProcessor->onEvent(e);
-	}
-}
-
-KeyEventType SDL2SystemAPI::getKeyEventType(SDL_KeyboardEvent& event) {
-	switch (event.type) {
-	case SDL_KEYDOWN:
-		return KeyEventType::KeyDown;
-	case SDL_KEYUP:
-		return KeyEventType::KeyUp;
-	default:
-		return KeyEventType::Unknown;
-	}
-}
-
-Key SDL2SystemAPI::getKey(SDL_KeyboardEvent& event) {
-	switch (event.keysym.scancode) {
-	case SDL_SCANCODE_UP:
-		return Key::ArrowUp;
-	case SDL_SCANCODE_DOWN:
-		return Key::ArrowDown;
-	case SDL_SCANCODE_LEFT:
-		return Key::ArrowLeft;
-	case SDL_SCANCODE_RIGHT:
-		return Key::ArrowRight;
-	default:
-		return Key::Unknown;
 	}
 }
