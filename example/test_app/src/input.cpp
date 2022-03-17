@@ -5,15 +5,15 @@
 using Growl::InputHandler;
 
 void InputHandler::onMouseEvent(InputMouseEvent& event) {
-	mouseX = event.getMouseX();
-	mouseY = event.getMouseY();
+	mouseX = event.mouseX;
+	mouseY = event.mouseY;
 	system->log(
 		LogLevel::DEBUG, "InputHandler", "Got mouse event! ({},{})", mouseX,
 		mouseY);
 }
 
 void InputHandler::onKeyboardEvent(InputKeyboardEvent& event) {
-	switch (event.getType()) {
+	switch (event.type) {
 	case KeyEventType::Unknown:
 		system->log(LogLevel::DEBUG, "InputHandler", "Got unknown key event!");
 		break;

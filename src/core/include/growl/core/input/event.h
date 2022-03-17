@@ -16,28 +16,16 @@ enum class InputEventType {
 	CUSTOM
 };
 
-class InputMouseEvent {
-public:
-	InputMouseEvent(int mouseX, int mouseY)
-		: mouseX{mouseX}
-		, mouseY{mouseY} {}
-	int getMouseX() {
-		return mouseX;
-	}
-	int getMouseY() {
-		return mouseY;
-	}
-
-private:
+struct InputMouseEvent {
 	int mouseX;
 	int mouseY;
 };
 
-class InputControllerEvent {};
+struct InputControllerEvent {};
 
-class InputTouchEvent {};
+struct InputTouchEvent {};
 
-class InputCustomEvent {};
+struct InputCustomEvent {};
 
 struct InputEventError : public BaseError {
 	std::string message() {

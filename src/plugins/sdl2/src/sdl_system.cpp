@@ -99,7 +99,7 @@ void SDL2SystemAPI::handleMouseEvent(SDL_Event& event) {
 	if (inputProcessor) {
 		InputEvent e(
 			InputEventType::MOUSE,
-			InputMouseEvent(event.motion.x, event.motion.y));
+			InputMouseEvent{event.motion.x, event.motion.y});
 		inputProcessor->onEvent(e);
 	}
 }
@@ -109,7 +109,7 @@ void SDL2SystemAPI::handleKeyboardEvent(SDL_Event& event) {
 
 		InputEvent e(
 			InputEventType::KEYBOARD,
-			InputKeyboardEvent(getKeyEventType(event.key), getKey(event.key)));
+			InputKeyboardEvent{getKeyEventType(event.key), getKey(event.key)});
 		inputProcessor->onEvent(e);
 	}
 }
