@@ -13,15 +13,27 @@ Error TestAppGame::init() {
 	if (bundleResult.hasError()) {
 		return std::move(bundleResult.error());
 	}
-	Result<Image> imageResult = bundleResult.get().getImage("gfx/cat.jpg");
-	if (imageResult.hasError()) {
-		return std::move(imageResult.error());
+	Result<Image> catImageResult = bundleResult.get().getImage("gfx/cat.jpg");
+	if (catImageResult.hasError()) {
+		return std::move(catImageResult.error());
 	}
-	image = std::move(imageResult.get());
+	catImage = std::move(catImageResult.get());
 	getAPI().system()->log(
-		LogLevel::DEBUG, "TestAppGame", "Got image! W {}, H {}, Ch {}",
-		image->getWidth(), image->getHeight(), image->getChannels());
-	texture = getAPI().graphics()->createTexture(*image);
+		LogLevel::DEBUG, "TestAppGame", "Got cat image! W {}, H {}, Ch {}",
+		catImage->getWidth(), catImage->getHeight(), catImage->getChannels());
+	catTexture = getAPI().graphics()->createTexture(*catImage);
+
+	Result<Image> mouseImageResult =
+		bundleResult.get().getImage("gfx/mouse.jpg");
+	if (mouseImageResult.hasError()) {
+		return std::move(mouseImageResult.error());
+	}
+	mouseImage = std::move(mouseImageResult.get());
+	getAPI().system()->log(
+		LogLevel::DEBUG, "TestAppGame", "Got mouse image! W {}, H {}, Ch {}",
+		mouseImage->getWidth(), mouseImage->getHeight(),
+		mouseImage->getChannels());
+	mouseTexture = getAPI().graphics()->createTexture(*mouseImage);
 
 	return nullptr;
 }
@@ -36,10 +48,10 @@ void TestAppGame::render() {
 	getAPI().graphics()->clear(0.64, 0.56, 0.51);
 	auto batch = getAPI().graphics()->createBatch();
 	batch->begin();
+	batch->draw(catTexture.get(), catX, catY, 500, 500);
 	batch->draw(
-		texture.get(), input->getMouseX() - 100, input->getMouseY() - 100, 200,
-		200);
-	batch->draw(texture.get(), catX, catY, 500, 500);
+		mouseTexture.get(), input->getMouseX() - 100, input->getMouseY() - 100,
+		200, 200);
 	batch->end();
 	if (counter > SPEED * 2) {
 		getAPI().system()->log("TestAppGame", "FPS: {:05f}", frames / counter);
