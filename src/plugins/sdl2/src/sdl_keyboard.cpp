@@ -112,6 +112,55 @@ Key SDL2SystemAPI::getKey(SDL_KeyboardEvent& event) {
 	case SDL_SCANCODE_Z:
 		return Key::LetterZ;
 
+	case SDL_SCANCODE_F1:
+		return Key::FunctionF1;
+	case SDL_SCANCODE_F2:
+		return Key::FunctionF2;
+	case SDL_SCANCODE_F3:
+		return Key::FunctionF3;
+	case SDL_SCANCODE_F4:
+		return Key::FunctionF4;
+	case SDL_SCANCODE_F5:
+		return Key::FunctionF5;
+	case SDL_SCANCODE_F6:
+		return Key::FunctionF6;
+	case SDL_SCANCODE_F7:
+		return Key::FunctionF7;
+	case SDL_SCANCODE_F8:
+		return Key::FunctionF8;
+	case SDL_SCANCODE_F9:
+		return Key::FunctionF9;
+	case SDL_SCANCODE_F10:
+		return Key::FunctionF10;
+	case SDL_SCANCODE_F11:
+		return Key::FunctionF11;
+	case SDL_SCANCODE_F12:
+		return Key::FunctionF12;
+	case SDL_SCANCODE_F13:
+		return Key::FunctionF13;
+	case SDL_SCANCODE_F14:
+		return Key::FunctionF14;
+	case SDL_SCANCODE_F15:
+		return Key::FunctionF15;
+	case SDL_SCANCODE_F16:
+		return Key::FunctionF16;
+	case SDL_SCANCODE_F17:
+		return Key::FunctionF17;
+	case SDL_SCANCODE_F18:
+		return Key::FunctionF18;
+	case SDL_SCANCODE_F19:
+		return Key::FunctionF19;
+	case SDL_SCANCODE_F20:
+		return Key::FunctionF20;
+	case SDL_SCANCODE_F21:
+		return Key::FunctionF21;
+	case SDL_SCANCODE_F22:
+		return Key::FunctionF22;
+	case SDL_SCANCODE_F23:
+		return Key::FunctionF23;
+	case SDL_SCANCODE_F24:
+		return Key::FunctionF24;
+
 	default:
 		return Key::Unknown;
 	}
