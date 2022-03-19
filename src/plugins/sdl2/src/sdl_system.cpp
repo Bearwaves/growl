@@ -23,15 +23,7 @@ Error SDL2SystemAPI::init() {
 	SDL_ShowCursor(SDL_DISABLE);
 
 	if (SDL_NumJoysticks() > 0) {
-		if (SDL_IsGameController(0)) {
-			controller = SDL_GameControllerOpen(0);
-			if (SDL_GameControllerHasRumble(controller)) {
-				log("SDL2SystemAPI", "Game controller has rumble available");
-			}
-		} else {
-			log(LogLevel::WARN, "SDL2SystemAPI",
-				"Game controller is not compatible");
-		}
+		openGameController(0);
 	}
 
 	running = true;
@@ -78,14 +70,15 @@ void SDL2SystemAPI::tick() {
 		case SDL_CONTROLLERBUTTONUP:
 			handleControllerEvent(event);
 			break;
+		case SDL_CONTROLLERDEVICEADDED:
+			openGameController(event.cdevice.which);
+			break;
 		}
 	}
 }
 
 void SDL2SystemAPI::dispose() {
-	if (controller) {
-		SDL_GameControllerClose(controller);
-	}
+	controller = nullptr;
 	SDL_Quit();
 }
 

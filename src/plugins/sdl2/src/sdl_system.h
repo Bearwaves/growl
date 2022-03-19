@@ -6,6 +6,23 @@
 
 namespace Growl {
 
+class SDL2Controller {
+public:
+	SDL2Controller(SystemAPI* system, SDL_GameController* controller)
+		: system{system}
+		, controller{controller} {}
+	~SDL2Controller() {
+		system->log(
+			"SDL2Controller", "Closed controller: {}",
+			SDL_GameControllerName(controller));
+		SDL_GameControllerClose(controller);
+	}
+
+private:
+	SystemAPI* system;
+	SDL_GameController* controller;
+};
+
 class SDL2SystemAPI : public SystemAPIInternal {
 public:
 	Error init() override;
@@ -32,9 +49,10 @@ private:
 
 	ControllerEventType getControllerEventType(SDL_Event& event);
 	ControllerButton getButton(SDL_Event& event);
+	void openGameController(int id);
 
 	bool running;
-	SDL_GameController* controller;
+	std::unique_ptr<SDL2Controller> controller;
 };
 
 } // namespace Growl
