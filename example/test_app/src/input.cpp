@@ -39,3 +39,33 @@ void InputHandler::onKeyboardEvent(InputKeyboardEvent& event) {
 		break;
 	}
 }
+
+void InputHandler::onControllerEvent(InputControllerEvent& event) {
+	switch (event.type) {
+	case ControllerEventType::Unknown:
+		system->log(
+			LogLevel::WARN, "InputHandler", "Got unknown controller event!");
+		break;
+	case ControllerEventType::ButtonDown:
+	case ControllerEventType::ButtonUp:
+		switch (event.button) {
+		case ControllerButton::DpadUp:
+			up = event.type == ControllerEventType::ButtonDown;
+			break;
+		case ControllerButton::DpadDown:
+			down = event.type == ControllerEventType::ButtonDown;
+			break;
+		case ControllerButton::DpadLeft:
+			left = event.type == ControllerEventType::ButtonDown;
+			break;
+		case ControllerButton::DpadRight:
+			right = event.type == ControllerEventType::ButtonDown;
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
+}

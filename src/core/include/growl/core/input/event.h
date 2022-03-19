@@ -1,5 +1,6 @@
 #pragma once
 
+#include "controller.h"
 #include "keyboard.h"
 #include <growl/util/error.h>
 #include <string>
@@ -20,8 +21,6 @@ struct InputMouseEvent {
 	int mouseX;
 	int mouseY;
 };
-
-struct InputControllerEvent {};
 
 struct InputTouchEvent {};
 

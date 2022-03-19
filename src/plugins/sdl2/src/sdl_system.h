@@ -25,11 +25,16 @@ private:
 
 	void handleMouseEvent(SDL_Event& event);
 	void handleKeyboardEvent(SDL_Event& event);
+	void handleControllerEvent(SDL_Event& event);
 
 	KeyEventType getKeyEventType(SDL_KeyboardEvent& event);
 	Key getKey(SDL_KeyboardEvent& event);
 
+	ControllerEventType getControllerEventType(SDL_Event& event);
+	ControllerButton getButton(SDL_Event& event);
+
 	bool running;
+	SDL_GameController* controller;
 };
 
 } // namespace Growl

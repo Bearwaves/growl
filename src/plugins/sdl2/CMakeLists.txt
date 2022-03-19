@@ -10,6 +10,7 @@ set(SOURCES
 
 	"src/sdl_system.cpp"
 	"src/sdl_keyboard.cpp"
+	"src/sdl_controller.cpp"
 	"src/sdl_window.cpp"
 	)
 

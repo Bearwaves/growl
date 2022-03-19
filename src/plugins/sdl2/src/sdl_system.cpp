@@ -1,5 +1,5 @@
 #include "sdl_system.h"
-#include "SDL_log.h"
+#include "SDL.h"
 #include "sdl_error.h"
 #include "sdl_window.h"
 #include <assert.h>
@@ -17,6 +17,22 @@ Error SDL2SystemAPI::init() {
 		return std::make_unique<SDL2Error>(SDL_GetError());
 	}
 	SDL_LogSetPriority(SDL_LOG_CATEGORY_CUSTOM, SDL_LOG_PRIORITY_INFO);
+	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) == -1) {
+		return std::make_unique<SDL2Error>(SDL_GetError());
+	}
+	SDL_ShowCursor(SDL_DISABLE);
+
+	if (SDL_NumJoysticks() > 0) {
+		if (SDL_IsGameController(0)) {
+			controller = SDL_GameControllerOpen(0);
+			if (SDL_GameControllerHasRumble(controller)) {
+				log("SDL2SystemAPI", "Game controller has rumble available");
+			}
+		} else {
+			log(LogLevel::WARN, "SDL2SystemAPI",
+				"Game controller is not compatible");
+		}
+	}
 
 	running = true;
 	return nullptr;
@@ -58,11 +74,18 @@ void SDL2SystemAPI::tick() {
 		case SDL_KEYUP:
 			handleKeyboardEvent(event);
 			break;
+		case SDL_CONTROLLERBUTTONDOWN:
+		case SDL_CONTROLLERBUTTONUP:
+			handleControllerEvent(event);
+			break;
 		}
 	}
 }
 
 void SDL2SystemAPI::dispose() {
+	if (controller) {
+		SDL_GameControllerClose(controller);
+	}
 	SDL_Quit();
 }
 
