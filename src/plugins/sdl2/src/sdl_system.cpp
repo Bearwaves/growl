@@ -22,10 +22,6 @@ Error SDL2SystemAPI::init() {
 	}
 	SDL_ShowCursor(SDL_DISABLE);
 
-	if (SDL_NumJoysticks() > 0) {
-		openGameController(0);
-	}
-
 	running = true;
 	return nullptr;
 }

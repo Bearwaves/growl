@@ -7,18 +7,13 @@ using Growl::ControllerEventType;
 using Growl::SDL2SystemAPI;
 
 void SDL2SystemAPI::openGameController(int id) {
-	if (SDL_IsGameController(id)) {
-		auto sdl_controller = SDL_GameControllerOpen(id);
-		log("SDL2SystemAPI", "Got controller: {}",
-			SDL_GameControllerName(sdl_controller));
-		if (SDL_GameControllerHasRumble(sdl_controller)) {
-			log("SDL2SystemAPI", "Game controller has rumble available");
-		}
-		controller = std::make_unique<SDL2Controller>(this, sdl_controller);
-	} else {
-		log(LogLevel::WARN, "SDL2SystemAPI",
-			"Game controller is not compatible");
+	auto sdl_controller = SDL_GameControllerOpen(id);
+	log("SDL2SystemAPI", "Got controller: {}",
+		SDL_GameControllerName(sdl_controller));
+	if (SDL_GameControllerHasRumble(sdl_controller)) {
+		log("SDL2SystemAPI", "Game controller has rumble available");
 	}
+	controller = std::make_unique<SDL2Controller>(this, sdl_controller);
 }
 
 void SDL2SystemAPI::handleControllerEvent(SDL_Event& event) {
