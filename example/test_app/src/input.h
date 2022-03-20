@@ -44,10 +44,10 @@ private:
 	SystemAPI* system;
 	int mouseX;
 	int mouseY;
-	bool up;
-	bool down;
-	bool left;
-	bool right;
+	bool up = false;
+	bool down = false;
+	bool left = false;
+	bool right = false;
 };
 
 } // namespace Growl

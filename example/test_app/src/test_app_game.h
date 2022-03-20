@@ -27,8 +27,8 @@ private:
 	double counter = 0;
 	constexpr const static float SPEED = 500; // px/s
 	int frames = 0;
-	float catX;
-	float catY;
+	float catX = 0;
+	float catY = 0;
 };
 
 } // namespace Growl
