@@ -33,9 +33,15 @@ else()
 	string(STRIP "${GIT_BRANCH}" GIT_BRANCH)
 endif()
 
-message(STATUS "Got version: ${GIT_REV}${GIT_DIFF}")
+if (NOT ("${GIT_TAG}" STREQUAL "" OR "${GIT_REV}" STREQUAL "+"))
+	set(GIT_VERSION "${GIT_TAG}")
+else()
+	set(GIT_VERSION "${GIT_REV}${GIT_DIFF}")
+endif()
 
-set(VERSION "const char* Growl_VERSION=\"${GIT_REV}${GIT_DIFF}\";")
+message(STATUS "Got version: ${GIT_VERSION}")
+
+set(VERSION "const char* Growl_VERSION=\"${GIT_VERSION}\";")
 
 set(VERSION_PATH "${CMAKE_CURRENT_SOURCE_DIR}/version.cpp")
 
