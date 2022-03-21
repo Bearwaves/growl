@@ -1,11 +1,13 @@
 #pragma once
 
+#include "atlas.h"
 #include "image.h"
 #include <cstdint>
 #include <fstream>
 #include <growl/util/error.h>
 #include <map>
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <string>
 
 using nlohmann::json;
@@ -16,7 +18,7 @@ typedef uint64_t AssetsBundleVersion;
 
 constexpr AssetsBundleVersion ASSETS_BUNDLE_LATEST_VERSION = 1;
 
-enum class AssetType : uint64_t { Unknown, Image };
+enum class AssetType : uint64_t { Unknown, Image, Atlas };
 
 std::string getAssetTypeName(AssetType type);
 
@@ -29,6 +31,7 @@ struct AssetInfo {
 	uint64_t position;
 	uint64_t size;
 	AssetType type;
+	std::optional<std::vector<AtlasRegion>> atlas_regions;
 };
 
 void to_json(json& j, const AssetInfo& r);

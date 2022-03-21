@@ -11,6 +11,7 @@ set(SOURCES
 	"fpng/fpng.cpp"
 
 	"stb_image/stb_image.c"
+	"stb_rect_pack/stb_rect_pack.c"
 	)
 
 set(HEADERS
@@ -22,6 +23,7 @@ set(HEADERS
 	"fpng/fpng.h"
 
 	"stb_image/stb_image.h"
+	"stb_rect_pack/stb_rect_pack.h"
 	)
 
 add_library(growl-contrib ${SOURCES} ${HEADERS})

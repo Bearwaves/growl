@@ -43,18 +43,26 @@ Result<AssetsBundle> Growl::loadAssetsBundle(std::string filePath) noexcept {
 
 void Growl::to_json(json& j, const AssetInfo& r) {
 	j = json{{"position", r.position}, {"size", r.size}, {"typ", r.type}};
+	if (r.atlas_regions.has_value()) {
+		j["regions"] = r.atlas_regions.value();
+	}
 }
 
 void Growl::from_json(const json& j, AssetInfo& r) {
 	j.at("position").get_to(r.position);
 	j.at("size").get_to(r.size);
 	j.at("typ").get_to(r.type);
+	if (j.contains("regions")) {
+		r.atlas_regions = j.at("regions").get<std::vector<AtlasRegion>>();
+	}
 }
 
 std::string Growl::getAssetTypeName(AssetType type) {
 	switch (type) {
 	case AssetType::Image:
 		return "Image";
+	case AssetType::Atlas:
+		return "Atlas";
 	default:
 		return "Unknown";
 	}

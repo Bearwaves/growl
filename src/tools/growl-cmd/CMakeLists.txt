@@ -8,6 +8,7 @@ include_directories(../../version/include)
 set(SOURCES
 	"src/main.cpp"
 	"src/assets.cpp"
+	"src/atlas.cpp"
 	)
 
 set(HEADERS
