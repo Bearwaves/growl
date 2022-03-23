@@ -69,13 +69,12 @@ std::string Growl::getAssetTypeName(AssetType type) {
 }
 
 Result<Image> AssetsBundle::getImage(std::string name) noexcept {
-	AssetInfo info;
-	try {
-		info = assetsMap.at(name);
-	} catch (std::out_of_range&) {
+	auto info_find = assetsMap.find(name);
+	if (info_find == assetsMap.end()) {
 		return Error(std::make_unique<AssetsError>(
 			"Failed to load asset " + name + "; not found in asset map."));
 	}
+	auto& info = info_find->second;
 
 	if (info.type != AssetType::Image) {
 		auto typeName = getAssetTypeName(info.type);

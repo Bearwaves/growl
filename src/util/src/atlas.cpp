@@ -25,12 +25,11 @@ Atlas::Atlas(
 }
 
 Result<AtlasRegion> Atlas::getRegion(const std::string& name) noexcept {
-	try {
-		return mappings.at(name);
-	} catch (std::out_of_range&) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load atlas region " + name + "; not found in atlas."));
+	if (auto it = mappings.find(name); it != mappings.end()) {
+		return it->second;
 	}
+	return Error(std::make_unique<AssetsError>(
+		"Failed to load atlas region " + name + "; not found in atlas."));
 }
 
 std::vector<AtlasRegion> Atlas::getRegions() noexcept {
