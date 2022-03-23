@@ -18,7 +18,7 @@ class AtlasImagePackInfo {
 public:
 	friend class Atlas;
 	friend Result<Atlas>
-	packAtlasFromFiles(std::vector<AtlasImagePackInfo> images) noexcept;
+	packAtlasFromFiles(std::vector<AtlasImagePackInfo>& images) noexcept;
 
 	AtlasImagePackInfo(std::filesystem::path path, int width, int height)
 		: path{path}
@@ -46,11 +46,18 @@ void from_json(const json& j, AtlasRegion& r);
 
 class Atlas {
 public:
-	Atlas(std::unique_ptr<Image> image, std::vector<AtlasImagePackInfo> pack);
-	Result<AtlasRegion> getRegion(std::string name) noexcept;
+	Atlas(
+		std::unique_ptr<Image> image,
+		const std::vector<AtlasImagePackInfo>& pack);
+	Result<AtlasRegion> getRegion(const std::string& name) noexcept;
 	std::vector<AtlasRegion> getRegions() noexcept;
-	Image* getImage() {
-		return image.get();
+
+	const std::unordered_map<std::string, AtlasRegion>& getMappings() const {
+		return mappings;
+	}
+
+	const Image& getImage() const {
+		return *image;
 	};
 
 private:
@@ -59,6 +66,6 @@ private:
 };
 
 Result<Atlas>
-packAtlasFromFiles(std::vector<AtlasImagePackInfo> images) noexcept;
+packAtlasFromFiles(std::vector<AtlasImagePackInfo>& images) noexcept;
 
 } // namespace Growl

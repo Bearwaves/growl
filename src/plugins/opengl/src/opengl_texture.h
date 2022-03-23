@@ -10,7 +10,7 @@ public:
 	explicit OpenGLTexture(unsigned int id)
 		: id{id} {}
 	~OpenGLTexture();
-	void bind();
+	void bind() const;
 
 private:
 	GLuint id;

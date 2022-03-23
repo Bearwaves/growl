@@ -15,7 +15,8 @@ public:
 	void begin() override;
 	void end() override;
 	void draw(
-		Texture* texture, float x, float y, float width, float height) override;
+		const Texture& texture, float x, float y, float width,
+		float height) override;
 
 private:
 	OpenGLShader* shader;

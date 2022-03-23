@@ -48,10 +48,10 @@ void TestAppGame::render() {
 	getAPI().graphics()->clear(0.64, 0.56, 0.51);
 	auto batch = getAPI().graphics()->createBatch();
 	batch->begin();
-	batch->draw(catTexture.get(), catX, catY, 500, 500);
+	batch->draw(*catTexture, catX, catY, 500, 500);
 	batch->draw(
-		mouseTexture.get(), input->getMouseX() - 100, input->getMouseY() - 100,
-		200, 200);
+		*mouseTexture, input->getMouseX() - 100, input->getMouseY() - 100, 200,
+		200);
 	batch->end();
 	if (counter > SPEED * 2) {
 		getAPI().system()->log("TestAppGame", "FPS: {:05f}", frames / counter);

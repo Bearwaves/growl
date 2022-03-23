@@ -15,17 +15,16 @@ using Growl::Result;
 constexpr int MAX_SIZE = 8192;
 
 Atlas::Atlas(
-	std::unique_ptr<Image> image, std::vector<AtlasImagePackInfo> pack) {
-	this->image = std::move(image);
+	std::unique_ptr<Image> image, const std::vector<AtlasImagePackInfo>& pack)
+	: image{std::move(image)} {
 	for (const auto& info : pack) {
 		std::string name = info.path.filename().string();
 		mappings.emplace(
-			name,
-			AtlasRegion{name, info.x, info.y, info.width, info.height});
+			name, AtlasRegion{name, info.x, info.y, info.width, info.height});
 	}
 }
 
-Result<AtlasRegion> Atlas::getRegion(std::string name) noexcept {
+Result<AtlasRegion> Atlas::getRegion(const std::string& name) noexcept {
 	try {
 		return mappings.at(name);
 	} catch (std::out_of_range&) {
@@ -51,7 +50,7 @@ int nextPowerOfTwo(int n) {
 }
 
 Result<Atlas>
-Growl::packAtlasFromFiles(std::vector<AtlasImagePackInfo> images) noexcept {
+Growl::packAtlasFromFiles(std::vector<AtlasImagePackInfo>& images) noexcept {
 	stbrp_context ctx;
 	std::vector<stbrp_rect> rects;
 	int i = 0;

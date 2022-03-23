@@ -6,6 +6,6 @@ OpenGLTexture::~OpenGLTexture() {
 	glDeleteTextures(1, &id);
 }
 
-void OpenGLTexture::bind() {
+void OpenGLTexture::bind() const {
 	glBindTexture(GL_TEXTURE_2D, id);
 }

@@ -22,7 +22,7 @@ public:
 		: width{width}
 		, height{height}
 		, channels{channels}
-		, data{data} {}
+		, data{std::move(data)} {}
 
 	int getWidth() const {
 		return width;

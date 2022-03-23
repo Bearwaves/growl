@@ -22,7 +22,6 @@ using rang::style;
 Error includeAtlas(
 	std::filesystem::path path, std::filesystem::path& resolved_path,
 	AssetsMap& assets_map, std::ofstream& outfile) noexcept {
-	// std::vector<AtlasImage> images;
 	std::vector<Growl::AtlasImagePackInfo> images;
 	for (auto entry : std::filesystem::directory_iterator(path)) {
 		int width, height, channels;
@@ -46,8 +45,8 @@ Error includeAtlas(
 
 	std::vector<uint8_t> out_buf;
 	if (!fpng::fpng_encode_image_to_memory(
-			atlas.getImage()->getRaw(), atlas.getImage()->getWidth(),
-			atlas.getImage()->getHeight(), 4, out_buf,
+			atlas.getImage().getRaw(), atlas.getImage().getWidth(),
+			atlas.getImage().getHeight(), 4, out_buf,
 			fpng::FPNG_ENCODE_SLOWER)) {
 		return std::make_unique<AssetsError>("Failed to encode image.");
 	}

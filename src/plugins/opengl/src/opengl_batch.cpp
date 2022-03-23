@@ -21,9 +21,9 @@ void OpenGLBatch::end() {
 }
 
 void OpenGLBatch::draw(
-	Texture* texture, float x, float y, float width, float height) {
-	auto tex = static_cast<OpenGLTexture*>(texture);
-	tex->bind();
+	const Texture& texture, float x, float y, float width, float height) {
+	auto& tex = static_cast<const OpenGLTexture&>(texture);
+	tex.bind();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 	float right = x + width;
