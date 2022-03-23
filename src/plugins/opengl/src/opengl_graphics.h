@@ -12,7 +12,7 @@ using std::chrono::time_point;
 namespace Growl {
 class OpenGLGraphicsAPI : public GraphicsAPIInternal {
 public:
-	explicit OpenGLGraphicsAPI(SystemAPI& system);
+	explicit OpenGLGraphicsAPI(SystemAPI* system);
 	Error init() override;
 	void dispose() override;
 	void begin() override;
@@ -26,7 +26,7 @@ public:
 	void checkShaderCompileError(unsigned int shader);
 
 private:
-	SystemAPI& system;
+	SystemAPI* system;
 	std::unique_ptr<Window> window;
 	std::unique_ptr<OpenGLShader> default_shader;
 	SDL_GLContext context;

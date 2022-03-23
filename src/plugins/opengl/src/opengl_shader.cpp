@@ -4,8 +4,7 @@
 
 using Growl::OpenGLShader;
 
-OpenGLShader::OpenGLShader(OpenGLGraphicsAPI& graphics)
-	: graphics{graphics} {
+OpenGLShader::OpenGLShader(OpenGLGraphicsAPI& graphics) {
 	GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
 	const char* vertexSource = DEFAULT_VERTEX.c_str();
 	glShaderSource(vertex, 1, &vertexSource, nullptr);

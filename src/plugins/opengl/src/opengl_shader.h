@@ -14,8 +14,6 @@ public:
 	void bind(glm::mat4 mvp);
 
 private:
-	OpenGLGraphicsAPI& graphics;
-
 	GLuint program;
 
 	static std::string const DEFAULT_VERTEX;
