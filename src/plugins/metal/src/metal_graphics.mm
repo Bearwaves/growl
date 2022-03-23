@@ -12,7 +12,7 @@ using Growl::Batch;
 using std::chrono::duration;
 using std::chrono::seconds;
 
-MetalGraphicsAPI::MetalGraphicsAPI(SystemAPI& system)
+MetalGraphicsAPI::MetalGraphicsAPI(SystemAPI* system)
 	: system{system} {}
 
 Error MetalGraphicsAPI::init() {
@@ -37,8 +37,8 @@ void MetalGraphicsAPI::end() {
 	[pool release];
 }
 
-Error MetalGraphicsAPI::setWindow(WindowConfig& config) {
-	auto windowResult = system.createWindow(config);
+Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
+	auto windowResult = system->createWindow(config);
 	if (windowResult.hasError()) {
 		return std::move(windowResult.error());
 	}

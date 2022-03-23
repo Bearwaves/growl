@@ -2,7 +2,7 @@
 
 using Growl::MetalTexture;
 
-void MetalTexture::bind(id<MTLRenderCommandEncoder> encoder) {
+void MetalTexture::bind(id<MTLRenderCommandEncoder> encoder) const {
 	[encoder setFragmentTexture:metalTexture atIndex:0];
 	[encoder setFragmentSamplerState:sampler atIndex:0];
 }

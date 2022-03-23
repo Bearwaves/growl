@@ -17,9 +17,9 @@ void MetalBatch::end() {
 }
 
 void MetalBatch::draw(
-	Texture* texture, float x, float y, float width, float height) {
-	auto tex = static_cast<MetalTexture*>(texture);
-	tex->bind(encoder);
+	const Texture& texture, float x, float y, float width, float height) {
+	auto& tex = static_cast<const MetalTexture&>(texture);
+	tex.bind(encoder);
 	float right = x + width;
 	float bottom = y + height;
 	float quadVertexData[] = {right, bottom, 1.f, 1.f, x,	  bottom, 0.f, 1.f,

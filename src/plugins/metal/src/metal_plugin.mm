@@ -5,5 +5,5 @@ using Growl::API;
 using Growl::MetalGraphicsAPI;
 
 void initMetalPlugin(API& api) {
-	api.addGraphicsAPI(std::make_unique<MetalGraphicsAPI>(*api.system()));
+	api.addGraphicsAPI(std::make_unique<MetalGraphicsAPI>(api.system()));
 }
