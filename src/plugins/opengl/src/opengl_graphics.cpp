@@ -38,7 +38,7 @@ void OpenGLGraphicsAPI::end() {
 	SDL_GL_SwapWindow(static_cast<SDL_Window*>(window->getNative()));
 }
 
-Error OpenGLGraphicsAPI::setWindow(WindowConfig& config) {
+Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 	auto windowResult = system->createWindow(config);
 	if (windowResult.hasError()) {
 		return std::move(windowResult.error());
