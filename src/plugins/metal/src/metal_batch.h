@@ -24,6 +24,8 @@ public:
 	void draw(
 		const TextureAtlasRegion& texture, float x, float y, float width,
 		float height) override;
+	int getTargetWidth() override;
+	int getTargetHeight() override;
 
 private:
 	id<MTLCommandBuffer> command_buffer;

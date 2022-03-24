@@ -63,6 +63,14 @@ void MetalBatch::draw(
 				vertexCount:6];
 }
 
+int MetalBatch::getTargetWidth() {
+	return surface.width;
+}
+
+int MetalBatch::getTargetHeight() {
+	return surface.height;
+}
+
 MTLRenderPassDescriptor* MetalBatch::renderPassDescriptor() {
 	MTLRenderPassDescriptor* pass =
 		[MTLRenderPassDescriptor renderPassDescriptor];

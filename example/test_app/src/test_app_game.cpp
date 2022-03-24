@@ -30,10 +30,21 @@ void TestAppGame::render() {
 			(input->leftPressed() ? -1 : (input->rightPressed() ? 1 : 0));
 	catY += getAPI().graphics()->getDeltaTime() * SPEED *
 			(input->upPressed() ? -1 : (input->downPressed() ? 1 : 0));
-	getAPI().graphics()->clear(0.64, 0.56, 0.51);
+	getAPI().graphics()->clear(0, 0, 0);
 
 	auto batch = getAPI().graphics()->createBatch();
 	batch->begin();
+
+	auto grass_region = texture_atlas->getRegion("grass.png").get();
+	for (int x = 0; x < batch->getTargetWidth();
+		 x += grass_region.region.width) {
+		for (int y = 0; y < batch->getTargetHeight();
+			 y += grass_region.region.height) {
+			batch->draw(
+				grass_region, x, y, grass_region.region.width,
+				grass_region.region.height);
+		}
+	}
 	batch->draw(
 		texture_atlas->getRegion("cat.jpg").get(), catX, catY, 500, 500);
 	batch->draw(

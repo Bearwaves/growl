@@ -16,6 +16,8 @@ public:
 	virtual void draw(
 		const TextureAtlasRegion& texture, float x, float y, float width,
 		float height) = 0;
+	virtual int getTargetWidth() = 0;
+	virtual int getTargetHeight() = 0;
 };
 
 } // namespace Growl
