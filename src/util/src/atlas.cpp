@@ -89,9 +89,29 @@ Result<Atlas> Growl::packAtlasFromFiles(
 
 		uint32_t* img_32 = reinterpret_cast<uint32_t*>(img_data);
 
+		// Dilation passes
+		// TODO improve performance and correctness
+		for (int py = 0; py <= padding * 2; py++) {
+			for (int px = 0; px <= padding * 2; px++) {
+				if (px == padding && py == padding) {
+					// Do centre draw after
+					continue;
+				}
+				for (int j = 0; j < img_height; j++) {
+					auto dst = texture_data.data() +
+							   sizeof(uint32_t) *
+								   ((rect.y + py + j) * width + rect.x + px);
+					std::memcpy(
+						dst, img_32 + (j * img_width),
+						img_width * sizeof(uint32_t));
+				}
+			}
+		}
+
 		for (int j = 0; j < img_height; j++) {
 			auto dst = texture_data.data() +
-					   sizeof(uint32_t) * ((rect.y + j) * width + rect.x);
+					   sizeof(uint32_t) *
+						   ((rect.y + padding + j) * width + rect.x + padding);
 			std::memcpy(
 				dst, img_32 + (j * img_width), img_width * sizeof(uint32_t));
 		}
