@@ -1,6 +1,7 @@
 #include "metal_graphics.h"
 #include "metal_batch.h"
 #include "metal_texture.h"
+#include "metal_texture_atlas.h"
 #include <SDL.h>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/mat4x4.hpp>
@@ -8,6 +9,8 @@
 using Growl::Error;
 using Growl::MetalGraphicsAPI;
 using Growl::Texture;
+using Growl::TextureAtlas;
+using Growl::MetalTextureAtlas;
 using Growl::Batch;
 using std::chrono::duration;
 using std::chrono::seconds;
@@ -112,7 +115,14 @@ std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(const Image& image) {
 	auto sampler = [device newSamplerStateWithDescriptor:samplerDescriptor];
 	[samplerDescriptor release];
 
-	return std::make_unique<MetalTexture>(metalTexture, sampler);
+	return std::make_unique<MetalTexture>(
+		metalTexture, sampler, image.getWidth(), image.getHeight());
+}
+
+std::unique_ptr<TextureAtlas>
+MetalGraphicsAPI::createTextureAtlas(const Atlas& atlas) {
+	return std::make_unique<MetalTextureAtlas>(
+		atlas, createTexture(atlas.getImage()));
 }
 
 std::unique_ptr<Batch> MetalGraphicsAPI::createBatch() {

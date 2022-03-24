@@ -7,9 +7,14 @@ namespace Growl {
 
 class MetalTexture : public Texture {
 public:
-	MetalTexture(id<MTLTexture> metalTexture, id<MTLSamplerState> sampler)
+	MetalTexture(
+		id<MTLTexture> metalTexture, id<MTLSamplerState> sampler, int width,
+		int height)
 		: metalTexture{metalTexture}
-		, sampler{sampler} {}
+		, sampler{sampler} {
+		this->width = width;
+		this->height = height;
+	}
 	void bind(id<MTLRenderCommandEncoder> encoder) const;
 
 private:

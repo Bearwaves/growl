@@ -23,6 +23,8 @@ public:
 	Error setWindow(const WindowConfig& windowConfig) override;
 	void clear(float r, float g, float b) override;
 	std::unique_ptr<Texture> createTexture(const Image& image) override;
+	std::unique_ptr<TextureAtlas>
+	createTextureAtlas(const Atlas& atlas) override;
 	std::unique_ptr<Batch> createBatch() override;
 
 private:
