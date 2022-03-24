@@ -55,16 +55,16 @@ void OpenGLBatch::draw(
 	glEnable(GL_BLEND);
 	float right = x + width;
 	float bottom = y + height;
-	float texX = region.region.x / (float)tex.getWidth();
-	float texY = region.region.y / (float)tex.getWidth();
-	float texW = region.region.width / (float)tex.getWidth();
-	float texH = region.region.height / (float)tex.getHeight();
+	// Address texel centres
+	float texLeft = (region.region.x + 0.5) / (float)tex.getWidth();
+	float texTop = (region.region.y + 0.5) / (float)tex.getHeight();
+	float texRight =
+		(region.region.x + region.region.width + 0.5) / (float)tex.getWidth();
+	float texBottom =
+		(region.region.y + region.region.height + 0.5) / (float)tex.getHeight();
 	float quadVertexData[] = {
-		x,	   y,	   texX,		texY,		 // Top-left
-		right, y,	   texX + texW, texY,		 // Top-right
-		right, bottom, texX + texW, texY + texH, // Bottom-right
-		x,	   bottom, texX,		texY + texH	 // Bottom-left
-	};
+		x,	   y,	   texLeft,	 texTop,	right, y,	   texRight, texTop,
+		right, bottom, texRight, texBottom, x,	   bottom, texLeft,	 texBottom};
 	GLuint elements[] = {0, 1, 2, 2, 3, 0};
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(

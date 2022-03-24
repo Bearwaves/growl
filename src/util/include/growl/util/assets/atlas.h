@@ -17,8 +17,8 @@ class Atlas;
 class AtlasImagePackInfo {
 public:
 	friend class Atlas;
-	friend Result<Atlas>
-	packAtlasFromFiles(std::vector<AtlasImagePackInfo>& images, int padding) noexcept;
+	friend Result<Atlas> packAtlasFromFiles(
+		std::vector<AtlasImagePackInfo>& images, int padding) noexcept;
 
 	AtlasImagePackInfo(std::filesystem::path path, int width, int height)
 		: path{path}
@@ -63,7 +63,7 @@ private:
 	std::unordered_map<std::string, AtlasRegion> mappings;
 };
 
-Result<Atlas>
-packAtlasFromFiles(std::vector<AtlasImagePackInfo>& images, int padding) noexcept;
+Result<Atlas> packAtlasFromFiles(
+	std::vector<AtlasImagePackInfo>& images, int padding) noexcept;
 
 } // namespace Growl
