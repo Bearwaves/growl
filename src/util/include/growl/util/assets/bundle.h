@@ -31,7 +31,7 @@ struct AssetInfo {
 	uint64_t position;
 	uint64_t size;
 	AssetType type;
-	std::optional<std::vector<AtlasRegion>> atlas_regions;
+	std::optional<std::unordered_map<std::string, AtlasRegion>> atlas_regions;
 };
 
 void to_json(json& j, const AssetInfo& r);
@@ -50,6 +50,7 @@ public:
 	}
 
 	Result<Image> getImage(std::string name) noexcept;
+	Result<Atlas> getAtlas(std::string name) noexcept;
 
 private:
 	std::ifstream file;

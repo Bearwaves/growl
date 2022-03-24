@@ -14,30 +14,12 @@ using Growl::Result;
 
 constexpr int MAX_SIZE = 8192;
 
-Atlas::Atlas(
-	std::unique_ptr<Image> image, const std::vector<AtlasImagePackInfo>& pack)
-	: image{std::move(image)} {
-	for (const auto& info : pack) {
-		std::string name = info.path.filename().string();
-		mappings.emplace(
-			name, AtlasRegion{name, info.x, info.y, info.width, info.height});
-	}
-}
-
 Result<AtlasRegion> Atlas::getRegion(const std::string& name) noexcept {
 	if (auto it = mappings.find(name); it != mappings.end()) {
 		return it->second;
 	}
 	return Error(std::make_unique<AssetsError>(
 		"Failed to load atlas region " + name + "; not found in atlas."));
-}
-
-std::vector<AtlasRegion> Atlas::getRegions() noexcept {
-	std::vector<AtlasRegion> regions;
-	for (auto [_, region] : mappings) {
-		regions.push_back(region);
-	}
-	return regions;
 }
 
 int nextPowerOfTwo(int n) {
@@ -82,6 +64,7 @@ Growl::packAtlasFromFiles(std::vector<AtlasImagePackInfo>& images) noexcept {
 	}
 
 	std::vector<unsigned char> texture_data(width * height * sizeof(uint32_t));
+	std::unordered_map<std::string, AtlasRegion> mappings;
 	for (size_t i = 0; i < rects.size(); i++) {
 		auto& rect = rects[i];
 		auto& image = images[rect.id];
@@ -99,10 +82,8 @@ Growl::packAtlasFromFiles(std::vector<AtlasImagePackInfo>& images) noexcept {
 				"Failed to parse image data: wrong dimensions"));
 		}
 
-		image.width = rect.w;
-		image.height = rect.h;
-		image.x = rect.x;
-		image.y = rect.y;
+		mappings[image.path.filename().string()] =
+			AtlasRegion{rect.x, rect.y, rect.w, rect.h};
 
 		uint32_t* img_32 = reinterpret_cast<uint32_t*>(img_data);
 
@@ -115,16 +96,11 @@ Growl::packAtlasFromFiles(std::vector<AtlasImagePackInfo>& images) noexcept {
 	}
 
 	return Atlas(
-		std::make_unique<Image>(width, height, 4, texture_data), images);
+		std::make_unique<Image>(width, height, 4, texture_data), mappings);
 }
 
 void Growl::to_json(json& j, const AtlasRegion& r) {
-	j = json{
-		{"x", r.x},
-		{"y", r.y},
-		{"width", r.width},
-		{"height", r.height},
-		{"name", r.name}};
+	j = json{{"x", r.x}, {"y", r.y}, {"width", r.width}, {"height", r.height}};
 }
 
 void Growl::from_json(const json& j, AtlasRegion& r) {
@@ -132,5 +108,4 @@ void Growl::from_json(const json& j, AtlasRegion& r) {
 	j.at("y").get_to(r.y);
 	j.at("width").get_to(r.width);
 	j.at("height").get_to(r.height);
-	j.at("name").get_to(r.name);
 }

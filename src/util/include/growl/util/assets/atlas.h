@@ -29,12 +29,9 @@ private:
 	std::filesystem::path path;
 	int width;
 	int height;
-	int x;
-	int y;
 };
 
 struct AtlasRegion {
-	std::string name;
 	int x;
 	int y;
 	int width;
@@ -48,9 +45,10 @@ class Atlas {
 public:
 	Atlas(
 		std::unique_ptr<Image> image,
-		const std::vector<AtlasImagePackInfo>& pack);
+		const std::unordered_map<std::string, AtlasRegion>& mappings)
+		: image{std::move(image)}
+		, mappings{mappings} {}
 	Result<AtlasRegion> getRegion(const std::string& name) noexcept;
-	std::vector<AtlasRegion> getRegions() noexcept;
 
 	const std::unordered_map<std::string, AtlasRegion>& getMappings() const {
 		return mappings;

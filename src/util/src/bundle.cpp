@@ -12,6 +12,7 @@ using Growl::AssetsBundleMapInfo;
 using Growl::AssetsBundleVersion;
 using Growl::AssetsError;
 using Growl::AssetsMap;
+using Growl::Atlas;
 using Growl::Error;
 using Growl::Image;
 using Growl::Result;
@@ -53,7 +54,8 @@ void Growl::from_json(const json& j, AssetInfo& r) {
 	j.at("size").get_to(r.size);
 	j.at("typ").get_to(r.type);
 	if (j.contains("regions")) {
-		r.atlas_regions = j.at("regions").get<std::vector<AtlasRegion>>();
+		r.atlas_regions =
+			j.at("regions").get<std::unordered_map<std::string, AtlasRegion>>();
 	}
 }
 
@@ -72,14 +74,14 @@ Result<Image> AssetsBundle::getImage(std::string name) noexcept {
 	auto info_find = assetsMap.find(name);
 	if (info_find == assetsMap.end()) {
 		return Error(std::make_unique<AssetsError>(
-			"Failed to load asset " + name + "; not found in asset map."));
+			"Failed to load image " + name + "; not found in asset map."));
 	}
 	auto& info = info_find->second;
 
 	if (info.type != AssetType::Image) {
 		auto typeName = getAssetTypeName(info.type);
 		return Error(std::make_unique<AssetsError>(
-			"Failed to load asset " + name + "; expected Image type but was " +
+			"Failed to load image " + name + "; expected Image type but was " +
 			typeName + "."));
 	}
 
@@ -89,4 +91,42 @@ Result<Image> AssetsBundle::getImage(std::string name) noexcept {
 	file.read(reinterpret_cast<char*>(imgData.data()), info.size);
 
 	return loadImageFromMemory(imgData.data(), info.size);
+}
+
+Result<Atlas> AssetsBundle::getAtlas(std::string name) noexcept {
+	auto info_find = assetsMap.find(name);
+	if (info_find == assetsMap.end()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load atlas " + name + "; not found in asset map."));
+	}
+	auto& info = info_find->second;
+
+	if (info.type != AssetType::Atlas) {
+		auto typeName = getAssetTypeName(info.type);
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load atlas " + name + "; expected Atlas type but was " +
+			typeName + "."));
+	}
+
+	if (!info.atlas_regions.has_value()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load atlas " + name +
+			"; atlas region data is missing."));
+	}
+
+	std::vector<unsigned char> imgData;
+	imgData.reserve(info.size);
+	file.seekg(info.position);
+	file.read(reinterpret_cast<char*>(imgData.data()), info.size);
+
+	Result<Image> imageResult = loadImageFromMemory(imgData.data(), info.size);
+	if (imageResult.hasError()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load atlas " + name +
+			" image data: " + imageResult.error()->message()));
+	}
+
+	return Atlas(
+		std::make_unique<Image>(std::move(imageResult.get())),
+		info.atlas_regions.value());
 }

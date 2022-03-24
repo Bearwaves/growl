@@ -7,6 +7,8 @@
 #include <optional>
 
 #include "input.h"
+#include <growl/core/graphics/texture_atlas.h>
+#include <growl/util/assets/atlas.h>
 
 namespace Growl {
 
@@ -19,11 +21,9 @@ public:
 	void resize(const int width, const int height) override;
 
 private:
-	std::unique_ptr<Texture> catTexture;
-	std::unique_ptr<Texture> mouseTexture;
+	std::unique_ptr<Atlas> atlas;
+	std::unique_ptr<TextureAtlas> texture_atlas;
 	std::unique_ptr<InputHandler> input;
-	std::optional<Image> catImage;
-	std::optional<Image> mouseImage;
 	double counter = 0;
 	constexpr const static float SPEED = 500; // px/s
 	int frames = 0;

@@ -1,6 +1,7 @@
 #include "opengl_graphics.h"
 #include "opengl_batch.h"
 #include "opengl_texture.h"
+#include "opengl_texture_atlas.h"
 #include <growl/core/log.h>
 #define GL_GLEXT_PROTOTYPES
 #include <GLES3/gl3.h>
@@ -9,10 +10,12 @@
 #include <glm/mat4x4.hpp>
 #include <memory>
 
+using Growl::Atlas;
 using Growl::Batch;
 using Growl::Error;
 using Growl::OpenGLGraphicsAPI;
 using Growl::Texture;
+using Growl::TextureAtlas;
 using std::chrono::duration;
 using std::chrono::seconds;
 
@@ -75,7 +78,14 @@ std::unique_ptr<Texture> OpenGLGraphicsAPI::createTexture(const Image& image) {
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	return std::make_unique<OpenGLTexture>(textureID);
+	return std::make_unique<OpenGLTexture>(
+		textureID, image.getWidth(), image.getHeight());
+}
+
+std::unique_ptr<TextureAtlas>
+OpenGLGraphicsAPI::createTextureAtlas(const Atlas& atlas) {
+	return std::make_unique<OpenGLTextureAtlas>(
+		atlas, createTexture(atlas.getImage()));
 }
 
 std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {

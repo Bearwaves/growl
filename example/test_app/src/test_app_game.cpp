@@ -13,27 +13,12 @@ Error TestAppGame::init() {
 	if (bundleResult.hasError()) {
 		return std::move(bundleResult.error());
 	}
-	Result<Image> catImageResult = bundleResult.get().getImage("gfx/cat.jpg");
-	if (catImageResult.hasError()) {
-		return std::move(catImageResult.error());
+	Result<Atlas> atlasResult = bundleResult.get().getAtlas("gfx");
+	if (atlasResult.hasError()) {
+		return std::move(atlasResult.error());
 	}
-	catImage = std::move(catImageResult.get());
-	getAPI().system()->log(
-		LogLevel::DEBUG, "TestAppGame", "Got cat image! W {}, H {}, Ch {}",
-		catImage->getWidth(), catImage->getHeight(), catImage->getChannels());
-	catTexture = getAPI().graphics()->createTexture(*catImage);
-
-	Result<Image> mouseImageResult =
-		bundleResult.get().getImage("gfx/mouse.jpg");
-	if (mouseImageResult.hasError()) {
-		return std::move(mouseImageResult.error());
-	}
-	mouseImage = std::move(mouseImageResult.get());
-	getAPI().system()->log(
-		LogLevel::DEBUG, "TestAppGame", "Got mouse image! W {}, H {}, Ch {}",
-		mouseImage->getWidth(), mouseImage->getHeight(),
-		mouseImage->getChannels());
-	mouseTexture = getAPI().graphics()->createTexture(*mouseImage);
+	atlas = std::make_unique<Atlas>(std::move(atlasResult.get()));
+	texture_atlas = getAPI().graphics()->createTextureAtlas(*atlas);
 
 	return nullptr;
 }
@@ -46,12 +31,14 @@ void TestAppGame::render() {
 	catY += getAPI().graphics()->getDeltaTime() * SPEED *
 			(input->upPressed() ? -1 : (input->downPressed() ? 1 : 0));
 	getAPI().graphics()->clear(0.64, 0.56, 0.51);
+
 	auto batch = getAPI().graphics()->createBatch();
 	batch->begin();
-	batch->draw(*catTexture, catX, catY, 500, 500);
 	batch->draw(
-		*mouseTexture, input->getMouseX() - 100, input->getMouseY() - 100, 200,
-		200);
+		texture_atlas->getRegion("cat.jpg").get(), catX, catY, 500, 500);
+	batch->draw(
+		texture_atlas->getRegion("mouse.jpg").get(), input->getMouseX() - 100,
+		input->getMouseY() - 100, 200, 200);
 	batch->end();
 	if (counter > SPEED * 2) {
 		getAPI().system()->log("TestAppGame", "FPS: {:05f}", frames / counter);

@@ -37,10 +37,10 @@ Error includeAtlas(
 		return std::move(result.error());
 	}
 	auto atlas = std::move(result.get());
-	for (auto& region : atlas.getRegions()) {
+	for (auto& [name, _] : atlas.getMappings()) {
 		std::cout << "=> [" << style::bold << resolved_path.string()
-				  << style::reset << "] Included image " << style::bold
-				  << region.name << style::reset << "." << std::endl;
+				  << style::reset << "] Included image " << style::bold << name
+				  << style::reset << "." << std::endl;
 	}
 
 	std::vector<uint8_t> out_buf;
@@ -52,7 +52,7 @@ Error includeAtlas(
 	}
 	unsigned int ptr = outfile.tellp();
 	assets_map[resolved_path] = {
-		ptr, out_buf.size(), AssetType::Atlas, atlas.getRegions()};
+		ptr, out_buf.size(), AssetType::Atlas, atlas.getMappings()};
 	outfile.write(
 		reinterpret_cast<const char*>(out_buf.data()), out_buf.size());
 

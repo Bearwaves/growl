@@ -2,6 +2,7 @@
 
 #include "../graphics/batch.h"
 #include "../graphics/texture.h"
+#include "../graphics/texture_atlas.h"
 #include "../graphics/window.h"
 #include <growl/util/assets/image.h>
 #include <memory>
@@ -17,6 +18,8 @@ public:
 	}
 	virtual void clear(float r, float g, float b) = 0;
 	virtual std::unique_ptr<Texture> createTexture(const Image& image) = 0;
+	virtual std::unique_ptr<TextureAtlas>
+	createTextureAtlas(const Atlas& atlas) = 0;
 	virtual std::unique_ptr<Batch> createBatch() = 0;
 
 protected:

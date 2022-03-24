@@ -155,8 +155,8 @@ void listAssets(std::string assetsBundle) {
 			cout << "   Atlas contains " << style::bold
 				 << info.atlas_regions.value().size() << style::reset
 				 << " images." << endl;
-			for (auto& region : info.atlas_regions.value()) {
-				cout << "    • " << region.name << endl;
+			for (auto& [name, _] : info.atlas_regions.value()) {
+				cout << "    • " << name << endl;
 			}
 		}
 	}

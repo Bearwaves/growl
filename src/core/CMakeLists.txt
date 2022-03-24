@@ -20,6 +20,7 @@ set(HEADERS
 
 	"include/growl/core/graphics/batch.h"
 	"include/growl/core/graphics/texture.h"
+	"include/growl/core/graphics/texture_atlas.h"
 	"include/growl/core/graphics/window.h"
 
 	"include/growl/core/input/event.h"
@@ -29,3 +30,4 @@ set(HEADERS
 	)
 
 add_library(growl-core ${SOURCES} ${HEADERS})
+target_link_libraries(growl-core growl-util)

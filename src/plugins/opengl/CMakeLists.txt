@@ -11,6 +11,7 @@ set(SOURCES
 	"src/opengl_graphics.cpp"
 	"src/opengl_batch.cpp"
 	"src/opengl_texture.cpp"
+	"src/opengl_texture_atlas.cpp"
 	"src/opengl_shader.cpp"
 	)
 
@@ -18,6 +19,7 @@ set(HEADERS
 	"src/opengl_graphics.h"
 	"src/opengl_batch.h"
 	"src/opengl_texture.h"
+	"src/opengl_texture_atlas.h"
 	"src/opengl_shader.h"
 	)
 
