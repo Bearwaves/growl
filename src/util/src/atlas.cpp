@@ -31,12 +31,12 @@ int nextPowerOfTwo(int n) {
 }
 
 Result<Atlas>
-Growl::packAtlasFromFiles(std::vector<AtlasImagePackInfo>& images) noexcept {
+Growl::packAtlasFromFiles(std::vector<AtlasImagePackInfo>& images, int padding) noexcept {
 	stbrp_context ctx;
 	std::vector<stbrp_rect> rects;
 	int i = 0;
 	for (auto& image : images) {
-		rects.push_back(stbrp_rect{i++, image.width, image.height});
+		rects.push_back(stbrp_rect{i++, image.width + padding*2, image.height + padding*2});
 	}
 	int width = nextPowerOfTwo(std::max(images[0].width, images[0].height));
 	int height = width;
@@ -77,13 +77,13 @@ Growl::packAtlasFromFiles(std::vector<AtlasImagePackInfo>& images) noexcept {
 				"Failed to load atlas image data"));
 		}
 		Image img(img_width, img_height, img_channels, img_data);
-		if (img_width != rect.w || img_height != rect.h) {
+		if (img_width != rect.w-padding*2 || img_height != rect.h-padding*2) {
 			return Error(std::make_unique<AssetsError>(
 				"Failed to parse image data: wrong dimensions"));
 		}
 
 		mappings[image.path.filename().string()] =
-			AtlasRegion{rect.x, rect.y, rect.w, rect.h};
+			AtlasRegion{rect.x+padding, rect.y+padding, img_width, img_height};
 
 		uint32_t* img_32 = reinterpret_cast<uint32_t*>(img_data);
 

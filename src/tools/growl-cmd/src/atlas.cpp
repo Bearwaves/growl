@@ -22,6 +22,15 @@ using rang::style;
 Error includeAtlas(
 	std::filesystem::path path, std::filesystem::path& resolved_path,
 	AssetsMap& assets_map, std::ofstream& outfile) noexcept {
+	int padding = 0;
+	std::ifstream json_file(path / "atlas.json");
+	try {
+		json j = json::parse(json_file);
+		padding = j.value("padding", padding);
+	} catch (std::exception&) {
+		return std::make_unique<AssetsError>("Failed to read pack.json");
+	}
+
 	std::vector<Growl::AtlasImagePackInfo> images;
 	for (auto entry : std::filesystem::directory_iterator(path)) {
 		int width, height, channels;
@@ -32,7 +41,7 @@ Error includeAtlas(
 		images.push_back(AtlasImagePackInfo(entry.path(), width, height));
 	}
 
-	auto result = packAtlasFromFiles(images);
+	auto result = packAtlasFromFiles(images, padding);
 	if (result.hasError()) {
 		return std::move(result.error());
 	}
