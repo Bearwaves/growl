@@ -38,11 +38,11 @@ struct Result : protected std::variant<T, Error> {
 	}
 
 	Error&& error() && noexcept {
-		return std::get<Error>(*this);
+		return std::move(std::get<Error>(*this));
 	}
 
 	const Error&& error() const&& noexcept {
-		return std::get<Error>(*this);
+		return std::move(std::get<Error>(*this));
 	}
 
 	T& get() & noexcept {
@@ -54,11 +54,11 @@ struct Result : protected std::variant<T, Error> {
 	}
 
 	T&& get() && noexcept {
-		return std::get<T>(*this);
+		return std::move(std::get<T>(*this));
 	}
 
 	const T&& get() const&& noexcept {
-		return std::get<T>(*this);
+		return std::move(std::get<T>(*this));
 	}
 };
 
