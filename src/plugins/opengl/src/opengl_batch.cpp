@@ -1,6 +1,6 @@
 #include "opengl_batch.h"
+#include "opengl.h"
 #include "opengl_texture.h"
-#include <GLES3/gl3.h>
 
 using Growl::OpenGLBatch;
 
@@ -75,4 +75,16 @@ void OpenGLBatch::draw(
 		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 	shader->bind(mvp);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
+int OpenGLBatch::getTargetWidth() {
+	int w, h;
+	SDL_GetWindowSize(static_cast<SDL_Window*>(window->getNative()), &w, &h);
+	return w;
+}
+
+int OpenGLBatch::getTargetHeight() {
+	int w, h;
+	SDL_GetWindowSize(static_cast<SDL_Window*>(window->getNative()), &w, &h);
+	return h;
 }

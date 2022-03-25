@@ -1,10 +1,8 @@
 #include "opengl_graphics.h"
+#include "opengl.h"
 #include "opengl_batch.h"
 #include "opengl_texture.h"
 #include "opengl_texture_atlas.h"
-#include <growl/core/log.h>
-#define GL_GLEXT_PROTOTYPES
-#include <GLES3/gl3.h>
 #include <SDL_opengl.h>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/mat4x4.hpp>
@@ -47,6 +45,16 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 		return std::move(windowResult.error());
 	}
 	window = std::move(windowResult.get());
+
+#ifdef GROWL_OPENGL_APPLE
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(
+		SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+	SDL_GL_SetAttribute(
+		SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+#endif
+
 	context =
 		SDL_GL_CreateContext(static_cast<SDL_Window*>(window->getNative()));
 	glViewport(0, 0, config.getWidth(), config.getHeight());
@@ -93,7 +101,8 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {
 	SDL_GetWindowSize(static_cast<SDL_Window*>(window->getNative()), &w, &h);
 	glViewport(0, 0, w, h);
 	auto projection = glm::ortho<float>(0, w, h, 0, 1, -1);
-	return std::make_unique<OpenGLBatch>(default_shader.get(), projection);
+	return std::make_unique<OpenGLBatch>(
+		default_shader.get(), projection, window.get());
 }
 
 void OpenGLGraphicsAPI::checkGLError(const char* file, long line) {
@@ -120,6 +129,7 @@ void OpenGLGraphicsAPI::checkShaderCompileError(unsigned int shader) {
 }
 
 void OpenGLGraphicsAPI::setupDebugCallback() {
+#ifndef GROWL_OPENGL_APPLE
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(
@@ -130,6 +140,7 @@ void OpenGLGraphicsAPI::setupDebugCallback() {
 		},
 		this);
 	checkGLError(__FILE__, __LINE__);
+#endif
 }
 
 void OpenGLGraphicsAPI::onGLDebugMessage(

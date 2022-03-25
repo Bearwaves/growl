@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GLES3/gl3.h>
+#include "opengl.h"
 #include <growl/core/graphics/texture.h>
 
 namespace Growl {

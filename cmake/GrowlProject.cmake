@@ -6,7 +6,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
 	set(GROWL_METAL 1)
 	add_definitions(-DGROWL_METAL)
 else ()

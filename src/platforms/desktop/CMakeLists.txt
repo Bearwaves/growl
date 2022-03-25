@@ -17,8 +17,11 @@ if (GROWL_METAL)
 	set(GROWL_DESKTOP_LIBS
 		growl-plugin-metal
 		)
-else ()
+endif()
+
+if (GROWL_OPENGL)
 	set(GROWL_DESKTOP_LIBS
+		${GROWL_DESKTOP_LIBS}
 		growl-plugin-opengl
 		)
 endif()

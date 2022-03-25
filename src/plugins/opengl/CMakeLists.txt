@@ -16,6 +16,8 @@ set(SOURCES
 	)
 
 set(HEADERS
+	"src/opengl.h"
+
 	"src/opengl_graphics.h"
 	"src/opengl_batch.h"
 	"src/opengl_texture.h"

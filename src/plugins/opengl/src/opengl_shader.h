@@ -1,5 +1,5 @@
 #pragma once
-#include <GLES3/gl3.h>
+#include "opengl.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <string>
 

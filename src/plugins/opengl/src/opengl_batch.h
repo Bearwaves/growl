@@ -8,9 +8,10 @@ namespace Growl {
 
 class OpenGLBatch : public Batch {
 public:
-	explicit OpenGLBatch(OpenGLShader* shader, glm::mat4 mvp)
+	explicit OpenGLBatch(OpenGLShader* shader, glm::mat4 mvp, Window* window)
 		: shader{shader}
-		, mvp{mvp} {}
+		, mvp{mvp}
+		, window{window} {}
 	~OpenGLBatch();
 	void begin() override;
 	void end() override;
@@ -21,9 +22,13 @@ public:
 		const TextureAtlasRegion& texture, float x, float y, float width,
 		float height) override;
 
+	int getTargetWidth() override;
+	int getTargetHeight() override;
+
 private:
 	OpenGLShader* shader;
 	glm::mat4 mvp;
+	Window* window;
 	GLuint vao;
 	GLuint vbo;
 	GLuint ebo;
