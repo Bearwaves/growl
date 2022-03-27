@@ -1,3 +1,2 @@
-thirdparty/**/* linguist-vendored
 **/thirdparty/**/* linguist-vendored
 cmake/FindSDL2.cmake linguist-vendored
