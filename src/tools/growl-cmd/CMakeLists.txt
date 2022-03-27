@@ -12,8 +12,8 @@ set(SOURCES
 	)
 
 set(HEADERS
-	"contrib/CLI11.hpp"
-	"contrib/rang.hpp"
+	"thirdparty/CLI11.hpp"
+	"thirdparty/rang.hpp"
 	)
 
 add_executable(growl-cmd ${SOURCES} ${HEADERS})

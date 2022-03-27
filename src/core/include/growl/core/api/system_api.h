@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../../../contrib/fmt/color.h"
-#include "../../../../../contrib/fmt/core.h"
+#include "../../../../../../thirdparty/fmt/color.h"
+#include "../../../../../../thirdparty/fmt/core.h"
 #include "../log.h"
 #include <growl/core/input/processor.h>
 #include <growl/util/error.h>

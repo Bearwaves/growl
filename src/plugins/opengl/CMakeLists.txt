@@ -29,6 +29,5 @@ add_library(growl-plugin-opengl ${SOURCES} ${HEADERS})
 target_link_libraries(
 	growl-plugin-opengl
 	growl-core
-	growl-contrib
 	${OPENGL_LIBRARIES}
 	)

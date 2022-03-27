@@ -1,6 +1,6 @@
-#include "../../../contrib/fpng/fpng.h"
-#include "../../../contrib/stb_image/stb_image.h"
-#include "../contrib/rang.hpp"
+#include "../../../../thirdparty/fpng/fpng.h"
+#include "../../../../thirdparty/stb_image/stb_image.h"
+#include "../thirdparty/rang.hpp"
 #include <cstdint>
 #include <filesystem>
 #include <fstream>

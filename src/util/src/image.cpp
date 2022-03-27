@@ -1,6 +1,6 @@
 #include "../include/growl/util/assets/image.h"
-#include "../../contrib/fpng/fpng.h"
-#include "../../contrib/stb_image/stb_image.h"
+#include "../../../thirdparty/fpng/fpng.h"
+#include "../../../thirdparty/stb_image/stb_image.h"
 #include <memory>
 
 using Growl::BaseError;

@@ -1,4 +1,4 @@
-project(growl-contrib)
+project(growl-thirdparty)
 
 add_subdirectory(glm)
 add_subdirectory(json)
@@ -26,5 +26,5 @@ set(HEADERS
 	"stb_rect_pack/stb_rect_pack.h"
 	)
 
-add_library(growl-contrib ${SOURCES} ${HEADERS})
-target_link_libraries(growl-contrib glm::glm nlohmann_json::nlohmann_json)
+add_library(growl-thirdparty ${SOURCES} ${HEADERS})
+target_link_libraries(growl-thirdparty glm::glm nlohmann_json::nlohmann_json)

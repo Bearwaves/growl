@@ -18,4 +18,4 @@ set(HEADERS
 	)
 
 add_library(growl-util ${SOURCES} ${HEADERS})
-target_link_libraries(growl-util growl-contrib)
+target_link_libraries(growl-util growl-thirdparty)
