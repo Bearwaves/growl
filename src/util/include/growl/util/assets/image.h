@@ -24,6 +24,8 @@ public:
 		, channels{channels}
 		, data{std::move(data)} {}
 
+	~Image() = default;
+
 	// Image is move-only
 	Image(const Image&) = delete;
 	Image& operator=(const Image&) = delete;
@@ -44,9 +46,6 @@ public:
 			return raw.get();
 		}
 		return data.data();
-	}
-	bool useFiltering() const {
-		return true;
 	}
 
 private:

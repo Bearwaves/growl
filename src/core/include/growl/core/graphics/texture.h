@@ -2,6 +2,11 @@
 
 namespace Growl {
 
+struct TextureOptions {
+	bool filtering = true;
+	bool mipmapped = true;
+};
+
 class Texture {
 public:
 	Texture(int width, int height)

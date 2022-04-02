@@ -19,9 +19,13 @@ public:
 	void end() override;
 	Error setWindow(const WindowConfig& windowConfig) override;
 	void clear(float r, float g, float b) override;
-	std::unique_ptr<Texture> createTexture(const Image& image) override;
-	std::unique_ptr<TextureAtlas>
-	createTextureAtlas(const Atlas& atlas) override;
+	std::unique_ptr<Texture>
+	createTexture(const Image& image, const TextureOptions options) override;
+	std::unique_ptr<Texture> createTexture(
+		unsigned int width, unsigned int height,
+		const TextureOptions options) override;
+	std::unique_ptr<TextureAtlas> createTextureAtlas(
+		const Atlas& atlas, const TextureOptions options) override;
 	std::unique_ptr<Batch> createBatch() override;
 
 	void checkGLError(const char* file, long line);
@@ -33,6 +37,10 @@ private:
 	std::unique_ptr<OpenGLShader> default_shader;
 	SDL_GLContext context;
 	time_point<high_resolution_clock> last_render;
+
+	std::unique_ptr<Texture> setupTexture(
+		unsigned int textureID, int width, int height,
+		const TextureOptions options);
 
 	void setupDebugCallback();
 	void onGLDebugMessage(

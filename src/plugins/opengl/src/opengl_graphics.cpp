@@ -7,6 +7,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/mat4x4.hpp>
 #include <memory>
+#include <vector>
 
 using Growl::Atlas;
 using Growl::Batch;
@@ -14,6 +15,7 @@ using Growl::Error;
 using Growl::OpenGLGraphicsAPI;
 using Growl::Texture;
 using Growl::TextureAtlas;
+using Growl::TextureOptions;
 using std::chrono::duration;
 using std::chrono::seconds;
 
@@ -69,31 +71,69 @@ void OpenGLGraphicsAPI::clear(float r, float g, float b) {
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-std::unique_ptr<Texture> OpenGLGraphicsAPI::createTexture(const Image& image) {
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(
-		GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+std::unique_ptr<Texture> OpenGLGraphicsAPI::createTexture(
+	const Image& image, const TextureOptions options) {
+	unsigned int texture_id;
+	glGenTextures(1, &texture_id);
+	glBindTexture(GL_TEXTURE_2D, texture_id);
 
 	glTexImage2D(
 		GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, image.getRaw());
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
-	return std::make_unique<OpenGLTexture>(
-		textureID, image.getWidth(), image.getHeight());
+	return setupTexture(
+		texture_id, image.getWidth(), image.getHeight(), options);
 }
 
-std::unique_ptr<TextureAtlas>
-OpenGLGraphicsAPI::createTextureAtlas(const Atlas& atlas) {
+std::unique_ptr<Texture> OpenGLGraphicsAPI::createTexture(
+	unsigned int width, unsigned int height, const TextureOptions options) {
+	unsigned int texture_id;
+	glGenTextures(1, &texture_id);
+	glBindTexture(GL_TEXTURE_2D, texture_id);
+
+	std::vector<unsigned char> data(4 * width * height, 0);
+
+	glTexImage2D(
+		GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+		data.data());
+
+	return setupTexture(texture_id, width, height, options);
+}
+
+std::unique_ptr<Texture> OpenGLGraphicsAPI::setupTexture(
+	unsigned int textureID, int width, int height,
+	const TextureOptions options) {
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	if (options.mipmapped) {
+		glGenerateMipmap(GL_TEXTURE_2D);
+		if (options.filtering) {
+			glTexParameteri(
+				GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		} else {
+			glTexParameteri(
+				GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+				GL_NEAREST_MIPMAP_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		}
+	} else if (options.filtering) {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	} else {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return std::make_unique<OpenGLTexture>(textureID, width, height);
+}
+
+std::unique_ptr<TextureAtlas> OpenGLGraphicsAPI::createTextureAtlas(
+	const Atlas& atlas, const TextureOptions options) {
 	return std::make_unique<OpenGLTextureAtlas>(
-		atlas, createTexture(atlas.getImage()));
+		atlas, createTexture(atlas.getImage(), options));
 }
 
 std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {

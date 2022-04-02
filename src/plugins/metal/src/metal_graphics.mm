@@ -5,11 +5,13 @@
 #include <SDL.h>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/mat4x4.hpp>
+#include <vector>
 
 using Growl::Error;
 using Growl::MetalGraphicsAPI;
 using Growl::Texture;
 using Growl::TextureAtlas;
+using Growl::TextureOptions;
 using Growl::MetalTextureAtlas;
 using Growl::Batch;
 using std::chrono::duration;
@@ -72,40 +74,66 @@ void MetalGraphicsAPI::clear(float r, float g, float b) {
 	[encoder endEncoding];
 }
 
-std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(const Image& image) {
+std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(
+	const Image& image, const TextureOptions options) {
 	auto textureDescriptor = [MTLTextureDescriptor
 		texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
 									 width:image.getWidth()
 									height:image.getHeight()
-								 mipmapped:true];
+								 mipmapped:options.mipmapped];
 	auto metalTexture = [device newTextureWithDescriptor:textureDescriptor];
 	NSUInteger bytesPerRow = 4 * image.getWidth();
 	MTLRegion region = {
 		{0, 0, 0},
 		{static_cast<NSUInteger>(image.getWidth()),
 		 static_cast<NSUInteger>(image.getHeight()), 1}};
-	const Byte* imageBytes = image.getRaw();
 	[metalTexture replaceRegion:region
 					mipmapLevel:0
-					  withBytes:imageBytes
+					  withBytes:image.getRaw()
 					bytesPerRow:bytesPerRow];
 
-	auto buf = [command_queue commandBuffer];
-	auto blitEncoder = [buf blitCommandEncoder];
-	[blitEncoder generateMipmapsForTexture:metalTexture];
-	[blitEncoder endEncoding];
-	[buf commit];
+	return setupTexture(metalTexture, options);
+}
+
+std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(
+	unsigned int width, unsigned int height, const TextureOptions options) {
+	auto textureDescriptor = [MTLTextureDescriptor
+		texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
+									 width:width
+									height:height
+								 mipmapped:options.mipmapped];
+	auto metalTexture = [device newTextureWithDescriptor:textureDescriptor];
+	std::vector<unsigned char> bytes(4 * width * height, 0);
+	MTLRegion region = {{0, 0, 0}, {width, height, 1}};
+	[metalTexture replaceRegion:region
+					mipmapLevel:0
+					  withBytes:bytes.data()
+					bytesPerRow:4 * width];
+	return setupTexture(metalTexture, options);
+}
+
+std::unique_ptr<Texture> MetalGraphicsAPI::setupTexture(
+	id<MTLTexture> texture, const TextureOptions options) {
+	if (options.mipmapped) {
+		auto buf = [command_queue commandBuffer];
+		auto blitEncoder = [buf blitCommandEncoder];
+		[blitEncoder generateMipmapsForTexture:texture];
+		[blitEncoder endEncoding];
+		[buf commit];
+	}
 
 	MTLSamplerDescriptor* samplerDescriptor =
 		[[MTLSamplerDescriptor alloc] init];
 	samplerDescriptor.maxAnisotropy = 1;
-	auto filter = image.useFiltering() ? MTLSamplerMinMagFilterLinear
-									   : MTLSamplerMinMagFilterNearest;
+	auto filter = options.filtering ? MTLSamplerMinMagFilterLinear
+									: MTLSamplerMinMagFilterNearest;
 	samplerDescriptor.minFilter = filter;
 	samplerDescriptor.magFilter = filter;
-	samplerDescriptor.mipFilter = image.useFiltering()
-									  ? MTLSamplerMipFilterLinear
-									  : MTLSamplerMipFilterNearest;
+	if (options.mipmapped) {
+		samplerDescriptor.mipFilter = options.filtering
+										  ? MTLSamplerMipFilterLinear
+										  : MTLSamplerMipFilterNearest;
+	}
 	auto addressMode = MTLSamplerAddressModeClampToEdge;
 	samplerDescriptor.sAddressMode = addressMode;
 	samplerDescriptor.rAddressMode = addressMode;
@@ -116,13 +144,13 @@ std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(const Image& image) {
 	[samplerDescriptor release];
 
 	return std::make_unique<MetalTexture>(
-		metalTexture, sampler, image.getWidth(), image.getHeight());
+		texture, sampler, texture.width, texture.height);
 }
 
-std::unique_ptr<TextureAtlas>
-MetalGraphicsAPI::createTextureAtlas(const Atlas& atlas) {
+std::unique_ptr<TextureAtlas> MetalGraphicsAPI::createTextureAtlas(
+	const Atlas& atlas, const TextureOptions options) {
 	return std::make_unique<MetalTextureAtlas>(
-		atlas, createTexture(atlas.getImage()));
+		atlas, createTexture(atlas.getImage(), options));
 }
 
 std::unique_ptr<Batch> MetalGraphicsAPI::createBatch() {

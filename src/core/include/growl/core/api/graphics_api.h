@@ -17,9 +17,15 @@ public:
 		return deltaTime;
 	}
 	virtual void clear(float r, float g, float b) = 0;
-	virtual std::unique_ptr<Texture> createTexture(const Image& image) = 0;
-	virtual std::unique_ptr<TextureAtlas>
-	createTextureAtlas(const Atlas& atlas) = 0;
+	virtual std::unique_ptr<Texture> createTexture(
+		const Image& image,
+		const TextureOptions options = TextureOptions{}) = 0;
+	virtual std::unique_ptr<Texture> createTexture(
+		unsigned int width, unsigned int height,
+		const TextureOptions options = TextureOptions{}) = 0;
+	virtual std::unique_ptr<TextureAtlas> createTextureAtlas(
+		const Atlas& atlas,
+		const TextureOptions options = TextureOptions{}) = 0;
 	virtual std::unique_ptr<Batch> createBatch() = 0;
 
 protected:
