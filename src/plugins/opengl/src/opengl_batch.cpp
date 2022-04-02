@@ -7,9 +7,15 @@ using Growl::OpenGLBatch;
 OpenGLBatch::~OpenGLBatch() {
 	glDeleteBuffers(1, &vbo);
 	glDeleteVertexArrays(1, &vao);
+	if (fbo) {
+		glDeleteFramebuffers(1, &fbo);
+	}
 }
 
 void OpenGLBatch::begin() {
+	if (fbo) {
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	}
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glGenBuffers(1, &vbo);
@@ -18,6 +24,9 @@ void OpenGLBatch::begin() {
 
 void OpenGLBatch::end() {
 	glBindVertexArray(0);
+	if (fbo) {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 }
 
 void OpenGLBatch::draw(
@@ -78,13 +87,9 @@ void OpenGLBatch::draw(
 }
 
 int OpenGLBatch::getTargetWidth() {
-	int w, h;
-	SDL_GetWindowSize(static_cast<SDL_Window*>(window->getNative()), &w, &h);
-	return w;
+	return width;
 }
 
 int OpenGLBatch::getTargetHeight() {
-	int w, h;
-	SDL_GetWindowSize(static_cast<SDL_Window*>(window->getNative()), &w, &h);
-	return h;
+	return height;
 }

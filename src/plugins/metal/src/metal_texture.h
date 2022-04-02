@@ -11,12 +11,17 @@ public:
 		id<MTLTexture> metalTexture, id<MTLSamplerState> sampler, int width,
 		int height)
 		: Texture(width, height)
-		, metalTexture{metalTexture}
+		, metal_texture{metalTexture}
 		, sampler{sampler} {}
+
 	void bind(id<MTLRenderCommandEncoder> encoder) const;
 
+	id<MTLTexture> getRaw() const {
+		return metal_texture;
+	}
+
 private:
-	id<MTLTexture> metalTexture;
+	id<MTLTexture> metal_texture;
 	id<MTLSamplerState> sampler;
 };
 

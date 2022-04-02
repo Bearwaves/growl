@@ -22,14 +22,18 @@ public:
 	void end() override;
 	Error setWindow(const WindowConfig& windowConfig) override;
 	void clear(float r, float g, float b) override;
+
 	std::unique_ptr<Texture>
 	createTexture(const Image& image, const TextureOptions options) override;
 	std::unique_ptr<Texture> createTexture(
 		unsigned int width, unsigned int height,
 		const TextureOptions options) override;
+
 	std::unique_ptr<TextureAtlas> createTextureAtlas(
 		const Atlas& atlas, const TextureOptions options) override;
+
 	std::unique_ptr<Batch> createBatch() override;
+	std::unique_ptr<Batch> createBatch(const Texture& texture) override;
 
 private:
 	SystemAPI* system;

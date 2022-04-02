@@ -30,6 +30,24 @@ Error TestAppGame::init() {
 }
 
 void TestAppGame::render() {
+	if (!grass_tiled) {
+		// Pre-tile some grass to demo render-to-texture.
+		grass_tiled = getAPI().graphics()->createTexture(
+			grass->getWidth() * 2, grass->getHeight() * 2);
+
+		auto batch = getAPI().graphics()->createBatch(*grass_tiled);
+		batch->begin();
+		for (int x = 0; x < 2; x++) {
+			for (int y = 0; y < 2; y++) {
+				batch->draw(
+					*grass, x * grass->getWidth(), y * grass->getHeight(),
+					grass->getWidth(), grass->getHeight());
+			}
+		}
+		batch->end();
+		grass = nullptr;
+	}
+
 	counter += getAPI().graphics()->getDeltaTime();
 	frames++;
 	catX += getAPI().graphics()->getDeltaTime() * SPEED *
@@ -41,9 +59,12 @@ void TestAppGame::render() {
 	auto batch = getAPI().graphics()->createBatch();
 	batch->begin();
 
-	for (int x = 0; x < batch->getTargetWidth(); x += grass->getWidth()) {
-		for (int y = 0; y < batch->getTargetHeight(); y += grass->getHeight()) {
-			batch->draw(*grass, x, y, grass->getWidth(), grass->getHeight());
+	for (int x = 0; x < batch->getTargetWidth(); x += grass_tiled->getWidth()) {
+		for (int y = 0; y < batch->getTargetHeight();
+			 y += grass_tiled->getHeight()) {
+			batch->draw(
+				*grass_tiled, x, y, grass_tiled->getWidth(),
+				grass_tiled->getHeight());
 		}
 	}
 	batch->draw(

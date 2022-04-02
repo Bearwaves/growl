@@ -11,7 +11,12 @@ public:
 		: Texture(width, height)
 		, id{id} {}
 	~OpenGLTexture();
+
 	void bind() const;
+
+	GLuint getRaw() const {
+		return id;
+	}
 
 private:
 	GLuint id;

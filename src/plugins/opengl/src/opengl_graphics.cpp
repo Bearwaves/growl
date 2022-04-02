@@ -142,7 +142,26 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {
 	glViewport(0, 0, w, h);
 	auto projection = glm::ortho<float>(0, w, h, 0, 1, -1);
 	return std::make_unique<OpenGLBatch>(
-		default_shader.get(), projection, window.get());
+		default_shader.get(), projection, w, h, 0);
+}
+
+std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
+	auto& opengl_texture = static_cast<const OpenGLTexture&>(texture);
+	glViewport(0, 0, texture.getWidth(), texture.getHeight());
+	auto projection =
+		glm::ortho<float>(0, texture.getWidth(), 0, texture.getHeight(), 1, -1);
+
+	GLuint fbo;
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+		opengl_texture.getRaw(), 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	return std::make_unique<OpenGLBatch>(
+		default_shader.get(), projection, texture.getWidth(),
+		texture.getHeight(), fbo);
 }
 
 void OpenGLGraphicsAPI::checkGLError(const char* file, long line) {

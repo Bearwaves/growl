@@ -8,13 +8,18 @@ namespace Growl {
 
 class OpenGLBatch : public Batch {
 public:
-	explicit OpenGLBatch(OpenGLShader* shader, glm::mat4 mvp, Window* window)
+	OpenGLBatch(
+		OpenGLShader* shader, glm::mat4 mvp, int width, int height, GLuint fbo)
 		: shader{shader}
 		, mvp{mvp}
-		, window{window} {}
+		, width{width}
+		, height{height}
+		, fbo{fbo} {}
 	~OpenGLBatch();
+
 	void begin() override;
 	void end() override;
+
 	void draw(
 		const Texture& texture, float x, float y, float width,
 		float height) override;
@@ -28,10 +33,12 @@ public:
 private:
 	OpenGLShader* shader;
 	glm::mat4 mvp;
-	Window* window;
+	int width;
+	int height;
 	GLuint vao;
 	GLuint vbo;
 	GLuint ebo;
+	GLuint fbo;
 };
 
 } // namespace Growl
