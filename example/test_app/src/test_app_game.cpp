@@ -1,5 +1,6 @@
 #include "test_app_game.h"
 #include <growl/util/assets/bundle.h>
+#include <growl/util/assets/image.h>
 
 using Growl::Error;
 using Growl::TestAppGame;
@@ -17,8 +18,13 @@ Error TestAppGame::init() {
 	if (atlasResult.hasError()) {
 		return std::move(atlasResult.error());
 	}
-	atlas = std::make_unique<Atlas>(std::move(atlasResult.get()));
-	texture_atlas = getAPI().graphics()->createTextureAtlas(*atlas);
+	texture_atlas = getAPI().graphics()->createTextureAtlas(atlasResult.get());
+
+	Result<Image> imageResult = loadImageFromFile("../assets/gfx/grass.png");
+	if (imageResult.hasError()) {
+		return std::move(imageResult.error());
+	}
+	grass = getAPI().graphics()->createTexture(imageResult.get());
 
 	return nullptr;
 }
@@ -35,14 +41,9 @@ void TestAppGame::render() {
 	auto batch = getAPI().graphics()->createBatch();
 	batch->begin();
 
-	auto grass_region = texture_atlas->getRegion("grass.png").get();
-	for (int x = 0; x < batch->getTargetWidth();
-		 x += grass_region.region.width) {
-		for (int y = 0; y < batch->getTargetHeight();
-			 y += grass_region.region.height) {
-			batch->draw(
-				grass_region, x, y, grass_region.region.width,
-				grass_region.region.height);
+	for (int x = 0; x < batch->getTargetWidth(); x += grass->getWidth()) {
+		for (int y = 0; y < batch->getTargetHeight(); y += grass->getHeight()) {
+			batch->draw(*grass, x, y, grass->getWidth(), grass->getHeight());
 		}
 	}
 	batch->draw(
