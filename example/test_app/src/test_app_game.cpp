@@ -73,9 +73,9 @@ void TestAppGame::render() {
 		texture_atlas->getRegion("mouse.jpg").get(), input->getMouseX() - 100,
 		input->getMouseY() - 100, 200, 200);
 	batch->end();
-	if (counter > SPEED * 2) {
+	if (counter > FPS_SAMPLE_SECONDS) {
 		getAPI().system()->log("TestAppGame", "FPS: {:05f}", frames / counter);
-		counter -= SPEED * 2;
+		counter -= FPS_SAMPLE_SECONDS;
 		frames = 0;
 	}
 }

@@ -12,6 +12,8 @@
 
 namespace Growl {
 
+constexpr int FPS_SAMPLE_SECONDS = 5;
+
 class TestAppGame : public Game {
 public:
 	explicit TestAppGame() = default;
