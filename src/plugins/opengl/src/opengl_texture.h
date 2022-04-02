@@ -8,10 +8,8 @@ namespace Growl {
 class OpenGLTexture : public Texture {
 public:
 	explicit OpenGLTexture(unsigned int id, int width, int height)
-		: id{id} {
-		this->width = width;
-		this->height = height;
-	}
+		: Texture(width, height)
+		, id{id} {}
 	~OpenGLTexture();
 	void bind() const;
 

@@ -5,10 +5,8 @@ namespace Growl {
 
 class MetalTextureAtlas : public TextureAtlas {
 public:
-	MetalTextureAtlas(const Atlas& atlas, std::unique_ptr<Texture> texture) {
-		this->texture = std::move(texture);
-		this->mappings = atlas.getMappings();
-	}
+	MetalTextureAtlas(const Atlas& atlas, std::unique_ptr<Texture> texture)
+		: TextureAtlas(atlas, std::move(texture)) {}
 
 	Result<TextureAtlasRegion> getRegion(const std::string& name) override;
 };

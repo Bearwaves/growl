@@ -48,6 +48,13 @@ public:
 		const std::unordered_map<std::string, AtlasRegion>& mappings)
 		: image{std::move(image)}
 		, mappings{mappings} {}
+
+	// Atlas is move-only
+	Atlas(const Atlas&) = delete;
+	Atlas& operator=(const Atlas&) = delete;
+	Atlas(Atlas&&) = default;
+	Atlas& operator=(Atlas&&) = default;
+
 	Result<AtlasRegion> getRegion(const std::string& name) noexcept;
 
 	const std::unordered_map<std::string, AtlasRegion>& getMappings() const {

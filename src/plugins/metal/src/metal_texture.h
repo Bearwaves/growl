@@ -10,11 +10,9 @@ public:
 	MetalTexture(
 		id<MTLTexture> metalTexture, id<MTLSamplerState> sampler, int width,
 		int height)
-		: metalTexture{metalTexture}
-		, sampler{sampler} {
-		this->width = width;
-		this->height = height;
-	}
+		: Texture(width, height)
+		, metalTexture{metalTexture}
+		, sampler{sampler} {}
 	void bind(id<MTLRenderCommandEncoder> encoder) const;
 
 private:

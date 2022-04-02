@@ -24,6 +24,12 @@ public:
 		, channels{channels}
 		, data{std::move(data)} {}
 
+	// Image is move-only
+	Image(const Image&) = delete;
+	Image& operator=(const Image&) = delete;
+	Image(Image&&) = default;
+	Image& operator=(Image&&) = default;
+
 	int getWidth() const {
 		return width;
 	}
