@@ -12,6 +12,14 @@ set(SOURCES
 
 	"stb_image/stb_image.c"
 	"stb_rect_pack/stb_rect_pack.c"
+
+	"harfbuzz/src/harfbuzz.cc"
+
+	"libunibreak/src/unibreakdef.c"
+	"libunibreak/src/unibreakbase.c"
+	"libunibreak/src/linebreakdef.c"
+	"libunibreak/src/linebreak.c"
+	"libunibreak/src/linebreakdata.c"
 	)
 
 set(HEADERS
@@ -24,6 +32,11 @@ set(HEADERS
 
 	"stb_image/stb_image.h"
 	"stb_rect_pack/stb_rect_pack.h"
+
+	"libunibreak/src/unibreakdef.h"
+	"libunibreak/src/unibreakbase.h"
+	"libunibreak/src/linebreakdef.h"
+	"libunibreak/src/linebreak.h"
 	)
 
 add_library(growl-thirdparty ${SOURCES} ${HEADERS})
