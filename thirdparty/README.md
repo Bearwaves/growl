@@ -10,6 +10,7 @@
 | {fmt}         | `8.1.1`   | https://github.com/fmtlib/fmt           |
 | HarfBuzz      | `4.2.0`   | https://github.com/harfbuzz/harfbuzz    |
 | libunibreak   | `5.0`     | https://github.com/adah1972/libunibreak |
+| FreeType      | `2.12.0`  | https://freetype.org/                   |
 
 ## Modifications
 
@@ -26,3 +27,7 @@ Only the base C files (`unibreakbase.*`, `unibreakdef.*`), plus files needed for
 linebreaks (`linebreak.*`, `linebreakdef.*`, `linebreakdata.c`) are included.
 
 Generators, templates, emoji/word/grapheme data are not included.
+
+### FreeType
+
+Only `src/` and `include/` directories, minus the .mk files.
