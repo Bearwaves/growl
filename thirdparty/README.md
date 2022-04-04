@@ -30,4 +30,5 @@ Generators, templates, emoji/word/grapheme data are not included.
 
 ### FreeType
 
-Only `src/` and `include/` directories, minus the .mk files.
+Only `src/` and `include/` directories, minus the `tools/` directory and `.mk`
+files.
