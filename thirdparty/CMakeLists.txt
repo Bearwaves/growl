@@ -31,6 +31,8 @@ set(SOURCES
 	"freetype/src/truetype/truetype.c"
 	"freetype/src/raster/raster.c"
 	"freetype/src/psnames/psnames.c"
+	"freetype/src/psaux/psaux.c"
+	"freetype/src/gzip/ftgzip.c"
 
 	"harfbuzz/src/harfbuzz.cc"
 
