@@ -1,11 +1,12 @@
 project(growl-util)
 
-include_directories("include")
+include_directories("include" "../../thirdparty/freetype/include")
 
 set(SOURCES
 	"src/bundle.cpp"
 	"src/image.cpp"
 	"src/atlas.cpp"
+	"src/font.cpp"
 	)
 
 set(HEADERS
@@ -15,6 +16,8 @@ set(HEADERS
 	"include/growl/util/assets/error.h"
 	"include/growl/util/assets/image.h"
 	"include/growl/util/assets/atlas.h"
+
+	"include/growl/util/font/font.h"
 	)
 
 add_library(growl-util ${SOURCES} ${HEADERS})
