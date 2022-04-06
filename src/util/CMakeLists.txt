@@ -16,8 +16,7 @@ set(HEADERS
 	"include/growl/util/assets/error.h"
 	"include/growl/util/assets/image.h"
 	"include/growl/util/assets/atlas.h"
-
-	"include/growl/util/font/font.h"
+	"include/growl/util/assets/font.h"
 	)
 
 add_library(growl-util ${SOURCES} ${HEADERS})

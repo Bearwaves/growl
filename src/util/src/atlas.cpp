@@ -1,4 +1,5 @@
-#include "../include/growl/util/assets/atlas.h"
+#include <growl/util/assets/atlas.h>
+
 #include "../../../thirdparty/stb_image/stb_image.h"
 #include "../../../thirdparty/stb_rect_pack/stb_rect_pack.h"
 #include <algorithm>

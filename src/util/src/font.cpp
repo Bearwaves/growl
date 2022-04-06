@@ -1,24 +1,14 @@
-#include "../include/growl/util/font/font.h"
+#include <growl/util/assets/font.h>
+
 #include <freetype/freetype.h>
 #include <freetype/ftmodapi.h>
+#include <growl/util/assets/error.h>
 #include <iostream>
 #include <memory>
 
-using Growl::BaseError;
 using Growl::Error;
 using Growl::Font;
 using Growl::Result;
-
-struct fontLoadError : BaseError {
-	std::string msg;
-
-	fontLoadError(std::string msg)
-		: msg{msg} {}
-
-	std::string message() override {
-		return msg;
-	}
-};
 
 struct Growl::FTFontData {
 	FT_Library library;
@@ -40,14 +30,12 @@ Result<Font> Growl::loadFontFromFile(std::string filepath) {
 	FT_Face face;
 
 	if (auto err = FT_Init_FreeType(&lib); err) {
-		return Error(
-			std::make_unique<fontLoadError>("Failed to init FreeType"));
+		return Error(std::make_unique<AssetsError>("Failed to init FreeType"));
 	}
 
 	if (auto err = FT_New_Face(lib, filepath.c_str(), 0, &face); err) {
 		FT_Done_Library(lib);
-		return Error(
-			std::make_unique<fontLoadError>("Failed to load font file"));
+		return Error(std::make_unique<AssetsError>("Failed to load font file"));
 	}
 
 	return Font(FTFontData{lib, face});

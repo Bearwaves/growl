@@ -1,4 +1,4 @@
-#include "growl/core/game/game.h"
+#include <growl/core/game/game.h>
 
 using Growl::API;
 using Growl::Game;
