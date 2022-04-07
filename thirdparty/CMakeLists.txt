@@ -2,6 +2,7 @@ project(growl-thirdparty)
 
 add_subdirectory(glm)
 add_subdirectory(json)
+add_subdirectory(utfcpp)
 
 set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
 add_compile_definitions(FT2_BUILD_LIBRARY)
@@ -61,4 +62,4 @@ set(HEADERS
 	)
 
 add_library(growl-thirdparty ${SOURCES} ${HEADERS})
-target_link_libraries(growl-thirdparty glm::glm nlohmann_json::nlohmann_json)
+target_link_libraries(growl-thirdparty glm::glm nlohmann_json::nlohmann_json utf8cpp)

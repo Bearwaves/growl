@@ -11,6 +11,7 @@
 | HarfBuzz      | `4.2.0`   | https://github.com/harfbuzz/harfbuzz    |
 | libunibreak   | `5.0`     | https://github.com/adah1972/libunibreak |
 | FreeType      | `2.12.0`  | https://freetype.org/                   |
+| UTF8-CPP      | `3.2.1`   | https://github.com/nemtrif/utfcpp       |
 
 ## Modifications
 
@@ -32,3 +33,7 @@ Generators, templates, emoji/word/grapheme data are not included.
 
 Only `src/` and `include/` directories, minus the `tools/` and `dlg/`
 directories and `.mk` files.
+
+### UTF8-CPP
+
+Only `source/` and `CMakeLists.txt`, along with license and README.
