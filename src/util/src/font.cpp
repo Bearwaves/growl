@@ -4,7 +4,6 @@
 #include <freetype/freetype.h>
 #include <freetype/ftmodapi.h>
 #include <growl/util/assets/error.h>
-#include <growl/util/assets/font_atlas.h>
 #include <iostream>
 #include <memory>
 
