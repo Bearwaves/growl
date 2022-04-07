@@ -17,9 +17,13 @@ public:
 	Font(Font&&) = default;
 	Font& operator=(Font&&) = default;
 
+	const FTFontData& getFTFontData() {
+		return *ft_data;
+	}
+
 private:
 	std::unique_ptr<FTFontData> ft_data;
 };
 
-Result<Font> loadFontFromFile(std::string filePath);
+Result<Font> loadFontFromFile(std::string filePath) noexcept;
 } // namespace Growl

@@ -1,19 +1,16 @@
 #include <growl/util/assets/font.h>
 
+#include "font_internal.h"
 #include <freetype/freetype.h>
 #include <freetype/ftmodapi.h>
 #include <growl/util/assets/error.h>
+#include <growl/util/assets/font_atlas.h>
 #include <iostream>
 #include <memory>
 
 using Growl::Error;
 using Growl::Font;
 using Growl::Result;
-
-struct Growl::FTFontData {
-	FT_Library library;
-	FT_Face face;
-};
 
 Font::Font(Growl::FTFontData ft_data)
 	: ft_data{std::make_unique<Growl::FTFontData>(std::move(ft_data))} {}
@@ -25,7 +22,7 @@ Font::~Font() {
 	}
 }
 
-Result<Font> Growl::loadFontFromFile(std::string filepath) {
+Result<Font> Growl::loadFontFromFile(std::string filepath) noexcept {
 	FT_Library lib;
 	FT_Face face;
 

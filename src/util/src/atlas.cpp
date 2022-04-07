@@ -42,7 +42,6 @@ Result<Atlas> Growl::packAtlasFromFiles(
 	}
 	int width = nextPowerOfTwo(std::max(images[0].width, images[0].height));
 	int height = width;
-	bool resize_width_next = true;
 	bool did_pack = false;
 
 	while (width <= MAX_SIZE && height <= MAX_SIZE) {
@@ -52,12 +51,11 @@ Result<Atlas> Growl::packAtlasFromFiles(
 			did_pack = true;
 			break;
 		}
-		if (resize_width_next) {
+		if (width <= height) {
 			width *= 2;
 		} else {
 			height *= 2;
 		}
-		resize_width_next = !resize_width_next;
 	}
 
 	if (!did_pack) {
