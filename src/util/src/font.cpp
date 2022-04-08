@@ -3,7 +3,6 @@
 #include "font_internal.h"
 #include <freetype/freetype.h>
 #include <freetype/ftmodapi.h>
-#include <growl/util/assets/error.h>
 #include <iostream>
 #include <memory>
 
@@ -26,12 +25,14 @@ Result<Font> Growl::loadFontFromFile(std::string filepath) noexcept {
 	FT_Face face;
 
 	if (auto err = FT_Init_FreeType(&lib); err) {
-		return Error(std::make_unique<AssetsError>("Failed to init FreeType"));
+		return Error(
+			std::make_unique<FontError>("Failed to init FreeType", err));
 	}
 
 	if (auto err = FT_New_Face(lib, filepath.c_str(), 0, &face); err) {
 		FT_Done_Library(lib);
-		return Error(std::make_unique<AssetsError>("Failed to load font file"));
+		return Error(
+			std::make_unique<FontError>("Failed to load font file", err));
 	}
 
 	return Font(FTFontData{lib, face});

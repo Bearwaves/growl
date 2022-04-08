@@ -36,7 +36,7 @@ Growl::createFontAtlasFromFont(Font& font, int size) noexcept {
 	if (auto err = FT_Set_Pixel_Sizes(font.getFTFontData().face, 0, size);
 		err) {
 		return Error(
-			std::make_unique<AssetsError>("Failed to set font face size"));
+			std::make_unique<FontError>("Failed to set font face size", err));
 	}
 
 	std::vector<stbrp_rect> glyph_rects;
@@ -44,7 +44,8 @@ Growl::createFontAtlasFromFont(Font& font, int size) noexcept {
 		if (auto err = FT_Load_Glyph(
 				font.getFTFontData().face, i, FT_LOAD_BITMAP_METRICS_ONLY);
 			err) {
-			return Error(std::make_unique<AssetsError>("Failed to load glyph"));
+			return Error(
+				std::make_unique<FontError>("Failed to load glyph", err));
 		}
 		auto& metrics = font.getFTFontData().face->glyph->metrics;
 		// Glyph sizes are represented in 26.6 fractional format, so we shift
@@ -71,7 +72,7 @@ Result<FontAtlas> Growl::createFontAtlasFromFont(
 	if (auto err = FT_Set_Pixel_Sizes(font.getFTFontData().face, 0, size);
 		err) {
 		return Error(
-			std::make_unique<AssetsError>("Failed to set font face size"));
+			std::make_unique<FontError>("Failed to set font face size", err));
 	}
 
 	std::vector<stbrp_rect> glyph_rects;
@@ -96,8 +97,8 @@ Result<FontAtlas> Growl::createFontAtlasFromFont(
 				font.getFTFontData().face, glyph_index,
 				FT_LOAD_BITMAP_METRICS_ONLY);
 			err) {
-			return Error(std::make_unique<AssetsError>(
-				"Failed to load glyph " + code_hex));
+			return Error(std::make_unique<FontError>(
+				"Failed to load glyph " + code_hex, err));
 		}
 		auto& metrics = font.getFTFontData().face->glyph->metrics;
 		// Glyph sizes are represented in 26.6 fractional format, so we shift
@@ -140,8 +141,8 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 		if (auto err = FT_Load_Glyph(
 				font.getFTFontData().face, rect.id, FT_LOAD_RENDER);
 			err) {
-			return Error(
-				std::make_unique<AssetsError>("Failed to load glyph bitmap"));
+			return Error(std::make_unique<FontError>(
+				"Failed to load glyph bitmap", err));
 		}
 		auto& bitmap = font.getFTFontData().face->glyph->bitmap;
 
