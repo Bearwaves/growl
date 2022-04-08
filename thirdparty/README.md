@@ -12,6 +12,8 @@
 | libunibreak   | `5.0`     | https://github.com/adah1972/libunibreak |
 | FreeType      | `2.12.0`  | https://freetype.org/                   |
 | UTF8-CPP      | `3.2.1`   | https://github.com/nemtrif/utfcpp       |
+| libpng        | `1.6.37`  | http://libpng.org/pub/png/libpng.html   |
+| zlib          | `1.2.12`  | https://www.zlib.net/                   |
 
 ## Modifications
 
@@ -37,3 +39,12 @@ directories and `.mk` files.
 ### UTF8-CPP
 
 Only `source/` and `CMakeLists.txt`, along with license and README.
+
+### libpng
+
+All `.c` and `.h` files, except `example.c` and `pngtest.c`. Used
+`scripts/pnglibconf.h.prebuilt` as `pnglibconf.h`.
+
+### zlib
+
+All `.c` and `.h` files from the root.

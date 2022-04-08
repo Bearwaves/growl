@@ -5,9 +5,14 @@ add_subdirectory(json)
 add_subdirectory(utfcpp)
 
 set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
-add_compile_definitions(FT2_BUILD_LIBRARY FT_CONFIG_OPTION_ERROR_STRINGS)
+add_compile_definitions(
+	FT2_BUILD_LIBRARY
+	FT_CONFIG_OPTION_ERROR_STRINGS
+	FT_CONFIG_OPTION_USE_PNG
+	FT_CONFIG_OPTION_SYSTEM_ZLIB
+	)
 
-include_directories("freetype/include/")
+include_directories("freetype/include/" "libpng/" "zlib/")
 
 set(SOURCES
 	"fmt/format.cpp"
@@ -37,11 +42,39 @@ set(SOURCES
 
 	"harfbuzz/src/harfbuzz.cc"
 
+	"libpng/png.c"
+	"libpng/pngerror.c"
+	"libpng/pngget.c"
+	"libpng/pngmem.c"
+	"libpng/pngpread.c"
+	"libpng/pngread.c"
+	"libpng/pngrio.c"
+	"libpng/pngrtran.c"
+	"libpng/pngrutil.c"
+	"libpng/pngset.c"
+	"libpng/pngtrans.c"
+	"libpng/pngwio.c"
+	"libpng/pngwrite.c"
+	"libpng/pngwtran.c"
+	"libpng/pngwutil.c"
+
 	"libunibreak/src/unibreakdef.c"
 	"libunibreak/src/unibreakbase.c"
 	"libunibreak/src/linebreakdef.c"
 	"libunibreak/src/linebreak.c"
 	"libunibreak/src/linebreakdata.c"
+
+	"zlib/adler32.c"
+	"zlib/compress.c"
+	"zlib/crc32.c"
+	"zlib/deflate.c"
+	"zlib/infback.c"
+	"zlib/inffast.c"
+	"zlib/inflate.c"
+	"zlib/inftrees.c"
+	"zlib/trees.c"
+	"zlib/uncompr.c"
+	"zlib/zutil.c"
 	)
 
 set(HEADERS
@@ -52,6 +85,14 @@ set(HEADERS
 
 	"fpng/fpng.h"
 
+	"libpng/png.h"
+	"libpng/pngconf.h"
+	"libpng/pngdebug.h"
+	"libpng/pnginfo.h"
+	"libpng/pnglibconf.h"
+	"libpng/pngpriv.h"
+	"libpng/pngstruct.h"
+
 	"stb_image/stb_image.h"
 	"stb_rect_pack/stb_rect_pack.h"
 
@@ -59,6 +100,17 @@ set(HEADERS
 	"libunibreak/src/unibreakbase.h"
 	"libunibreak/src/linebreakdef.h"
 	"libunibreak/src/linebreak.h"
+
+	"zlib/crc32.h"
+	"zlib/deflate.h"
+	"zlib/inffast.h"
+	"zlib/inffixed.h"
+	"zlib/inflate.h"
+	"zlib/inftrees.h"
+	"zlib/trees.h"
+	"zlib/zconf.h"
+	"zlib/zlib.h"
+	"zlib/zutil.h"
 	)
 
 add_library(growl-thirdparty ${SOURCES} ${HEADERS})
