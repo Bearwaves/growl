@@ -4,6 +4,7 @@
 #include "font_internal.h"
 #include <cstdio>
 #include <freetype/freetype.h>
+#include <freetype/ftimage.h>
 #include <growl/util/assets/error.h>
 #include <growl/util/assets/image.h>
 #include <growl/util/error.h>
@@ -28,15 +29,14 @@ static int nextPowerOfTwo(int n) {
 	return i;
 }
 
+static Error setFontFacePixelSize(Font& font, int size) noexcept;
 static Result<FontAtlas>
 packFontAtlas(Font& font, std::vector<stbrp_rect>& rects) noexcept;
 
 Result<FontAtlas>
 Growl::createFontAtlasFromFont(Font& font, int size) noexcept {
-	if (auto err = FT_Set_Pixel_Sizes(font.getFTFontData().face, 0, size);
-		err) {
-		return Error(
-			std::make_unique<FontError>("Failed to set font face size", err));
+	if (auto err = setFontFacePixelSize(font, size); err) {
+		return std::move(err);
 	}
 
 	std::vector<stbrp_rect> glyph_rects;
@@ -69,10 +69,8 @@ Result<FontAtlas> Growl::createFontAtlasFromFont(
 		return Error(std::make_unique<AssetsError>(
 			"Font atlas charset not a valid UTF-8 string"));
 	}
-	if (auto err = FT_Set_Pixel_Sizes(font.getFTFontData().face, 0, size);
-		err) {
-		return Error(
-			std::make_unique<FontError>("Failed to set font face size", err));
+	if (auto err = setFontFacePixelSize(font, size); err) {
+		return std::move(err);
 	}
 
 	std::vector<stbrp_rect> glyph_rects;
@@ -111,6 +109,34 @@ Result<FontAtlas> Growl::createFontAtlasFromFont(
 	return packFontAtlas(font, glyph_rects);
 }
 
+Error setFontFacePixelSize(Font& font, int size) noexcept {
+	if (font.getFTFontData().face->num_fixed_sizes) {
+		int best = 0;
+		int diff = std::abs(
+			size - font.getFTFontData().face->available_sizes[0].height);
+		for (int i = 1; i < font.getFTFontData().face->num_fixed_sizes; i++) {
+			int ndiff = std::abs(
+				size - font.getFTFontData().face->available_sizes[i].height);
+			if (ndiff < diff) {
+				diff = ndiff;
+				best = i;
+			}
+		}
+		if (auto err = FT_Select_Size(font.getFTFontData().face, best); err) {
+			return Error(std::make_unique<FontError>(
+				"Failed to select font face size", err));
+		}
+		return nullptr;
+	}
+
+	if (auto err = FT_Set_Pixel_Sizes(font.getFTFontData().face, 0, size);
+		err) {
+		return Error(
+			std::make_unique<FontError>("Failed to set font face size", err));
+	}
+	return nullptr;
+}
+
 Result<FontAtlas>
 packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 	int width = nextPowerOfTwo(std::max(glyph_rects[0].w, glyph_rects[0].h));
@@ -136,24 +162,42 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 	}
 
 	std::vector<unsigned char> image_data(width * height * sizeof(uint32_t), 0);
-	uint32_t* image_32 = reinterpret_cast<uint32_t*>(image_data.data());
+	bool has_color = FT_HAS_COLOR(font.getFTFontData().face);
+	int load_params = FT_LOAD_RENDER;
+	if (has_color) {
+		load_params |= FT_LOAD_COLOR;
+	}
 	for (auto& rect : glyph_rects) {
-		if (auto err = FT_Load_Glyph(
-				font.getFTFontData().face, rect.id, FT_LOAD_RENDER);
+		if (auto err =
+				FT_Load_Glyph(font.getFTFontData().face, rect.id, load_params);
 			err) {
 			return Error(std::make_unique<FontError>(
 				"Failed to load glyph bitmap", err));
 		}
 		auto& bitmap = font.getFTFontData().face->glyph->bitmap;
+		int bytes_per_pixel = has_color ? 4 : 1;
 
 		for (int row = 0; row < bitmap.rows; row++) {
 			for (int col = 0; col < bitmap.width; col++) {
 				int x = rect.x + col;
 				int y = rect.y + row;
-				if (unsigned char c = bitmap.buffer[row * bitmap.pitch + col];
-					c) {
-					image_32[y * width + x] =
-						0x00FFFFFF | (c << 24); // little endian
+				unsigned char* dst =
+					image_data.data() + sizeof(uint32_t) * (y * width + x);
+				unsigned char* src =
+					bitmap.buffer +
+					bytes_per_pixel * (row * bitmap.width + col);
+				if (has_color) {
+					unsigned char b = *src++, g = *src++, r = *src++,
+								  a = *src++;
+					*dst++ = r;
+					*dst++ = g;
+					*dst++ = b;
+					*dst++ = a;
+				} else {
+					*dst++ = 0xFF;
+					*dst++ = 0xFF;
+					*dst++ = 0xFF;
+					*dst++ = *src;
 				}
 			}
 		}
