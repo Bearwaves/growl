@@ -8,11 +8,13 @@ using Growl::BaseError;
 using Growl::Image;
 using Growl::Result;
 
+namespace {
 struct imageLoadError : BaseError {
 	std::string message() override {
 		return "Failed to load image";
 	}
 };
+} // namespace
 
 Result<Image> Growl::loadImageFromFile(std::string filePath) {
 	int width, height, channels;
