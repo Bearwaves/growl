@@ -15,20 +15,20 @@ using Growl::Result;
 
 constexpr int MAX_SIZE = 8192;
 
+static int nextPowerOfTwo(int n) {
+	int i = 2;
+	while (i < n) {
+		i *= 2;
+	}
+	return i;
+}
+
 Result<AtlasRegion> Atlas::getRegion(const std::string& name) noexcept {
 	if (auto it = mappings.find(name); it != mappings.end()) {
 		return it->second;
 	}
 	return Error(std::make_unique<AssetsError>(
 		"Failed to load atlas region " + name + "; not found in atlas."));
-}
-
-int nextPowerOfTwo(int n) {
-	int i = 2;
-	while (i < n) {
-		i *= 2;
-	}
-	return i;
 }
 
 Result<Atlas> Growl::packAtlasFromFiles(

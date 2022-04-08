@@ -17,6 +17,7 @@ private:
 	std::unique_ptr<Image> img;
 };
 
+Result<FontAtlas> createFontAtlasFromFont(Font& font, int size) noexcept;
 Result<FontAtlas>
 createFontAtlasFromFont(Font& font, int size, std::string text) noexcept;
 } // namespace Growl

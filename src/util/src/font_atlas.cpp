@@ -20,7 +20,42 @@ using Growl::Result;
 
 constexpr int MAX_SIZE = 8192;
 
-int nextPowerOfTwo(int);
+static int nextPowerOfTwo(int n) {
+	int i = 2;
+	while (i < n) {
+		i *= 2;
+	}
+	return i;
+}
+
+static Result<FontAtlas>
+packFontAtlas(Font& font, std::vector<stbrp_rect>& rects) noexcept;
+
+Result<FontAtlas>
+Growl::createFontAtlasFromFont(Font& font, int size) noexcept {
+	if (auto err = FT_Set_Pixel_Sizes(font.getFTFontData().face, 0, size);
+		err) {
+		return Error(
+			std::make_unique<AssetsError>("Failed to set font face size"));
+	}
+
+	std::vector<stbrp_rect> glyph_rects;
+	for (int i = 0; i < font.getFTFontData().face->num_glyphs; i++) {
+		if (auto err = FT_Load_Glyph(
+				font.getFTFontData().face, i, FT_LOAD_BITMAP_METRICS_ONLY);
+			err) {
+			return Error(std::make_unique<AssetsError>("Failed to load glyph"));
+		}
+		auto& metrics = font.getFTFontData().face->glyph->metrics;
+		// Glyph sizes are represented in 26.6 fractional format, so we shift
+		// them to get the pixel sizes.
+		glyph_rects.push_back(stbrp_rect{
+			i, static_cast<stbrp_coord>(metrics.width >> 6),
+			static_cast<stbrp_coord>(metrics.height >> 6)});
+	}
+
+	return packFontAtlas(font, glyph_rects);
+}
 
 Result<FontAtlas> Growl::createFontAtlasFromFont(
 	Font& font, int size, std::string text) noexcept {
@@ -72,6 +107,11 @@ Result<FontAtlas> Growl::createFontAtlasFromFont(
 			static_cast<stbrp_coord>(metrics.height >> 6)});
 	}
 
+	return packFontAtlas(font, glyph_rects);
+}
+
+Result<FontAtlas>
+packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 	int width = nextPowerOfTwo(std::max(glyph_rects[0].w, glyph_rects[0].h));
 	int height = width;
 	bool packed = false;
