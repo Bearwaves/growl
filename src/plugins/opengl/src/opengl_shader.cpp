@@ -1,6 +1,5 @@
 #include "opengl_shader.h"
 #include "opengl_graphics.h"
-#include <iostream>
 
 using Growl::OpenGLShader;
 

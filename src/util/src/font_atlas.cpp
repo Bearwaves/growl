@@ -177,8 +177,8 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 		auto& bitmap = font.getFTFontData().face->glyph->bitmap;
 		int bytes_per_pixel = has_color ? 4 : 1;
 
-		for (int row = 0; row < bitmap.rows; row++) {
-			for (int col = 0; col < bitmap.width; col++) {
+		for (unsigned int row = 0; row < bitmap.rows; row++) {
+			for (unsigned int col = 0; col < bitmap.width; col++) {
 				int x = rect.x + col;
 				int y = rect.y + row;
 				unsigned char* dst =
