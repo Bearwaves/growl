@@ -34,16 +34,19 @@ struct AssetInfo {
 	std::optional<std::unordered_map<std::string, AtlasRegion>> atlas_regions;
 };
 
+// Turn off name linting as json library needs these.
+// NOLINTNEXTLINE(readability-identifier-naming)
 void to_json(json& j, const AssetInfo& r);
+// NOLINTNEXTLINE(readability-identifier-naming)
 void from_json(const json& j, AssetInfo& r);
 
 using AssetsMap = std::map<std::string, AssetInfo>;
 
 class AssetsBundle {
 public:
-	explicit AssetsBundle(std::ifstream& file, AssetsMap& assetsMap) noexcept
+	explicit AssetsBundle(std::ifstream& file, AssetsMap& assets_map) noexcept
 		: file{std::move(file)}
-		, assetsMap{std::move(assetsMap)} {}
+		, assetsMap{std::move(assets_map)} {}
 
 	AssetsMap& getAssetsMap() {
 		return assetsMap;
@@ -57,6 +60,6 @@ private:
 	AssetsMap assetsMap;
 };
 
-Result<AssetsBundle> loadAssetsBundle(std::string filePath) noexcept;
+Result<AssetsBundle> loadAssetsBundle(std::string file_path) noexcept;
 
 } // namespace Growl

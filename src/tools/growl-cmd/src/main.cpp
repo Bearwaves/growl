@@ -9,7 +9,7 @@ using std::cout;
 using std::endl;
 
 void bundleAssets(std::string directory, std::string output);
-void listAssets(std::string assetsBundle);
+void listAssets(std::string assets_bundle);
 
 int main(int argc, char** argv) {
 	CLI::App app{"growl-cmd"};
@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 
 	cout << "┏━━━━━━━━━━┓" << endl;
 	cout << "┃" << style::bold << " 🐻 GROWL " << style::reset << "┃ "
-		 << style::bold << Growl_VERSION << style::reset << " "
+		 << style::bold << GROWL_VERSION << style::reset << " "
 		 << style::underline << "https://github.com/Bearwaves/growl"
 		 << style::reset << endl;
 	cout << "┗━━━━━━━━━━┛" << endl;

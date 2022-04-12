@@ -33,12 +33,12 @@ public:
 	}
 	virtual Result<std::unique_ptr<Window>>
 	createWindow(const WindowConfig& config) override;
-	void setLogLevel(LogLevel logLevel) override;
+	void setLogLevel(LogLevel log_level) override;
 
 private:
 	void
-	logInternal(LogLevel logLevel, std::string tag, std::string msg) override;
-	SDL_LogPriority getLogPriority(LogLevel logLevel);
+	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
+	SDL_LogPriority getLogPriority(LogLevel log_level);
 
 	void handleMouseEvent(SDL_Event& event);
 	void handleKeyboardEvent(SDL_Event& event);

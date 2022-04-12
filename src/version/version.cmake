@@ -41,7 +41,7 @@ endif()
 
 message(STATUS "Got version: ${GIT_VERSION}")
 
-set(VERSION "const char* Growl_VERSION=\"${GIT_VERSION}\";")
+set(VERSION "const char* GROWL_VERSION=\"${GIT_VERSION}\";")
 
 set(VERSION_PATH "${CMAKE_CURRENT_SOURCE_DIR}/version.cpp")
 

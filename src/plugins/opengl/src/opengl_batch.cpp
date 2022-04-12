@@ -37,7 +37,7 @@ void OpenGLBatch::draw(
 	glEnable(GL_BLEND);
 	float right = x + width;
 	float bottom = y + height;
-	float quadVertexData[] = {
+	float quad_vertex_data[] = {
 		x,	   y,	   0.0f, 0.0f, // Top-left
 		right, y,	   1.0f, 0.0f, // Top-right
 		right, bottom, 1.0f, 1.0f, // Bottom-right
@@ -46,7 +46,7 @@ void OpenGLBatch::draw(
 	GLuint elements[] = {0, 1, 2, 2, 3, 0};
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(
-		GL_ARRAY_BUFFER, sizeof(quadVertexData), quadVertexData,
+		GL_ARRAY_BUFFER, sizeof(quad_vertex_data), quad_vertex_data,
 		GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
@@ -65,19 +65,20 @@ void OpenGLBatch::draw(
 	float right = x + width;
 	float bottom = y + height;
 	// Address texel centres
-	float texLeft = (region.region.x + 0.5) / (float)tex.getWidth();
-	float texTop = (region.region.y + 0.5) / (float)tex.getHeight();
-	float texRight =
+	float tex_left = (region.region.x + 0.5) / (float)tex.getWidth();
+	float tex_top = (region.region.y + 0.5) / (float)tex.getHeight();
+	float tex_right =
 		(region.region.x + region.region.width + 0.5) / (float)tex.getWidth();
-	float texBottom =
+	float tex_bottom =
 		(region.region.y + region.region.height + 0.5) / (float)tex.getHeight();
-	float quadVertexData[] = {
-		x,	   y,	   texLeft,	 texTop,	right, y,	   texRight, texTop,
-		right, bottom, texRight, texBottom, x,	   bottom, texLeft,	 texBottom};
+	float quad_vertex_data[] = {x,	   y,	   tex_left,  tex_top,
+								right, y,	   tex_right, tex_top,
+								right, bottom, tex_right, tex_bottom,
+								x,	   bottom, tex_left,  tex_bottom};
 	GLuint elements[] = {0, 1, 2, 2, 3, 0};
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(
-		GL_ARRAY_BUFFER, sizeof(quadVertexData), quadVertexData,
+		GL_ARRAY_BUFFER, sizeof(quad_vertex_data), quad_vertex_data,
 		GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(

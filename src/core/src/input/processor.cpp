@@ -11,16 +11,16 @@ InputProcessor::~InputProcessor() {}
 void InputProcessor::onEvent(InputEvent& event) {
 	switch (event.getType()) {
 	case InputEventType::KEYBOARD: {
-		auto keyboardEventResult = event.getEvent<InputKeyboardEvent>();
-		if (keyboardEventResult.hasResult()) {
-			onKeyboardEvent(keyboardEventResult.get());
+		auto keyboard_event_result = event.getEvent<InputKeyboardEvent>();
+		if (keyboard_event_result.hasResult()) {
+			onKeyboardEvent(keyboard_event_result.get());
 		}
 		return;
 	}
 	case InputEventType::MOUSE: {
-		auto mouseEventResult = event.getEvent<InputMouseEvent>();
-		if (mouseEventResult.hasResult()) {
-			onMouseEvent(mouseEventResult.get());
+		auto mouse_event_result = event.getEvent<InputMouseEvent>();
+		if (mouse_event_result.hasResult()) {
+			onMouseEvent(mouse_event_result.get());
 		}
 		return;
 	}

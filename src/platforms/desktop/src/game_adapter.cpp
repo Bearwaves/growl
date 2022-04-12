@@ -11,10 +11,10 @@ void initSDL2Plugin(API& api);
 void initMetalPlugin(API& api);
 void initOpenGLPlugin(API& api);
 
-GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig windowConfig)
+GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 	: m_api(std::make_unique<API>())
 	, m_game(std::move(game))
-	, m_window_config(std::move(windowConfig)) {
+	, m_window_config(std::move(window_config)) {
 
 	initSDL2Plugin(*m_api);
 #ifdef GROWL_METAL

@@ -62,6 +62,6 @@ private:
 	StbiImage raw;
 };
 
-Result<Image> loadImageFromFile(std::string filePath);
+Result<Image> loadImageFromFile(std::string file_path);
 Result<Image> loadImageFromMemory(const unsigned char* address, uint64_t size);
 } // namespace Growl

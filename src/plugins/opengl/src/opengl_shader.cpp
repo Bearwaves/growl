@@ -5,14 +5,14 @@ using Growl::OpenGLShader;
 
 OpenGLShader::OpenGLShader(OpenGLGraphicsAPI& graphics) {
 	GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-	const char* vertexSource = DEFAULT_VERTEX.c_str();
-	glShaderSource(vertex, 1, &vertexSource, nullptr);
+	const char* vertex_source = default_vertex.c_str();
+	glShaderSource(vertex, 1, &vertex_source, nullptr);
 	glCompileShader(vertex);
 	graphics.checkShaderCompileError(vertex);
 
 	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	const char* fragmentSource = DEFAULT_FRAGMENT.c_str();
-	glShaderSource(fragment, 1, &fragmentSource, nullptr);
+	const char* fragment_source = default_fragment.c_str();
+	glShaderSource(fragment, 1, &fragment_source, nullptr);
 	glCompileShader(fragment);
 	graphics.checkShaderCompileError(fragment);
 
@@ -31,20 +31,20 @@ OpenGLShader::~OpenGLShader() {
 
 void OpenGLShader::bind(glm::mat4 mvp) {
 	glUseProgram(program);
-	GLint posAttrib = glGetAttribLocation(program, "position");
-	glEnableVertexAttribArray(posAttrib);
+	GLint pos_attrib = glGetAttribLocation(program, "position");
+	glEnableVertexAttribArray(pos_attrib);
 	glVertexAttribPointer(
-		posAttrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
-	GLint texAttrib = glGetAttribLocation(program, "texCoord");
-	glEnableVertexAttribArray(texAttrib);
+		pos_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+	GLint tex_attrib = glGetAttribLocation(program, "texCoord");
+	glEnableVertexAttribArray(tex_attrib);
 	glVertexAttribPointer(
-		texAttrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
+		tex_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
 		(void*)(2 * sizeof(GLfloat)));
-	GLuint mvpID = glGetUniformLocation(program, "mvp");
-	glUniformMatrix4fv(mvpID, 1, GL_FALSE, glm::value_ptr(mvp));
+	GLuint mvp_id = glGetUniformLocation(program, "mvp");
+	glUniformMatrix4fv(mvp_id, 1, GL_FALSE, glm::value_ptr(mvp));
 }
 
-std::string const OpenGLShader::DEFAULT_VERTEX = R"(
+std::string const OpenGLShader::default_vertex = R"(
 #version 150 core
 
 in vec2 position;
@@ -60,7 +60,7 @@ void main() {
 }
 )";
 
-std::string const OpenGLShader::DEFAULT_FRAGMENT = R"(
+std::string const OpenGLShader::default_fragment = R"(
 #version 150 core
 
 in vec2 TexCoord;

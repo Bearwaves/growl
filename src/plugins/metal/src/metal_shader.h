@@ -9,7 +9,7 @@ class MetalShader {
 public:
 	explicit MetalShader(id<MTLDevice> device);
 	~MetalShader();
-	void bind(id<MTLTexture> dstTexture, id<MTLRenderCommandEncoder> encoder);
+	void bind(id<MTLTexture> dst_texture, id<MTLRenderCommandEncoder> encoder);
 
 private:
 	id<MTLFunction> vertex_func;

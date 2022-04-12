@@ -78,19 +78,19 @@ void SDL2SystemAPI::dispose() {
 	SDL_Quit();
 }
 
-void SDL2SystemAPI::setLogLevel(LogLevel logLevel) {
-	SDL_LogSetPriority(SDL_LOG_CATEGORY_CUSTOM, getLogPriority(logLevel));
+void SDL2SystemAPI::setLogLevel(LogLevel log_level) {
+	SDL_LogSetPriority(SDL_LOG_CATEGORY_CUSTOM, getLogPriority(log_level));
 }
 
 void SDL2SystemAPI::logInternal(
-	LogLevel logLevel, std::string tag, std::string msg) {
+	LogLevel log_level, std::string tag, std::string msg) {
 	SDL_LogMessage(
-		SDL_LOG_CATEGORY_CUSTOM, getLogPriority(logLevel), "[%s] %s",
+		SDL_LOG_CATEGORY_CUSTOM, getLogPriority(log_level), "[%s] %s",
 		tag.c_str(), msg.c_str());
 }
 
-SDL_LogPriority SDL2SystemAPI::getLogPriority(LogLevel logLevel) {
-	switch (logLevel) {
+SDL_LogPriority SDL2SystemAPI::getLogPriority(LogLevel log_level) {
+	switch (log_level) {
 	case LogLevel::DEBUG:
 		return SDL_LOG_PRIORITY_DEBUG;
 	case LogLevel::INFO:

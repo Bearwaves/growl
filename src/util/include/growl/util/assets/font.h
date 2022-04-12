@@ -25,5 +25,5 @@ private:
 	std::unique_ptr<FTFontData> ft_data;
 };
 
-Result<Font> loadFontFromFile(std::string filePath) noexcept;
+Result<Font> loadFontFromFile(std::string file_path) noexcept;
 } // namespace Growl

@@ -9,19 +9,19 @@ using Growl::Image;
 using Growl::Result;
 
 namespace {
-struct imageLoadError : BaseError {
+struct ImageLoadError : BaseError {
 	std::string message() override {
 		return "Failed to load image";
 	}
 };
 } // namespace
 
-Result<Image> Growl::loadImageFromFile(std::string filePath) {
+Result<Image> Growl::loadImageFromFile(std::string file_path) {
 	int width, height, channels;
 	unsigned char* img =
-		stbi_load(filePath.c_str(), &width, &height, &channels, 4);
+		stbi_load(file_path.c_str(), &width, &height, &channels, 4);
 	if (img == nullptr) {
-		return Error(std::make_unique<imageLoadError>());
+		return Error(std::make_unique<ImageLoadError>());
 	}
 	return Image(width, height, channels, img);
 }
@@ -34,7 +34,7 @@ Growl::loadImageFromMemory(const unsigned char* address, uint64_t size) {
 	if (fpng::fpng_decode_memory(
 			address, size, data, width, height, channels, 4) !=
 		fpng::FPNG_DECODE_SUCCESS) {
-		return Error(std::make_unique<imageLoadError>());
+		return Error(std::make_unique<ImageLoadError>());
 	}
 	return Image(width, height, channels, data);
 }

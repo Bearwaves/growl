@@ -5,4 +5,4 @@ CheckOptions:
   - { key: readability-identifier-naming.FunctionCase,  value: camelBack  }
   - { key: readability-identifier-naming.ParameterCase, value: lower_case }
   - { key: readability-identifier-naming.ConstexprVariableCase, value: UPPER_CASE }
-  - { key: readability-identifier-naming.GlobalConstantCase, value: UPPER_CASE }
+  - { key: readability-identifier-naming.GlobalPointerCase, value: UPPER_CASE }

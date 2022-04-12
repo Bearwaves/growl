@@ -17,7 +17,7 @@ public:
 	void dispose() override;
 	void begin() override;
 	void end() override;
-	Error setWindow(const WindowConfig& windowConfig) override;
+	Error setWindow(const WindowConfig& window_config) override;
 	void clear(float r, float g, float b) override;
 
 	std::unique_ptr<Texture>
@@ -43,7 +43,7 @@ private:
 	time_point<high_resolution_clock> last_render;
 
 	std::unique_ptr<Texture> setupTexture(
-		unsigned int textureID, int width, int height,
+		unsigned int texture_id, int width, int height,
 		const TextureOptions options);
 
 	void setupDebugCallback();

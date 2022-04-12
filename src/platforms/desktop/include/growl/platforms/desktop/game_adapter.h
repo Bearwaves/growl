@@ -10,7 +10,8 @@ class Game;
 
 class GameAdapter {
 public:
-	explicit GameAdapter(std::unique_ptr<Game> game, WindowConfig windowConfig);
+	explicit GameAdapter(
+		std::unique_ptr<Game> game, WindowConfig window_config);
 	~GameAdapter();
 	void run();
 

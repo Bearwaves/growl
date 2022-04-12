@@ -38,7 +38,10 @@ struct AtlasRegion {
 	int height;
 };
 
+// Turn off name linting as json library needs these.
+// NOLINTNEXTLINE(readability-identifier-naming)
 void to_json(json& j, const AtlasRegion& r);
+// NOLINTNEXTLINE(readability-identifier-naming)
 void from_json(const json& j, AtlasRegion& r);
 
 class Atlas {

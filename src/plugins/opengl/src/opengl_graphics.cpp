@@ -42,11 +42,11 @@ void OpenGLGraphicsAPI::end() {
 }
 
 Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
-	auto windowResult = system->createWindow(config);
-	if (windowResult.hasError()) {
-		return std::move(windowResult.error());
+	auto window_result = system->createWindow(config);
+	if (window_result.hasError()) {
+		return std::move(window_result.error());
 	}
-	window = std::move(windowResult.get());
+	window = std::move(window_result.get());
 
 #ifdef GROWL_OPENGL_APPLE
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -101,7 +101,7 @@ std::unique_ptr<Texture> OpenGLGraphicsAPI::createTexture(
 }
 
 std::unique_ptr<Texture> OpenGLGraphicsAPI::setupTexture(
-	unsigned int textureID, int width, int height,
+	unsigned int texture_id, int width, int height,
 	const TextureOptions options) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -127,7 +127,7 @@ std::unique_ptr<Texture> OpenGLGraphicsAPI::setupTexture(
 	}
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-	return std::make_unique<OpenGLTexture>(textureID, width, height);
+	return std::make_unique<OpenGLTexture>(texture_id, width, height);
 }
 
 std::unique_ptr<TextureAtlas> OpenGLGraphicsAPI::createTextureAtlas(
@@ -177,10 +177,10 @@ void OpenGLGraphicsAPI::checkShaderCompileError(unsigned int shader) {
 	int result;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE) {
-		int infoLen;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
-		char* log = new char[infoLen];
-		glGetShaderInfoLog(shader, infoLen, &infoLen, log);
+		int info_len;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_len);
+		char* log = new char[info_len];
+		glGetShaderInfoLog(shader, info_len, &info_len, log);
 		system->log(
 			LogLevel::ERROR, "OpenGL", "Error compiling shader: {}", log);
 		delete[] log;
@@ -193,8 +193,8 @@ void OpenGLGraphicsAPI::setupDebugCallback() {
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(
 		[](GLenum source, GLenum type, GLuint id, GLenum severity,
-		   GLsizei length, const GLchar* message, const void* userParam) {
-			reinterpret_cast<const OpenGLGraphicsAPI*>(userParam)
+		   GLsizei length, const GLchar* message, const void* user_param) {
+			reinterpret_cast<const OpenGLGraphicsAPI*>(user_param)
 				->onGLDebugMessage(source, type, id, severity, message);
 		},
 		this);

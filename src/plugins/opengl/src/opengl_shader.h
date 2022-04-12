@@ -16,8 +16,8 @@ public:
 private:
 	GLuint program;
 
-	static std::string const DEFAULT_VERTEX;
-	static std::string const DEFAULT_FRAGMENT;
+	static std::string const default_vertex;
+	static std::string const default_fragment;
 };
 
 } // namespace Growl

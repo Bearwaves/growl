@@ -27,10 +27,10 @@ public:
 
 	template <class... Args>
 	void
-	log(LogLevel logLevel, std::string tag, std::string_view msg,
+	log(LogLevel log_level, std::string tag, std::string_view msg,
 		Args&&... args) {
 		logInternal(
-			logLevel, tag, fmt::format(msg, std::forward<Args>(args)...));
+			log_level, tag, fmt::format(msg, std::forward<Args>(args)...));
 	}
 
 	template <class... Args>
@@ -38,11 +38,11 @@ public:
 		log(LogLevel::INFO, tag, msg, args...);
 	}
 
-	virtual void setLogLevel(LogLevel logLevel) = 0;
+	virtual void setLogLevel(LogLevel log_level) = 0;
 
 protected:
 	virtual void
-	logInternal(LogLevel logLevel, std::string tag, std::string formatted) = 0;
+	logInternal(LogLevel log_level, std::string tag, std::string formatted) = 0;
 	InputProcessor* inputProcessor;
 };
 

@@ -128,27 +128,27 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 	}
 
 	info.position = outfile.tellp();
-	json resourceMapJson = assets_map;
-	auto resourceMapEncoded = resourceMapJson.dump();
-	info.size = resourceMapEncoded.size();
+	json resource_map_json = assets_map;
+	auto resource_map_encoded = resource_map_json.dump();
+	info.size = resource_map_encoded.size();
 	outfile.write(
-		reinterpret_cast<const char*>(resourceMapEncoded.c_str()),
-		resourceMapEncoded.size());
+		reinterpret_cast<const char*>(resource_map_encoded.c_str()),
+		resource_map_encoded.size());
 	outfile.seekp(sizeof(version));
 	outfile.write(reinterpret_cast<const char*>(&info), sizeof(info));
 }
 
-void listAssets(std::string assetsBundle) {
-	auto assetsBundleResult = Growl::loadAssetsBundle(assetsBundle);
-	if (assetsBundleResult.hasError()) {
+void listAssets(std::string assets_bundle) {
+	auto assets_bundle_result = Growl::loadAssetsBundle(assets_bundle);
+	if (assets_bundle_result.hasError()) {
 		cout << fg::red << "Failed to load asset bundle: "
-			 << assetsBundleResult.error()->message() << style::reset << endl;
+			 << assets_bundle_result.error()->message() << style::reset << endl;
 		exit(1);
 	}
-	auto assetsMap = assetsBundleResult.get().getAssetsMap();
-	cout << "Found " << style::bold << assetsMap.size() << style::reset
+	auto assets_map = assets_bundle_result.get().getAssetsMap();
+	cout << "Found " << style::bold << assets_map.size() << style::reset
 		 << " assets." << endl;
-	for (auto [asset, info] : assetsMap) {
+	for (auto [asset, info] : assets_map) {
 		cout << " • [" << style::bold << Growl::getAssetTypeName(info.type)
 			 << style::reset << "] " << asset << endl;
 		if (info.type == AssetType::Atlas && info.atlas_regions.has_value()) {

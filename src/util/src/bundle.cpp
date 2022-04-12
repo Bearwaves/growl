@@ -18,29 +18,29 @@ using Growl::Error;
 using Growl::Image;
 using Growl::Result;
 
-Result<AssetsBundle> Growl::loadAssetsBundle(std::string filePath) noexcept {
+Result<AssetsBundle> Growl::loadAssetsBundle(std::string file_path) noexcept {
 	std::ifstream file;
-	file.open(filePath, std::ios::binary | std::ios::in);
+	file.open(file_path, std::ios::binary | std::ios::in);
 	if (file.fail()) {
 		return Error(std::make_unique<AssetsError>(
-			"Failed to open file " + filePath + "; does it exist?"));
+			"Failed to open file " + file_path + "; does it exist?"));
 	}
 	AssetsBundleVersion version;
 	file.read(reinterpret_cast<char*>(&version), sizeof(version));
-	AssetsBundleMapInfo mapInfo;
-	file.read(reinterpret_cast<char*>(&mapInfo), sizeof(mapInfo));
-	file.seekg(mapInfo.position);
-	std::string resourceMapJson(mapInfo.size, '\0');
-	file.read(resourceMapJson.data(), mapInfo.size);
-	AssetsMap resourceMap;
+	AssetsBundleMapInfo map_info;
+	file.read(reinterpret_cast<char*>(&map_info), sizeof(map_info));
+	file.seekg(map_info.position);
+	std::string resource_map_json(map_info.size, '\0');
+	file.read(resource_map_json.data(), map_info.size);
+	AssetsMap resource_map;
 	try {
-		resourceMap = json::parse(resourceMapJson);
+		resource_map = json::parse(resource_map_json);
 	} catch (std::exception& e) {
 		return Error(std::make_unique<AssetsError>(
 			"Failed to load assets map JSON: " + std::string(e.what())));
 	}
 
-	return AssetsBundle(file, resourceMap);
+	return AssetsBundle(file, resource_map);
 }
 
 void Growl::to_json(json& j, const AssetInfo& r) {
@@ -80,18 +80,18 @@ Result<Image> AssetsBundle::getImage(std::string name) noexcept {
 	auto& info = info_find->second;
 
 	if (info.type != AssetType::Image) {
-		auto typeName = getAssetTypeName(info.type);
+		auto type_name = getAssetTypeName(info.type);
 		return Error(std::make_unique<AssetsError>(
 			"Failed to load image " + name + "; expected Image type but was " +
-			typeName + "."));
+			type_name + "."));
 	}
 
-	std::vector<unsigned char> imgData;
-	imgData.reserve(info.size);
+	std::vector<unsigned char> img_data;
+	img_data.reserve(info.size);
 	file.seekg(info.position);
-	file.read(reinterpret_cast<char*>(imgData.data()), info.size);
+	file.read(reinterpret_cast<char*>(img_data.data()), info.size);
 
-	return loadImageFromMemory(imgData.data(), info.size);
+	return loadImageFromMemory(img_data.data(), info.size);
 }
 
 Result<Atlas> AssetsBundle::getAtlas(std::string name) noexcept {
@@ -103,10 +103,10 @@ Result<Atlas> AssetsBundle::getAtlas(std::string name) noexcept {
 	auto& info = info_find->second;
 
 	if (info.type != AssetType::Atlas) {
-		auto typeName = getAssetTypeName(info.type);
+		auto type_name = getAssetTypeName(info.type);
 		return Error(std::make_unique<AssetsError>(
 			"Failed to load atlas " + name + "; expected Atlas type but was " +
-			typeName + "."));
+			type_name + "."));
 	}
 
 	if (!info.atlas_regions.has_value()) {
@@ -115,19 +115,20 @@ Result<Atlas> AssetsBundle::getAtlas(std::string name) noexcept {
 			"; atlas region data is missing."));
 	}
 
-	std::vector<unsigned char> imgData;
-	imgData.reserve(info.size);
+	std::vector<unsigned char> img_data;
+	img_data.reserve(info.size);
 	file.seekg(info.position);
-	file.read(reinterpret_cast<char*>(imgData.data()), info.size);
+	file.read(reinterpret_cast<char*>(img_data.data()), info.size);
 
-	Result<Image> imageResult = loadImageFromMemory(imgData.data(), info.size);
-	if (imageResult.hasError()) {
+	Result<Image> image_result =
+		loadImageFromMemory(img_data.data(), info.size);
+	if (image_result.hasError()) {
 		return Error(std::make_unique<AssetsError>(
 			"Failed to load atlas " + name +
-			" image data: " + imageResult.error()->message()));
+			" image data: " + image_result.error()->message()));
 	}
 
 	return Atlas(
-		std::make_unique<Image>(std::move(imageResult.get())),
+		std::make_unique<Image>(std::move(image_result.get())),
 		info.atlas_regions.value());
 }
