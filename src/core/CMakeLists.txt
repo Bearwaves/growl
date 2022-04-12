@@ -6,6 +6,7 @@ set(SOURCES
 	"src/api/api.cpp"
 	"src/game/game.cpp"
 	"src/input/processor.cpp"
+	"src/graphics/font_texture_atlas.cpp"
 	)
 
 set(HEADERS
@@ -21,6 +22,7 @@ set(HEADERS
 	"include/growl/core/graphics/batch.h"
 	"include/growl/core/graphics/texture.h"
 	"include/growl/core/graphics/texture_atlas.h"
+	"include/growl/core/graphics/font_texture_atlas.h"
 	"include/growl/core/graphics/window.h"
 
 	"include/growl/core/input/event.h"

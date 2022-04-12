@@ -32,6 +32,9 @@ public:
 	std::unique_ptr<TextureAtlas> createTextureAtlas(
 		const Atlas& atlas, const TextureOptions options) override;
 
+	std::unique_ptr<FontTextureAtlas> createFontTextureAtlas(
+		const FontAtlas& atlas, const TextureOptions options) override;
+
 	std::unique_ptr<Batch> createBatch() override;
 	std::unique_ptr<Batch> createBatch(const Texture& texture) override;
 

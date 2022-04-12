@@ -1,18 +1,21 @@
 #pragma once
 
 #include <growl/core/game/game.h>
+#include <growl/core/graphics/font_texture_atlas.h>
 #include <growl/core/graphics/texture.h>
+#include <growl/core/graphics/texture_atlas.h>
+#include <growl/util/assets/atlas.h>
+#include <growl/util/assets/font.h>
 #include <growl/util/assets/image.h>
+#include <growl/util/text/glyph_layout.h>
 #include <memory>
 #include <optional>
 
 #include "input.h"
-#include <growl/core/graphics/texture_atlas.h>
-#include <growl/util/assets/atlas.h>
 
 namespace Growl {
 
-constexpr int FPS_SAMPLE_SECONDS = 5;
+constexpr int FPS_SAMPLE_SECONDS = 1;
 
 class TestAppGame : public Game {
 public:
@@ -27,6 +30,11 @@ private:
 	std::unique_ptr<Texture> grass;
 	std::unique_ptr<Texture> grass_tiled;
 	std::unique_ptr<InputHandler> input;
+
+	std::unique_ptr<Font> font;
+	std::unique_ptr<FontTextureAtlas> font_atlas;
+	std::unique_ptr<GlyphLayout> layout;
+
 	double counter = 0;
 	constexpr const static float SPEED = 500; // px/s
 	int frames = 0;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../graphics/batch.h"
+#include "../graphics/font_texture_atlas.h"
 #include "../graphics/texture.h"
 #include "../graphics/texture_atlas.h"
 #include "../graphics/window.h"
@@ -27,6 +28,10 @@ public:
 
 	virtual std::unique_ptr<TextureAtlas> createTextureAtlas(
 		const Atlas& atlas,
+		const TextureOptions options = TextureOptions{}) = 0;
+
+	virtual std::unique_ptr<FontTextureAtlas> createFontTextureAtlas(
+		const FontAtlas& atlas,
 		const TextureOptions options = TextureOptions{}) = 0;
 
 	virtual std::unique_ptr<Batch> createBatch() = 0;

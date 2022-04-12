@@ -44,6 +44,7 @@ void MetalBatch::draw(
 	float bottom = y + height;
 
 	// Address texel centres
+	// TODO don't?
 	float texLeft = (region.region.x + 0.5) / (float)tex.getWidth();
 	float texTop = (region.region.y + 0.5) / (float)tex.getHeight();
 	float texRight =
@@ -61,6 +62,46 @@ void MetalBatch::draw(
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
 				vertexStart:0
 				vertexCount:6];
+}
+
+void MetalBatch::draw(
+	const GlyphLayout& glyph_layout, const FontTextureAtlas& font_texture_atlas,
+	float x, float y) {
+	auto& tex =
+		static_cast<const MetalTexture&>(font_texture_atlas.getTexture());
+	tex.bind(encoder);
+
+	std::vector<float> vertices;
+	for (auto& glyph : glyph_layout.getLayout()) {
+		float gx = x + glyph.x;
+		float gy = y + glyph.y;
+		float right = gx + glyph.w;
+		float bottom = gy + glyph.h;
+
+		// Replace this by translating the glyphs in the layout?
+		const auto& regionResult = font_texture_atlas.getRegion(glyph.glyph_id);
+		if (regionResult.hasError()) {
+			continue;
+		}
+		auto region = regionResult.get();
+
+		float texLeft = region.x / (float)tex.getWidth();
+		float texTop = region.y / (float)tex.getHeight();
+		float texRight = (region.x + region.w) / (float)tex.getWidth();
+		float texBottom = (region.y + region.h) / (float)tex.getHeight();
+		vertices.insert(vertices.end(), {right, bottom, texRight, texBottom,
+										 gx,	bottom, texLeft,  texBottom,
+										 gx,	gy,		texLeft,  texTop,
+										 right, bottom, texRight, texBottom,
+										 gx,	gy,		texLeft,  texTop,
+										 right, gy,		texRight, texTop});
+	}
+	[encoder setVertexBytes:vertices.data()
+					 length:vertices.size() * sizeof(float)
+					atIndex:1];
+	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
+				vertexStart:0
+				vertexCount:vertices.size() / 4];
 }
 
 int MetalBatch::getTargetWidth() {

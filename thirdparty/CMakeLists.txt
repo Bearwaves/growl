@@ -10,6 +10,7 @@ add_compile_definitions(
 	FT_CONFIG_OPTION_ERROR_STRINGS
 	FT_CONFIG_OPTION_USE_PNG
 	FT_CONFIG_OPTION_SYSTEM_ZLIB
+	HAVE_FREETYPE
 	)
 
 include_directories("freetype/include/" "libpng/" "zlib/")

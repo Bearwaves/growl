@@ -14,10 +14,10 @@ public:
 	// Font is move-only
 	Font(const Font&) = delete;
 	Font& operator=(const Font&) = delete;
-	Font(Font&&) = default;
-	Font& operator=(Font&&) = default;
+	Font(Font&&);
+	Font& operator=(Font&&);
 
-	const FTFontData& getFTFontData() {
+	const FTFontData& getFTFontData() const {
 		return *ft_data;
 	}
 

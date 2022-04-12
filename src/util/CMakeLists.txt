@@ -8,6 +8,7 @@ set(SOURCES
 	"src/atlas.cpp"
 	"src/font.cpp"
 	"src/font_atlas.cpp"
+	"src/glyph_layout.cpp"
 	)
 
 set(HEADERS
@@ -19,6 +20,8 @@ set(HEADERS
 	"include/growl/util/assets/atlas.h"
 	"include/growl/util/assets/font.h"
 	"include/growl/util/assets/font_atlas.h"
+
+	"include/growl/util/text/glyph_layout.h"
 	)
 
 add_library(growl-util ${SOURCES} ${HEADERS})

@@ -10,12 +10,14 @@
 #include <growl/util/error.h>
 #include <memory>
 #include <set>
+#include <unordered_map>
 #include <utf8.h>
 
 using Growl::AssetsError;
 using Growl::Error;
 using Growl::Font;
 using Growl::FontAtlas;
+using Growl::GlyphPosition;
 using Growl::Image;
 using Growl::Result;
 
@@ -161,6 +163,7 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 			"Failed to pack font in texture; too large"));
 	}
 
+	std::unordered_map<int, GlyphPosition> glyphs;
 	std::vector<unsigned char> image_data(width * height * sizeof(uint32_t), 0);
 	bool has_color = FT_HAS_COLOR(font.getFTFontData().face);
 	int load_params = FT_LOAD_RENDER;
@@ -201,8 +204,11 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 				}
 			}
 		}
+
+		glyphs[rect.id] = GlyphPosition{rect.x, rect.y, rect.w, rect.h};
 	}
 
 	return FontAtlas(
-		font, std::make_unique<Image>(width, height, 4, image_data));
+		font, std::make_unique<Image>(width, height, 4, image_data),
+		std::move(glyphs));
 }

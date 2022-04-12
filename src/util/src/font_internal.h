@@ -1,9 +1,16 @@
+#include "../../../../thirdparty/harfbuzz/src/hb.h"
 #include <freetype/freetype.h>
 #include <growl/util/assets/font.h>
+#include <growl/util/text/glyph_layout.h>
 
 struct Growl::FTFontData {
 	FT_Library library;
 	FT_Face face;
+};
+
+struct Growl::HBData {
+	hb_font_t* font;
+	hb_buffer_t* buffer;
 };
 
 namespace {

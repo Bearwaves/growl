@@ -1,30 +1,53 @@
 #include "test_app_game.h"
 #include <growl/util/assets/bundle.h>
+#include <growl/util/assets/font.h>
+#include <growl/util/assets/font_atlas.h>
 #include <growl/util/assets/image.h>
+#include <memory>
+#include <string>
 
 using Growl::Error;
 using Growl::TestAppGame;
 
 Error TestAppGame::init() {
+	getAPI().system()->log("TestAppGame", "Game starting up!");
+
+	getAPI().system()->log("TestAppGame", "Loading font");
+	Result<Font> font_result = loadFontFromFile("../assets/fonts/andada.otf");
+	if (font_result.hasError()) {
+		return std::move(font_result.error());
+	}
+	font = std::make_unique<Font>(std::move(font_result.get()));
+	getAPI().system()->log("TestAppGame", "Generating font atlas");
+	Result<FontAtlas> font_atlas_result = createFontAtlasFromFont(*font, 75);
+	if (font_atlas_result.hasError()) {
+		return std::move(font_atlas_result.error());
+	}
+	font_atlas = getAPI().graphics()->createFontTextureAtlas(
+		font_atlas_result.get(), TextureOptions{false, false});
+	getAPI().system()->log("TestAppGame", "Generating layout");
+	layout = std::make_unique<GlyphLayout>(*font, "Hello Growl!", 0);
+
 	input = std::make_unique<InputHandler>(getAPI().system());
 	getAPI().system()->setInputProcessor(input.get());
 	getAPI().system()->setLogLevel(LogLevel::DEBUG);
-	getAPI().system()->log("TestAppGame", "Game starting up!");
-	Result<AssetsBundle> bundleResult = loadAssetsBundle("./assets.growl");
-	if (bundleResult.hasError()) {
-		return std::move(bundleResult.error());
-	}
-	Result<Atlas> atlasResult = bundleResult.get().getAtlas("gfx");
-	if (atlasResult.hasError()) {
-		return std::move(atlasResult.error());
-	}
-	texture_atlas = getAPI().graphics()->createTextureAtlas(atlasResult.get());
 
-	Result<Image> imageResult = loadImageFromFile("../assets/gfx/grass.png");
-	if (imageResult.hasError()) {
-		return std::move(imageResult.error());
+	getAPI().system()->log("TestAppGame", "Loading asset bundle");
+	Result<AssetsBundle> bundle_result = loadAssetsBundle("./assets.growl");
+	if (bundle_result.hasError()) {
+		return std::move(bundle_result.error());
 	}
-	grass = getAPI().graphics()->createTexture(imageResult.get());
+	Result<Atlas> atlas_result = bundle_result.get().getAtlas("gfx");
+	if (atlas_result.hasError()) {
+		return std::move(atlas_result.error());
+	}
+	texture_atlas = getAPI().graphics()->createTextureAtlas(atlas_result.get());
+
+	Result<Image> image_result = loadImageFromFile("../assets/gfx/grass.png");
+	if (image_result.hasError()) {
+		return std::move(image_result.error());
+	}
+	grass = getAPI().graphics()->createTexture(image_result.get());
 
 	return nullptr;
 }
@@ -72,9 +95,10 @@ void TestAppGame::render() {
 	batch->draw(
 		texture_atlas->getRegion("mouse.jpg").get(), input->getMouseX() - 100,
 		input->getMouseY() - 100, 200, 200);
+	batch->draw(*layout, *font_atlas, 50, 150);
 	batch->end();
 	if (counter > FPS_SAMPLE_SECONDS) {
-		getAPI().system()->log("TestAppGame", "FPS: {:05f}", frames / counter);
+		layout->setText("FPS: " + std::to_string(frames / counter));
 		counter -= FPS_SAMPLE_SECONDS;
 		frames = 0;
 	}

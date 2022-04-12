@@ -11,6 +11,7 @@ using Growl::Error;
 using Growl::MetalGraphicsAPI;
 using Growl::Texture;
 using Growl::TextureAtlas;
+using Growl::FontTextureAtlas;
 using Growl::TextureOptions;
 using Growl::MetalTextureAtlas;
 using Growl::Batch;
@@ -150,6 +151,12 @@ std::unique_ptr<Texture> MetalGraphicsAPI::setupTexture(
 std::unique_ptr<TextureAtlas> MetalGraphicsAPI::createTextureAtlas(
 	const Atlas& atlas, const TextureOptions options) {
 	return std::make_unique<MetalTextureAtlas>(
+		atlas, createTexture(atlas.getImage(), options));
+}
+
+std::unique_ptr<FontTextureAtlas> MetalGraphicsAPI::createFontTextureAtlas(
+	const FontAtlas& atlas, const TextureOptions options) {
+	return std::make_unique<FontTextureAtlas>(
 		atlas, createTexture(atlas.getImage(), options));
 }
 
