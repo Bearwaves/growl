@@ -20,7 +20,7 @@ public:
 	void dispose() override;
 	void begin() override;
 	void end() override;
-	Error setWindow(const WindowConfig& windowConfig) override;
+	Error setWindow(const WindowConfig& window_config) override;
 	void clear(float r, float g, float b) override;
 
 	std::unique_ptr<Texture>

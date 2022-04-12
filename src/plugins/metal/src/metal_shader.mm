@@ -4,17 +4,17 @@
 using Growl::MetalShader;
 
 MetalShader::MetalShader(id<MTLDevice> device) {
-	auto compileOptions = [MTLCompileOptions new];
-	NSError* compileError;
+	auto compile_options = [MTLCompileOptions new];
+	NSError* compile_error;
 	id<MTLLibrary> lib = [device newLibraryWithSource:DEFAULT_SHADER
-											  options:compileOptions
-												error:&compileError];
-	assert(!compileError);
+											  options:compile_options
+												error:&compile_error];
+	assert(!compile_error);
 	fragment_func = [lib newFunctionWithName:@"pixel_func"];
 	vertex_func = [lib newFunctionWithName:@"vertex_func"];
 	[lib release];
-	[compileError release];
-	[compileOptions release];
+	[compile_error release];
+	[compile_options release];
 }
 
 MetalShader::~MetalShader() {
@@ -26,13 +26,13 @@ MetalShader::~MetalShader() {
 }
 
 void MetalShader::bind(
-	id<MTLTexture> dstTexture, id<MTLRenderCommandEncoder> encoder) {
+	id<MTLTexture> dst_texture, id<MTLRenderCommandEncoder> encoder) {
 	if (!descriptor) {
 		descriptor = [[MTLRenderPipelineDescriptor alloc] init];
 		descriptor.vertexFunction = vertex_func;
 		descriptor.fragmentFunction = fragment_func;
 		descriptor.label = @"Growl shader";
-		descriptor.colorAttachments[0].pixelFormat = dstTexture.pixelFormat;
+		descriptor.colorAttachments[0].pixelFormat = dst_texture.pixelFormat;
 		descriptor.colorAttachments[0].blendingEnabled = true;
 		descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
 		descriptor.colorAttachments[0].alphaBlendOperation =
@@ -51,12 +51,12 @@ void MetalShader::bind(
 	}
 
 	NSError* error = NULL;
-	id<MTLRenderPipelineState> pipelineState = [[encoder.device
+	id<MTLRenderPipelineState> pipeline_state = [[encoder.device
 		newRenderPipelineStateWithDescriptor:descriptor
 									   error:&error] autorelease];
 	assert(!error);
 	[error release];
-	[encoder setRenderPipelineState:pipelineState];
+	[encoder setRenderPipelineState:pipeline_state];
 }
 
 NSString* const MetalShader::DEFAULT_SHADER = @R"(

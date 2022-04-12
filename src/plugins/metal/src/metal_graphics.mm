@@ -44,15 +44,15 @@ void MetalGraphicsAPI::end() {
 }
 
 Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
-	auto windowResult = system->createWindow(config);
-	if (windowResult.hasError()) {
-		return std::move(windowResult.error());
+	auto window_result = system->createWindow(config);
+	if (window_result.hasError()) {
+		return std::move(window_result.error());
 	}
-	window = std::move(windowResult.get());
-	SDL_Window* nativeWindow = static_cast<SDL_Window*>(window->getNative());
+	window = std::move(window_result.get());
+	SDL_Window* native_window = static_cast<SDL_Window*>(window->getNative());
 	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal");
 	SDL_Renderer* renderer =
-		SDL_CreateRenderer(nativeWindow, -1, SDL_RENDERER_PRESENTVSYNC);
+		SDL_CreateRenderer(native_window, -1, SDL_RENDERER_PRESENTVSYNC);
 	swap_chain = static_cast<CAMetalLayer*>(SDL_RenderGetMetalLayer(renderer));
 	SDL_DestroyRenderer(renderer);
 	swap_chain.pixelFormat = MTLPixelFormatBGRA8Unorm;
@@ -77,72 +77,72 @@ void MetalGraphicsAPI::clear(float r, float g, float b) {
 
 std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(
 	const Image& image, const TextureOptions options) {
-	auto textureDescriptor = [MTLTextureDescriptor
+	auto texture_descriptor = [MTLTextureDescriptor
 		texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
 									 width:image.getWidth()
 									height:image.getHeight()
 								 mipmapped:options.mipmapped];
-	auto metalTexture = [device newTextureWithDescriptor:textureDescriptor];
-	NSUInteger bytesPerRow = 4 * image.getWidth();
+	auto metal_texture = [device newTextureWithDescriptor:texture_descriptor];
+	NSUInteger bytes_per_row = 4 * image.getWidth();
 	MTLRegion region = {
 		{0, 0, 0},
 		{static_cast<NSUInteger>(image.getWidth()),
 		 static_cast<NSUInteger>(image.getHeight()), 1}};
-	[metalTexture replaceRegion:region
-					mipmapLevel:0
-					  withBytes:image.getRaw()
-					bytesPerRow:bytesPerRow];
+	[metal_texture replaceRegion:region
+					 mipmapLevel:0
+					   withBytes:image.getRaw()
+					 bytesPerRow:bytes_per_row];
 
-	return setupTexture(metalTexture, options);
+	return setupTexture(metal_texture, options);
 }
 
 std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(
 	unsigned int width, unsigned int height, const TextureOptions options) {
-	auto textureDescriptor = [MTLTextureDescriptor
+	auto texture_descriptor = [MTLTextureDescriptor
 		texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
 									 width:width
 									height:height
 								 mipmapped:options.mipmapped];
-	auto metalTexture = [device newTextureWithDescriptor:textureDescriptor];
+	auto metal_texture = [device newTextureWithDescriptor:texture_descriptor];
 	std::vector<unsigned char> bytes(4 * width * height, 0);
 	MTLRegion region = {{0, 0, 0}, {width, height, 1}};
-	[metalTexture replaceRegion:region
-					mipmapLevel:0
-					  withBytes:bytes.data()
-					bytesPerRow:4 * width];
-	return setupTexture(metalTexture, options);
+	[metal_texture replaceRegion:region
+					 mipmapLevel:0
+					   withBytes:bytes.data()
+					 bytesPerRow:4 * width];
+	return setupTexture(metal_texture, options);
 }
 
 std::unique_ptr<Texture> MetalGraphicsAPI::setupTexture(
 	id<MTLTexture> texture, const TextureOptions options) {
 	if (options.mipmapped) {
 		auto buf = [command_queue commandBuffer];
-		auto blitEncoder = [buf blitCommandEncoder];
-		[blitEncoder generateMipmapsForTexture:texture];
-		[blitEncoder endEncoding];
+		auto blit_encoder = [buf blitCommandEncoder];
+		[blit_encoder generateMipmapsForTexture:texture];
+		[blit_encoder endEncoding];
 		[buf commit];
 	}
 
-	MTLSamplerDescriptor* samplerDescriptor =
+	MTLSamplerDescriptor* sampler_descriptor =
 		[[MTLSamplerDescriptor alloc] init];
-	samplerDescriptor.maxAnisotropy = 1;
+	sampler_descriptor.maxAnisotropy = 1;
 	auto filter = options.filtering ? MTLSamplerMinMagFilterLinear
 									: MTLSamplerMinMagFilterNearest;
-	samplerDescriptor.minFilter = filter;
-	samplerDescriptor.magFilter = filter;
+	sampler_descriptor.minFilter = filter;
+	sampler_descriptor.magFilter = filter;
 	if (options.mipmapped) {
-		samplerDescriptor.mipFilter = options.filtering
-										  ? MTLSamplerMipFilterLinear
-										  : MTLSamplerMipFilterNearest;
+		sampler_descriptor.mipFilter = options.filtering
+										   ? MTLSamplerMipFilterLinear
+										   : MTLSamplerMipFilterNearest;
 	}
-	auto addressMode = MTLSamplerAddressModeClampToEdge;
-	samplerDescriptor.sAddressMode = addressMode;
-	samplerDescriptor.rAddressMode = addressMode;
-	samplerDescriptor.tAddressMode = addressMode;
-	samplerDescriptor.lodMinClamp = 0;
-	samplerDescriptor.lodMaxClamp = FLT_MAX;
-	auto sampler = [device newSamplerStateWithDescriptor:samplerDescriptor];
-	[samplerDescriptor release];
+	auto address_mode = MTLSamplerAddressModeClampToEdge;
+	sampler_descriptor.sAddressMode = address_mode;
+	sampler_descriptor.rAddressMode = address_mode;
+	sampler_descriptor.tAddressMode = address_mode;
+	sampler_descriptor.lodMinClamp = 0;
+	sampler_descriptor.lodMaxClamp = FLT_MAX;
+	auto sampler = [device newSamplerStateWithDescriptor:sampler_descriptor];
+	[sampler_descriptor release];
 
 	return std::make_unique<MetalTexture>(
 		texture, sampler, texture.width, texture.height);

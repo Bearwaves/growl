@@ -23,10 +23,10 @@ void MetalBatch::draw(
 
 	float right = x + width;
 	float bottom = y + height;
-	float quadVertexData[] = {right, bottom, 1.f, 1.f, x,	  bottom, 0.f, 1.f,
-							  x,	 y,		 0.f, 0.f, right, bottom, 1.f, 1.f,
-							  x,	 y,		 0.f, 0.f, right, y,	  1.f, 0.f};
-	[encoder setVertexBytes:quadVertexData
+	float quad_vertex_data[] = {
+		right, bottom, 1.f, 1.f, x, bottom, 0.f, 1.f, x,	 y, 0.f, 0.f,
+		right, bottom, 1.f, 1.f, x, y,		0.f, 0.f, right, y, 1.f, 0.f};
+	[encoder setVertexBytes:quad_vertex_data
 					 length:6 * 4 * sizeof(float)
 					atIndex:1];
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
@@ -45,18 +45,19 @@ void MetalBatch::draw(
 
 	// Address texel centres
 	// TODO don't?
-	float texLeft = (region.region.x + 0.5) / (float)tex.getWidth();
-	float texTop = (region.region.y + 0.5) / (float)tex.getHeight();
-	float texRight =
+	float tex_left = (region.region.x + 0.5) / (float)tex.getWidth();
+	float tex_top = (region.region.y + 0.5) / (float)tex.getHeight();
+	float tex_right =
 		(region.region.x + region.region.width + 0.5) / (float)tex.getWidth();
-	float texBottom =
+	float tex_bottom =
 		(region.region.y + region.region.height + 0.5) / (float)tex.getHeight();
 
-	float quadVertexData[] = {
-		right, bottom, texRight, texBottom, x,	   bottom, texLeft,	 texBottom,
-		x,	   y,	   texLeft,	 texTop,	right, bottom, texRight, texBottom,
-		x,	   y,	   texLeft,	 texTop,	right, y,	   texRight, texTop};
-	[encoder setVertexBytes:quadVertexData
+	float quad_vertex_data[] = {
+		right,	  bottom,	  tex_right, tex_bottom, x,			bottom,
+		tex_left, tex_bottom, x,		 y,			 tex_left,	tex_top,
+		right,	  bottom,	  tex_right, tex_bottom, x,			y,
+		tex_left, tex_top,	  right,	 y,			 tex_right, tex_top};
+	[encoder setVertexBytes:quad_vertex_data
 					 length:6 * 4 * sizeof(float)
 					atIndex:1];
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
@@ -79,22 +80,23 @@ void MetalBatch::draw(
 		float bottom = gy + glyph.h;
 
 		// Replace this by translating the glyphs in the layout?
-		const auto& regionResult = font_texture_atlas.getRegion(glyph.glyph_id);
-		if (regionResult.hasError()) {
+		const auto& region_result =
+			font_texture_atlas.getRegion(glyph.glyph_id);
+		if (region_result.hasError()) {
 			continue;
 		}
-		auto region = regionResult.get();
+		auto region = region_result.get();
 
-		float texLeft = region.x / (float)tex.getWidth();
-		float texTop = region.y / (float)tex.getHeight();
-		float texRight = (region.x + region.w) / (float)tex.getWidth();
-		float texBottom = (region.y + region.h) / (float)tex.getHeight();
-		vertices.insert(vertices.end(), {right, bottom, texRight, texBottom,
-										 gx,	bottom, texLeft,  texBottom,
-										 gx,	gy,		texLeft,  texTop,
-										 right, bottom, texRight, texBottom,
-										 gx,	gy,		texLeft,  texTop,
-										 right, gy,		texRight, texTop});
+		float tex_left = region.x / (float)tex.getWidth();
+		float tex_top = region.y / (float)tex.getHeight();
+		float tex_right = (region.x + region.w) / (float)tex.getWidth();
+		float tex_bottom = (region.y + region.h) / (float)tex.getHeight();
+		vertices.insert(vertices.end(), {right, bottom, tex_right, tex_bottom,
+										 gx,	bottom, tex_left,  tex_bottom,
+										 gx,	gy,		tex_left,  tex_top,
+										 right, bottom, tex_right, tex_bottom,
+										 gx,	gy,		tex_left,  tex_top,
+										 right, gy,		tex_right, tex_top});
 	}
 	[encoder setVertexBytes:vertices.data()
 					 length:vertices.size() * sizeof(float)

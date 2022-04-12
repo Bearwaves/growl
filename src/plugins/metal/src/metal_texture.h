@@ -8,10 +8,10 @@ namespace Growl {
 class MetalTexture : public Texture {
 public:
 	MetalTexture(
-		id<MTLTexture> metalTexture, id<MTLSamplerState> sampler, int width,
+		id<MTLTexture> metal_texture, id<MTLSamplerState> sampler, int width,
 		int height)
 		: Texture(width, height)
-		, metal_texture{metalTexture}
+		, metal_texture{metal_texture}
 		, sampler{sampler} {}
 
 	void bind(id<MTLRenderCommandEncoder> encoder) const;
