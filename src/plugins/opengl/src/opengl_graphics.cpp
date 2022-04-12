@@ -12,6 +12,7 @@
 using Growl::Atlas;
 using Growl::Batch;
 using Growl::Error;
+using Growl::FontTextureAtlas;
 using Growl::OpenGLGraphicsAPI;
 using Growl::Texture;
 using Growl::TextureAtlas;
@@ -133,6 +134,12 @@ std::unique_ptr<Texture> OpenGLGraphicsAPI::setupTexture(
 std::unique_ptr<TextureAtlas> OpenGLGraphicsAPI::createTextureAtlas(
 	const Atlas& atlas, const TextureOptions options) {
 	return std::make_unique<OpenGLTextureAtlas>(
+		atlas, createTexture(atlas.getImage(), options));
+}
+
+std::unique_ptr<FontTextureAtlas> OpenGLGraphicsAPI::createFontTextureAtlas(
+	const FontAtlas& atlas, const TextureOptions options) {
+	return std::make_unique<FontTextureAtlas>(
 		atlas, createTexture(atlas.getImage(), options));
 }
 

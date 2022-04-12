@@ -19,8 +19,8 @@ public:
 		const TextureAtlasRegion& texture, float x, float y, float width,
 		float height) = 0;
 	virtual void draw(
-		const GlyphLayout& texture, const FontTextureAtlas& font_texture_atlas,
-		float x, float y) = 0;
+		const GlyphLayout& glyph_layout,
+		const FontTextureAtlas& font_texture_atlas, float x, float y) = 0;
 
 	virtual int getTargetWidth() = 0;
 	virtual int getTargetHeight() = 0;

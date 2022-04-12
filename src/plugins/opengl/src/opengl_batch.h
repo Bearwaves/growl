@@ -26,6 +26,9 @@ public:
 	void draw(
 		const TextureAtlasRegion& texture, float x, float y, float width,
 		float height) override;
+	void draw(
+		const GlyphLayout& glyph_layout,
+		const FontTextureAtlas& font_texture_atlas, float x, float y) override;
 
 	int getTargetWidth() override;
 	int getTargetHeight() override;
