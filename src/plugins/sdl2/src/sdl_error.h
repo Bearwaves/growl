@@ -1,6 +1,6 @@
 #pragma once
 
-#include <growl/util/error.h>
+#include "growl/util/error.h"
 namespace Growl {
 
 class SDL2Error : public BaseError {

@@ -1,6 +1,6 @@
+#include "growl/core/graphics/window.h"
+#include "growl/platforms/desktop/game_adapter.h"
 #include "test_app_game.h"
-#include <growl/core/graphics/window.h>
-#include <growl/platforms/desktop/game_adapter.h>
 #include <memory>
 
 int main() {

@@ -1,5 +1,5 @@
+#include "growl/core/input/event.h"
 #include "sdl_system.h"
-#include <growl/core/input/event.h>
 
 using Growl::Key;
 using Growl::KeyEventType;

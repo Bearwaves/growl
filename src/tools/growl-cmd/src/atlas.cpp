@@ -1,14 +1,14 @@
+#include "growl/util/assets/atlas.h"
 #include "../../../../thirdparty/fpng/fpng.h"
 #include "../../../../thirdparty/stb_image/stb_image.h"
 #include "../thirdparty/rang.hpp"
+#include "growl/util/assets/bundle.h"
+#include "growl/util/assets/error.h"
+#include "growl/util/error.h"
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
-#include <growl/util/assets/atlas.h>
-#include <growl/util/assets/bundle.h>
-#include <growl/util/assets/error.h>
-#include <growl/util/error.h>
 #include <memory>
 #include <ostream>
 

@@ -1,5 +1,5 @@
+#include "growl/core/api/api.h"
 #include "sdl_system.h"
-#include <growl/core/api/api.h>
 
 using Growl::API;
 using Growl::SDL2SystemAPI;

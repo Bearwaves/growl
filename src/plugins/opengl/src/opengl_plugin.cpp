@@ -1,5 +1,5 @@
+#include "growl/core/api/api.h"
 #include "opengl_graphics.h"
-#include <growl/core/api/api.h>
 
 using Growl::API;
 using Growl::OpenGLGraphicsAPI;

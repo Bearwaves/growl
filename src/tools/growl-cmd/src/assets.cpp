@@ -1,11 +1,11 @@
 #include "../../../../thirdparty/fpng/fpng.h"
 #include "../../../../thirdparty/stb_image/stb_image.h"
 #include "../thirdparty/rang.hpp"
+#include "growl/util/assets/bundle.h"
+#include "growl/util/assets/error.h"
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
-#include <growl/util/assets/bundle.h>
-#include <growl/util/assets/error.h>
 #include <iostream>
 #include <map>
 #include <nlohmann/json.hpp>

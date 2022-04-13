@@ -1,7 +1,7 @@
 #pragma once
 
+#include "growl/core/graphics/batch.h"
 #include <Metal/Metal.h>
-#include <growl/core/graphics/batch.h>
 
 #include "metal_shader.h"
 

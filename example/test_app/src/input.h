@@ -1,7 +1,7 @@
 #pragma once
 
-#include <growl/core/api/system_api.h>
-#include <growl/core/input/processor.h>
+#include "growl/core/api/system_api.h"
+#include "growl/core/input/processor.h"
 
 namespace Growl {
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <growl/core/game/game.h>
-#include <growl/core/graphics/font_texture_atlas.h>
-#include <growl/core/graphics/texture.h>
-#include <growl/core/graphics/texture_atlas.h>
-#include <growl/util/assets/atlas.h>
-#include <growl/util/assets/font.h>
-#include <growl/util/assets/image.h>
-#include <growl/util/text/glyph_layout.h>
+#include "growl/core/game/game.h"
+#include "growl/core/graphics/font_texture_atlas.h"
+#include "growl/core/graphics/texture.h"
+#include "growl/core/graphics/texture_atlas.h"
+#include "growl/util/assets/atlas.h"
+#include "growl/util/assets/font.h"
+#include "growl/util/assets/image.h"
+#include "growl/util/text/glyph_layout.h"
 #include <memory>
 #include <optional>
 

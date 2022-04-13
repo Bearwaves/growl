@@ -1,10 +1,10 @@
 #pragma once
 
 #include "atlas.h"
+#include "growl/util/error.h"
 #include "image.h"
 #include <cstdint>
 #include <fstream>
-#include <growl/util/error.h>
 #include <map>
 #include <nlohmann/json.hpp>
 #include <optional>

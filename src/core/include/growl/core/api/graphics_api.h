@@ -5,7 +5,7 @@
 #include "../graphics/texture.h"
 #include "../graphics/texture_atlas.h"
 #include "../graphics/window.h"
-#include <growl/util/assets/image.h>
+#include "growl/util/assets/image.h"
 #include <memory>
 
 namespace Growl {

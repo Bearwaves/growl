@@ -1,6 +1,6 @@
 #pragma once
 
-#include <growl/core/graphics/texture_atlas.h>
+#include "growl/core/graphics/texture_atlas.h"
 namespace Growl {
 
 class OpenGLTextureAtlas : public TextureAtlas {

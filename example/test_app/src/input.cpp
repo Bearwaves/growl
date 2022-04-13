@@ -1,6 +1,6 @@
 #include "input.h"
-#include <growl/core/api/system_api.h>
-#include <growl/core/log.h>
+#include "growl/core/api/system_api.h"
+#include "growl/core/log.h"
 
 using Growl::InputHandler;
 

@@ -1,11 +1,11 @@
 #pragma once
 
+#include "growl/core/api/api.h"
+#include "growl/core/api/system_api.h"
 #include "metal_shader.h"
 #include <Metal/Metal.h>
 #include <QuartzCore/CAMetalLayer.h>
 #include <chrono>
-#include <growl/core/api/api.h>
-#include <growl/core/api/system_api.h>
 #include <memory>
 
 using std::chrono::high_resolution_clock;

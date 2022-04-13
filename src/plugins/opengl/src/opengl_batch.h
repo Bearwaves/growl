@@ -1,8 +1,8 @@
 #pragma once
 
+#include "growl/core/graphics/batch.h"
 #include "opengl_graphics.h"
 #include "opengl_shader.h"
-#include <growl/core/graphics/batch.h>
 
 namespace Growl {
 

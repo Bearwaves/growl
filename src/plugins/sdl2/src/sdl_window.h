@@ -1,7 +1,7 @@
 #pragma once
 
+#include "growl/core/graphics/window.h"
 #include <SDL.h>
-#include <growl/core/graphics/window.h>
 
 namespace Growl {
 

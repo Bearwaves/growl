@@ -1,5 +1,5 @@
 #include "opengl_texture_atlas.h"
-#include <growl/util/assets/error.h>
+#include "growl/util/assets/error.h"
 
 using Growl::Error;
 using Growl::OpenGLTextureAtlas;

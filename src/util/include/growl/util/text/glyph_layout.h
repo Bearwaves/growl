@@ -1,6 +1,6 @@
 #pragma once
 
-#include <growl/util/assets/font_atlas.h>
+#include "growl/util/assets/font_atlas.h"
 #include <string>
 
 namespace Growl {

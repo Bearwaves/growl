@@ -1,7 +1,7 @@
 #pragma once
 
+#include "growl/core/graphics/texture.h"
 #include <Metal/Metal.h>
-#include <growl/core/graphics/texture.h>
 
 namespace Growl {
 

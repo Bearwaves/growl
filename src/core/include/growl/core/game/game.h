@@ -1,7 +1,7 @@
 #pragma once
 
-#include <growl/core/api/api.h>
-#include <growl/util/error.h>
+#include "growl/core/api/api.h"
+#include "growl/util/error.h"
 #include <memory>
 
 namespace Growl {

@@ -1,7 +1,7 @@
 #include "../../../../thirdparty/harfbuzz/src/hb.h"
+#include "growl/util/assets/font.h"
+#include "growl/util/text/glyph_layout.h"
 #include <freetype/freetype.h>
-#include <growl/util/assets/font.h>
-#include <growl/util/text/glyph_layout.h>
 
 struct Growl::FTFontData {
 	FT_Library library;

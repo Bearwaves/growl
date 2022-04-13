@@ -1,4 +1,4 @@
-#include <growl/util/assets/font.h>
+#include "growl/util/assets/font.h"
 
 #include "font_internal.h"
 #include <freetype/freetype.h>

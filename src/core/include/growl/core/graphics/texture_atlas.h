@@ -1,8 +1,8 @@
 #pragma once
 
+#include "growl/util/assets/atlas.h"
+#include "growl/util/error.h"
 #include "texture.h"
-#include <growl/util/assets/atlas.h>
-#include <growl/util/error.h>
 #include <memory>
 #include <string>
 #include <unordered_map>

@@ -1,7 +1,7 @@
+#include "growl/platforms/desktop/game_adapter.h"
+#include "growl/core/graphics/window.h"
+#include "growl/core/log.h"
 #include <chrono>
-#include <growl/core/graphics/window.h>
-#include <growl/core/log.h>
-#include <growl/platforms/desktop/game_adapter.h>
 #include <iostream>
 
 using Growl::API;

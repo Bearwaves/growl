@@ -1,7 +1,7 @@
 #pragma once
 
-#include <growl/core/graphics/texture.h>
-#include <growl/util/assets/font_atlas.h>
+#include "growl/core/graphics/texture.h"
+#include "growl/util/assets/font_atlas.h"
 #include <unordered_map>
 
 namespace Growl {

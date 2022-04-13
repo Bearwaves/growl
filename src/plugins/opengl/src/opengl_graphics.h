@@ -1,10 +1,10 @@
 #pragma once
 
+#include "growl/core/api/api_internal.h"
+#include "growl/core/api/system_api.h"
 #include "opengl_shader.h"
 #include <SDL.h>
 #include <chrono>
-#include <growl/core/api/api_internal.h>
-#include <growl/core/api/system_api.h>
 
 using std::chrono::high_resolution_clock;
 using std::chrono::time_point;

@@ -1,6 +1,6 @@
 #include "../thirdparty/CLI11.hpp"
 #include "../thirdparty/rang.hpp"
-#include <growl/version.h>
+#include "growl/version.h"
 #include <iostream>
 #include <string>
 

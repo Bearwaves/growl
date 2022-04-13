@@ -1,9 +1,9 @@
 #include "sdl_system.h"
 #include "SDL.h"
+#include "growl/core/input/event.h"
 #include "sdl_error.h"
 #include "sdl_window.h"
 #include <assert.h>
-#include <growl/core/input/event.h>
 #include <memory>
 
 using Growl::Error;
