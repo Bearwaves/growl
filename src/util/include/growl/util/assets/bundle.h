@@ -3,10 +3,10 @@
 #include "atlas.h"
 #include "growl/util/error.h"
 #include "image.h"
+#include "nlohmann/json.hpp"
 #include <cstdint>
 #include <fstream>
 #include <map>
-#include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
 

@@ -1,7 +1,7 @@
 #include "growl/util/text/glyph_layout.h"
 #include "../../../../thirdparty/harfbuzz/src/hb-ft.h"
 #include "font_internal.h"
-#include <freetype/freetype.h>
+#include "freetype/freetype.h"
 
 using Growl::GlyphLayout;
 

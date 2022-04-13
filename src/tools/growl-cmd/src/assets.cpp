@@ -3,12 +3,12 @@
 #include "../thirdparty/rang.hpp"
 #include "growl/util/assets/bundle.h"
 #include "growl/util/assets/error.h"
+#include "nlohmann/json.hpp"
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
-#include <nlohmann/json.hpp>
 #include <string>
 
 using Growl::AssetsBundleMapInfo;

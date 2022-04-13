@@ -1,8 +1,8 @@
 #include "growl/util/assets/font.h"
 
 #include "font_internal.h"
-#include <freetype/freetype.h>
-#include <freetype/ftmodapi.h>
+#include "freetype/freetype.h"
+#include "freetype/ftmodapi.h"
 #include <iostream>
 #include <memory>
 

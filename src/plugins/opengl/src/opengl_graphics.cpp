@@ -1,11 +1,11 @@
 #include "opengl_graphics.h"
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/mat4x4.hpp"
 #include "opengl.h"
 #include "opengl_batch.h"
 #include "opengl_texture.h"
 #include "opengl_texture_atlas.h"
 #include <SDL_opengl.h>
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/mat4x4.hpp>
 #include <memory>
 #include <vector>
 

@@ -1,6 +1,6 @@
 #pragma once
+#include "glm/gtc/type_ptr.hpp"
 #include "opengl.h"
-#include <glm/gtc/type_ptr.hpp>
 #include <string>
 
 namespace Growl {

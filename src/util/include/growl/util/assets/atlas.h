@@ -2,9 +2,9 @@
 
 #include "growl/util/assets/image.h"
 #include "growl/util/error.h"
+#include "nlohmann/json.hpp"
 #include <filesystem>
 #include <memory>
-#include <nlohmann/json.hpp>
 #include <string>
 #include <unordered_map>
 #include <vector>

@@ -1,10 +1,10 @@
 #include "metal_graphics.h"
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/mat4x4.hpp"
 #include "metal_batch.h"
 #include "metal_texture.h"
 #include "metal_texture_atlas.h"
 #include <SDL.h>
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/mat4x4.hpp>
 #include <vector>
 
 using Growl::Error;

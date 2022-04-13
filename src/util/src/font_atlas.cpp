@@ -2,12 +2,12 @@
 
 #include "../../../thirdparty/stb_rect_pack/stb_rect_pack.h"
 #include "font_internal.h"
+#include "freetype/freetype.h"
+#include "freetype/ftimage.h"
 #include "growl/util/assets/error.h"
 #include "growl/util/assets/image.h"
 #include "growl/util/error.h"
 #include <cstdio>
-#include <freetype/freetype.h>
-#include <freetype/ftimage.h>
 #include <memory>
 #include <set>
 #include <unordered_map>
