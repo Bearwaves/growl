@@ -24,6 +24,10 @@ public:
 
 	void setText(std::string text);
 
+	const int getWidth() const {
+		return width;
+	}
+
 	const std::vector<LayoutInfo>& getLayout() const {
 		return layout_info;
 	}

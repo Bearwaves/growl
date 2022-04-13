@@ -19,7 +19,7 @@ Error TestAppGame::init() {
 	}
 	font = std::make_unique<Font>(std::move(font_result.get()));
 	getAPI().system()->log("TestAppGame", "Generating font atlas");
-	Result<FontAtlas> font_atlas_result = createFontAtlasFromFont(*font, 75);
+	Result<FontAtlas> font_atlas_result = createFontAtlasFromFont(*font, 50);
 	if (font_atlas_result.hasError()) {
 		return std::move(font_atlas_result.error());
 	}
@@ -95,7 +95,9 @@ void TestAppGame::render() {
 	batch->draw(
 		texture_atlas->getRegion("mouse.jpg").get(), input->getMouseX() - 100,
 		input->getMouseY() - 100, 200, 200);
-	batch->draw(*layout, *font_atlas, 50, 150);
+	batch->draw(
+		*layout, *font_atlas,
+		batch->getTargetWidth() - (layout->getWidth() * 1.05), 50);
 	batch->end();
 	if (counter > FPS_SAMPLE_SECONDS) {
 		layout->setText("FPS: " + std::to_string(frames / counter));

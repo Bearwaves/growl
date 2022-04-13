@@ -35,7 +35,7 @@ void GlyphLayout::layout() noexcept {
 	std::vector<LayoutInfo> new_layout;
 	int cursor_x = 0;
 	int cursor_y = 0;
-	for (int i = 0; i < len; i++) {
+	for (unsigned int i = 0; i < len; i++) {
 		int glyph_id = static_cast<int>(info[i].codepoint);
 		if (auto err =
 				FT_Load_Glyph(face, glyph_id, FT_LOAD_BITMAP_METRICS_ONLY);
@@ -55,6 +55,7 @@ void GlyphLayout::layout() noexcept {
 		cursor_y += (pos[i].y_advance >> 6);
 	}
 
+	width = cursor_x;
 	layout_info = std::move(new_layout);
 }
 
