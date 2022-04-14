@@ -35,6 +35,8 @@ void GlyphLayout::layout() noexcept {
 	std::vector<LayoutInfo> new_layout;
 	int cursor_x = 0;
 	int cursor_y = 0;
+	int bearing_up = 0;
+	int bearing_down = 0;
 	for (unsigned int i = 0; i < len; i++) {
 		int glyph_id = static_cast<int>(info[i].codepoint);
 		if (auto err =
@@ -50,12 +52,29 @@ void GlyphLayout::layout() noexcept {
 				static_cast<int>(face->glyph->metrics.width >> 6),
 				static_cast<int>(face->glyph->metrics.height >> 6),
 			});
+			int y_above_baseline =
+				(pos[i].y_offset) + face->glyph->metrics.horiBearingY;
+			if (y_above_baseline > bearing_up) {
+				bearing_up = y_above_baseline;
+			}
+			int y_below = face->glyph->metrics.height -
+						  (face->glyph->metrics.horiBearingY + pos[i].y_offset);
+			if (y_below > bearing_down) {
+				bearing_down = y_below;
+			}
 		}
 		cursor_x += (pos[i].x_advance >> 6);
 		cursor_y += (pos[i].y_advance >> 6);
 	}
 
+	bearing_up >>= 6;
+	bearing_down >>= 6;
+	for (auto& glyph : new_layout) {
+		glyph.y += bearing_up;
+	}
+
 	width = cursor_x;
+	height = bearing_down + bearing_up;
 	layout_info = std::move(new_layout);
 }
 

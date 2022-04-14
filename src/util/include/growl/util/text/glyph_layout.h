@@ -28,6 +28,10 @@ public:
 		return width;
 	}
 
+	const int getHeight() const {
+		return height;
+	}
+
 	const std::vector<LayoutInfo>& getLayout() const {
 		return layout_info;
 	}
@@ -35,6 +39,7 @@ public:
 private:
 	std::string text;
 	int width;
+	int height;
 	std::unique_ptr<HBData> hb_data;
 	std::vector<LayoutInfo> layout_info;
 };
