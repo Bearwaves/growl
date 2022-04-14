@@ -75,6 +75,7 @@ void GlyphLayout::layout() noexcept {
 
 	width = cursor_x;
 	height = bearing_down + bearing_up;
+	origin_offset = bearing_up;
 	layout_info = std::move(new_layout);
 }
 

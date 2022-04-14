@@ -32,6 +32,10 @@ public:
 		return height;
 	}
 
+	const int getOriginOffset() const {
+		return origin_offset;
+	}
+
 	const std::vector<LayoutInfo>& getLayout() const {
 		return layout_info;
 	}
@@ -40,6 +44,7 @@ private:
 	std::string text;
 	int width;
 	int height;
+	int origin_offset;
 	std::unique_ptr<HBData> hb_data;
 	std::vector<LayoutInfo> layout_info;
 };
