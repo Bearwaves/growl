@@ -8,9 +8,11 @@ cmake_install.cmake
 install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
+CMakeSettings.json
 _deps
 
 build/
 build_xcode/
 .cache/
 .DS_Store
+.vs/
