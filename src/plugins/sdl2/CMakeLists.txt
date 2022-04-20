@@ -21,4 +21,4 @@ set(HEADERS
 	)
 
 add_library(growl-plugin-sdl2 ${SOURCES} ${HEADERS})
-target_link_libraries(growl-plugin-sdl2 growl-core ${SDL2_LIBRARIES})
+target_link_libraries(growl-plugin-sdl2 growl-core ${SDL2_LIBRARY})
