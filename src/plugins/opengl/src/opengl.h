@@ -1,10 +1,8 @@
 #pragma once
 
-#ifdef __APPLE__
-#define GROWL_OPENGL_APPLE
+#ifdef GROWL_OPENGL_3_3
 #define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl3.h>
-#else
-#define GL_GLEXT_PROTOTYPES
-#include <GLES3/gl3.h>
+#include <OpenGL/gl.h>
+#elif GROWL_OPENGL_4_5
+#include "../thirdparty/opengl_4_5.h"
 #endif

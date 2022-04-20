@@ -1,11 +1,11 @@
 #include "opengl_graphics.h"
+#include "SDL_video.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
 #include "opengl.h"
 #include "opengl_batch.h"
 #include "opengl_texture.h"
 #include "opengl_texture_atlas.h"
-#include <SDL_opengl.h>
 #include <memory>
 #include <vector>
 
@@ -49,17 +49,28 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 	}
 	window = std::move(window_result.get());
 
-#ifdef GROWL_OPENGL_APPLE
+#ifdef GROWL_OPENGL_3_3
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+#elif GROWL_OPENGL_4_5
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+#endif
 	SDL_GL_SetAttribute(
 		SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 	SDL_GL_SetAttribute(
 		SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-#endif
 
 	context =
 		SDL_GL_CreateContext(static_cast<SDL_Window*>(window->getNative()));
+#ifdef GROWL_OPENGL_4_5
+	gladLoadGLLoader(SDL_GL_GetProcAddress);
+#endif
+
+	system->log(
+		"OpenGLGraphicsAPI", "Loaded OpenGL version {}.{}", GLVersion.major,
+		GLVersion.minor);
+
 	glViewport(0, 0, config.getWidth(), config.getHeight());
 	default_shader = std::make_unique<OpenGLShader>(*this);
 	setupDebugCallback();
@@ -195,7 +206,7 @@ void OpenGLGraphicsAPI::checkShaderCompileError(unsigned int shader) {
 }
 
 void OpenGLGraphicsAPI::setupDebugCallback() {
-#ifndef GROWL_OPENGL_APPLE
+#ifdef GROWL_OPENGL_4_5
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(

@@ -3,6 +3,14 @@ project(growl-plugin-opengl)
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	set(GROWL_OPENGL_3_3 1)
+	add_definitions(-DGROWL_OPENGL_3_3)
+else ()
+	set(GROWL_OPENGL_4_5 1)
+	add_definitions(-DGROWL_OPENGL_4_5)
+endif ()
+
 include_directories("../../core/include" ${SDL2_INCLUDE_DIR})
 
 set(SOURCES
@@ -24,6 +32,18 @@ set(HEADERS
 	"src/opengl_texture_atlas.h"
 	"src/opengl_shader.h"
 	)
+
+if (GROWL_OPENGL_4_5)
+	set(SOURCES
+		"thirdparty/opengl_4_5.c"
+		${SOURCES}
+		)
+	set(HEADERS
+		"thirdparty/opengl_4_5.h"
+		"thirdparty/khrplatform.h"
+		${HEADERS}
+		)
+endif ()
 
 add_library(growl-plugin-opengl ${SOURCES} ${HEADERS})
 target_link_libraries(
