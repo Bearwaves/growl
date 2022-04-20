@@ -49,9 +49,9 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 	}
 	window = std::move(window_result.get());
 
-#ifdef GROWL_OPENGL_3_3
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+#ifdef GROWL_OPENGL_4_1
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 #elif GROWL_OPENGL_4_5
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
@@ -67,9 +67,11 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
 #endif
 
+	GLint major, minor;
+	glGetIntegerv(GL_MAJOR_VERSION, &major);
+	glGetIntegerv(GL_MINOR_VERSION, &minor);
 	system->log(
-		"OpenGLGraphicsAPI", "Loaded OpenGL version {}.{}", GLVersion.major,
-		GLVersion.minor);
+		"OpenGLGraphicsAPI", "Loaded OpenGL version {}.{}", major, minor);
 
 	glViewport(0, 0, config.getWidth(), config.getHeight());
 	default_shader = std::make_unique<OpenGLShader>(*this);
@@ -223,8 +225,10 @@ void OpenGLGraphicsAPI::setupDebugCallback() {
 void OpenGLGraphicsAPI::onGLDebugMessage(
 	GLenum source, GLenum type, GLuint id, GLenum severity,
 	const GLchar* message) const {
+#ifdef GROWL_OPENGL_4_5
 	if (severity == GL_DEBUG_SEVERITY_HIGH ||
 		severity == GL_DEBUG_SEVERITY_MEDIUM) {
 		system->log(LogLevel::ERROR, "OpenGL", "{}", message);
 	}
+#endif
 }

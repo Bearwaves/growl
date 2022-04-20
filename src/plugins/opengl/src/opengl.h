@@ -1,8 +1,8 @@
 #pragma once
 
-#ifdef GROWL_OPENGL_3_3
+#ifdef GROWL_OPENGL_4_1
 #define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
 #elif GROWL_OPENGL_4_5
 #include "../thirdparty/opengl_4_5.h"
 #endif
