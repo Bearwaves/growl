@@ -13,7 +13,12 @@ set(HEADERS
 	"src/input.h"
 	)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic")
+if (MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
+else ()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic")
+endif ()
+
 set(GROWL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GROWL_PATH}/cmake/")
 include(GrowlProject)

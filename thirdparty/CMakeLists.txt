@@ -4,7 +4,12 @@ add_subdirectory(glm)
 add_subdirectory(json)
 add_subdirectory(utfcpp)
 
-set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
+if (MSVC)
+	set(CMAKE_CXX_FLAGS "/W0")
+else ()
+	set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
+endif ()
+
 add_compile_definitions(
 	FT2_BUILD_LIBRARY
 	FT_CONFIG_OPTION_ERROR_STRINGS

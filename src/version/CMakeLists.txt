@@ -2,6 +2,8 @@ project(growl-version)
 
 include_directories(include)
 
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/_version.cpp PROPERTIES SYMBOLIC 1)
+
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/version.cpp
 		${CMAKE_CURRENT_BINARY_DIR}/_version.cpp
@@ -17,4 +19,4 @@ set(HEADERS
 	)
 
 add_library(growl-version ${SOURCES} ${HEADERS})
-set_target_properties(growl-version PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(growl-version PROPERTIES LINKER_LANGUAGE C)

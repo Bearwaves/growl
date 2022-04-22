@@ -34,7 +34,7 @@ Error includeAtlas(
 	std::vector<Growl::AtlasImagePackInfo> images;
 	for (auto entry : std::filesystem::directory_iterator(path)) {
 		int width, height, channels;
-		if (!stbi_info(entry.path().c_str(), &width, &height, &channels)) {
+		if (!stbi_info(entry.path().string().c_str(), &width, &height, &channels)) {
 			// Not an image
 			continue;
 		}
@@ -59,8 +59,8 @@ Error includeAtlas(
 			fpng::FPNG_ENCODE_SLOWER)) {
 		return std::make_unique<AssetsError>("Failed to encode image.");
 	}
-	unsigned int ptr = outfile.tellp();
-	assets_map[resolved_path] = {
+	auto ptr = static_cast<unsigned int>(outfile.tellp());
+	assets_map[resolved_path.string()] = {
 		ptr, out_buf.size(), AssetType::Atlas, atlas.getMappings()};
 	outfile.write(
 		reinterpret_cast<const char*>(out_buf.data()), out_buf.size());

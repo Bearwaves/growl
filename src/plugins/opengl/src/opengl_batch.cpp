@@ -66,12 +66,12 @@ void OpenGLBatch::draw(
 	float right = x + width;
 	float bottom = y + height;
 	// Address texel centres
-	float tex_left = (region.region.x + 0.5) / (float)tex.getWidth();
-	float tex_top = (region.region.y + 0.5) / (float)tex.getHeight();
+	float tex_left = (region.region.x + 0.5f) / (float)tex.getWidth();
+	float tex_top = (region.region.y + 0.5f) / (float)tex.getHeight();
 	float tex_right =
-		(region.region.x + region.region.width + 0.5) / (float)tex.getWidth();
+		(region.region.x + region.region.width + 0.5f) / (float)tex.getWidth();
 	float tex_bottom =
-		(region.region.y + region.region.height + 0.5) / (float)tex.getHeight();
+		(region.region.y + region.region.height + 0.5f) / (float)tex.getHeight();
 	float quad_vertex_data[] = {x,	   y,	   tex_left,  tex_top,
 								right, y,	   tex_right, tex_top,
 								right, bottom, tex_right, tex_bottom,

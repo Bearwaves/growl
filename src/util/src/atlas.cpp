@@ -71,7 +71,8 @@ Result<Atlas> Growl::packAtlasFromFiles(
 
 		int img_width, img_height, img_channels;
 		unsigned char* img_data = stbi_load(
-			image.path.c_str(), &img_width, &img_height, &img_channels, 4);
+			image.path.string().c_str(), &img_width, &img_height, &img_channels,
+			4);
 		if (!img_data) {
 			return Error(std::make_unique<AssetsError>(
 				"Failed to load atlas image data"));

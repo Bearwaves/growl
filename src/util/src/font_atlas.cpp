@@ -81,7 +81,7 @@ Result<FontAtlas> Growl::createFontAtlasFromFont(
 	while (iter != text.end()) {
 		int code = utf8::next(iter, text.end());
 		char hex[7];
-		sprintf(hex, "0x%04X", uint16_t(code));
+		sprintf_s(hex, "0x%04X", uint16_t(code));
 		std::string code_hex(hex);
 		int glyph_index = FT_Get_Char_Index(font.getFTFontData().face, code);
 		if (!glyph_index) {

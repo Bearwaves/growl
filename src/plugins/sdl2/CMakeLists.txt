@@ -5,6 +5,17 @@ find_package(SDL2 REQUIRED)
 
 include_directories("../../core/include" ${SDL2_INCLUDE_DIR})
 
+set(SDL_LINK_LIBS
+	${SDL2_LIBRARY}
+	)
+
+if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
+	set(SDL_LINK_LIBS
+		${SDL_LINK_LIBS}
+		"user32" "gdi32" "winmm" "imm32" "ole32" "oleaut32" "version" "uuid" "advapi32" "setupapi" "shell32"
+		)
+endif ()
+
 set(SOURCES
 	"src/sdl_plugin.cpp"
 
@@ -21,4 +32,4 @@ set(HEADERS
 	)
 
 add_library(growl-plugin-sdl2 ${SOURCES} ${HEADERS})
-target_link_libraries(growl-plugin-sdl2 growl-core ${SDL2_LIBRARY})
+target_link_libraries(growl-plugin-sdl2 growl-core ${SDL_LINK_LIBS})

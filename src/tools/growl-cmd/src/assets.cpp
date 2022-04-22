@@ -37,7 +37,7 @@ Error includeImage(
 	}
 	int width, height, channels;
 	unsigned char* img =
-		stbi_load(entry.path().c_str(), &width, &height, &channels, 4);
+		stbi_load(entry.path().string().c_str(), &width, &height, &channels, 4);
 	if (!img) {
 		// Not an image.
 		return nullptr;
@@ -48,8 +48,8 @@ Error includeImage(
 			img, width, height, 4, out_buf, fpng::FPNG_ENCODE_SLOWER)) {
 		return std::make_unique<AssetsError>("Failed to encode image.");
 	}
-	unsigned int ptr = outfile.tellp();
-	assets_map[resolved_path] = {ptr, out_buf.size(), AssetType::Image};
+	auto ptr = static_cast<unsigned int>(outfile.tellp());
+	assets_map[resolved_path.string()] = {ptr, out_buf.size(), AssetType::Image};
 	outfile.write(
 		reinterpret_cast<const char*>(out_buf.data()), out_buf.size());
 
