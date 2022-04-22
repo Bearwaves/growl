@@ -49,7 +49,8 @@ Error includeImage(
 		return std::make_unique<AssetsError>("Failed to encode image.");
 	}
 	auto ptr = static_cast<unsigned int>(outfile.tellp());
-	assets_map[resolved_path.string()] = {ptr, out_buf.size(), AssetType::Image};
+	assets_map[resolved_path.string()] = {
+		ptr, out_buf.size(), AssetType::Image};
 	outfile.write(
 		reinterpret_cast<const char*>(out_buf.data()), out_buf.size());
 

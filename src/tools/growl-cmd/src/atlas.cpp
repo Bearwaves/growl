@@ -34,7 +34,8 @@ Error includeAtlas(
 	std::vector<Growl::AtlasImagePackInfo> images;
 	for (auto entry : std::filesystem::directory_iterator(path)) {
 		int width, height, channels;
-		if (!stbi_info(entry.path().string().c_str(), &width, &height, &channels)) {
+		if (!stbi_info(
+				entry.path().string().c_str(), &width, &height, &channels)) {
 			// Not an image
 			continue;
 		}
