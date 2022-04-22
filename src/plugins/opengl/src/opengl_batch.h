@@ -38,9 +38,9 @@ private:
 	glm::mat4 mvp;
 	int width;
 	int height;
-	GLuint vao;
-	GLuint vbo;
-	GLuint ebo;
+	GLuint vao = 0;
+	GLuint vbo = 0;
+	GLuint ebo = 0;
 	GLuint fbo;
 };
 

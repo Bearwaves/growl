@@ -32,8 +32,8 @@ Growl::loadImageFromMemory(const unsigned char* address, uint64_t size) {
 	uint32_t width, height, channels;
 	std::vector<unsigned char> data;
 	if (fpng::fpng_decode_memory(
-			address, size, data, width, height, channels, 4) !=
-		fpng::FPNG_DECODE_SUCCESS) {
+			address, static_cast<uint32_t>(size), data, width, height, channels,
+			4) != fpng::FPNG_DECODE_SUCCESS) {
 		return Error(std::make_unique<ImageLoadError>());
 	}
 	return Image(width, height, channels, data);

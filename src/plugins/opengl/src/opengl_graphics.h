@@ -42,7 +42,7 @@ private:
 	SystemAPI* system;
 	std::unique_ptr<Window> window;
 	std::unique_ptr<OpenGLShader> default_shader;
-	SDL_GLContext context;
+	SDL_GLContext context = nullptr;
 	time_point<high_resolution_clock> last_render;
 
 	std::unique_ptr<Texture> setupTexture(

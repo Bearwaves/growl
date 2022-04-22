@@ -160,7 +160,8 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {
 	int w, h;
 	SDL_GetWindowSize(static_cast<SDL_Window*>(window->getNative()), &w, &h);
 	glViewport(0, 0, w, h);
-	auto projection = glm::ortho<float>(0, w, h, 0, 1, -1);
+	auto projection = glm::ortho<float>(
+		0, static_cast<float>(w), static_cast<float>(h), 0, 1, -1);
 	return std::make_unique<OpenGLBatch>(
 		default_shader.get(), projection, w, h, 0);
 }
@@ -168,8 +169,9 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {
 std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
 	auto& opengl_texture = static_cast<const OpenGLTexture&>(texture);
 	glViewport(0, 0, texture.getWidth(), texture.getHeight());
-	auto projection =
-		glm::ortho<float>(0, texture.getWidth(), 0, texture.getHeight(), 1, -1);
+	auto projection = glm::ortho<float>(
+		0, static_cast<float>(texture.getWidth()), 0,
+		static_cast<float>(texture.getHeight()), 1, -1);
 
 	GLuint fbo;
 	glGenFramebuffers(1, &fbo);

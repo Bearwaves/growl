@@ -70,8 +70,8 @@ void OpenGLBatch::draw(
 	float tex_top = (region.region.y + 0.5f) / (float)tex.getHeight();
 	float tex_right =
 		(region.region.x + region.region.width + 0.5f) / (float)tex.getWidth();
-	float tex_bottom =
-		(region.region.y + region.region.height + 0.5f) / (float)tex.getHeight();
+	float tex_bottom = (region.region.y + region.region.height + 0.5f) /
+					   (float)tex.getHeight();
 	float quad_vertex_data[] = {x,	   y,	   tex_left,  tex_top,
 								right, y,	   tex_right, tex_top,
 								right, bottom, tex_right, tex_bottom,
@@ -112,7 +112,7 @@ void OpenGLBatch::draw(
 		if (region_result.hasError()) {
 			continue;
 		}
-		auto region = region_result.get();
+		auto& region = region_result.get();
 
 		float tex_left = region.x / (float)tex.getWidth();
 		float tex_top = region.y / (float)tex.getHeight();
@@ -135,7 +135,8 @@ void OpenGLBatch::draw(
 		GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
 		indices.data(), GL_STATIC_DRAW);
 	shader->bind(mvp);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(
+		GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
 }
 
 int OpenGLBatch::getTargetWidth() {

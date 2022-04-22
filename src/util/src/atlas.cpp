@@ -46,8 +46,10 @@ Result<Atlas> Growl::packAtlasFromFiles(
 
 	while (width <= MAX_SIZE && height <= MAX_SIZE) {
 		std::vector<stbrp_node> nodes(width * 2);
-		stbrp_init_target(&ctx, width, height, nodes.data(), nodes.size());
-		if (stbrp_pack_rects(&ctx, rects.data(), rects.size())) {
+		stbrp_init_target(
+			&ctx, width, height, nodes.data(), static_cast<int>(nodes.size()));
+		if (stbrp_pack_rects(
+				&ctx, rects.data(), static_cast<int>(rects.size()))) {
 			did_pack = true;
 			break;
 		}

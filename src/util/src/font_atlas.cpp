@@ -147,8 +147,11 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 	while (width <= MAX_SIZE && height <= MAX_SIZE) {
 		stbrp_context ctx;
 		std::vector<stbrp_node> nodes(width * 2);
-		stbrp_init_target(&ctx, width, height, nodes.data(), nodes.size());
-		if (stbrp_pack_rects(&ctx, glyph_rects.data(), glyph_rects.size())) {
+		stbrp_init_target(
+			&ctx, width, height, nodes.data(), static_cast<int>(nodes.size()));
+		if (stbrp_pack_rects(
+				&ctx, glyph_rects.data(),
+				static_cast<int>(glyph_rects.size()))) {
 			packed = true;
 			break;
 		}
