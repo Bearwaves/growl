@@ -5,6 +5,7 @@
 #include "freetype/ftmodapi.h"
 #include <iostream>
 #include <memory>
+#include <vector>
 
 using Growl::Error;
 using Growl::Font;
@@ -12,6 +13,10 @@ using Growl::Result;
 
 Font::Font(Growl::FTFontData ft_data)
 	: ft_data{std::make_unique<Growl::FTFontData>(std::move(ft_data))} {}
+
+Font::Font(Growl::FTFontData ft_data, std::vector<unsigned char>&& data)
+	: ft_data{std::make_unique<Growl::FTFontData>(std::move(ft_data))}
+	, data{std::move(data)} {}
 
 Font::~Font() {
 	if (ft_data) {
@@ -39,4 +44,24 @@ Result<Font> Growl::loadFontFromFile(std::string filepath) noexcept {
 	}
 
 	return Font(FTFontData{lib, face});
+}
+
+Result<Font>
+Growl::loadFontFromMemory(std::vector<unsigned char>&& data) noexcept {
+	FT_Library lib;
+	FT_Face face;
+
+	if (auto err = FT_Init_FreeType(&lib); err) {
+		return Error(
+			std::make_unique<FontError>("Failed to init FreeType", err));
+	}
+
+	if (auto err = FT_New_Memory_Face(lib, data.data(), data.size(), 0, &face);
+		err) {
+		FT_Done_Library(lib);
+		return Error(std::make_unique<FontError>(
+			"Failed to load font from memory", err));
+	}
+
+	return Font(FTFontData{lib, face}, std::move(data));
 }

@@ -36,7 +36,7 @@ Growl::loadImageFromMemory(const unsigned char* address, uint64_t size) {
 			4) != fpng::FPNG_DECODE_SUCCESS) {
 		return Error(std::make_unique<ImageLoadError>());
 	}
-	return Image(width, height, channels, data);
+	return Image(width, height, channels, std::move(data));
 }
 
 void Image::StbiDeleter::operator()(unsigned char* data) const {

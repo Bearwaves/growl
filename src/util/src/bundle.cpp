@@ -1,6 +1,7 @@
 #include "growl/util/assets/bundle.h"
 
 #include "growl/util/assets/error.h"
+#include "growl/util/assets/font.h"
 #include "growl/util/assets/image.h"
 #include <cstdint>
 #include <memory>
@@ -15,6 +16,7 @@ using Growl::AssetsError;
 using Growl::AssetsMap;
 using Growl::Atlas;
 using Growl::Error;
+using Growl::Font;
 using Growl::Image;
 using Growl::Result;
 
@@ -66,6 +68,8 @@ std::string Growl::getAssetTypeName(AssetType type) {
 		return "Image";
 	case AssetType::Atlas:
 		return "Atlas";
+	case AssetType::Font:
+		return "Font";
 	default:
 		return "Unknown";
 	}
@@ -131,4 +135,28 @@ Result<Atlas> AssetsBundle::getAtlas(std::string name) noexcept {
 	return Atlas(
 		std::make_unique<Image>(std::move(image_result.get())),
 		info.atlas_regions.value());
+}
+
+Result<Font> AssetsBundle::getFont(std::string name) noexcept {
+	auto info_find = assetsMap.find(name);
+	if (info_find == assetsMap.end()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load font " + name + "; not found in asset map."));
+	}
+	auto& info = info_find->second;
+
+	if (info.type != AssetType::Font) {
+		auto type_name = getAssetTypeName(info.type);
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load font " + name + "; expected Font type but was " +
+			type_name + "."));
+	}
+
+	std::cout << info.size << ", " << info.position << std::endl;
+	std::vector<unsigned char> font_data;
+	font_data.resize(info.size);
+	file.seekg(info.position);
+	file.read(reinterpret_cast<char*>(font_data.data()), info.size);
+
+	return loadFontFromMemory(std::move(font_data));
 }

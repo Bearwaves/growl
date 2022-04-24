@@ -12,8 +12,14 @@ using Growl::TestAppGame;
 Error TestAppGame::init() {
 	getAPI().system()->log("TestAppGame", "Game starting up!");
 
+	getAPI().system()->log("TestAppGame", "Loading asset bundle");
+	Result<AssetsBundle> bundle_result = loadAssetsBundle("./assets.growl");
+	if (bundle_result.hasError()) {
+		return std::move(bundle_result.error());
+	}
+
 	getAPI().system()->log("TestAppGame", "Loading font");
-	Result<Font> font_result = loadFontFromFile("../assets/fonts/andada.otf");
+	Result<Font> font_result = bundle_result.get().getFont("fonts/andada.otf");
 	if (font_result.hasError()) {
 		return std::move(font_result.error());
 	}
@@ -32,11 +38,6 @@ Error TestAppGame::init() {
 	getAPI().system()->setInputProcessor(input.get());
 	getAPI().system()->setLogLevel(LogLevel::DEBUG);
 
-	getAPI().system()->log("TestAppGame", "Loading asset bundle");
-	Result<AssetsBundle> bundle_result = loadAssetsBundle("./assets.growl");
-	if (bundle_result.hasError()) {
-		return std::move(bundle_result.error());
-	}
 	Result<Atlas> atlas_result = bundle_result.get().getAtlas("gfx");
 	if (atlas_result.hasError()) {
 		return std::move(atlas_result.error());

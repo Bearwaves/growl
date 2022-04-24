@@ -1,6 +1,7 @@
 #pragma once
 
 #include "growl/util/error.h"
+#include <vector>
 
 namespace Growl {
 
@@ -8,7 +9,8 @@ struct FTFontData;
 
 class Font {
 public:
-	Font(FTFontData ft_data);
+	explicit Font(FTFontData ft_data);
+	Font(FTFontData ft_data, std::vector<unsigned char>&& data);
 	~Font();
 
 	// Font is move-only
@@ -23,7 +25,9 @@ public:
 
 private:
 	std::unique_ptr<FTFontData> ft_data;
+	std::vector<unsigned char> data;
 };
 
 Result<Font> loadFontFromFile(std::string file_path) noexcept;
+Result<Font> loadFontFromMemory(std::vector<unsigned char>&& data) noexcept;
 } // namespace Growl

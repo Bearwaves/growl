@@ -1,6 +1,7 @@
 #pragma once
 
 #include "atlas.h"
+#include "font.h"
 #include "growl/util/error.h"
 #include "image.h"
 #include "nlohmann/json.hpp"
@@ -18,7 +19,7 @@ typedef uint64_t AssetsBundleVersion;
 
 constexpr AssetsBundleVersion ASSETS_BUNDLE_LATEST_VERSION = 1;
 
-enum class AssetType : uint64_t { Unknown, Image, Atlas };
+enum class AssetType : uint64_t { Unknown, Image, Atlas, Font };
 
 std::string getAssetTypeName(AssetType type);
 
@@ -54,6 +55,7 @@ public:
 
 	Result<Image> getImage(std::string name) noexcept;
 	Result<Atlas> getAtlas(std::string name) noexcept;
+	Result<Font> getFont(std::string name) noexcept;
 
 private:
 	std::ifstream file;

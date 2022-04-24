@@ -1,19 +1,24 @@
 #include "../../../../thirdparty/fpng/fpng.h"
 #include "../../../../thirdparty/stb_image/stb_image.h"
 #include "../thirdparty/rang.hpp"
+#include "error.h"
 #include "growl/util/assets/bundle.h"
 #include "growl/util/assets/error.h"
+#include "growl/util/assets/font.h"
 #include "nlohmann/json.hpp"
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string>
 
 using Growl::AssetsBundleMapInfo;
 using Growl::AssetsBundleVersion;
 using Growl::AssetsError;
+using Growl::AssetsIncludeError;
+using Growl::AssetsIncludeErrorCode;
 using Growl::AssetsMap;
 using Growl::AssetType;
 using Growl::Error;
@@ -24,29 +29,29 @@ using rang::style;
 using std::cout;
 using std::endl;
 
-Error includeAtlas(
+AssetsIncludeError includeAtlas(
 	const std::filesystem::path path, std::filesystem::path& resolved_path,
 	AssetsMap& assets_map, std::ofstream& outfile) noexcept;
 
-Error includeImage(
+AssetsIncludeError includeImage(
 	const std::filesystem::directory_entry& entry,
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
 	std::ofstream& outfile) noexcept {
 	if (!entry.is_regular_file()) {
-		return nullptr;
+		return AssetsIncludeErrorCode::None;
 	}
 	int width, height, channels;
 	unsigned char* img =
 		stbi_load(entry.path().string().c_str(), &width, &height, &channels, 4);
 	if (!img) {
 		// Not an image.
-		return nullptr;
+		return AssetsIncludeErrorCode::WrongType;
 	}
 	Image image(width, height, channels, img);
 	std::vector<uint8_t> out_buf;
 	if (!fpng::fpng_encode_image_to_memory(
 			img, width, height, 4, out_buf, fpng::FPNG_ENCODE_SLOWER)) {
-		return std::make_unique<AssetsError>("Failed to encode image.");
+		return AssetsIncludeError("Failed to encode image.");
 	}
 	auto ptr = static_cast<unsigned int>(outfile.tellp());
 	assets_map[resolved_path.string()] = {
@@ -56,7 +61,37 @@ Error includeImage(
 
 	std::cout << "Included " << style::bold << resolved_path.string()
 			  << style::reset << "." << endl;
-	return nullptr;
+	return AssetsIncludeErrorCode::None;
+}
+
+AssetsIncludeError includeFont(
+	const std::filesystem::directory_entry& entry,
+	std::filesystem::path& resolved_path, AssetsMap& assets_map,
+	std::ofstream& outfile) noexcept {
+	// Try to create a font
+	if (auto font_result = Growl::loadFontFromFile(entry.path().string());
+		font_result.hasError()) {
+		return AssetsIncludeErrorCode::WrongType;
+	}
+
+	auto size = std::filesystem::file_size(entry.path());
+	std::vector<unsigned char> data(size);
+	std::ifstream file;
+	file.open(entry.path(), std::ios::binary | std::ios::in);
+	if (file.fail()) {
+		return AssetsIncludeError(
+			"Failed to open file " + resolved_path.string());
+	}
+	file.read(reinterpret_cast<char*>(data.data()), size);
+
+	auto ptr = static_cast<unsigned int>(outfile.tellp());
+	assets_map[resolved_path.string()] = {ptr, size, AssetType::Font};
+	outfile.write(reinterpret_cast<const char*>(data.data()), size);
+
+	std::cout << "Included " << style::bold << resolved_path.string()
+			  << style::reset << "." << endl;
+
+	return AssetsIncludeErrorCode::None;
 }
 
 Error processDirectory(
@@ -69,22 +104,35 @@ Error processDirectory(
 			 << dir_resolved_path.string() << style::reset << "." << endl;
 		if (auto err =
 				includeAtlas(path, dir_resolved_path, assets_map, outfile);
-			err) {
+			err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
 			return std::make_unique<AssetsError>(
-				"Failed to build atlas: " + err->message());
+				"Failed to build atlas: " + err.message());
 		}
 		return nullptr;
 	}
 	for (const auto& file_entry : std::filesystem::directory_iterator(path)) {
 		std::filesystem::path resolved_path =
 			std::filesystem::relative(file_entry, assets_dir);
-		if (auto err =
-				includeImage(file_entry, resolved_path, assets_map, outfile);
-			err) {
-			cout << fg::red << "Failed to include asset "
-				 << resolved_path.string() << ": " << err->message()
-				 << style::reset << endl;
-			exit(1);
+
+		// Try to import things as different asset types
+		auto img_err =
+			includeImage(file_entry, resolved_path, assets_map, outfile);
+		if (img_err.getCode() == AssetsIncludeErrorCode::None) {
+			continue;
+		}
+		if (img_err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
+			return std::make_unique<AssetsError>(
+				"Failed to include image: " + img_err.message());
+		}
+
+		auto font_err =
+			includeFont(file_entry, resolved_path, assets_map, outfile);
+		if (font_err.getCode() == AssetsIncludeErrorCode::None) {
+			continue;
+		}
+		if (font_err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
+			return std::make_unique<AssetsError>(
+				"Failed to include font: " + font_err.message());
 		}
 	}
 	return nullptr;

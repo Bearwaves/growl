@@ -2,6 +2,7 @@
 #include "../../../../thirdparty/fpng/fpng.h"
 #include "../../../../thirdparty/stb_image/stb_image.h"
 #include "../thirdparty/rang.hpp"
+#include "error.h"
 #include "growl/util/assets/bundle.h"
 #include "growl/util/assets/error.h"
 #include "growl/util/error.h"
@@ -13,13 +14,15 @@
 #include <ostream>
 
 using Growl::AssetsError;
+using Growl::AssetsIncludeError;
+using Growl::AssetsIncludeErrorCode;
 using Growl::AssetsMap;
 using Growl::AssetType;
 using Growl::AtlasImagePackInfo;
 using Growl::Error;
 using rang::style;
 
-Error includeAtlas(
+AssetsIncludeError includeAtlas(
 	std::filesystem::path path, std::filesystem::path& resolved_path,
 	AssetsMap& assets_map, std::ofstream& outfile) noexcept {
 	int padding = 0;
@@ -28,7 +31,7 @@ Error includeAtlas(
 		json j = json::parse(json_file);
 		padding = j.value("padding", padding);
 	} catch (std::exception&) {
-		return std::make_unique<AssetsError>("Failed to read pack.json");
+		return AssetsIncludeError("Failed to read pack.json");
 	}
 
 	std::vector<Growl::AtlasImagePackInfo> images;
@@ -44,7 +47,7 @@ Error includeAtlas(
 
 	auto result = packAtlasFromFiles(images, padding);
 	if (result.hasError()) {
-		return std::move(result.error());
+		return AssetsIncludeError(result.error()->message());
 	}
 	auto atlas = std::move(result.get());
 	for (auto& [name, _] : atlas.getMappings()) {
@@ -58,7 +61,7 @@ Error includeAtlas(
 			atlas.getImage().getRaw(), atlas.getImage().getWidth(),
 			atlas.getImage().getHeight(), 4, out_buf,
 			fpng::FPNG_ENCODE_SLOWER)) {
-		return std::make_unique<AssetsError>("Failed to encode image.");
+		return AssetsIncludeError("Failed to encode image.");
 	}
 	auto ptr = static_cast<unsigned int>(outfile.tellp());
 	assets_map[resolved_path.string()] = {
@@ -66,5 +69,5 @@ Error includeAtlas(
 	outfile.write(
 		reinterpret_cast<const char*>(out_buf.data()), out_buf.size());
 
-	return nullptr;
+	return AssetsIncludeErrorCode::None;
 }
