@@ -152,7 +152,6 @@ Result<Font> AssetsBundle::getFont(std::string name) noexcept {
 			type_name + "."));
 	}
 
-	std::cout << info.size << ", " << info.position << std::endl;
 	std::vector<unsigned char> font_data;
 	font_data.resize(info.size);
 	file.seekg(info.position);
