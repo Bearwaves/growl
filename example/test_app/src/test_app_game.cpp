@@ -3,11 +3,13 @@
 #include "growl/util/assets/font.h"
 #include "growl/util/assets/font_atlas.h"
 #include "growl/util/assets/image.h"
+#include "growl/util/timer.h"
 #include <memory>
 #include <string>
 
 using Growl::Error;
 using Growl::TestAppGame;
+using Growl::Timer;
 
 Error TestAppGame::init() {
 	getAPI().system()->log("TestAppGame", "Game starting up!");
@@ -24,13 +26,18 @@ Error TestAppGame::init() {
 		return std::move(font_result.error());
 	}
 	font = std::make_unique<Font>(std::move(font_result.get()));
-	getAPI().system()->log("TestAppGame", "Generating font atlas");
-	Result<FontAtlas> font_atlas_result = createFontAtlasFromFont(*font, 50);
-	if (font_atlas_result.hasError()) {
-		return std::move(font_atlas_result.error());
+	{
+		Timer timer(getAPI().system(), "TestAppGame", "Generating font atlas");
+		getAPI().system()->log("TestAppGame", "Generating font atlas");
+		Result<FontAtlas> font_atlas_result =
+			createFontAtlasFromFont(*font, 50);
+		if (font_atlas_result.hasError()) {
+			return std::move(font_atlas_result.error());
+		}
+		font_atlas = getAPI().graphics()->createFontTextureAtlas(
+			font_atlas_result.get(), TextureOptions{false, false});
 	}
-	font_atlas = getAPI().graphics()->createFontTextureAtlas(
-		font_atlas_result.get(), TextureOptions{false, false});
+
 	getAPI().system()->log("TestAppGame", "Generating layout");
 	layout = std::make_unique<GlyphLayout>(*font, "Hello Growl!", 0);
 

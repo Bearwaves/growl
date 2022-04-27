@@ -9,10 +9,12 @@ set(SOURCES
 	"src/font.cpp"
 	"src/font_atlas.cpp"
 	"src/glyph_layout.cpp"
+	"src/timer.cpp"
 	)
 
 set(HEADERS
 	"include/growl/util/error.h"
+	"include/growl/util/timer.h"
 
 	"include/growl/util/assets/bundle.h"
 	"include/growl/util/assets/error.h"
