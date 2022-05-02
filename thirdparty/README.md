@@ -14,6 +14,7 @@
 | UTF8-CPP      | `3.2.1`   | https://github.com/nemtrif/utfcpp       |
 | libpng        | `1.6.37`  | http://libpng.org/pub/png/libpng.html   |
 | zlib          | `1.2.12`  | https://www.zlib.net/                   |
+| msdfgen       | `1.9.2`   | https://github.com/Chlumsky/msdfgen/    |
 
 ## Modifications
 
@@ -33,18 +34,23 @@ Generators, templates, emoji/word/grapheme data are not included.
 
 ### FreeType
 
-Only `src/` and `include/` directories, minus the `tools/` and `dlg/`
+Included only `src/` and `include/` directories, minus the `tools/` and `dlg/`
 directories and `.mk` files.
 
 ### UTF8-CPP
 
-Only `source/` and `CMakeLists.txt`, along with license and README.
+Included only `source/` and `CMakeLists.txt`, along with license and README.
 
 ### libpng
 
-All `.c` and `.h` files, except `example.c` and `pngtest.c`. Used
+Included all `.c` and `.h` files, except `example.c` and `pngtest.c`. Used
 `scripts/pnglibconf.h.prebuilt` as `pnglibconf.h`.
 
 ### zlib
 
-All `.c` and `.h` files from the root.
+Included all `.c` and `.h` files from the root.
+
+### msdfgen
+
+Included `core/`, `ext/`, `include/` and `lib/`, along with top-level headers
+and license.
