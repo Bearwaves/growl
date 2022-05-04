@@ -3,15 +3,17 @@
 
 using Growl::OpenGLShader;
 
-OpenGLShader::OpenGLShader(OpenGLGraphicsAPI& graphics) {
+OpenGLShader::OpenGLShader(
+	OpenGLGraphicsAPI& graphics, std::string vertex_src,
+	std::string fragment_src) {
 	GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-	const char* vertex_source = default_vertex.c_str();
+	const char* vertex_source = vertex_src.c_str();
 	glShaderSource(vertex, 1, &vertex_source, nullptr);
 	glCompileShader(vertex);
 	graphics.checkShaderCompileError(vertex);
 
 	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	const char* fragment_source = default_fragment.c_str();
+	const char* fragment_source = fragment_src.c_str();
 	glShaderSource(fragment, 1, &fragment_source, nullptr);
 	glCompileShader(fragment);
 	graphics.checkShaderCompileError(fragment);
@@ -69,5 +71,25 @@ uniform sampler2D texture0;
 
 void main() {
 	outCol = texture(texture0, TexCoord);
+}
+)";
+
+std::string const OpenGLShader::sdf_fragment = R"(
+#version 150 core
+
+in vec2 TexCoord;
+out vec4 outCol;
+uniform sampler2D texture0;
+
+float median(float r, float g, float b) {
+    return max(min(r, g), min(max(r, g), b));
+}
+
+void main() {
+	vec4 msd = texture(texture0, TexCoord).rgba;
+	float sd = median(msd.r, msd.g, msd.b);
+	float screenPxDistance = 2 *(sd - 0.5);
+	float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
+	outCol = mix(vec4(1, 1, 1, 0), vec4(1, 1, 1, 1), opacity);
 }
 )";

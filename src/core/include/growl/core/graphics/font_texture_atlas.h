@@ -10,7 +10,8 @@ class FontTextureAtlas {
 public:
 	FontTextureAtlas(
 		const FontAtlas& font_atlas, std::unique_ptr<Texture> texture)
-		: glyphs{font_atlas.getGlyphs()}
+		: type{font_atlas.getType()}
+		, glyphs{font_atlas.getGlyphs()}
 		, texture{std::move(texture)} {}
 
 	virtual ~FontTextureAtlas() = default;
@@ -23,11 +24,16 @@ public:
 
 	Result<GlyphPosition> getRegion(int glyph_code) const;
 
+	const FontAtlasType getType() const {
+		return type;
+	}
+
 	const Texture& getTexture() const {
 		return *texture;
 	}
 
 private:
+	FontAtlasType type;
 	std::unordered_map<int, GlyphPosition> glyphs;
 	std::unique_ptr<Texture> texture;
 };

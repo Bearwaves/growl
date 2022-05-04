@@ -9,8 +9,10 @@ namespace Growl {
 class OpenGLBatch : public Batch {
 public:
 	OpenGLBatch(
-		OpenGLShader* shader, glm::mat4 mvp, int width, int height, GLuint fbo)
-		: shader{shader}
+		OpenGLShader* default_shader, OpenGLShader* sdf_shader, glm::mat4 mvp,
+		int width, int height, GLuint fbo)
+		: default_shader{default_shader}
+		, sdf_shader{sdf_shader}
 		, mvp{mvp}
 		, width{width}
 		, height{height}
@@ -34,7 +36,8 @@ public:
 	int getTargetHeight() override;
 
 private:
-	OpenGLShader* shader;
+	OpenGLShader* default_shader;
+	OpenGLShader* sdf_shader;
 	glm::mat4 mvp;
 	int width;
 	int height;

@@ -1,4 +1,5 @@
 #include "opengl_batch.h"
+#include "growl/util/assets/font_atlas.h"
 #include "opengl.h"
 #include "opengl_texture.h"
 #include <vector>
@@ -52,7 +53,7 @@ void OpenGLBatch::draw(
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	shader->bind(mvp);
+	default_shader->bind(mvp);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
@@ -84,7 +85,7 @@ void OpenGLBatch::draw(
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	shader->bind(mvp);
+	default_shader->bind(mvp);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
@@ -134,7 +135,11 @@ void OpenGLBatch::draw(
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
 		indices.data(), GL_STATIC_DRAW);
-	shader->bind(mvp);
+	if (font_texture_atlas.getType() == FontAtlasType::MSDF) {
+		sdf_shader->bind(mvp);
+	} else {
+		default_shader->bind(mvp);
+	}
 	glDrawElements(
 		GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
 }

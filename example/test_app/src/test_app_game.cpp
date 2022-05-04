@@ -35,9 +35,8 @@ Error TestAppGame::init() {
 			return std::move(font_atlas_result.error());
 		}
 		font_atlas = getAPI().graphics()->createFontTextureAtlas(
-			font_atlas_result.get(), TextureOptions{false, false});
+			font_atlas_result.get());
 	}
-
 	getAPI().system()->log("TestAppGame", "Generating layout");
 	layout = std::make_unique<GlyphLayout>(*font, "Hello Growl!", 0);
 

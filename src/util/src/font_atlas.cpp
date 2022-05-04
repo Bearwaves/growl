@@ -4,6 +4,9 @@
 #include "font_internal.h"
 #include "freetype/freetype.h"
 #include "freetype/ftimage.h"
+// Must go after FreeType.
+#include "../../../thirdparty/msdfgen/msdfgen-ext.h"
+#include "../../../thirdparty/msdfgen/msdfgen.h"
 #include "growl/util/assets/error.h"
 #include "growl/util/assets/image.h"
 #include "growl/util/error.h"
@@ -12,11 +15,13 @@
 #include <set>
 #include <unordered_map>
 #include <utf8.h>
+#include <vector>
 
 using Growl::AssetsError;
 using Growl::Error;
 using Growl::Font;
 using Growl::FontAtlas;
+using Growl::FontAtlasType;
 using Growl::GlyphPosition;
 using Growl::Image;
 using Growl::Result;
@@ -32,6 +37,9 @@ static int nextPowerOfTwo(int n) {
 }
 
 static Error setFontFacePixelSize(Font& font, int size) noexcept;
+static bool packRectsIncreasing(
+	std::vector<stbrp_rect>& rects, int start_size, int* out_width,
+	int* out_height);
 static Result<FontAtlas>
 packFontAtlas(Font& font, std::vector<stbrp_rect>& rects) noexcept;
 
@@ -111,6 +119,102 @@ Result<FontAtlas> Growl::createFontAtlasFromFont(
 	return packFontAtlas(font, glyph_rects);
 }
 
+// Distance field font implementation is incomplete.
+Result<FontAtlas>
+Growl::createDistanceFieldFontAtlasFromFont(Font& font) noexcept {
+	if (FT_HAS_COLOR(font.getFTFontData().face)) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to create distance field font atlas: cannot create from "
+			"coloured font."));
+	}
+	if (auto err = setFontFacePixelSize(font, 32); err) {
+		return err;
+	}
+	msdfgen::FontHandle* font_handle =
+		msdfgen::adoptFreetypeFont(font.getFTFontData().face);
+	msdfgen::FontMetrics font_metrics;
+	msdfgen::getFontMetrics(font_metrics, font_handle);
+
+	float scale = 32 / font_metrics.emSize;
+	int border = 2;
+	int pack_border = 1;
+	float range = 2;
+
+	std::vector<stbrp_rect> glyph_rects;
+	for (int i = 0; i < font.getFTFontData().face->num_glyphs; i++) {
+		msdfgen::Shape shape;
+		// int glyph = FT_Get_Char_Index(font.getFTFontData().face, 0x41);
+		msdfgen::loadGlyph(shape, font_handle, msdfgen::GlyphIndex(i));
+		if (shape.validate() && shape.contours.size() > 0) {
+			shape.inverseYAxis = true;
+			shape.normalize();
+			shape.orientContours();
+
+			auto bounds = shape.getBounds(border);
+			int glyph_width = round((bounds.r - bounds.l) * scale);
+			int glyph_height = round((bounds.t - bounds.b) * scale);
+			glyph_rects.push_back(stbrp_rect{
+				i, glyph_width + (pack_border * 2),
+				glyph_height + (pack_border * 2)});
+		}
+	}
+
+	int width, height;
+	if (!packRectsIncreasing(
+			glyph_rects,
+			nextPowerOfTwo(std::max(glyph_rects[0].w, glyph_rects[0].h)),
+			&width, &height)) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to pack font in texture; too large"));
+	}
+
+	std::unordered_map<int, GlyphPosition> glyphs;
+	std::vector<unsigned char> image_data(width * height * 4, 0);
+	for (const auto& rect : glyph_rects) {
+		msdfgen::Shape shape;
+		msdfgen::loadGlyph(shape, font_handle, msdfgen::GlyphIndex(rect.id));
+		if (shape.validate() && shape.contours.size() > 0) {
+			shape.inverseYAxis = true;
+			shape.normalize();
+			shape.orientContours();
+
+			auto bounds = shape.getBounds(border);
+			msdfgen::edgeColoringSimple(shape, 3);
+			msdfgen::Bitmap<float, 4> bitmap(
+				rect.w - (pack_border * 2), rect.h - (pack_border * 2));
+			msdfgen::generateMTSDF(
+				bitmap, shape, range, scale,
+				msdfgen::Vector2(-bounds.l, -bounds.b));
+
+			for (int row = 0; row < bitmap.height(); row++) {
+				for (int col = 0; col < bitmap.width(); col++) {
+					int x = rect.x + pack_border + col;
+					int y = rect.y + pack_border + row;
+					unsigned char* dst =
+						image_data.data() + 4 * (y * width + x);
+					*dst++ = msdfgen::pixelFloatToByte(bitmap(col, row)[0]);
+					*dst++ = msdfgen::pixelFloatToByte(bitmap(col, row)[1]);
+					*dst++ = msdfgen::pixelFloatToByte(bitmap(col, row)[2]);
+					*dst++ = msdfgen::pixelFloatToByte(bitmap(col, row)[3]);
+				}
+			}
+
+			int border_calc = floor(border * scale);
+			glyphs[rect.id] = GlyphPosition{
+				rect.x + pack_border + border_calc,
+				rect.y + pack_border + border_calc,
+				rect.w - ((pack_border + border_calc) * 2),
+				rect.h - ((pack_border + border_calc) * 2)};
+		}
+	}
+
+	msdfgen::destroyFont(font_handle);
+	return FontAtlas(
+		FontAtlasType::MSDF, font,
+		std::make_unique<Image>(width, height, 4, image_data),
+		std::move(glyphs));
+}
+
 Error setFontFacePixelSize(Font& font, int size) noexcept {
 	if (font.getFTFontData().face->num_fixed_sizes) {
 		int best = 0;
@@ -139,21 +243,21 @@ Error setFontFacePixelSize(Font& font, int size) noexcept {
 	return nullptr;
 }
 
-Result<FontAtlas>
-packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
-	int width = nextPowerOfTwo(std::max(glyph_rects[0].w, glyph_rects[0].h));
+bool packRectsIncreasing(
+	std::vector<stbrp_rect>& rects, int start_size, int* out_width,
+	int* out_height) {
+	int width = start_size;
 	int height = width;
-	bool packed = false;
 	while (width <= MAX_SIZE && height <= MAX_SIZE) {
 		stbrp_context ctx;
 		std::vector<stbrp_node> nodes(width * 2);
 		stbrp_init_target(
 			&ctx, width, height, nodes.data(), static_cast<int>(nodes.size()));
 		if (stbrp_pack_rects(
-				&ctx, glyph_rects.data(),
-				static_cast<int>(glyph_rects.size()))) {
-			packed = true;
-			break;
+				&ctx, rects.data(), static_cast<int>(rects.size()))) {
+			*out_width = width;
+			*out_height = height;
+			return true;
 		}
 		if (width <= height) {
 			width *= 2;
@@ -161,7 +265,16 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 			height *= 2;
 		}
 	}
-	if (!packed) {
+	return false;
+}
+
+Result<FontAtlas>
+packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
+	int width, height;
+	if (!packRectsIncreasing(
+			glyph_rects,
+			nextPowerOfTwo(std::max(glyph_rects[0].w, glyph_rects[0].h)),
+			&width, &height)) {
 		return Error(std::make_unique<AssetsError>(
 			"Failed to pack font in texture; too large"));
 	}
@@ -212,6 +325,7 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 	}
 
 	return FontAtlas(
-		font, std::make_unique<Image>(width, height, 4, image_data),
+		FontAtlasType::RGBA, font,
+		std::make_unique<Image>(width, height, 4, image_data),
 		std::move(glyphs));
 }

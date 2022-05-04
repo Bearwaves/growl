@@ -14,12 +14,15 @@ struct GlyphPosition {
 	int h;
 };
 
+enum class FontAtlasType { RGBA, SDF, MSDF };
+
 class FontAtlas {
 public:
 	FontAtlas(
-		Font& font, std::unique_ptr<Image> img,
+		FontAtlasType type, Font& font, std::unique_ptr<Image> img,
 		std::unordered_map<int, GlyphPosition> glyphs)
-		: font{font}
+		: type{type}
+		, font{font}
 		, img{std::move(img)}
 		, glyphs{std::move(glyphs)} {}
 
@@ -31,11 +34,16 @@ public:
 		return *img;
 	};
 
+	const FontAtlasType getType() const {
+		return type;
+	}
+
 	const std::unordered_map<int, GlyphPosition> getGlyphs() const {
 		return glyphs;
 	}
 
 private:
+	FontAtlasType type;
 	Font& font;
 	std::unique_ptr<Image> img;
 	std::unordered_map<int, GlyphPosition> glyphs;
@@ -44,4 +52,5 @@ private:
 Result<FontAtlas> createFontAtlasFromFont(Font& font, int size) noexcept;
 Result<FontAtlas>
 createFontAtlasFromFont(Font& font, int size, std::string text) noexcept;
+Result<FontAtlas> createDistanceFieldFontAtlasFromFont(Font& font) noexcept;
 } // namespace Growl
