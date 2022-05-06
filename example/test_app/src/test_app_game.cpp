@@ -3,6 +3,7 @@
 #include "growl/util/assets/font.h"
 #include "growl/util/assets/font_atlas.h"
 #include "growl/util/assets/image.h"
+#include "growl/util/text/glyph_layout.h"
 #include "growl/util/timer.h"
 #include <memory>
 #include <string>
