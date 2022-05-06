@@ -15,6 +15,7 @@ GlyphLayout::GlyphLayout(
 	, lang{lang}
 	, align{align}
 	, width{width}
+	, requested_width{width}
 	, hb_data{std::make_unique<Growl::HBData>(Growl::HBData{
 		  hb_ft_font_create(font.getFTFontData().face, 0), hb_buffer_create(),
 		  hb_buffer_create()})} {
@@ -68,7 +69,8 @@ void GlyphLayout::layout() noexcept {
 			break_index = cluster;
 			w_break = w;
 		}
-		if (w > width) {
+		if (requested_width && w > requested_width) {
+			std::cout << width << std::endl;
 			if (remaining_index > break_index) {
 				overflowed = true;
 				continue;

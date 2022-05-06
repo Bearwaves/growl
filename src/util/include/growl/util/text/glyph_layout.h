@@ -56,6 +56,7 @@ private:
 	std::string lang;
 	GlyphLayoutAlignment align;
 	int width;
+	int requested_width;
 	int height;
 	int origin_offset;
 	bool overflowed;
