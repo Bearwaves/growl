@@ -10,7 +10,8 @@ struct Growl::FTFontData {
 
 struct Growl::HBData {
 	hb_font_t* font;
-	hb_buffer_t* buffer;
+	hb_buffer_t* buffer_paragraph;
+	hb_buffer_t* buffer_line;
 };
 
 namespace {

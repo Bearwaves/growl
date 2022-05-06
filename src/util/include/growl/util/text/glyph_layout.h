@@ -15,14 +15,21 @@ struct LayoutInfo {
 	int h;
 };
 
+enum class GlyphLayoutAlignment { Auto, Left, Right, Center };
+
 class GlyphLayout {
 public:
-	GlyphLayout(Font& font, std::string text, int width) noexcept;
+	GlyphLayout(
+		Font& font, std::string text, int width,
+		GlyphLayoutAlignment align = GlyphLayoutAlignment::Auto,
+		std::string lang = "en") noexcept;
 	~GlyphLayout() noexcept;
 
 	void layout() noexcept;
 
 	void setText(std::string text);
+
+	void setWidth(int width);
 
 	const int getWidth() const {
 		return width;
@@ -40,13 +47,21 @@ public:
 		return layout_info;
 	}
 
+	const bool isOverflowed() const {
+		return overflowed;
+	}
+
 private:
 	std::string text;
+	std::string lang;
+	GlyphLayoutAlignment align;
 	int width;
 	int height;
 	int origin_offset;
+	bool overflowed;
 	std::unique_ptr<HBData> hb_data;
 	std::vector<LayoutInfo> layout_info;
+	std::vector<char> breaks;
 };
 
 } // namespace Growl
