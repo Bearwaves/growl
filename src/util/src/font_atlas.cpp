@@ -27,6 +27,7 @@ using Growl::Image;
 using Growl::Result;
 
 constexpr int MAX_SIZE = 8192;
+constexpr int SPACING = 1;
 
 static int nextPowerOfTwo(int n) {
 	int i = 2;
@@ -61,8 +62,8 @@ Growl::createFontAtlasFromFont(Font& font, int size) noexcept {
 		// Glyph sizes are represented in 26.6 fractional format, so we shift
 		// them to get the pixel sizes.
 		glyph_rects.push_back(stbrp_rect{
-			i, static_cast<stbrp_coord>(metrics.width >> 6),
-			static_cast<stbrp_coord>(metrics.height >> 6)});
+			i, static_cast<stbrp_coord>(metrics.width >> 6) + SPACING * 2,
+			static_cast<stbrp_coord>(metrics.height >> 6) + SPACING * 2});
 	}
 
 	return packFontAtlas(font, glyph_rects);
@@ -112,8 +113,9 @@ Result<FontAtlas> Growl::createFontAtlasFromFont(
 		// Glyph sizes are represented in 26.6 fractional format, so we shift
 		// them to get the pixel sizes.
 		glyph_rects.push_back(stbrp_rect{
-			glyph_index, static_cast<stbrp_coord>(metrics.width >> 6),
-			static_cast<stbrp_coord>(metrics.height >> 6)});
+			glyph_index,
+			static_cast<stbrp_coord>(metrics.width >> 6) + SPACING * 2,
+			static_cast<stbrp_coord>(metrics.height >> 6) + SPACING * 2});
 	}
 
 	return packFontAtlas(font, glyph_rects);
@@ -321,7 +323,9 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 			}
 		}
 
-		glyphs[rect.id] = GlyphPosition{rect.x, rect.y, rect.w, rect.h};
+		glyphs[rect.id] = GlyphPosition{
+			rect.x + SPACING, rect.y + SPACING, rect.w - SPACING * 2,
+			rect.h - SPACING * 2};
 	}
 
 	return FontAtlas(
