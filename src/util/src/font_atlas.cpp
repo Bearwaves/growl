@@ -300,8 +300,8 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 
 		for (unsigned int row = 0; row < bitmap.rows; row++) {
 			for (unsigned int col = 0; col < bitmap.width; col++) {
-				int x = rect.x + col;
-				int y = rect.y + row;
+				int x = rect.x + col + SPACING;
+				int y = rect.y + row + SPACING;
 				unsigned char* dst =
 					image_data.data() + sizeof(uint32_t) * (y * width + x);
 				unsigned char* src =
