@@ -2,9 +2,11 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
 #include "metal_batch.h"
+#include "metal_shader.h"
 #include "metal_texture.h"
 #include "metal_texture_atlas.h"
 #include <SDL.h>
+#include <memory>
 #include <vector>
 
 using Growl::Error;
@@ -58,7 +60,10 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 	swap_chain.pixelFormat = MTLPixelFormatBGRA8Unorm;
 	device = swap_chain.device;
 	command_queue = [device newCommandQueue];
-	default_shader = std::make_unique<MetalShader>(device);
+	default_shader =
+		std::make_unique<MetalShader>(device, MetalShader::DEFAULT_SHADER);
+	rect_shader =
+		std::make_unique<MetalShader>(device, MetalShader::RECT_SHADER);
 	return nullptr;
 }
 
@@ -167,7 +172,8 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch() {
 									  length:sizeof(projection)
 									 options:MTLResourceStorageModeShared];
 	return std::make_unique<MetalBatch>(
-		command_buffer, surface.texture, default_shader.get(), buffer);
+		command_buffer, surface.texture, default_shader.get(),
+		rect_shader.get(), buffer);
 }
 
 std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
@@ -179,5 +185,6 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
 									  length:sizeof(projection)
 									 options:MTLResourceStorageModeShared];
 	return std::make_unique<MetalBatch>(
-		command_buffer, metal_texture.getRaw(), default_shader.get(), buffer);
+		command_buffer, metal_texture.getRaw(), default_shader.get(),
+		rect_shader.get(), buffer);
 }

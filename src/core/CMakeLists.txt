@@ -20,6 +20,7 @@ set(HEADERS
 	"include/growl/core/game/game.h"
 
 	"include/growl/core/graphics/batch.h"
+	"include/growl/core/graphics/color.h"
 	"include/growl/core/graphics/texture.h"
 	"include/growl/core/graphics/texture_atlas.h"
 	"include/growl/core/graphics/font_texture_atlas.h"

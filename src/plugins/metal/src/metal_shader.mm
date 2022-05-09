@@ -3,12 +3,14 @@
 
 using Growl::MetalShader;
 
-MetalShader::MetalShader(id<MTLDevice> device) {
+MetalShader::MetalShader(id<MTLDevice> device, NSString* const shader_src) {
 	auto compile_options = [MTLCompileOptions new];
 	NSError* compile_error;
-	id<MTLLibrary> lib = [device newLibraryWithSource:DEFAULT_SHADER
-											  options:compile_options
-												error:&compile_error];
+	id<MTLLibrary> lib =
+		[device newLibraryWithSource:[GROWL_SHADER_HEADER
+										 stringByAppendingString:shader_src]
+							 options:compile_options
+							   error:&compile_error];
 	assert(!compile_error);
 	fragment_func = [lib newFunctionWithName:@"pixel_func"];
 	vertex_func = [lib newFunctionWithName:@"vertex_func"];
@@ -59,7 +61,7 @@ void MetalShader::bind(
 	[encoder setRenderPipelineState:pipeline_state];
 }
 
-NSString* const MetalShader::DEFAULT_SHADER = @R"(
+NSString* const MetalShader::GROWL_SHADER_HEADER = @R"(
 #include <metal_stdlib>
 using namespace metal;
 
@@ -70,13 +72,17 @@ struct ConstantBlock {
 struct VertexIn {
 	float2 position;
 	float2 vertPos;
+	float4 color;
 };
 
 struct VertexOut {
 	float2 texCoord0;
 	float4 position [[ position ]];
+	float4 color;
 };
+)";
 
+NSString* const MetalShader::DEFAULT_SHADER = @R"(
 vertex VertexOut vertex_func (
 	constant ConstantBlock& constant_block [[ buffer(0) ]],
 	const device VertexIn* vertex_array [[ buffer(1) ]],
@@ -87,6 +93,7 @@ vertex VertexOut vertex_func (
 	VertexOut outVertex = VertexOut();
 	outVertex.texCoord0 = v.vertPos;
 	outVertex.position = constant_block.mvp * float4(v.position, 0, 1);
+	outVertex.color = v.color;
 
 	return outVertex;
 }
@@ -96,6 +103,29 @@ fragment float4 pixel_func (
 	texture2d<float> tex0 [[ texture(0) ]],
 	sampler sampler0 [[ sampler(0) ]]
 ) {
-	return tex0.sample(sampler0, v.texCoord0);
+	return tex0.sample(sampler0, v.texCoord0) * v.color;
+}
+)";
+
+NSString* const MetalShader::RECT_SHADER = @R"(
+vertex VertexOut vertex_func (
+	constant ConstantBlock& constant_block [[ buffer(0) ]],
+	const device VertexIn* vertex_array [[ buffer(1) ]],
+	unsigned int vid [[ vertex_id ]]
+) {
+	VertexIn v = vertex_array[vid];
+
+	VertexOut outVertex = VertexOut();
+	outVertex.texCoord0 = v.vertPos;
+	outVertex.position = constant_block.mvp * float4(v.position, 0, 1);
+	outVertex.color = v.color;
+
+	return outVertex;
+}
+
+fragment float4 pixel_func (
+	VertexOut v [[ stage_in ]]
+) {
+	return v.color;
 }
 )";

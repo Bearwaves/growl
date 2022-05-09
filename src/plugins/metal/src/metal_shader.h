@@ -7,9 +7,12 @@ namespace Growl {
 
 class MetalShader {
 public:
-	explicit MetalShader(id<MTLDevice> device);
+	explicit MetalShader(id<MTLDevice> device, NSString* const shader_src);
 	~MetalShader();
 	void bind(id<MTLTexture> dst_texture, id<MTLRenderCommandEncoder> encoder);
+
+	static NSString* const DEFAULT_SHADER;
+	static NSString* const RECT_SHADER;
 
 private:
 	id<MTLFunction> vertex_func;
@@ -17,7 +20,7 @@ private:
 	MTLRenderPipelineDescriptor* descriptor = nullptr;
 	MTLVertexDescriptor* vertex_descriptor;
 
-	static NSString* const DEFAULT_SHADER;
+	static NSString* const GROWL_SHADER_HEADER;
 };
 
 }

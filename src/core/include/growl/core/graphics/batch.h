@@ -12,6 +12,9 @@ public:
 	virtual ~Batch() = default;
 	virtual void begin() = 0;
 	virtual void end() = 0;
+
+	virtual void setColor(float r, float g, float b, float a) = 0;
+
 	virtual void draw(
 		const Texture& texture, float x, float y, float width,
 		float height) = 0;
@@ -21,6 +24,8 @@ public:
 	virtual void draw(
 		const GlyphLayout& glyph_layout,
 		const FontTextureAtlas& font_texture_atlas, float x, float y) = 0;
+
+	virtual void drawRect(float x, float y, float width, float height) = 0;
 
 	virtual int getTargetWidth() = 0;
 	virtual int getTargetHeight() = 0;

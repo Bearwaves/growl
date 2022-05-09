@@ -48,6 +48,7 @@ private:
 	NSAutoreleasePool* pool;
 	id<MTLCommandBuffer> command_buffer;
 	std::unique_ptr<MetalShader> default_shader;
+	std::unique_ptr<MetalShader> rect_shader;
 	time_point<high_resolution_clock> last_render;
 
 	std::unique_ptr<Texture>
