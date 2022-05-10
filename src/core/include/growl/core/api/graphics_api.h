@@ -32,7 +32,7 @@ public:
 
 	virtual std::unique_ptr<FontTextureAtlas> createFontTextureAtlas(
 		const FontAtlas& atlas,
-		const TextureOptions options = TextureOptions{}) = 0;
+		const TextureOptions options = TextureOptions{false, false}) = 0;
 
 	virtual std::unique_ptr<Batch> createBatch() = 0;
 	virtual std::unique_ptr<Batch> createBatch(const Texture& texture) = 0;
