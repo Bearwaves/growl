@@ -31,6 +31,10 @@ void OpenGLBatch::end() {
 	}
 }
 
+void OpenGLBatch::setColor(float r, float g, float b, float a) {
+	color = {r, g, b, a};
+}
+
 void OpenGLBatch::draw(
 	const Texture& texture, float x, float y, float width, float height) {
 	auto& tex = static_cast<const OpenGLTexture&>(texture);
@@ -53,7 +57,7 @@ void OpenGLBatch::draw(
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	default_shader->bind(mvp);
+	default_shader->bind(mvp, color);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
@@ -85,7 +89,7 @@ void OpenGLBatch::draw(
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	default_shader->bind(mvp);
+	default_shader->bind(mvp, color);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
@@ -136,12 +140,36 @@ void OpenGLBatch::draw(
 		GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
 		indices.data(), GL_STATIC_DRAW);
 	if (font_texture_atlas.getType() == FontAtlasType::MSDF) {
-		sdf_shader->bind(mvp);
+		sdf_shader->bind(mvp, color);
 	} else {
-		default_shader->bind(mvp);
+		default_shader->bind(mvp, color);
 	}
 	glDrawElements(
 		GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
+}
+
+void OpenGLBatch::drawRect(float x, float y, float width, float height) {
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+
+	float right = x + width;
+	float bottom = y + height;
+	float quad_vertex_data[] = {
+		x,	   y,	   0.0f, 0.0f, // Top-left
+		right, y,	   1.0f, 0.0f, // Top-right
+		right, bottom, 1.0f, 1.0f, // Bottom-right
+		x,	   bottom, 0.0f, 1.0f  // Bottom-left
+	};
+	GLuint elements[] = {0, 1, 2, 2, 3, 0};
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(
+		GL_ARRAY_BUFFER, sizeof(quad_vertex_data), quad_vertex_data,
+		GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(
+		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+	rect_shader->bind(mvp, color);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
 int OpenGLBatch::getTargetWidth() {

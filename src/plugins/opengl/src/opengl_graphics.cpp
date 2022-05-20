@@ -78,6 +78,8 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 	default_shader = std::make_unique<OpenGLShader>(*this);
 	sdf_shader = std::make_unique<OpenGLShader>(
 		*this, OpenGLShader::default_vertex, OpenGLShader::sdf_fragment);
+	rect_shader = std::make_unique<OpenGLShader>(
+		*this, OpenGLShader::default_vertex, OpenGLShader::rect_fragment);
 	setupDebugCallback();
 
 	return nullptr;
@@ -166,7 +168,8 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {
 	auto projection = glm::ortho<float>(
 		0, static_cast<float>(w), static_cast<float>(h), 0, 1, -1);
 	return std::make_unique<OpenGLBatch>(
-		default_shader.get(), sdf_shader.get(), projection, w, h, 0);
+		default_shader.get(), sdf_shader.get(), rect_shader.get(), projection,
+		w, h, 0);
 }
 
 std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
@@ -185,8 +188,8 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return std::make_unique<OpenGLBatch>(
-		default_shader.get(), sdf_shader.get(), projection, texture.getWidth(),
-		texture.getHeight(), fbo);
+		default_shader.get(), sdf_shader.get(), rect_shader.get(), projection,
+		texture.getWidth(), texture.getHeight(), fbo);
 }
 
 void OpenGLGraphicsAPI::checkGLError(const char* file, long line) {

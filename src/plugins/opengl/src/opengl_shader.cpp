@@ -1,4 +1,5 @@
 #include "opengl_shader.h"
+#include "growl/core/graphics/color.h"
 #include "opengl_graphics.h"
 
 using Growl::OpenGLShader;
@@ -31,19 +32,23 @@ OpenGLShader::~OpenGLShader() {
 	glDeleteProgram(program);
 }
 
-void OpenGLShader::bind(glm::mat4 mvp) {
+void OpenGLShader::bind(glm::mat4 mvp, Color color) {
 	glUseProgram(program);
 	GLint pos_attrib = glGetAttribLocation(program, "position");
 	glEnableVertexAttribArray(pos_attrib);
 	glVertexAttribPointer(
 		pos_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
 	GLint tex_attrib = glGetAttribLocation(program, "texCoord");
-	glEnableVertexAttribArray(tex_attrib);
-	glVertexAttribPointer(
-		tex_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
-		(void*)(2 * sizeof(GLfloat)));
+	if (tex_attrib >= 0) {
+		glEnableVertexAttribArray(tex_attrib);
+		glVertexAttribPointer(
+			tex_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
+			(void*)(2 * sizeof(GLfloat)));
+	}
 	GLuint mvp_id = glGetUniformLocation(program, "mvp");
 	glUniformMatrix4fv(mvp_id, 1, GL_FALSE, glm::value_ptr(mvp));
+	GLuint color_id = glGetUniformLocation(program, "color");
+	glUniform4f(color_id, color.r, color.g, color.b, color.a);
 }
 
 std::string const OpenGLShader::default_vertex = R"(
@@ -68,9 +73,10 @@ std::string const OpenGLShader::default_fragment = R"(
 in vec2 TexCoord;
 out vec4 outCol;
 uniform sampler2D texture0;
+uniform vec4 color;
 
 void main() {
-	outCol = texture(texture0, TexCoord);
+	outCol = texture(texture0, TexCoord) * color;
 }
 )";
 
@@ -80,6 +86,7 @@ std::string const OpenGLShader::sdf_fragment = R"(
 in vec2 TexCoord;
 out vec4 outCol;
 uniform sampler2D texture0;
+uniform vec4 color;
 
 float median(float r, float g, float b) {
     return max(min(r, g), min(max(r, g), b));
@@ -90,6 +97,17 @@ void main() {
 	float sd = median(msd.r, msd.g, msd.b);
 	float screenPxDistance = 2 *(sd - 0.5);
 	float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
-	outCol = mix(vec4(1, 1, 1, 0), vec4(1, 1, 1, 1), opacity);
+	outCol = mix(vec4(1, 1, 1, 0), vec4(1, 1, 1, 1), opacity) * color;
+}
+)";
+
+std::string const OpenGLShader::rect_fragment = R"(
+#version 150 core
+
+out vec4 outCol;
+uniform vec4 color;
+
+void main() {
+	outCol = color;
 }
 )";
