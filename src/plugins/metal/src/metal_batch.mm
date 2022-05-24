@@ -1,5 +1,6 @@
 #include "metal_batch.h"
 #include "metal_texture.h"
+#include <cmath>
 #include <memory>
 #include <vector>
 
@@ -50,25 +51,17 @@ void MetalBatch::draw(
 	tex.bind(encoder);
 	default_shader->bind(surface, encoder);
 
-	float right = x + width;
-	float bottom = y + height;
+	float right = std::round(x + width);
+	float bottom = std::round(y + height);
 
-	// Address texel centres
-	// TODO don't?
-	float tex_left = (region.region.x + 0.5) / (float)tex.getWidth();
-	float tex_top = (region.region.y + 0.5) / (float)tex.getHeight();
-	float tex_right =
-		(region.region.x + region.region.width + 0.5) / (float)tex.getWidth();
-	float tex_bottom =
-		(region.region.y + region.region.height + 0.5) / (float)tex.getHeight();
-
+	auto& reg = region.region;
 	std::vector<float> vertices;
-	addVertex(vertices, right, bottom, tex_right, tex_bottom);
-	addVertex(vertices, x, bottom, tex_left, tex_bottom);
-	addVertex(vertices, x, y, tex_left, tex_top);
-	addVertex(vertices, right, bottom, tex_right, tex_bottom);
-	addVertex(vertices, x, y, tex_left, tex_top);
-	addVertex(vertices, right, y, tex_right, tex_top);
+	addVertex(vertices, right, bottom, reg.u1, reg.v1);
+	addVertex(vertices, x, bottom, reg.u0, reg.v1);
+	addVertex(vertices, x, y, reg.u0, reg.v0);
+	addVertex(vertices, right, bottom, reg.u1, reg.v1);
+	addVertex(vertices, x, y, reg.u0, reg.v0);
+	addVertex(vertices, right, y, reg.u1, reg.v0);
 	[encoder setVertexBytes:vertices.data()
 					 length:vertices.size() * sizeof(float)
 					atIndex:1];
@@ -87,10 +80,10 @@ void MetalBatch::draw(
 
 	std::vector<float> vertices;
 	for (auto& glyph : glyph_layout.getLayout()) {
-		float gx = x + glyph.x;
-		float gy = y + glyph.y;
-		float right = gx + glyph.w;
-		float bottom = gy + glyph.h;
+		float gx = std::round(x + glyph.x);
+		float gy = std::round(y + glyph.y);
+		float right = std::round(gx + glyph.w);
+		float bottom = std::round(gy + glyph.h);
 
 		// Replace this by translating the glyphs in the layout?
 		const auto& region_result =
@@ -98,19 +91,14 @@ void MetalBatch::draw(
 		if (region_result.hasError()) {
 			continue;
 		}
-		auto region = region_result.get();
+		auto& reg = region_result.get();
 
-		float tex_left = (region.x + 0.5) / (float)tex.getWidth();
-		float tex_top = (region.y + 0.5) / (float)tex.getHeight();
-		float tex_right = (region.x + region.w + 0.5) / (float)tex.getWidth();
-		float tex_bottom = (region.y + region.h + 0.5) / (float)tex.getHeight();
-
-		addVertex(vertices, right, bottom, tex_right, tex_bottom);
-		addVertex(vertices, gx, bottom, tex_left, tex_bottom);
-		addVertex(vertices, gx, gy, tex_left, tex_top);
-		addVertex(vertices, right, bottom, tex_right, tex_bottom);
-		addVertex(vertices, gx, gy, tex_left, tex_top);
-		addVertex(vertices, right, gy, tex_right, tex_top);
+		addVertex(vertices, right, bottom, reg.u1, reg.v1);
+		addVertex(vertices, gx, bottom, reg.u0, reg.v1);
+		addVertex(vertices, gx, gy, reg.u0, reg.v0);
+		addVertex(vertices, right, bottom, reg.u1, reg.v1);
+		addVertex(vertices, gx, gy, reg.u0, reg.v0);
+		addVertex(vertices, right, gy, reg.u1, reg.v0);
 	}
 	[encoder setVertexBytes:vertices.data()
 					 length:vertices.size() * sizeof(float)
