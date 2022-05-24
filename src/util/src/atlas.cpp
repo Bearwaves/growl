@@ -67,6 +67,8 @@ Result<Atlas> Growl::packAtlasFromFiles(
 
 	std::vector<unsigned char> texture_data(width * height * sizeof(uint32_t));
 	std::unordered_map<std::string, AtlasRegion> mappings;
+	const float inv_tex_width = 1.0f / width;
+	const float inv_tex_height = 1.0f / height;
 	for (size_t i = 0; i < rects.size(); i++) {
 		auto& rect = rects[i];
 		auto& image = images[rect.id];
@@ -87,7 +89,10 @@ Result<Atlas> Growl::packAtlasFromFiles(
 		}
 
 		mappings[image.path.filename().string()] = AtlasRegion{
-			rect.x + padding, rect.y + padding, img_width, img_height};
+			(rect.x + padding) * inv_tex_width,
+			(rect.y + padding) * inv_tex_height,
+			(rect.x + img_width - padding) * inv_tex_width,
+			(rect.y + img_height - padding) * inv_tex_height};
 
 		uint32_t* img_32 = reinterpret_cast<uint32_t*>(img_data);
 
@@ -124,12 +129,12 @@ Result<Atlas> Growl::packAtlasFromFiles(
 }
 
 void Growl::to_json(json& j, const AtlasRegion& r) {
-	j = json{{"x", r.x}, {"y", r.y}, {"width", r.width}, {"height", r.height}};
+	j = json{{"u0", r.u0}, {"v0", r.v0}, {"u1", r.u1}, {"v1", r.v1}};
 }
 
 void Growl::from_json(const json& j, AtlasRegion& r) {
-	j.at("x").get_to(r.x);
-	j.at("y").get_to(r.y);
-	j.at("width").get_to(r.width);
-	j.at("height").get_to(r.height);
+	j.at("u0").get_to(r.u0);
+	j.at("v0").get_to(r.v0);
+	j.at("u1").get_to(r.u1);
+	j.at("v1").get_to(r.v1);
 }

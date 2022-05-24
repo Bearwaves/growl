@@ -129,7 +129,7 @@ Growl::createDistanceFieldFontAtlasFromFont(Font& font) noexcept {
 			"Failed to create distance field font atlas: cannot create from "
 			"coloured font."));
 	}
-	if (auto err = setFontFacePixelSize(font, 32); err) {
+	if (auto err = setFontFacePixelSize(font, 100); err) {
 		return err;
 	}
 	msdfgen::FontHandle* font_handle =
@@ -145,7 +145,6 @@ Growl::createDistanceFieldFontAtlasFromFont(Font& font) noexcept {
 	std::vector<stbrp_rect> glyph_rects;
 	for (int i = 0; i < font.getFTFontData().face->num_glyphs; i++) {
 		msdfgen::Shape shape;
-		// int glyph = FT_Get_Char_Index(font.getFTFontData().face, 0x41);
 		msdfgen::loadGlyph(shape, font_handle, msdfgen::GlyphIndex(i));
 		if (shape.validate() && shape.contours.size() > 0) {
 			shape.inverseYAxis = true;
@@ -172,6 +171,9 @@ Growl::createDistanceFieldFontAtlasFromFont(Font& font) noexcept {
 
 	std::unordered_map<int, GlyphPosition> glyphs;
 	std::vector<unsigned char> image_data(width * height * 4, 0);
+	const float inv_tex_width = 1.0f / width;
+	const float inv_tex_height = 1.0f / height;
+
 	for (const auto& rect : glyph_rects) {
 		msdfgen::Shape shape;
 		msdfgen::loadGlyph(shape, font_handle, msdfgen::GlyphIndex(rect.id));
@@ -201,12 +203,14 @@ Growl::createDistanceFieldFontAtlasFromFont(Font& font) noexcept {
 				}
 			}
 
-			int border_calc = floor(border * scale);
+			int border_calc = border * scale;
 			glyphs[rect.id] = GlyphPosition{
-				rect.x + pack_border + border_calc,
-				rect.y + pack_border + border_calc,
-				rect.w - ((pack_border + border_calc) * 2),
-				rect.h - ((pack_border + border_calc) * 2)};
+				(rect.x + pack_border + border_calc) * inv_tex_width,
+				(rect.y + pack_border + border_calc) * inv_tex_height,
+				(rect.x + (rect.w - (pack_border + border_calc))) *
+					inv_tex_width,
+				(rect.y + (rect.h - (pack_border + border_calc))) *
+					inv_tex_height};
 		}
 	}
 
@@ -283,6 +287,8 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 
 	std::unordered_map<int, GlyphPosition> glyphs;
 	std::vector<unsigned char> image_data(width * height * sizeof(uint32_t), 0);
+	const float inv_tex_width = 1.0f / width;
+	const float inv_tex_height = 1.0f / height;
 	bool has_color = FT_HAS_COLOR(font.getFTFontData().face);
 	int load_params = FT_LOAD_RENDER;
 	if (has_color) {
@@ -324,8 +330,10 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 		}
 
 		glyphs[rect.id] = GlyphPosition{
-			rect.x + SPACING, rect.y + SPACING, rect.w - SPACING * 2,
-			rect.h - SPACING * 2};
+			(rect.x + SPACING) * inv_tex_width,
+			(rect.y + SPACING) * inv_tex_height,
+			(rect.x + (rect.w - SPACING)) * inv_tex_width,
+			(rect.y + (rect.h - SPACING)) * inv_tex_height};
 	}
 
 	return FontAtlas(

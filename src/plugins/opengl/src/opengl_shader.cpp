@@ -95,7 +95,7 @@ float median(float r, float g, float b) {
 void main() {
 	vec4 msd = texture(texture0, TexCoord).rgba;
 	float sd = median(msd.r, msd.g, msd.b);
-	float screenPxDistance = 2 *(sd - 0.5);
+	float screenPxDistance = 6.25 *(sd - 0.5);
 	float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
 	outCol = mix(vec4(1, 1, 1, 0), vec4(1, 1, 1, 1), opacity) * color;
 }

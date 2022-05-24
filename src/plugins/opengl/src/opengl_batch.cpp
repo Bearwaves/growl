@@ -2,6 +2,7 @@
 #include "growl/util/assets/font_atlas.h"
 #include "opengl.h"
 #include "opengl_texture.h"
+#include <cmath>
 #include <vector>
 
 using Growl::OpenGLBatch;
@@ -70,17 +71,11 @@ void OpenGLBatch::draw(
 	glEnable(GL_BLEND);
 	float right = x + width;
 	float bottom = y + height;
-	// Address texel centres
-	float tex_left = (region.region.x + 0.5f) / (float)tex.getWidth();
-	float tex_top = (region.region.y + 0.5f) / (float)tex.getHeight();
-	float tex_right =
-		(region.region.x + region.region.width + 0.5f) / (float)tex.getWidth();
-	float tex_bottom = (region.region.y + region.region.height + 0.5f) /
-					   (float)tex.getHeight();
-	float quad_vertex_data[] = {x,	   y,	   tex_left,  tex_top,
-								right, y,	   tex_right, tex_top,
-								right, bottom, tex_right, tex_bottom,
-								x,	   bottom, tex_left,  tex_bottom};
+	float quad_vertex_data[] = {
+		x,	   y,	   region.region.u0, region.region.v0,
+		right, y,	   region.region.u1, region.region.v0,
+		right, bottom, region.region.u1, region.region.v1,
+		x,	   bottom, region.region.u0, region.region.v1};
 	GLuint elements[] = {0, 1, 2, 2, 3, 0};
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(
@@ -106,10 +101,10 @@ void OpenGLBatch::draw(
 	std::vector<GLuint> indices;
 	GLuint i = 0;
 	for (auto& glyph : glyph_layout.getLayout()) {
-		float gx = x + glyph.x;
-		float gy = y + glyph.y;
-		float right = gx + glyph.w;
-		float bottom = gy + glyph.h;
+		float gx = std::round(x + glyph.x);
+		float gy = std::round(y + glyph.y);
+		float right = std::round(gx + glyph.w);
+		float bottom = std::round(gy + glyph.h);
 
 		// Replace this by translating the glyphs in the layout?
 		const auto& region_result =
@@ -119,14 +114,10 @@ void OpenGLBatch::draw(
 		}
 		auto& region = region_result.get();
 
-		float tex_left = region.x / (float)tex.getWidth();
-		float tex_top = region.y / (float)tex.getHeight();
-		float tex_right = (region.x + region.w) / (float)tex.getWidth();
-		float tex_bottom = (region.y + region.h) / (float)tex.getHeight();
 		vertices.insert(
-			vertices.end(),
-			{gx, gy, tex_left, tex_top, right, gy, tex_right, tex_top, right,
-			 bottom, tex_right, tex_bottom, gx, bottom, tex_left, tex_bottom});
+			vertices.end(), {gx, gy, region.u0, region.v0, right, gy, region.u1,
+							 region.v0, right, bottom, region.u1, region.v1, gx,
+							 bottom, region.u0, region.v1});
 		indices.insert(indices.end(), {i, i + 1, i + 2, i + 2, i + 3, i});
 		i += 4;
 	}

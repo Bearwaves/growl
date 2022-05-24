@@ -32,10 +32,10 @@ private:
 };
 
 struct AtlasRegion {
-	int x;
-	int y;
-	int width;
-	int height;
+	float u0;
+	float v0;
+	float u1;
+	float v1;
 };
 
 // Turn off name linting as json library needs these.

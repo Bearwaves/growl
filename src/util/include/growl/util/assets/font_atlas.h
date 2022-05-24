@@ -8,10 +8,10 @@
 namespace Growl {
 
 struct GlyphPosition {
-	int x;
-	int y;
-	int w;
-	int h;
+	float u0; // left
+	float v0; // top
+	float u1; // right
+	float v1; // bottom
 };
 
 enum class FontAtlasType { RGBA, SDF, MSDF };
