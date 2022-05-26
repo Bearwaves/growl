@@ -13,11 +13,12 @@ public:
 	MetalBatch(
 		id<MTLCommandBuffer> command_buffer, id<MTLTexture> surface,
 		MetalShader* default_shader, MetalShader* rect_shader,
-		id<MTLBuffer> constant_buffer)
+		MetalShader* sdf_shader, id<MTLBuffer> constant_buffer)
 		: command_buffer{command_buffer}
 		, surface{surface}
 		, default_shader{default_shader}
 		, rect_shader{rect_shader}
+		, sdf_shader{sdf_shader}
 		, constant_buffer{constant_buffer}
 		, color{1, 1, 1, 1} {}
 	void begin() override;
@@ -45,6 +46,7 @@ private:
 	id<MTLRenderCommandEncoder> encoder;
 	MetalShader* default_shader;
 	MetalShader* rect_shader;
+	MetalShader* sdf_shader;
 	id<MTLBuffer> constant_buffer;
 	Color color;
 

@@ -64,6 +64,7 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 		std::make_unique<MetalShader>(device, MetalShader::DEFAULT_SHADER);
 	rect_shader =
 		std::make_unique<MetalShader>(device, MetalShader::RECT_SHADER);
+	sdf_shader = std::make_unique<MetalShader>(device, MetalShader::SDF_SHADER);
 	return nullptr;
 }
 
@@ -173,7 +174,7 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch() {
 									 options:MTLResourceStorageModeShared];
 	return std::make_unique<MetalBatch>(
 		command_buffer, surface.texture, default_shader.get(),
-		rect_shader.get(), buffer);
+		rect_shader.get(), sdf_shader.get(), buffer);
 }
 
 std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
@@ -186,5 +187,5 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
 									 options:MTLResourceStorageModeShared];
 	return std::make_unique<MetalBatch>(
 		command_buffer, metal_texture.getRaw(), default_shader.get(),
-		rect_shader.get(), buffer);
+		rect_shader.get(), sdf_shader.get(), buffer);
 }

@@ -129,3 +129,36 @@ fragment float4 pixel_func (
 	return v.color;
 }
 )";
+
+NSString* const MetalShader::SDF_SHADER = @R"(
+vertex VertexOut vertex_func (
+	constant ConstantBlock& constant_block [[ buffer(0) ]],
+	const device VertexIn* vertex_array [[ buffer(1) ]],
+	unsigned int vid [[ vertex_id ]]
+) {
+	VertexIn v = vertex_array[vid];
+
+	VertexOut outVertex = VertexOut();
+	outVertex.texCoord0 = v.vertPos;
+	outVertex.position = constant_block.mvp * float4(v.position, 0, 1);
+	outVertex.color = v.color;
+
+	return outVertex;
+}
+
+float median(float r, float g, float b) {
+    return max(min(r, g), min(max(r, g), b));
+}
+
+fragment float4 pixel_func (
+	VertexOut v [[ stage_in ]],
+	texture2d<float> tex0 [[ texture(0) ]],
+	sampler sampler0 [[ sampler(0) ]]
+) {
+	float4 msd = tex0.sample(sampler0, v.texCoord0);
+	float sd = median(msd.r, msd.g, msd.b) - 0.5;
+	float d = fwidth(sd);
+	float opacity = smoothstep(-d, d, sd);
+	return float4(v.color.rgb, v.color.a * opacity);
+}
+)";

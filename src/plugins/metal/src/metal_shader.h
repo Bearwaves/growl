@@ -13,6 +13,7 @@ public:
 
 	static NSString* const DEFAULT_SHADER;
 	static NSString* const RECT_SHADER;
+	static NSString* const SDF_SHADER;
 
 private:
 	id<MTLFunction> vertex_func;
