@@ -1,27 +1,36 @@
 #include "../../../../thirdparty/fpng/fpng.h"
 #include "../../../../thirdparty/stb_image/stb_image.h"
 #include "../thirdparty/rang.hpp"
+#include "assets_config.h"
 #include "error.h"
 #include "growl/util/assets/bundle.h"
 #include "growl/util/assets/error.h"
 #include "growl/util/assets/font.h"
+#include "growl/util/assets/font_atlas.h"
 #include "nlohmann/json.hpp"
 #include <cstdint>
+#include <exception>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
+using Growl::AssetConfig;
+using Growl::AssetInfo;
 using Growl::AssetsBundleMapInfo;
+using Growl::AssetsBundleMSDFFontInfo;
 using Growl::AssetsBundleVersion;
 using Growl::AssetsError;
 using Growl::AssetsIncludeError;
 using Growl::AssetsIncludeErrorCode;
 using Growl::AssetsMap;
 using Growl::AssetType;
+using Growl::AtlasConfig;
 using Growl::Error;
+using Growl::FontConfig;
 using Growl::Image;
 using nlohmann::json;
 using rang::fg;
@@ -30,8 +39,9 @@ using std::cout;
 using std::endl;
 
 AssetsIncludeError includeAtlas(
-	const std::filesystem::path path, std::filesystem::path& resolved_path,
-	AssetsMap& assets_map, std::ofstream& outfile) noexcept;
+	const AtlasConfig& config, const std::filesystem::path& path,
+	const std::filesystem::path& resolved_path, AssetsMap& assets_map,
+	std::ofstream& outfile) noexcept;
 
 AssetsIncludeError includeImage(
 	const std::filesystem::directory_entry& entry,
@@ -65,12 +75,12 @@ AssetsIncludeError includeImage(
 }
 
 AssetsIncludeError includeFont(
-	const std::filesystem::directory_entry& entry,
+	const std::filesystem::directory_entry& entry, const FontConfig& config,
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
 	std::ofstream& outfile) noexcept {
 	// Try to create a font
-	if (auto font_result = Growl::loadFontFromFile(entry.path().string());
-		font_result.hasError()) {
+	auto font_result = Growl::loadFontFromFile(entry.path().string());
+	if (font_result.hasError()) {
 		return AssetsIncludeErrorCode::WrongType;
 	}
 
@@ -85,11 +95,35 @@ AssetsIncludeError includeFont(
 	file.read(reinterpret_cast<char*>(data.data()), size);
 
 	auto ptr = static_cast<unsigned int>(outfile.tellp());
-	assets_map[resolved_path.string()] = {ptr, size, AssetType::Font};
+	AssetInfo info{ptr, size, AssetType::Font};
 	outfile.write(reinterpret_cast<const char*>(data.data()), size);
 
 	std::cout << "Included " << style::bold << resolved_path.string()
 			  << style::reset << "." << endl;
+
+	if (config.msdf) {
+		std::cout << "Generating MSDF font atlas..." << std::endl;
+		auto dist_result = Growl::createDistanceFieldFontAtlasFromFont(
+			font_result.get(), config.msdfSize);
+		if (dist_result.hasError()) {
+			return AssetsIncludeError(
+				"failed to create MSDF font: " +
+				dist_result.error()->message());
+		}
+		std::vector<uint8_t> out_buf;
+		auto& image = dist_result.get().getImage();
+		if (!fpng::fpng_encode_image_to_memory(
+				image.getRaw(), image.getWidth(), image.getHeight(),
+				image.getChannels(), out_buf, fpng::FPNG_ENCODE_SLOWER)) {
+			return AssetsIncludeError("Failed to encode MSDF image.");
+		}
+		info.font = AssetsBundleMSDFFontInfo{
+			static_cast<unsigned int>(outfile.tellp()), out_buf.size(),
+			dist_result.get().getGlyphs()};
+		std::cout << "Included MSDF font atlas for " << style::bold
+				  << resolved_path.string() << style::reset << "." << std::endl;
+	}
+	assets_map[resolved_path.string()] = info;
 
 	return AssetsIncludeErrorCode::None;
 }
@@ -99,11 +133,23 @@ Error processDirectory(
 	std::ofstream& outfile) {
 	std::filesystem::path dir_resolved_path =
 		std::filesystem::relative(path, assets_dir);
-	if (std::filesystem::exists(path / "atlas.json")) {
+	std::unordered_map<std::string, AssetConfig> config;
+	if (std::filesystem::exists(path / "assets.json")) {
+		try {
+			std::ifstream config_file(path / "assets.json");
+			config = json::parse(config_file);
+		} catch (std::exception& e) {
+			return std::make_unique<AssetsError>(
+				"Failed to parse assets.json: " + std::string(e.what()));
+		}
+	}
+	if (auto it = config.find(".");
+		it != config.end() && it->second.atlas.has_value()) {
 		cout << "Building atlas for " << style::bold
 			 << dir_resolved_path.string() << style::reset << "." << endl;
-		if (auto err =
-				includeAtlas(path, dir_resolved_path, assets_map, outfile);
+		if (auto err = includeAtlas(
+				it->second.atlas.value(), path, dir_resolved_path, assets_map,
+				outfile);
 			err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
 			return std::make_unique<AssetsError>(
 				"Failed to build atlas: " + err.message());
@@ -113,6 +159,14 @@ Error processDirectory(
 	for (const auto& file_entry : std::filesystem::directory_iterator(path)) {
 		std::filesystem::path resolved_path =
 			std::filesystem::relative(file_entry, assets_dir);
+
+		AssetConfig asset_config;
+		if (auto it = config.find(file_entry.path().filename());
+			it != config.end()) {
+			asset_config = it->second;
+		} else if (auto it = config.find("*"); it != config.end()) {
+			asset_config = it->second;
+		}
 
 		// Try to import things as different asset types
 		auto img_err =
@@ -125,8 +179,12 @@ Error processDirectory(
 				"Failed to include image: " + img_err.message());
 		}
 
-		auto font_err =
-			includeFont(file_entry, resolved_path, assets_map, outfile);
+		FontConfig font_config;
+		if (asset_config.font.has_value()) {
+			font_config = asset_config.font.value();
+		}
+		auto font_err = includeFont(
+			file_entry, font_config, resolved_path, assets_map, outfile);
 		if (font_err.getCode() == AssetsIncludeErrorCode::None) {
 			continue;
 		}
@@ -207,6 +265,10 @@ void listAssets(std::string assets_bundle) {
 			for (auto& [name, _] : info.atlas_regions.value()) {
 				cout << "    • " << name << endl;
 			}
+		}
+		if (info.type == AssetType::Font && info.font.has_value()) {
+			cout << "   Includes MSDF atlas with "
+				 << info.font.value().glyphs.size() << " glyphs." << endl;
 		}
 	}
 }

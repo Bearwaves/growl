@@ -10,6 +10,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <unordered_map>
 
 using nlohmann::json;
 
@@ -28,11 +29,18 @@ struct AssetsBundleMapInfo {
 	uint64_t size;
 };
 
+struct AssetsBundleMSDFFontInfo {
+	uint64_t msdf_position;
+	uint64_t msdf_size;
+	std::unordered_map<int, AtlasRegion> glyphs;
+};
+
 struct AssetInfo {
 	uint64_t position;
 	uint64_t size;
 	AssetType type;
 	std::optional<std::unordered_map<std::string, AtlasRegion>> atlas_regions;
+	std::optional<AssetsBundleMSDFFontInfo> font;
 };
 
 // Turn off name linting as json library needs these.
@@ -40,6 +48,10 @@ struct AssetInfo {
 void to_json(json& j, const AssetInfo& r);
 // NOLINTNEXTLINE(readability-identifier-naming)
 void from_json(const json& j, AssetInfo& r);
+// NOLINTNEXTLINE(readability-identifier-naming)
+void to_json(json& j, const AssetsBundleMSDFFontInfo& r);
+// NOLINTNEXTLINE(readability-identifier-naming)
+void from_json(const json& j, AssetsBundleMSDFFontInfo& r);
 
 using AssetsMap = std::map<std::string, AssetInfo>;
 

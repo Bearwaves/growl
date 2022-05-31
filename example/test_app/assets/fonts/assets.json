@@ -1,0 +1,13 @@
+{
+  "*": {
+    "font": {
+      "msdf": true,
+      "msdfSize": 32
+    }
+  },
+  "notosans-medium.ttc": {
+    "font": {
+      "msdf": false
+    }
+  }
+}

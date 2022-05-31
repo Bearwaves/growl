@@ -50,6 +50,9 @@ void Growl::to_json(json& j, const AssetInfo& r) {
 	if (r.atlas_regions.has_value()) {
 		j["regions"] = r.atlas_regions.value();
 	}
+	if (r.font.has_value()) {
+		j["font"] = r.font.value();
+	}
 }
 
 void Growl::from_json(const json& j, AssetInfo& r) {
@@ -60,6 +63,22 @@ void Growl::from_json(const json& j, AssetInfo& r) {
 		r.atlas_regions =
 			j.at("regions").get<std::unordered_map<std::string, AtlasRegion>>();
 	}
+	if (j.contains("font")) {
+		r.font = j.at("font").get<AssetsBundleMSDFFontInfo>();
+	}
+}
+
+void Growl::to_json(json& j, const AssetsBundleMSDFFontInfo& r) {
+	j = json{
+		{"msdfPosition", r.msdf_position},
+		{"msdfSize", r.msdf_size},
+		{"glyphs", r.glyphs}};
+}
+
+void Growl::from_json(const json& j, AssetsBundleMSDFFontInfo& r) {
+	j.at("msdfPosition").get_to(r.msdf_position);
+	j.at("msdfSize").get_to(r.msdf_size);
+	j.at("glyphs").get_to(r.glyphs);
 }
 
 std::string Growl::getAssetTypeName(AssetType type) {

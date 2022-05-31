@@ -9,11 +9,13 @@ set(SOURCES
 	"src/main.cpp"
 	"src/assets.cpp"
 	"src/atlas.cpp"
+	"src/assets_config.cpp"
 	)
 
 set(HEADERS
 	"thirdparty/CLI11.hpp"
 	"thirdparty/rang.hpp"
+	"src/assets_config.h"
 	)
 
 add_executable(growl-cmd ${SOURCES} ${HEADERS})

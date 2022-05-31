@@ -1,6 +1,7 @@
 #pragma once
 
 #include "growl/core/graphics/texture.h"
+#include "growl/util/assets/atlas.h"
 #include "growl/util/assets/font_atlas.h"
 #include <unordered_map>
 
@@ -22,7 +23,7 @@ public:
 	FontTextureAtlas(FontTextureAtlas&&) = default;
 	FontTextureAtlas& operator=(FontTextureAtlas&&) = default;
 
-	Result<GlyphPosition> getRegion(int glyph_code) const;
+	Result<AtlasRegion> getRegion(int glyph_code) const;
 
 	const FontAtlasType getType() const {
 		return type;
@@ -34,7 +35,7 @@ public:
 
 private:
 	FontAtlasType type;
-	std::unordered_map<int, GlyphPosition> glyphs;
+	std::unordered_map<int, AtlasRegion> glyphs;
 	std::unique_ptr<Texture> texture;
 };
 

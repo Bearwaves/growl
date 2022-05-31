@@ -2,6 +2,7 @@
 #include "../../../../thirdparty/fpng/fpng.h"
 #include "../../../../thirdparty/stb_image/stb_image.h"
 #include "../thirdparty/rang.hpp"
+#include "assets_config.h"
 #include "error.h"
 #include "growl/util/assets/bundle.h"
 #include "growl/util/assets/error.h"
@@ -18,21 +19,15 @@ using Growl::AssetsIncludeError;
 using Growl::AssetsIncludeErrorCode;
 using Growl::AssetsMap;
 using Growl::AssetType;
+using Growl::AtlasConfig;
 using Growl::AtlasImagePackInfo;
 using Growl::Error;
 using rang::style;
 
 AssetsIncludeError includeAtlas(
-	std::filesystem::path path, std::filesystem::path& resolved_path,
-	AssetsMap& assets_map, std::ofstream& outfile) noexcept {
-	int padding = 0;
-	std::ifstream json_file(path / "atlas.json");
-	try {
-		json j = json::parse(json_file);
-		padding = j.value("padding", padding);
-	} catch (std::exception&) {
-		return AssetsIncludeError("Failed to read pack.json");
-	}
+	const AtlasConfig& config, const std::filesystem::path& path,
+	const std::filesystem::path& resolved_path, AssetsMap& assets_map,
+	std::ofstream& outfile) noexcept {
 
 	std::vector<Growl::AtlasImagePackInfo> images;
 	for (auto entry : std::filesystem::directory_iterator(path)) {
@@ -45,7 +40,7 @@ AssetsIncludeError includeAtlas(
 		images.push_back(AtlasImagePackInfo(entry.path(), width, height));
 	}
 
-	auto result = packAtlasFromFiles(images, padding);
+	auto result = packAtlasFromFiles(images, config.padding);
 	if (result.hasError()) {
 		return AssetsIncludeError(result.error()->message());
 	}

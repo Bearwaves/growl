@@ -1,18 +1,15 @@
 #pragma once
 
+#include "atlas.h"
 #include "font.h"
 #include "image.h"
+#include "nlohmann/json.hpp"
 #include <memory>
 #include <unordered_map>
 
-namespace Growl {
+using nlohmann::json;
 
-struct GlyphPosition {
-	float u0; // left
-	float v0; // top
-	float u1; // right
-	float v1; // bottom
-};
+namespace Growl {
 
 enum class FontAtlasType { RGBA, SDF, MSDF };
 
@@ -20,7 +17,7 @@ class FontAtlas {
 public:
 	FontAtlas(
 		FontAtlasType type, Font& font, std::unique_ptr<Image> img,
-		std::unordered_map<int, GlyphPosition> glyphs)
+		std::unordered_map<int, AtlasRegion> glyphs)
 		: type{type}
 		, font{font}
 		, img{std::move(img)}
@@ -38,7 +35,7 @@ public:
 		return type;
 	}
 
-	const std::unordered_map<int, GlyphPosition> getGlyphs() const {
+	const std::unordered_map<int, AtlasRegion> getGlyphs() const {
 		return glyphs;
 	}
 
@@ -46,11 +43,12 @@ private:
 	FontAtlasType type;
 	Font& font;
 	std::unique_ptr<Image> img;
-	std::unordered_map<int, GlyphPosition> glyphs;
+	std::unordered_map<int, AtlasRegion> glyphs;
 };
 
 Result<FontAtlas> createFontAtlasFromFont(Font& font, int size) noexcept;
 Result<FontAtlas>
 createFontAtlasFromFont(Font& font, int size, std::string text) noexcept;
-Result<FontAtlas> createDistanceFieldFontAtlasFromFont(Font& font) noexcept;
+Result<FontAtlas>
+createDistanceFieldFontAtlasFromFont(Font& font, int size) noexcept;
 } // namespace Growl

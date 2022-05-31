@@ -7,6 +7,7 @@
 // Must go after FreeType.
 #include "../../../thirdparty/msdfgen/msdfgen-ext.h"
 #include "../../../thirdparty/msdfgen/msdfgen.h"
+#include "growl/util/assets/atlas.h"
 #include "growl/util/assets/error.h"
 #include "growl/util/assets/image.h"
 #include "growl/util/error.h"
@@ -18,11 +19,11 @@
 #include <vector>
 
 using Growl::AssetsError;
+using Growl::AtlasRegion;
 using Growl::Error;
 using Growl::Font;
 using Growl::FontAtlas;
 using Growl::FontAtlasType;
-using Growl::GlyphPosition;
 using Growl::Image;
 using Growl::Result;
 
@@ -121,23 +122,19 @@ Result<FontAtlas> Growl::createFontAtlasFromFont(
 	return packFontAtlas(font, glyph_rects);
 }
 
-// Distance field font implementation is incomplete.
 Result<FontAtlas>
-Growl::createDistanceFieldFontAtlasFromFont(Font& font) noexcept {
+Growl::createDistanceFieldFontAtlasFromFont(Font& font, int size) noexcept {
 	if (FT_HAS_COLOR(font.getFTFontData().face)) {
 		return Error(std::make_unique<AssetsError>(
 			"Failed to create distance field font atlas: cannot create from "
 			"coloured font."));
-	}
-	if (auto err = setFontFacePixelSize(font, 100); err) {
-		return err;
 	}
 	msdfgen::FontHandle* font_handle =
 		msdfgen::adoptFreetypeFont(font.getFTFontData().face);
 	msdfgen::FontMetrics font_metrics;
 	msdfgen::getFontMetrics(font_metrics, font_handle);
 
-	float scale = 32 / font_metrics.emSize;
+	float scale = size / font_metrics.emSize;
 	int border = 2;
 	int pack_border = 1;
 	float range = 2;
@@ -169,7 +166,7 @@ Growl::createDistanceFieldFontAtlasFromFont(Font& font) noexcept {
 			"Failed to pack font in texture; too large"));
 	}
 
-	std::unordered_map<int, GlyphPosition> glyphs;
+	std::unordered_map<int, AtlasRegion> glyphs;
 	std::vector<unsigned char> image_data(width * height * 4, 0);
 	const float inv_tex_width = 1.0f / width;
 	const float inv_tex_height = 1.0f / height;
@@ -204,7 +201,7 @@ Growl::createDistanceFieldFontAtlasFromFont(Font& font) noexcept {
 			}
 
 			int border_calc = border * scale;
-			glyphs[rect.id] = GlyphPosition{
+			glyphs[rect.id] = AtlasRegion{
 				(rect.x + pack_border + border_calc) * inv_tex_width,
 				(rect.y + pack_border + border_calc) * inv_tex_height,
 				(rect.x + (rect.w - (pack_border + border_calc))) *
@@ -285,7 +282,7 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 			"Failed to pack font in texture; too large"));
 	}
 
-	std::unordered_map<int, GlyphPosition> glyphs;
+	std::unordered_map<int, AtlasRegion> glyphs;
 	std::vector<unsigned char> image_data(width * height * sizeof(uint32_t), 0);
 	const float inv_tex_width = 1.0f / width;
 	const float inv_tex_height = 1.0f / height;
@@ -329,7 +326,7 @@ packFontAtlas(Font& font, std::vector<stbrp_rect>& glyph_rects) noexcept {
 			}
 		}
 
-		glyphs[rect.id] = GlyphPosition{
+		glyphs[rect.id] = AtlasRegion{
 			(rect.x + SPACING) * inv_tex_width,
 			(rect.y + SPACING) * inv_tex_height,
 			(rect.x + (rect.w - SPACING)) * inv_tex_width,
