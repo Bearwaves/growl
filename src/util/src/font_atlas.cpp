@@ -1,5 +1,6 @@
 #include "growl/util/assets/font_atlas.h"
 
+#include "../../../thirdparty/harfbuzz/src/hb-ft.h"
 #include "../../../thirdparty/stb_rect_pack/stb_rect_pack.h"
 #include "font_internal.h"
 #include "freetype/freetype.h"
@@ -85,36 +86,36 @@ Result<FontAtlas> Growl::createFontAtlasFromFont(
 		return std::move(err);
 	}
 
+	// Create a Harfbuzz buffer to calculate which glyphs are used.
+	// This helps us account for zero-width-spacing and so on.
+	hb_buffer_t* buffer = hb_buffer_create();
+	hb_font_t* face = hb_ft_font_create(font.getFTFontData().face, 0);
+	hb_buffer_add_utf8(buffer, text.c_str(), -1, 0, -1);
+	hb_buffer_guess_segment_properties(buffer);
+	hb_shape(face, buffer, 0, 0);
+	unsigned int len_paragraph = hb_buffer_get_length(buffer);
+	hb_glyph_info_t* info_paragraph = hb_buffer_get_glyph_infos(buffer, 0);
+
 	std::vector<stbrp_rect> glyph_rects;
 	std::set<int> glyphs_seen;
-	auto iter = text.begin();
-	while (iter != text.end()) {
-		int code = utf8::next(iter, text.end());
-		char hex[7];
-		std::snprintf(hex, sizeof(hex), "0x%04X", uint16_t(code));
-		std::string code_hex(hex);
-		int glyph_index = FT_Get_Char_Index(font.getFTFontData().face, code);
-		if (!glyph_index) {
-			return Error(std::make_unique<AssetsError>(
-				"Code point not present in font: " + code_hex));
-		}
-		if (auto [_, inserted] = glyphs_seen.insert(glyph_index); !inserted) {
+
+	for (unsigned int i = 0; i < len_paragraph; i++) {
+		hb_codepoint_t glyph = info_paragraph[i].codepoint;
+		if (auto [_, inserted] = glyphs_seen.insert(glyph); !inserted) {
 			// Already seen glyph
 			continue;
 		}
-
 		if (auto err = FT_Load_Glyph(
-				font.getFTFontData().face, glyph_index,
-				FT_LOAD_BITMAP_METRICS_ONLY);
+				font.getFTFontData().face, glyph, FT_LOAD_BITMAP_METRICS_ONLY);
 			err) {
-			return Error(std::make_unique<FontError>(
-				"Failed to load glyph " + code_hex, err));
+			return Error(
+				std::make_unique<FontError>("Failed to load glyph", err));
 		}
 		auto& metrics = font.getFTFontData().face->glyph->metrics;
 		// Glyph sizes are represented in 26.6 fractional format, so we shift
 		// them to get the pixel sizes.
 		glyph_rects.push_back(stbrp_rect{
-			glyph_index,
+			static_cast<int>(glyph),
 			static_cast<stbrp_coord>(metrics.width >> 6) + SPACING * 2,
 			static_cast<stbrp_coord>(metrics.height >> 6) + SPACING * 2});
 	}
