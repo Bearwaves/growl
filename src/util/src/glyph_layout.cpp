@@ -70,7 +70,6 @@ void GlyphLayout::layout() noexcept {
 			w_break = w;
 		}
 		if (requested_width && w > requested_width) {
-			std::cout << width << std::endl;
 			if (remaining_index > break_index) {
 				overflowed = true;
 				continue;
@@ -202,6 +201,6 @@ void GlyphLayout::setText(std::string text) {
 }
 
 void GlyphLayout::setWidth(int width) {
-	this->width = width;
+	this->requested_width = width;
 	layout();
 }
