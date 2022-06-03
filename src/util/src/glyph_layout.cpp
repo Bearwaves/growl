@@ -84,8 +84,7 @@ void GlyphLayout::layout() noexcept {
 			}
 		}
 	}
-	lines.push_back(
-		text.substr(remaining_index, len_paragraph - remaining_index));
+	lines.push_back(text.substr(remaining_index, text.size()));
 
 	int cursor_x = 0;
 	int cursor_y = 0;
