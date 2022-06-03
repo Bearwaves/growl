@@ -66,7 +66,7 @@ void GlyphLayout::layout() noexcept {
 		}
 		w += (pos_paragraph[j].x_advance >> 6);
 		if (allow_break) {
-			break_index = cluster;
+			break_index = cluster + 1;
 			w_break = w;
 		}
 		if (requested_width && w > requested_width) {
