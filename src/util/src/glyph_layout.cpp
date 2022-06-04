@@ -54,21 +54,22 @@ void GlyphLayout::layout() noexcept {
 	std::vector<std::string> lines;
 	for (unsigned int i = 0; i < len_paragraph; i++) {
 		int j = rtl ? len_paragraph - (i + 1) : i;
-		uint32_t cluster = info_paragraph[j].cluster;
-		bool must_break = breaks.at(cluster) == LINEBREAK_MUSTBREAK;
-		bool allow_break = breaks.at(cluster) == LINEBREAK_ALLOWBREAK;
+		// On which char does this unicode cluster end? That's where the break
+		// info is.
+		uint32_t cluster_end =
+			i == len_paragraph - 1
+				? text.size() - 1
+				: info_paragraph[rtl ? j - 1 : j + 1].cluster - 1;
+		bool must_break = breaks.at(cluster_end) == LINEBREAK_MUSTBREAK;
+		bool allow_break = breaks.at(cluster_end) == LINEBREAK_ALLOWBREAK;
 		if (must_break) {
 			lines.push_back(
-				text.substr(remaining_index, cluster - remaining_index));
+				text.substr(remaining_index, cluster_end - remaining_index));
 			w = 0;
-			remaining_index = cluster + 1;
+			remaining_index = cluster_end + 1;
 			continue;
 		}
 		w += (pos_paragraph[j].x_advance >> 6);
-		if (allow_break) {
-			break_index = cluster + 1;
-			w_break = w;
-		}
 		if (requested_width && w > requested_width) {
 			if (remaining_index > break_index) {
 				overflowed = true;
@@ -82,6 +83,10 @@ void GlyphLayout::layout() noexcept {
 			} else {
 				remaining_index = break_index;
 			}
+		}
+		if (allow_break) {
+			break_index = cluster_end + 1;
+			w_break = w;
 		}
 	}
 	lines.push_back(text.substr(remaining_index, text.size()));
