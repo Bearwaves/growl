@@ -109,7 +109,7 @@ void MetalBatch::draw(
 					atIndex:1];
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
 				vertexStart:0
-				vertexCount:vertices.size() / 4];
+				vertexCount:glyph_layout.getLayout().size() * 6];
 }
 
 void MetalBatch::drawRect(float x, float y, float width, float height) {

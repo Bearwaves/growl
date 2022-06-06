@@ -51,6 +51,7 @@ private:
 	std::unique_ptr<MetalShader> rect_shader;
 	std::unique_ptr<MetalShader> sdf_shader;
 	time_point<high_resolution_clock> last_render;
+	dispatch_semaphore_t frame_boundary_semaphore;
 
 	std::unique_ptr<Texture>
 	setupTexture(id<MTLTexture> texture, const TextureOptions options);

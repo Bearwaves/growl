@@ -32,6 +32,7 @@ void MetalGraphicsAPI::dispose() {}
 
 void MetalGraphicsAPI::begin() {
 	pool = [[NSAutoreleasePool alloc] init];
+	dispatch_semaphore_wait(frame_boundary_semaphore, DISPATCH_TIME_FOREVER);
 	surface = [swap_chain nextDrawable];
 	command_buffer = [command_queue commandBuffer];
 	auto tp = high_resolution_clock::now();
@@ -41,6 +42,9 @@ void MetalGraphicsAPI::begin() {
 
 void MetalGraphicsAPI::end() {
 	[command_buffer presentDrawable:surface];
+	[command_buffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+	  dispatch_semaphore_signal(frame_boundary_semaphore);
+	}];
 	[command_buffer commit];
 	[pool release];
 }
@@ -59,6 +63,8 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 	SDL_DestroyRenderer(renderer);
 	swap_chain.pixelFormat = MTLPixelFormatBGRA8Unorm;
 	device = swap_chain.device;
+	frame_boundary_semaphore =
+		dispatch_semaphore_create(swap_chain.maximumDrawableCount);
 	command_queue = [device newCommandQueue];
 	default_shader =
 		std::make_unique<MetalShader>(device, MetalShader::DEFAULT_SHADER);
