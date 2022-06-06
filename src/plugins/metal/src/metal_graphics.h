@@ -54,6 +54,7 @@ private:
 
 	std::unique_ptr<Texture>
 	setupTexture(id<MTLTexture> texture, const TextureOptions options);
+	const std::vector<unsigned char> convertRGBAToBGRA(const Image& rgba);
 };
 
 } // namespace Growl

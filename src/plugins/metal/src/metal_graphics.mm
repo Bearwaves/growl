@@ -84,7 +84,7 @@ void MetalGraphicsAPI::clear(float r, float g, float b) {
 std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(
 	const Image& image, const TextureOptions options) {
 	auto texture_descriptor = [MTLTextureDescriptor
-		texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
+		texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm
 									 width:image.getWidth()
 									height:image.getHeight()
 								 mipmapped:options.mipmapped];
@@ -94,21 +94,25 @@ std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(
 		{0, 0, 0},
 		{static_cast<NSUInteger>(image.getWidth()),
 		 static_cast<NSUInteger>(image.getHeight()), 1}};
+	std::vector<unsigned char> bgra = convertRGBAToBGRA(image);
 	[metal_texture replaceRegion:region
 					 mipmapLevel:0
-					   withBytes:image.getRaw()
+					   withBytes:bgra.data()
 					 bytesPerRow:bytes_per_row];
 
 	return setupTexture(metal_texture, options);
 }
 
+// Texture as render target
 std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(
 	unsigned int width, unsigned int height, const TextureOptions options) {
 	auto texture_descriptor = [MTLTextureDescriptor
-		texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
+		texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm
 									 width:width
 									height:height
 								 mipmapped:options.mipmapped];
+	texture_descriptor.usage =
+		MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget;
 	auto metal_texture = [device newTextureWithDescriptor:texture_descriptor];
 	std::vector<unsigned char> bytes(4 * width * height, 0);
 	MTLRegion region = {{0, 0, 0}, {width, height, 1}};
@@ -188,4 +192,20 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
 	return std::make_unique<MetalBatch>(
 		command_buffer, metal_texture.getRaw(), default_shader.get(),
 		rect_shader.get(), sdf_shader.get(), buffer);
+}
+
+const std::vector<unsigned char>
+MetalGraphicsAPI::convertRGBAToBGRA(const Image& rgba) {
+	const unsigned char* src = rgba.getRaw();
+	std::vector<unsigned char> output(
+		4 * rgba.getWidth() * rgba.getHeight(), 0);
+	for (int i = 0; i < rgba.getWidth() * rgba.getHeight(); i++) {
+		unsigned char* dst = output.data() + i * 4;
+		unsigned char r = *src++, g = *src++, b = *src++, a = *src++;
+		*dst++ = b;
+		*dst++ = g;
+		*dst++ = r;
+		*dst++ = a;
+	}
+	return output;
 }
