@@ -47,6 +47,8 @@ void MetalShader::bind(
 			MTLBlendFactorOneMinusSourceAlpha;
 		descriptor.colorAttachments[0].destinationAlphaBlendFactor =
 			MTLBlendFactorOneMinusSourceAlpha;
+		descriptor.vertexBuffers[0].mutability = MTLMutabilityImmutable;
+		descriptor.vertexBuffers[1].mutability = MTLMutabilityImmutable;
 
 		vertex_descriptor = [[MTLVertexDescriptor alloc] init];
 		descriptor.vertexDescriptor = vertex_descriptor;

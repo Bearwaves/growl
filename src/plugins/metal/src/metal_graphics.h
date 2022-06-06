@@ -52,6 +52,11 @@ private:
 	std::unique_ptr<MetalShader> sdf_shader;
 	time_point<high_resolution_clock> last_render;
 	dispatch_semaphore_t frame_boundary_semaphore;
+	uint32_t current_buffer;
+	NSArray<id<MTLBuffer>>* vertex_buffers_ring;
+	uint32_t vertex_buffer_offset;
+	NSArray<id<MTLBuffer>>* constant_buffers_ring;
+	uint32_t constant_buffer_offset;
 
 	std::unique_ptr<Texture>
 	setupTexture(id<MTLTexture> texture, const TextureOptions options);

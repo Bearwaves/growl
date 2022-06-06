@@ -9,12 +9,11 @@ using Growl::MetalBatch;
 void MetalBatch::begin() {
 	encoder = [command_buffer
 		renderCommandEncoderWithDescriptor:renderPassDescriptor()];
-	[encoder setVertexBuffer:constant_buffer offset:0 atIndex:0];
+	[encoder setVertexBuffer:constant_buffer offset:constant_offset atIndex:0];
 }
 
 void MetalBatch::end() {
 	[encoder endEncoding];
-	[constant_buffer release];
 }
 
 void MetalBatch::setColor(float r, float g, float b, float a) {
@@ -104,9 +103,11 @@ void MetalBatch::draw(
 		addVertex(vertices, gx, gy, reg.u0, reg.v0);
 		addVertex(vertices, right, gy, reg.u1, reg.v0);
 	}
-	[encoder setVertexBytes:vertices.data()
-					 length:vertices.size() * sizeof(float)
-					atIndex:1];
+	memcpy(
+		static_cast<char*>(vertex_buffer.contents) + *vertex_offset,
+		vertices.data(), vertices.size() * sizeof(float));
+	[encoder setVertexBuffer:vertex_buffer offset:*vertex_offset atIndex:1];
+	*vertex_offset += vertices.size() * sizeof(float);
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
 				vertexStart:0
 				vertexCount:glyph_layout.getLayout().size() * 6];

@@ -13,13 +13,18 @@ public:
 	MetalBatch(
 		id<MTLCommandBuffer> command_buffer, id<MTLTexture> surface,
 		MetalShader* default_shader, MetalShader* rect_shader,
-		MetalShader* sdf_shader, id<MTLBuffer> constant_buffer)
+		MetalShader* sdf_shader, id<MTLBuffer> constant_buffer,
+		uint32_t constant_offset, id<MTLBuffer> vertex_buffer,
+		uint32_t* vertex_offset)
 		: command_buffer{command_buffer}
 		, surface{surface}
 		, default_shader{default_shader}
 		, rect_shader{rect_shader}
 		, sdf_shader{sdf_shader}
 		, constant_buffer{constant_buffer}
+		, constant_offset{constant_offset}
+		, vertex_buffer{vertex_buffer}
+		, vertex_offset{vertex_offset}
 		, color{1, 1, 1, 1} {}
 	void begin() override;
 	void end() override;
@@ -48,6 +53,9 @@ private:
 	MetalShader* rect_shader;
 	MetalShader* sdf_shader;
 	id<MTLBuffer> constant_buffer;
+	uint32_t constant_offset;
+	id<MTLBuffer> vertex_buffer;
+	uint32_t* vertex_offset;
 	Color color;
 
 	MTLRenderPassDescriptor* renderPassDescriptor();

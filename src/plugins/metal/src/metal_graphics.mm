@@ -20,6 +20,8 @@ using Growl::Batch;
 using std::chrono::duration;
 using std::chrono::seconds;
 
+constexpr int BufferMaxSize = 2 << 22; // 8MB
+
 MetalGraphicsAPI::MetalGraphicsAPI(SystemAPI* system)
 	: system{system} {}
 
@@ -38,6 +40,9 @@ void MetalGraphicsAPI::begin() {
 	auto tp = high_resolution_clock::now();
 	deltaTime = duration<double, seconds::period>(tp - last_render).count();
 	last_render = tp;
+	current_buffer = (current_buffer + 1) % swap_chain.maximumDrawableCount;
+	constant_buffer_offset = 0;
+	vertex_buffer_offset = 0;
 }
 
 void MetalGraphicsAPI::end() {
@@ -65,6 +70,25 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 	device = swap_chain.device;
 	frame_boundary_semaphore =
 		dispatch_semaphore_create(swap_chain.maximumDrawableCount);
+	current_buffer = 0;
+	NSMutableArray* constant_buffers =
+		[NSMutableArray arrayWithCapacity:swap_chain.maximumDrawableCount];
+	for (int i = 0; i < swap_chain.maximumDrawableCount; i++) {
+		id<MTLBuffer> buffer =
+			[device newBufferWithLength:BufferMaxSize
+								options:MTLResourceStorageModeShared];
+		[constant_buffers addObject:buffer];
+	}
+	constant_buffers_ring = std::move(constant_buffers);
+	NSMutableArray* vertex_buffers =
+		[NSMutableArray arrayWithCapacity:swap_chain.maximumDrawableCount];
+	for (int i = 0; i < swap_chain.maximumDrawableCount; i++) {
+		id<MTLBuffer> buffer =
+			[device newBufferWithLength:BufferMaxSize
+								options:MTLResourceStorageModeShared];
+		[vertex_buffers addObject:buffer];
+	}
+	vertex_buffers_ring = std::move(vertex_buffers);
 	command_queue = [device newCommandQueue];
 	default_shader =
 		std::make_unique<MetalShader>(device, MetalShader::DEFAULT_SHADER);
@@ -179,12 +203,15 @@ std::unique_ptr<FontTextureAtlas> MetalGraphicsAPI::createFontTextureAtlas(
 std::unique_ptr<Batch> MetalGraphicsAPI::createBatch() {
 	auto projection = glm::ortho<float>(
 		0, surface.texture.width, surface.texture.height, 0, 1, -1);
-	auto buffer = [device newBufferWithBytes:&projection
-									  length:sizeof(projection)
-									 options:MTLResourceStorageModeShared];
+	auto buffer = constant_buffers_ring[current_buffer];
+	uint32_t pre_offset = constant_buffer_offset;
+	memcpy(buffer.contents, &projection, sizeof(projection));
+	constant_buffer_offset += sizeof(projection);
+
 	return std::make_unique<MetalBatch>(
 		command_buffer, surface.texture, default_shader.get(),
-		rect_shader.get(), sdf_shader.get(), buffer);
+		rect_shader.get(), sdf_shader.get(), buffer, pre_offset,
+		vertex_buffers_ring[current_buffer], &vertex_buffer_offset);
 }
 
 std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
@@ -192,12 +219,15 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
 
 	auto projection = glm::ortho<float>(
 		0, metal_texture.getWidth(), metal_texture.getHeight(), 0, 1, -1);
-	auto buffer = [device newBufferWithBytes:&projection
-									  length:sizeof(projection)
-									 options:MTLResourceStorageModeShared];
+	auto buffer = constant_buffers_ring[current_buffer];
+	uint32_t pre_offset = constant_buffer_offset;
+	memcpy(buffer.contents, &projection, sizeof(projection));
+	constant_buffer_offset += sizeof(projection);
+
 	return std::make_unique<MetalBatch>(
 		command_buffer, metal_texture.getRaw(), default_shader.get(),
-		rect_shader.get(), sdf_shader.get(), buffer);
+		rect_shader.get(), sdf_shader.get(), buffer, pre_offset,
+		vertex_buffers_ring[current_buffer], &vertex_buffer_offset);
 }
 
 const std::vector<unsigned char>
