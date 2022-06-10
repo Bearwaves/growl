@@ -1,6 +1,7 @@
 #include "metal_graphics.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
+#include "growl/util/assets/font_face.h"
 #include "metal_batch.h"
 #include "metal_shader.h"
 #include "metal_texture.h"
@@ -20,7 +21,7 @@ using Growl::Batch;
 using std::chrono::duration;
 using std::chrono::seconds;
 
-constexpr int BufferMaxSize = 2 << 22; // 8MB
+constexpr int BUFFER_MAX_SIZE = 2 << 22; // 8MB
 
 MetalGraphicsAPI::MetalGraphicsAPI(SystemAPI* system)
 	: system{system} {}
@@ -47,7 +48,7 @@ void MetalGraphicsAPI::begin() {
 
 void MetalGraphicsAPI::end() {
 	[command_buffer presentDrawable:surface];
-	[command_buffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+	[command_buffer addCompletedHandler:^(id<MTLCommandBuffer> command_buffer) {
 	  dispatch_semaphore_signal(frame_boundary_semaphore);
 	}];
 	[command_buffer commit];
@@ -75,7 +76,7 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 		[NSMutableArray arrayWithCapacity:swap_chain.maximumDrawableCount];
 	for (int i = 0; i < swap_chain.maximumDrawableCount; i++) {
 		id<MTLBuffer> buffer =
-			[device newBufferWithLength:BufferMaxSize
+			[device newBufferWithLength:BUFFER_MAX_SIZE
 								options:MTLResourceStorageModeShared];
 		[constant_buffers addObject:buffer];
 	}
@@ -84,7 +85,7 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 		[NSMutableArray arrayWithCapacity:swap_chain.maximumDrawableCount];
 	for (int i = 0; i < swap_chain.maximumDrawableCount; i++) {
 		id<MTLBuffer> buffer =
-			[device newBufferWithLength:BufferMaxSize
+			[device newBufferWithLength:BUFFER_MAX_SIZE
 								options:MTLResourceStorageModeShared];
 		[vertex_buffers addObject:buffer];
 	}
@@ -194,10 +195,11 @@ std::unique_ptr<TextureAtlas> MetalGraphicsAPI::createTextureAtlas(
 		atlas, createTexture(atlas.getImage(), options));
 }
 
-std::unique_ptr<FontTextureAtlas> MetalGraphicsAPI::createFontTextureAtlas(
-	const FontAtlas& atlas, const TextureOptions options) {
+std::unique_ptr<FontTextureAtlas>
+MetalGraphicsAPI::createFontTextureAtlas(const FontFace& face) {
+	bool is_msdf = face.getType() != FontFaceType::Bitmap;
 	return std::make_unique<FontTextureAtlas>(
-		atlas, createTexture(atlas.getImage(), options));
+		face, createTexture(face.getImage(), {is_msdf, is_msdf}));
 }
 
 std::unique_ptr<Batch> MetalGraphicsAPI::createBatch() {

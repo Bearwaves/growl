@@ -1,5 +1,5 @@
 #include "opengl_batch.h"
-#include "growl/util/assets/font_atlas.h"
+#include "growl/util/assets/font_face.h"
 #include "opengl.h"
 #include "opengl_texture.h"
 #include <cmath>
@@ -130,7 +130,7 @@ void OpenGLBatch::draw(
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
 		indices.data(), GL_STATIC_DRAW);
-	if (font_texture_atlas.getType() == FontAtlasType::MSDF) {
+	if (font_texture_atlas.getType() == FontFaceType::MSDF) {
 		sdf_shader->bind(mvp, color);
 	} else {
 		default_shader->bind(mvp, color);

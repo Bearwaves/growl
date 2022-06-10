@@ -1,7 +1,6 @@
 #include "test_app_game.h"
 #include "growl/util/assets/bundle.h"
-#include "growl/util/assets/font.h"
-#include "growl/util/assets/font_atlas.h"
+#include "growl/util/assets/font_face.h"
 #include "growl/util/assets/image.h"
 #include "growl/util/text/glyph_layout.h"
 #include "growl/util/timer.h"
@@ -22,24 +21,18 @@ Error TestAppGame::init() {
 	}
 
 	getAPI().system()->log("TestAppGame", "Loading font");
-	Result<Font> font_result = bundle_result.get().getFont("fonts/andada.otf");
-	if (font_result.hasError()) {
-		return std::move(font_result.error());
-	}
-	font = std::make_unique<Font>(std::move(font_result.get()));
 	{
 		Timer timer(getAPI().system(), "TestAppGame", "Generating font atlas");
-		getAPI().system()->log("TestAppGame", "Generating font atlas");
-		Result<FontAtlas> font_atlas_result =
-			createFontAtlasFromFont(*font, 50);
-		if (font_atlas_result.hasError()) {
-			return std::move(font_atlas_result.error());
+		Result<FontFace> font_result =
+			bundle_result.get().getDistanceFieldFont("fonts/andada.otf");
+		if (font_result.hasError()) {
+			return std::move(font_result.error());
 		}
-		font_atlas = getAPI().graphics()->createFontTextureAtlas(
-			font_atlas_result.get());
+		font = std::make_unique<FontFace>(std::move(font_result.get()));
+		font_atlas = getAPI().graphics()->createFontTextureAtlas(*font);
 	}
 	getAPI().system()->log("TestAppGame", "Generating layout");
-	layout = std::make_unique<GlyphLayout>(*font, "Hello Growl!", 0);
+	layout = std::make_unique<GlyphLayout>(*font, "Hello Growl!", 0, 50);
 
 	input = std::make_unique<InputHandler>(getAPI().system());
 	getAPI().system()->setInputProcessor(input.get());

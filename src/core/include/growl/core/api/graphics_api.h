@@ -5,6 +5,7 @@
 #include "../graphics/texture.h"
 #include "../graphics/texture_atlas.h"
 #include "../graphics/window.h"
+#include "growl/util/assets/font_face.h"
 #include "growl/util/assets/image.h"
 #include <memory>
 
@@ -30,9 +31,8 @@ public:
 		const Atlas& atlas,
 		const TextureOptions options = TextureOptions{}) = 0;
 
-	virtual std::unique_ptr<FontTextureAtlas> createFontTextureAtlas(
-		const FontAtlas& atlas,
-		const TextureOptions options = TextureOptions{false, false}) = 0;
+	virtual std::unique_ptr<FontTextureAtlas>
+	createFontTextureAtlas(const FontFace& face) = 0;
 
 	virtual std::unique_ptr<Batch> createBatch() = 0;
 	virtual std::unique_ptr<Batch> createBatch(const Texture& texture) = 0;

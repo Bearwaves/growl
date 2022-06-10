@@ -5,7 +5,7 @@
 #include "growl/core/graphics/texture.h"
 #include "growl/core/graphics/texture_atlas.h"
 #include "growl/util/assets/atlas.h"
-#include "growl/util/assets/font.h"
+#include "growl/util/assets/font_face.h"
 #include "growl/util/assets/image.h"
 #include "growl/util/text/glyph_layout.h"
 #include <memory>
@@ -31,7 +31,7 @@ private:
 	std::unique_ptr<Texture> grass_tiled;
 	std::unique_ptr<InputHandler> input;
 
-	std::unique_ptr<Font> font;
+	std::unique_ptr<FontFace> font;
 	std::unique_ptr<FontTextureAtlas> font_atlas;
 	std::unique_ptr<GlyphLayout> layout;
 

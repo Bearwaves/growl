@@ -1,7 +1,7 @@
 #pragma once
 
 #include "atlas.h"
-#include "font.h"
+#include "font_face.h"
 #include "growl/util/error.h"
 #include "image.h"
 #include "nlohmann/json.hpp"
@@ -67,7 +67,9 @@ public:
 
 	Result<Image> getImage(std::string name) noexcept;
 	Result<Atlas> getAtlas(std::string name) noexcept;
-	Result<Font> getFont(std::string name) noexcept;
+	Result<FontFace> getBitmapFont(
+		std::string name, int size, std::string characters = "") noexcept;
+	Result<FontFace> getDistanceFieldFont(std::string name) noexcept;
 
 private:
 	std::ifstream file;

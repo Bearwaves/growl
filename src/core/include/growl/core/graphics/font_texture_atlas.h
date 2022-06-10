@@ -2,7 +2,7 @@
 
 #include "growl/core/graphics/texture.h"
 #include "growl/util/assets/atlas.h"
-#include "growl/util/assets/font_atlas.h"
+#include "growl/util/assets/font_face.h"
 #include <unordered_map>
 
 namespace Growl {
@@ -10,9 +10,9 @@ namespace Growl {
 class FontTextureAtlas {
 public:
 	FontTextureAtlas(
-		const FontAtlas& font_atlas, std::unique_ptr<Texture> texture)
-		: type{font_atlas.getType()}
-		, glyphs{font_atlas.getGlyphs()}
+		const FontFace& font_face, std::unique_ptr<Texture> texture)
+		: type{font_face.getType()}
+		, glyphs{font_face.getGlyphs()}
 		, texture{std::move(texture)} {}
 
 	virtual ~FontTextureAtlas() = default;
@@ -25,7 +25,7 @@ public:
 
 	Result<AtlasRegion> getRegion(int glyph_code) const;
 
-	const FontAtlasType getType() const {
+	const FontFaceType getType() const {
 		return type;
 	}
 
@@ -34,7 +34,7 @@ public:
 	}
 
 private:
-	FontAtlasType type;
+	FontFaceType type;
 	std::unordered_map<int, AtlasRegion> glyphs;
 	std::unique_ptr<Texture> texture;
 };

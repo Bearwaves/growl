@@ -1,4 +1,5 @@
 #include "metal_batch.h"
+#include "growl/util/assets/font_face.h"
 #include "metal_texture.h"
 #include <cmath>
 #include <memory>
@@ -75,7 +76,7 @@ void MetalBatch::draw(
 	auto& tex =
 		static_cast<const MetalTexture&>(font_texture_atlas.getTexture());
 	tex.bind(encoder);
-	if (font_texture_atlas.getType() == FontAtlasType::MSDF) {
+	if (font_texture_atlas.getType() == FontFaceType::MSDF) {
 		sdf_shader->bind(surface, encoder);
 	} else {
 		default_shader->bind(surface, encoder);

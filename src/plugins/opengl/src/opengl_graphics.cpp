@@ -2,6 +2,7 @@
 #include "SDL_video.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
+#include "growl/util/assets/font_face.h"
 #include "opengl.h"
 #include "opengl_batch.h"
 #include "opengl_shader.h"
@@ -155,10 +156,11 @@ std::unique_ptr<TextureAtlas> OpenGLGraphicsAPI::createTextureAtlas(
 		atlas, createTexture(atlas.getImage(), options));
 }
 
-std::unique_ptr<FontTextureAtlas> OpenGLGraphicsAPI::createFontTextureAtlas(
-	const FontAtlas& atlas, const TextureOptions options) {
+std::unique_ptr<FontTextureAtlas>
+OpenGLGraphicsAPI::createFontTextureAtlas(const FontFace& face) {
+	bool is_msdf = face.getType() != FontFaceType::Bitmap;
 	return std::make_unique<FontTextureAtlas>(
-		atlas, createTexture(atlas.getImage(), options));
+		face, createTexture(face.getImage(), {is_msdf, is_msdf}));
 }
 
 std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {

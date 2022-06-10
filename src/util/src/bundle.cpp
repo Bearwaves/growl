@@ -1,7 +1,7 @@
 #include "growl/util/assets/bundle.h"
 
 #include "growl/util/assets/error.h"
-#include "growl/util/assets/font.h"
+#include "growl/util/assets/font_face.h"
 #include "growl/util/assets/image.h"
 #include <cstdint>
 #include <memory>
@@ -16,7 +16,7 @@ using Growl::AssetsError;
 using Growl::AssetsMap;
 using Growl::Atlas;
 using Growl::Error;
-using Growl::Font;
+using Growl::FontFace;
 using Growl::Image;
 using Growl::Result;
 
@@ -156,7 +156,8 @@ Result<Atlas> AssetsBundle::getAtlas(std::string name) noexcept {
 		info.atlas_regions.value());
 }
 
-Result<Font> AssetsBundle::getFont(std::string name) noexcept {
+Result<FontFace> AssetsBundle::getBitmapFont(
+	std::string name, int size, std::string characters) noexcept {
 	auto info_find = assetsMap.find(name);
 	if (info_find == assetsMap.end()) {
 		return Error(std::make_unique<AssetsError>(
@@ -176,5 +177,51 @@ Result<Font> AssetsBundle::getFont(std::string name) noexcept {
 	file.seekg(info.position);
 	file.read(reinterpret_cast<char*>(font_data.data()), info.size);
 
-	return loadFontFromMemory(std::move(font_data));
+	return createBitmapFontFaceFromMemory(
+		std::move(font_data), size, characters);
+}
+
+Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
+	auto info_find = assetsMap.find(name);
+	if (info_find == assetsMap.end()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load font " + name + "; not found in asset map."));
+	}
+	auto& info = info_find->second;
+
+	if (info.type != AssetType::Font) {
+		auto type_name = getAssetTypeName(info.type);
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load font " + name + "; expected Font type but was " +
+			type_name + "."));
+	}
+
+	std::vector<unsigned char> font_data;
+	font_data.resize(info.size);
+	file.seekg(info.position);
+	file.read(reinterpret_cast<char*>(font_data.data()), info.size);
+
+	if (!info.font.has_value()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load MSDF data from font"));
+	}
+
+	std::vector<unsigned char> image_data;
+	image_data.resize(info.font.value().msdf_size);
+	file.seekg(info.font.value().msdf_position);
+	file.read(
+		reinterpret_cast<char*>(image_data.data()),
+		info.font.value().msdf_size);
+
+	Result<Image> image_result =
+		loadImageFromMemory(image_data.data(), info.font.value().msdf_size);
+	if (image_result.hasError()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load MSDF image: " + image_result.error()->message()));
+	}
+
+	return createDistanceFieldFontFaceFromBundleData(
+		std::move(font_data),
+		std::make_unique<Image>(std::move(image_result.get())),
+		std::move(info.font.value().glyphs));
 }

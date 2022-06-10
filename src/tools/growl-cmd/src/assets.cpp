@@ -5,8 +5,7 @@
 #include "error.h"
 #include "growl/util/assets/bundle.h"
 #include "growl/util/assets/error.h"
-#include "growl/util/assets/font.h"
-#include "growl/util/assets/font_atlas.h"
+#include "growl/util/assets/font_face.h"
 #include "nlohmann/json.hpp"
 #include <cstdint>
 #include <exception>
@@ -79,8 +78,7 @@ AssetsIncludeError includeFont(
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
 	std::ofstream& outfile) noexcept {
 	// Try to create a font
-	auto font_result = Growl::loadFontFromFile(entry.path().string());
-	if (font_result.hasError()) {
+	if (!Growl::isValidFont(entry.path())) {
 		return AssetsIncludeErrorCode::WrongType;
 	}
 
@@ -103,8 +101,8 @@ AssetsIncludeError includeFont(
 
 	if (config.msdf) {
 		std::cout << "Generating MSDF font atlas..." << std::endl;
-		auto dist_result = Growl::createDistanceFieldFontAtlasFromFont(
-			font_result.get(), config.msdfSize);
+		auto dist_result = Growl::createDistanceFieldFontFaceFromFile(
+			entry.path(), config.msdfSize);
 		if (dist_result.hasError()) {
 			return AssetsIncludeError(
 				"failed to create MSDF font: " +
@@ -120,6 +118,8 @@ AssetsIncludeError includeFont(
 		info.font = AssetsBundleMSDFFontInfo{
 			static_cast<unsigned int>(outfile.tellp()), out_buf.size(),
 			dist_result.get().getGlyphs()};
+		outfile.write(
+			reinterpret_cast<const char*>(out_buf.data()), out_buf.size());
 		std::cout << "Included MSDF font atlas for " << style::bold
 				  << resolved_path.string() << style::reset << "." << std::endl;
 	}

@@ -2,6 +2,7 @@
 
 #include "growl/core/api/api.h"
 #include "growl/core/api/system_api.h"
+#include "growl/util/assets/font_face.h"
 #include "metal_shader.h"
 #include <Metal/Metal.h>
 #include <QuartzCore/CAMetalLayer.h>
@@ -32,8 +33,8 @@ public:
 	std::unique_ptr<TextureAtlas> createTextureAtlas(
 		const Atlas& atlas, const TextureOptions options) override;
 
-	std::unique_ptr<FontTextureAtlas> createFontTextureAtlas(
-		const FontAtlas& atlas, const TextureOptions options) override;
+	std::unique_ptr<FontTextureAtlas>
+	createFontTextureAtlas(const FontFace& face) override;
 
 	std::unique_ptr<Batch> createBatch() override;
 	std::unique_ptr<Batch> createBatch(const Texture& texture) override;

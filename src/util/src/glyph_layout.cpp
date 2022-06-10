@@ -3,21 +3,25 @@
 #include "../../../../thirdparty/libunibreak/src/linebreak.h"
 #include "font_internal.h"
 #include "freetype/freetype.h"
+#include "growl/util/assets/font_face.h"
 #include <cctype>
 
+using Growl::FontFace;
 using Growl::GlyphLayout;
 using Growl::GlyphLayoutAlignment;
 
 GlyphLayout::GlyphLayout(
-	Font& font, std::string text, int width, GlyphLayoutAlignment align,
-	std::string lang) noexcept
+	FontFace& font, std::string text, int width, int size,
+	GlyphLayoutAlignment align, std::string lang) noexcept
 	: text{text}
 	, lang{lang}
 	, align{align}
 	, width{width}
+	, size{size}
 	, requested_width{width}
+	, font_face(font)
 	, hb_data{std::make_unique<Growl::HBData>(Growl::HBData{
-		  hb_ft_font_create(font.getFTFontData().face, 0), hb_buffer_create(),
+		  hb_ft_font_create(font.getFontData().face, 0), hb_buffer_create(),
 		  hb_buffer_create()})} {
 	init_linebreak();
 	setText(text);
@@ -30,7 +34,12 @@ GlyphLayout::~GlyphLayout() noexcept {
 }
 
 void GlyphLayout::layout() noexcept {
-	FT_Face face = hb_ft_font_get_face(hb_data->font);
+	FT_Face face = font_face.getFontData().face;
+
+	if (size && font_face.getType() != FontFaceType::Bitmap) {
+		Growl::Internal::setFontFacePixelSize(font_face.getFontData(), size);
+		hb_ft_font_changed(hb_data->font);
+	}
 
 	hb_buffer_reset(hb_data->buffer_paragraph);
 	hb_buffer_add_utf8(hb_data->buffer_paragraph, text.c_str(), -1, 0, -1);
@@ -206,5 +215,13 @@ void GlyphLayout::setText(std::string text) {
 
 void GlyphLayout::setWidth(int width) {
 	this->requested_width = width;
+	layout();
+}
+
+void GlyphLayout::setFontSize(int size) {
+	if (font_face.getType() == FontFaceType::Bitmap) {
+		return;
+	}
+	this->size = size;
 	layout();
 }
