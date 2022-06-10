@@ -81,6 +81,8 @@ createBitmapFontFace(FTFontData font_data, int size, std::string characters) {
 				static_cast<stbrp_coord>(metrics.width >> 6) + SPACING * 2,
 				static_cast<stbrp_coord>(metrics.height >> 6) + SPACING * 2});
 		}
+		hb_font_destroy(face);
+		hb_buffer_destroy(buffer);
 	}
 
 	int width, height;

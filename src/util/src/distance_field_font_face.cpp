@@ -5,8 +5,10 @@
 #include "growl/util/assets/image.h"
 #include "growl/util/error.h"
 // Must go after FreeType.
+#include "../../../thirdparty/harfbuzz/src/hb-ft.h"
 #include "../../../thirdparty/msdfgen/msdfgen-ext.h"
 #include "../../../thirdparty/msdfgen/msdfgen.h"
+#include <set>
 
 using Growl::AssetsError;
 using Growl::AtlasRegion;
@@ -39,21 +41,59 @@ Result<FontFace> createDistanceFieldFontFace(
 	float range = 2;
 
 	std::vector<stbrp_rect> glyph_rects;
-	for (int i = 0; i < font_data.face->num_glyphs; i++) {
-		msdfgen::Shape shape;
-		msdfgen::loadGlyph(shape, font_handle, msdfgen::GlyphIndex(i));
-		if (shape.validate() && shape.contours.size() > 0) {
-			shape.inverseYAxis = true;
-			shape.normalize();
-			shape.orientContours();
+	if (characters.empty()) {
+		for (int i = 0; i < font_data.face->num_glyphs; i++) {
+			msdfgen::Shape shape;
+			msdfgen::loadGlyph(shape, font_handle, msdfgen::GlyphIndex(i));
+			if (shape.validate() && shape.contours.size() > 0) {
+				shape.inverseYAxis = true;
+				shape.normalize();
+				shape.orientContours();
 
-			auto bounds = shape.getBounds(border);
-			int glyph_width = round((bounds.r - bounds.l) * scale);
-			int glyph_height = round((bounds.t - bounds.b) * scale);
-			glyph_rects.push_back(stbrp_rect{
-				i, glyph_width + (pack_border * 2),
-				glyph_height + (pack_border * 2)});
+				auto bounds = shape.getBounds(border);
+				int glyph_width = round((bounds.r - bounds.l) * scale);
+				int glyph_height = round((bounds.t - bounds.b) * scale);
+				glyph_rects.push_back(stbrp_rect{
+					i, glyph_width + (pack_border * 2),
+					glyph_height + (pack_border * 2)});
+			}
 		}
+	} else {
+		// If characters is specified, use a Harfbuzz buffer to work
+		// out what we actually need to create.
+		hb_buffer_t* buffer = hb_buffer_create();
+		hb_font_t* face = hb_ft_font_create(font_data.face, 0);
+		hb_buffer_add_utf8(buffer, characters.c_str(), -1, 0, -1);
+		hb_buffer_guess_segment_properties(buffer);
+		hb_shape(face, buffer, 0, 0);
+		unsigned int len_paragraph = hb_buffer_get_length(buffer);
+		hb_glyph_info_t* info_paragraph = hb_buffer_get_glyph_infos(buffer, 0);
+		std::set<int> glyphs_seen;
+
+		for (unsigned int i = 0; i < len_paragraph; i++) {
+			hb_codepoint_t glyph = info_paragraph[i].codepoint;
+			if (auto [_, inserted] = glyphs_seen.insert(glyph); !inserted) {
+				// Already seen glyph
+				continue;
+			}
+
+			msdfgen::Shape shape;
+			msdfgen::loadGlyph(shape, font_handle, msdfgen::GlyphIndex(glyph));
+			if (shape.validate() && shape.contours.size() > 0) {
+				shape.inverseYAxis = true;
+				shape.normalize();
+				shape.orientContours();
+
+				auto bounds = shape.getBounds(border);
+				int glyph_width = round((bounds.r - bounds.l) * scale);
+				int glyph_height = round((bounds.t - bounds.b) * scale);
+				glyph_rects.push_back(stbrp_rect{
+					static_cast<int>(glyph), glyph_width + (pack_border * 2),
+					glyph_height + (pack_border * 2)});
+			}
+		}
+		hb_font_destroy(face);
+		hb_buffer_destroy(buffer);
 	}
 
 	int width, height;
