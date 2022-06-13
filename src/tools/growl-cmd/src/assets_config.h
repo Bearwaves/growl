@@ -2,6 +2,7 @@
 
 #include "nlohmann/json.hpp"
 #include <optional>
+#include <string>
 
 using nlohmann::json;
 
@@ -14,6 +15,7 @@ struct AtlasConfig {
 struct FontConfig {
 	bool msdf;
 	int msdfSize = 32;
+	std::string msdfCharacters = "";
 };
 
 struct AssetConfig {

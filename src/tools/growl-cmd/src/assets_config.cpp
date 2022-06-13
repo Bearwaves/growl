@@ -16,4 +16,5 @@ void Growl::from_json(const json& j, AtlasConfig& s) {
 void Growl::from_json(const json& j, FontConfig& s) {
 	s.msdf = j.value("msdf", s.msdf);
 	s.msdfSize = j.value("msdfSize", s.msdfSize);
+	s.msdfCharacters = j.value("msdfCharacters", s.msdfCharacters);
 }

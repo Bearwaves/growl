@@ -2,12 +2,8 @@
   "*": {
     "font": {
       "msdf": true,
-      "msdfSize": 32
-    }
-  },
-  "notosans-medium.ttc": {
-    "font": {
-      "msdf": false
+      "msdfSize": 32,
+      "msdfCharacters": "HelloGrowlFPS01234567890!:."
     }
   }
 }

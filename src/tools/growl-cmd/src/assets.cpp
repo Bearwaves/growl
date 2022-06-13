@@ -102,7 +102,7 @@ AssetsIncludeError includeFont(
 	if (config.msdf) {
 		std::cout << "Generating MSDF font atlas..." << std::endl;
 		auto dist_result = Growl::createDistanceFieldFontFaceFromFile(
-			entry.path(), config.msdfSize);
+			entry.path(), config.msdfSize, config.msdfCharacters);
 		if (dist_result.hasError()) {
 			return AssetsIncludeError(
 				"failed to create MSDF font: " +
