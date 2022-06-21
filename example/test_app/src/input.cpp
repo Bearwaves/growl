@@ -12,7 +12,7 @@ void InputHandler::onMouseEvent(InputMouseEvent& event) {
 void InputHandler::onKeyboardEvent(InputKeyboardEvent& event) {
 	switch (event.type) {
 	case KeyEventType::Unknown:
-		system->log(LogLevel::WARN, "InputHandler", "Got unknown key event!");
+		system.log(LogLevel::WARN, "InputHandler", "Got unknown key event!");
 		break;
 	case KeyEventType::KeyDown:
 	case KeyEventType::KeyUp:
@@ -43,7 +43,7 @@ void InputHandler::onKeyboardEvent(InputKeyboardEvent& event) {
 void InputHandler::onControllerEvent(InputControllerEvent& event) {
 	switch (event.type) {
 	case ControllerEventType::Unknown:
-		system->log(
+		system.log(
 			LogLevel::WARN, "InputHandler", "Got unknown controller event!");
 		break;
 	case ControllerEventType::ButtonDown:

@@ -7,7 +7,7 @@ namespace Growl {
 
 class InputHandler : public InputProcessor {
 public:
-	explicit InputHandler(SystemAPI* system)
+	explicit InputHandler(SystemAPI& system)
 		: system{system} {}
 
 	void onMouseEvent(InputMouseEvent& event) override;
@@ -41,7 +41,7 @@ public:
 	}
 
 private:
-	SystemAPI* system;
+	SystemAPI& system;
 	int mouseX;
 	int mouseY;
 	bool up = false;

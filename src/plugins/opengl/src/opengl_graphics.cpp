@@ -22,7 +22,7 @@ using Growl::TextureOptions;
 using std::chrono::duration;
 using std::chrono::seconds;
 
-OpenGLGraphicsAPI::OpenGLGraphicsAPI(SystemAPI* system)
+OpenGLGraphicsAPI::OpenGLGraphicsAPI(SystemAPI& system)
 	: system{system} {}
 
 Error OpenGLGraphicsAPI::init() {
@@ -45,7 +45,7 @@ void OpenGLGraphicsAPI::end() {
 }
 
 Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
-	auto window_result = system->createWindow(config);
+	auto window_result = system.createWindow(config);
 	if (window_result.hasError()) {
 		return std::move(window_result.error());
 	}
@@ -72,7 +72,7 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 	GLint major, minor;
 	glGetIntegerv(GL_MAJOR_VERSION, &major);
 	glGetIntegerv(GL_MINOR_VERSION, &minor);
-	system->log(
+	system.log(
 		"OpenGLGraphicsAPI", "Loaded OpenGL version {}.{}", major, minor);
 
 	glViewport(0, 0, config.getWidth(), config.getHeight());
@@ -197,7 +197,7 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
 void OpenGLGraphicsAPI::checkGLError(const char* file, long line) {
 	int err = glGetError();
 	if (err) {
-		system->log(
+		system.log(
 			LogLevel::ERROR, "OpenGL", "Error {:#04x} at {}:{}", err, file,
 			line);
 	};
@@ -211,7 +211,7 @@ void OpenGLGraphicsAPI::checkShaderCompileError(unsigned int shader) {
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_len);
 		char* log = new char[info_len];
 		glGetShaderInfoLog(shader, info_len, &info_len, log);
-		system->log(
+		system.log(
 			LogLevel::ERROR, "OpenGL", "Error compiling shader: {}", log);
 		delete[] log;
 	}
@@ -238,7 +238,7 @@ void OpenGLGraphicsAPI::onGLDebugMessage(
 #ifdef GROWL_OPENGL_4_5
 	if (severity == GL_DEBUG_SEVERITY_HIGH ||
 		severity == GL_DEBUG_SEVERITY_MEDIUM) {
-		system->log(LogLevel::ERROR, "OpenGL", "{}", message);
+		system.log(LogLevel::ERROR, "OpenGL", "{}", message);
 	}
 #endif
 }

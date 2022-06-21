@@ -30,36 +30,36 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 		exit(1);
 	}
 	if (auto err = m_api->graphicsInternal->init(); err) {
-		m_api->system()->log(
+		m_api->system().log(
 			LogLevel::FATAL, "GameAdapter", "Failed to init graphics API: {}",
 			err.get()->message());
 		exit(2);
 	}
-	m_api->system()->log("GameAdapter", "Desktop adapter created");
+	m_api->system().log("GameAdapter", "Desktop adapter created");
 }
 
 GameAdapter::~GameAdapter() {
-	m_api->system()->log("GameAdapter", "Desktop adapter destroying");
+	m_api->system().log("GameAdapter", "Desktop adapter destroying");
 	m_api->graphicsInternal->dispose();
 	m_api->systemInternal->dispose();
 }
 
 void GameAdapter::run() {
 	if (auto err = m_api->graphicsInternal->setWindow(m_window_config); err) {
-		m_api->system()->log(
+		m_api->system().log(
 			LogLevel::FATAL, "GameAdapter", "Failed to create window: {}",
 			err.get()->message());
 		return;
 	}
 	if (auto err = m_game->init(); err) {
-		m_api->system()->log(
+		m_api->system().log(
 			LogLevel::FATAL, "GameAdapter", "Failed to init game: {}",
 			err.get()->message());
 		return;
 	}
-	m_api->system()->log("GameAdapter", "Run!");
+	m_api->system().log("GameAdapter", "Run!");
 	while (m_api->systemInternal->isRunning()) {
-		m_api->system()->tick();
+		m_api->system().tick();
 		m_api->graphicsInternal->begin();
 		m_game->render();
 		m_api->graphicsInternal->end();

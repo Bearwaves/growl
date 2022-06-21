@@ -12,11 +12,11 @@ class API {
 	friend class GameAdapter;
 
 public:
-	SystemAPI* system() {
-		return systemInternal.get();
+	SystemAPI& system() {
+		return *systemInternal;
 	}
-	GraphicsAPI* graphics() {
-		return graphicsInternal.get();
+	GraphicsAPI& graphics() {
+		return *graphicsInternal;
 	}
 
 	void addSystemAPI(std::unique_ptr<SystemAPIInternal> internal);
