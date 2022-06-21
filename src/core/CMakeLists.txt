@@ -16,6 +16,7 @@ set(HEADERS
 	"include/growl/core/api/api_internal.h"
 	"include/growl/core/api/system_api.h"
 	"include/growl/core/api/graphics_api.h"
+	"include/growl/core/api/audio_api.h"
 
 	"include/growl/core/game/game.h"
 
@@ -30,6 +31,8 @@ set(HEADERS
 	"include/growl/core/input/processor.h"
 	"include/growl/core/input/controller.h"
 	"include/growl/core/input/keyboard.h"
+
+	"include/growl/core/audio/device.h"
 	)
 
 add_library(growl-core ${SOURCES} ${HEADERS})

@@ -35,12 +35,19 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 			err.get()->message());
 		exit(2);
 	}
+	if (auto err = m_api->audioInternal->init(); err) {
+		m_api->system().log(
+			LogLevel::FATAL, "GameAdapter", "Failed to init audio API: {}",
+			err.get()->message());
+		exit(3);
+	}
 	m_api->system().log("GameAdapter", "Desktop adapter created");
 }
 
 GameAdapter::~GameAdapter() {
 	m_api->system().log("GameAdapter", "Desktop adapter destroying");
 	m_api->graphicsInternal->dispose();
+	m_api->audioInternal->dispose();
 	m_api->systemInternal->dispose();
 }
 

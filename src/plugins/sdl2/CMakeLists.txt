@@ -23,12 +23,14 @@ set(SOURCES
 	"src/sdl_keyboard.cpp"
 	"src/sdl_controller.cpp"
 	"src/sdl_window.cpp"
+	"src/sdl_audio.cpp"
 	)
 
 set(HEADERS
 	"src/sdl_error.h"
 	"src/sdl_system.h"
 	"src/sdl_window.h"
+	"src/sdl_audio.h"
 	)
 
 add_library(growl-plugin-sdl2 ${SOURCES} ${HEADERS})

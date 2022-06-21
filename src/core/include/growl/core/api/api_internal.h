@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio_api.h"
 #include "graphics_api.h"
 #include "growl/util/error.h"
 #include "system_api.h"
@@ -28,6 +29,11 @@ public:
 	virtual Error setWindow(const WindowConfig& window_descriptor) = 0;
 	virtual void begin() = 0;
 	virtual void end() = 0;
+};
+
+class AudioAPIInternal : public AudioAPI, public APIInternal {
+public:
+	virtual ~AudioAPIInternal() {}
 };
 
 } // namespace Growl

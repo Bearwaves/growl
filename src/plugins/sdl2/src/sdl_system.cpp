@@ -22,6 +22,8 @@ Error SDL2SystemAPI::init() {
 	}
 	SDL_ShowCursor(SDL_DISABLE);
 
+	this->log("SDL2SystemAPI", "Initialised SDL system");
+
 	running = true;
 	return nullptr;
 }
