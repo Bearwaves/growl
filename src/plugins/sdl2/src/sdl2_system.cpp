@@ -1,8 +1,8 @@
-#include "sdl_system.h"
+#include "sdl2_system.h"
 #include "SDL.h"
 #include "growl/core/input/event.h"
-#include "sdl_error.h"
-#include "sdl_window.h"
+#include "sdl2_error.h"
+#include "sdl2_window.h"
 #include <assert.h>
 #include <memory>
 

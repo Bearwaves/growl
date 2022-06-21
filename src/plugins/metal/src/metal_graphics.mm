@@ -23,7 +23,7 @@ using std::chrono::seconds;
 
 constexpr int BUFFER_MAX_SIZE = 2 << 22; // 8MB
 
-MetalGraphicsAPI::MetalGraphicsAPI(SystemAPI* system)
+MetalGraphicsAPI::MetalGraphicsAPI(SystemAPI& system)
 	: system{system} {}
 
 Error MetalGraphicsAPI::init() {
@@ -56,7 +56,7 @@ void MetalGraphicsAPI::end() {
 }
 
 Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
-	auto window_result = system->createWindow(config);
+	auto window_result = system.createWindow(config);
 	if (window_result.hasError()) {
 		return std::move(window_result.error());
 	}

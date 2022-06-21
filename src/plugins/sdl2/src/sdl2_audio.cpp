@@ -1,9 +1,9 @@
-#include "sdl_audio.h"
+#include "sdl2_audio.h"
 #include "SDL.h"
 #include "SDL_audio.h"
 #include "growl/core/audio/device.h"
 #include "growl/util/error.h"
-#include "sdl_error.h"
+#include "sdl2_error.h"
 #include <memory>
 #include <vector>
 

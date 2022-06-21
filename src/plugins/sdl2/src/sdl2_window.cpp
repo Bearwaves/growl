@@ -1,4 +1,4 @@
-#include "sdl_window.h"
+#include "sdl2_window.h"
 #include "SDL_video.h"
 
 using Growl::SDL2Window;

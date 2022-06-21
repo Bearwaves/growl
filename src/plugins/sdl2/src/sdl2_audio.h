@@ -3,7 +3,7 @@
 #include "growl/core/api/api_internal.h"
 #include "growl/core/audio/device.h"
 #include "growl/util/error.h"
-#include "sdl_system.h"
+#include "sdl2_system.h"
 #include <memory>
 #include <string>
 #include <vector>

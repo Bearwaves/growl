@@ -1,6 +1,6 @@
 #include "growl/core/api/api.h"
-#include "sdl_audio.h"
-#include "sdl_system.h"
+#include "sdl2_audio.h"
+#include "sdl2_system.h"
 #include <memory>
 
 using Growl::API;
