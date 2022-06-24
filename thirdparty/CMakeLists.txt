@@ -3,6 +3,7 @@ project(growl-thirdparty)
 add_subdirectory(glm)
 add_subdirectory(json)
 add_subdirectory(utfcpp)
+add_subdirectory(soloud)
 
 if (MSVC)
 	set(CMAKE_CXX_FLAGS "/W0")
@@ -183,6 +184,7 @@ target_link_libraries(growl-thirdparty
 	glm::glm
 	nlohmann_json::nlohmann_json
 	utf8cpp
+	soloud
 	)
 
 if (OpenMP_CXX_FOUND)
