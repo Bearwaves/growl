@@ -30,5 +30,6 @@ add_library(growl-platform-desktop ${SOURCES} ${HEADERS})
 target_link_libraries(growl-platform-desktop
 	growl-core
 	growl-plugin-sdl2
+	growl-plugin-soloud
 	${GROWL_DESKTOP_LIBS}
 	)

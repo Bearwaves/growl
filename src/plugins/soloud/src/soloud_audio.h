@@ -1,17 +1,13 @@
 #pragma once
 
 #include "growl/core/api/api_internal.h"
-#include "growl/core/audio/device.h"
-#include "growl/util/error.h"
-#include "sdl2_system.h"
+#include "soloud.h"
 #include <memory>
-#include <string>
-#include <vector>
 namespace Growl {
 
-class SDL2AudioAPI : public AudioAPIInternal {
+class SoLoudAudioAPI : public AudioAPIInternal {
 public:
-	explicit SDL2AudioAPI(SystemAPI& system)
+	explicit SoLoudAudioAPI(SystemAPI& system)
 		: system{system} {}
 	Error init() override;
 	void dispose() override;
@@ -21,7 +17,8 @@ public:
 
 private:
 	SystemAPI& system;
+	std::unique_ptr<SoLoud::Soloud> soloud;
 	std::vector<AudioDevice> devices;
 };
 
-} // namespace Growl
+}; // namespace Growl
