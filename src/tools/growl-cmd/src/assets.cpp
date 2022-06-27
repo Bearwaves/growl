@@ -6,6 +6,7 @@
 #include "growl/util/assets/bundle.h"
 #include "growl/util/assets/error.h"
 #include "growl/util/assets/font_face.h"
+#include "growl/util/assets/sound.h"
 #include "nlohmann/json.hpp"
 #include <cstdint>
 #include <exception>
@@ -96,7 +97,7 @@ AssetsIncludeError includeFont(
 	AssetInfo info{ptr, size, AssetType::Font};
 	outfile.write(reinterpret_cast<const char*>(data.data()), size);
 
-	std::cout << "Included " << style::bold << resolved_path.string()
+	std::cout << "Included font " << style::bold << resolved_path.string()
 			  << style::reset << "." << endl;
 
 	if (config.msdf) {
@@ -123,6 +124,36 @@ AssetsIncludeError includeFont(
 		std::cout << "Included MSDF font atlas for " << style::bold
 				  << resolved_path.string() << style::reset << "." << std::endl;
 	}
+	assets_map[resolved_path.string()] = info;
+
+	return AssetsIncludeErrorCode::None;
+}
+
+AssetsIncludeError includeSound(
+	const std::filesystem::directory_entry& entry,
+	std::filesystem::path& resolved_path, AssetsMap& assets_map,
+	std::ofstream& outfile) noexcept {
+	if (!Growl::isValidSound(entry.path())) {
+		return AssetsIncludeErrorCode::WrongType;
+	}
+
+	auto size = std::filesystem::file_size(entry.path());
+	std::vector<unsigned char> data(size);
+	std::ifstream file;
+	file.open(entry.path(), std::ios::binary | std::ios::in);
+	if (file.fail()) {
+		return AssetsIncludeError(
+			"Failed to open file " + resolved_path.string());
+	}
+	file.read(reinterpret_cast<char*>(data.data()), size);
+
+	auto ptr = static_cast<unsigned int>(outfile.tellp());
+	AssetInfo info{ptr, size, AssetType::Sound};
+	outfile.write(reinterpret_cast<const char*>(data.data()), size);
+
+	std::cout << "Included sound " << style::bold << resolved_path.string()
+			  << style::reset << "." << std::endl;
+
 	assets_map[resolved_path.string()] = info;
 
 	return AssetsIncludeErrorCode::None;
@@ -191,6 +222,16 @@ Error processDirectory(
 		if (font_err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
 			return std::make_unique<AssetsError>(
 				"Failed to include font: " + font_err.message());
+		}
+
+		auto sound_err =
+			includeSound(file_entry, resolved_path, assets_map, outfile);
+		if (sound_err.getCode() == AssetsIncludeErrorCode::None) {
+			continue;
+		}
+		if (sound_err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
+			return std::make_unique<AssetsError>(
+				"Failed to include sound: " + sound_err.message());
 		}
 	}
 	return nullptr;

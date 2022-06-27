@@ -89,6 +89,8 @@ std::string Growl::getAssetTypeName(AssetType type) {
 		return "Atlas";
 	case AssetType::Font:
 		return "Font";
+	case AssetType::Sound:
+		return "Sound";
 	default:
 		return "Unknown";
 	}
