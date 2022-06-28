@@ -3,10 +3,10 @@
 #include "../thirdparty/rang.hpp"
 #include "assets_config.h"
 #include "error.h"
+#include "growl/util/assets/audio.h"
 #include "growl/util/assets/bundle.h"
 #include "growl/util/assets/error.h"
 #include "growl/util/assets/font_face.h"
-#include "growl/util/assets/sound.h"
 #include "nlohmann/json.hpp"
 #include <cstdint>
 #include <exception>
@@ -129,11 +129,11 @@ AssetsIncludeError includeFont(
 	return AssetsIncludeErrorCode::None;
 }
 
-AssetsIncludeError includeSound(
+AssetsIncludeError includeAudio(
 	const std::filesystem::directory_entry& entry,
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
 	std::ofstream& outfile) noexcept {
-	if (!Growl::isValidSound(entry.path())) {
+	if (!Growl::isValidAudio(entry.path())) {
 		return AssetsIncludeErrorCode::WrongType;
 	}
 
@@ -148,10 +148,10 @@ AssetsIncludeError includeSound(
 	file.read(reinterpret_cast<char*>(data.data()), size);
 
 	auto ptr = static_cast<unsigned int>(outfile.tellp());
-	AssetInfo info{ptr, size, AssetType::Sound};
+	AssetInfo info{ptr, size, AssetType::Audio};
 	outfile.write(reinterpret_cast<const char*>(data.data()), size);
 
-	std::cout << "Included sound " << style::bold << resolved_path.string()
+	std::cout << "Included audio " << style::bold << resolved_path.string()
 			  << style::reset << "." << std::endl;
 
 	assets_map[resolved_path.string()] = info;
@@ -225,7 +225,7 @@ Error processDirectory(
 		}
 
 		auto sound_err =
-			includeSound(file_entry, resolved_path, assets_map, outfile);
+			includeAudio(file_entry, resolved_path, assets_map, outfile);
 		if (sound_err.getCode() == AssetsIncludeErrorCode::None) {
 			continue;
 		}

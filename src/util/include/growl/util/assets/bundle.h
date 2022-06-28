@@ -20,7 +20,7 @@ typedef uint64_t AssetsBundleVersion;
 
 constexpr AssetsBundleVersion ASSETS_BUNDLE_LATEST_VERSION = 1;
 
-enum class AssetType : uint64_t { Unknown, Image, Atlas, Font, Sound };
+enum class AssetType : uint64_t { Unknown, Image, Atlas, Font, Audio };
 
 std::string getAssetTypeName(AssetType type);
 

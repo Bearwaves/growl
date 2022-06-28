@@ -11,7 +11,7 @@ set(SOURCES
 	"src/distance_field_font_face.cpp"
 	"src/font_internal.cpp"
 	"src/glyph_layout.cpp"
-	"src/sound.cpp"
+	"src/audio.cpp"
 	"src/timer.cpp"
 	)
 
@@ -24,7 +24,7 @@ set(HEADERS
 	"include/growl/util/assets/image.h"
 	"include/growl/util/assets/atlas.h"
 	"include/growl/util/assets/font_face.h"
-	"include/growl/util/assets/sound.h"
+	"include/growl/util/assets/audio.h"
 
 	"include/growl/util/text/glyph_layout.h"
 	)

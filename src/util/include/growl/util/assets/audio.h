@@ -3,6 +3,6 @@
 #include <string>
 namespace Growl {
 
-bool isValidSound(std::string path);
+bool isValidAudio(std::string path);
 
 }
