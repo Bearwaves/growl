@@ -1,3 +1,5 @@
+cmake_minimum_required (VERSION 3.19)
+
 project(growl-plugin-opengl)
 
 set(OpenGL_GL_PREFERENCE GLVND)

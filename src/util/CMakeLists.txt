@@ -1,3 +1,5 @@
+cmake_minimum_required (VERSION 3.19)
+
 project(growl-util)
 
 include_directories("include" "../../thirdparty/freetype/include")

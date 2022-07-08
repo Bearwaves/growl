@@ -1,3 +1,5 @@
+cmake_minimum_required (VERSION 3.19)
+
 project(growl-plugin-metal)
 
 include_directories("../../core/include" ${SDL2_INCLUDE_DIR})
