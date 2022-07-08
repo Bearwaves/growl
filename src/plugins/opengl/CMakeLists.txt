@@ -13,8 +13,6 @@ else ()
 	add_definitions(-DGROWL_OPENGL_4_5)
 endif ()
 
-include_directories("../../core/include" ${SDL2_INCLUDE_DIR})
-
 set(SOURCES
 	"src/opengl_plugin.cpp"
 
@@ -50,6 +48,8 @@ endif ()
 add_library(growl-plugin-opengl ${SOURCES} ${HEADERS})
 target_link_libraries(
 	growl-plugin-opengl
+	PRIVATE
+	growl-plugin-sdl2
 	growl-core
 	${OPENGL_LIBRARIES}
 	)
