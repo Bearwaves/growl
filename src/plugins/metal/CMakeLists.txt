@@ -1,8 +1,6 @@
 cmake_minimum_required (VERSION 3.19)
 
-project(growl-plugin-metal)
-
-include_directories("../../core/include" ${SDL2_INCLUDE_DIR})
+project(growl-plugin-metal LANGUAGES OBJCXX)
 
 set(SOURCES
 	"src/metal_plugin.mm"
@@ -21,14 +19,13 @@ set(HEADERS
 	"src/metal_shader.h"
 	)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -x objective-c++")
-
 add_library(growl-plugin-metal ${SOURCES} ${HEADERS})
-find_library(FOUNDATION_LIBRARY Foundation)
-find_library(METAL_LIBRARY Metal)
-find_library(QUARTZ_LIBRARY QuartzCore)
 target_link_libraries(
 	growl-plugin-metal
+	PRIVATE
 	growl-core
-	${FOUNDATION_LIBRARY} ${METAL_LIBRARY} ${QUARTZ_LIBRARY}
+	growl-plugin-sdl2
+	"-framework Foundation"
+	"-framework Metal"
+	"-framework QuartzCore"
 	)
