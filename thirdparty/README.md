@@ -15,7 +15,7 @@
 | stb_image     | `v2.27`    | https://github.com/nothings/stb         | 💾                 |
 | stb_rect_pack | `v1.0.1`   | https://github.com/nothings/stb         | 💾                 |
 | UTF8-CPP      | `3.2.1`    | https://github.com/nemtrif/utfcpp       | 💾                 |
-| zlib          | `1.2.12`   | https://www.zlib.net/                   | 💾                 |
+| zlib          | `1.2.12`   | https://www.zlib.net/                   | 📥                 |
 
 ## Modifications
 
@@ -57,7 +57,3 @@ Added custom CMakeLists.txt.
 ### UTF8-CPP
 
 Included only `source/` and `CMakeLists.txt`, along with license and README.
-
-### zlib
-
-Included all `.c` and `.h` files from the root.

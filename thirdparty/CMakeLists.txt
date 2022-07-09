@@ -16,8 +16,13 @@ FetchContent_Declare(
 	fmt
 	URL https://github.com/fmtlib/fmt/releases/download/8.1.1/fmt-8.1.1.zip
 	)
+FetchContent_Declare(
+	zlib
+	URL https://github.com/madler/zlib/archive/refs/tags/v1.2.12.tar.gz
+	)
 
-FetchContent_MakeAvailable(json fmt)
+FetchContent_MakeAvailable(json fmt zlib)
+
 add_library(thirdparty::json ALIAS nlohmann_json)
 add_library(thirdparty::fmt ALIAS fmt)
 
@@ -37,7 +42,7 @@ add_compile_definitions(
 	HAVE_FREETYPE
 	)
 
-include_directories("freetype/include/" "libpng/" "zlib/")
+include_directories("freetype/include/" "libpng/")
 
 set(SOURCES
 	"fpng/fpng.cpp"
@@ -109,18 +114,6 @@ set(SOURCES
 	"msdfgen/core/edge-segments.cpp"
 	"msdfgen/core/rasterization.cpp"
 	"msdfgen/ext/import-font.cpp"
-
-	"zlib/adler32.c"
-	"zlib/compress.c"
-	"zlib/crc32.c"
-	"zlib/deflate.c"
-	"zlib/infback.c"
-	"zlib/inffast.c"
-	"zlib/inflate.c"
-	"zlib/inftrees.c"
-	"zlib/trees.c"
-	"zlib/uncompr.c"
-	"zlib/zutil.c"
 	)
 
 set(HEADERS
@@ -175,17 +168,6 @@ set(HEADERS
 	"msdfgen/core/pixel-conversion.hpp"
 	"msdfgen/core/Vector2.h"
 	"msdfgen/ext/import-font.h"
-
-	"zlib/crc32.h"
-	"zlib/deflate.h"
-	"zlib/inffast.h"
-	"zlib/inffixed.h"
-	"zlib/inflate.h"
-	"zlib/inftrees.h"
-	"zlib/trees.h"
-	"zlib/zconf.h"
-	"zlib/zlib.h"
-	"zlib/zutil.h"
 	)
 
 add_library(growl-thirdparty ${SOURCES} ${HEADERS})
@@ -196,6 +178,8 @@ target_link_libraries(growl-thirdparty
 	thirdparty::json
 	utf8cpp
 	soloud
+	PRIVATE
+	zlib
 	)
 
 if (OpenMP_CXX_FOUND)
