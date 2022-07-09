@@ -12,7 +12,14 @@ FetchContent_Declare(
 	json
 	URL https://github.com/nlohmann/json/releases/download/v3.10.5/json.tar.xz
 	)
-FetchContent_MakeAvailable(json)
+FetchContent_Declare(
+	fmt
+	URL https://github.com/fmtlib/fmt/releases/download/8.1.1/fmt-8.1.1.zip
+	)
+
+FetchContent_MakeAvailable(json fmt)
+add_library(thirdparty::json ALIAS nlohmann_json)
+add_library(thirdparty::fmt ALIAS fmt)
 
 if (MSVC)
 	set(CMAKE_CXX_FLAGS "/W0")
@@ -33,8 +40,6 @@ add_compile_definitions(
 include_directories("freetype/include/" "libpng/" "zlib/")
 
 set(SOURCES
-	"fmt/format.cpp"
-
 	"fpng/fpng.cpp"
 
 	"stb_image/stb_image.c"
@@ -119,11 +124,6 @@ set(SOURCES
 	)
 
 set(HEADERS
-	"fmt/core.h"
-	"fmt/color.h"
-	"fmt/format.h"
-	"fmt/format-inl.h"
-
 	"fpng/fpng.h"
 
 	"libpng/png.h"
@@ -190,13 +190,15 @@ set(HEADERS
 
 add_library(growl-thirdparty ${SOURCES} ${HEADERS})
 target_link_libraries(growl-thirdparty
+	INTERFACE
 	glm::glm
-	nlohmann_json::nlohmann_json
+	thirdparty::fmt
+	thirdparty::json
 	utf8cpp
 	soloud
 	)
 
 if (OpenMP_CXX_FOUND)
-	target_link_libraries(growl-thirdparty OpenMP::OpenMP_CXX)
+	target_link_libraries(growl-thirdparty PRIVATE OpenMP::OpenMP_CXX)
 	add_compile_definitions(MSDFGEN_USE_OPENMP)
 endif ()
