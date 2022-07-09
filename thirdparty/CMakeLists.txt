@@ -2,10 +2,17 @@ cmake_minimum_required (VERSION 3.19)
 
 project(growl-thirdparty)
 
+include(FetchContent)
+
 add_subdirectory(glm)
-add_subdirectory(json)
 add_subdirectory(utfcpp)
 add_subdirectory(soloud)
+
+FetchContent_Declare(
+	json
+	URL https://github.com/nlohmann/json/releases/download/v3.10.5/json.tar.xz
+	)
+FetchContent_MakeAvailable(json)
 
 if (MSVC)
 	set(CMAKE_CXX_FLAGS "/W0")

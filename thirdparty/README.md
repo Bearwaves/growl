@@ -1,21 +1,21 @@
 # Growl third-party dependencies
 
-| Package       | Version    | URL                                     |
-|---------------|------------|-----------------------------------------|
-| {fmt}         | `8.1.1`    | https://github.com/fmtlib/fmt           |
-| fpng          | `bfe5f9c`  | https://github.com/richgel999/fpng      |
-| FreeType      | `2.12.0`   | https://freetype.org/                   |
-| glm           | `0.9.9.8`  | https://github.com/g-truc/glm           |
-| HarfBuzz      | `4.2.0`    | https://github.com/harfbuzz/harfbuzz    |
-| json          | `3.10.5`   | https://github.com/nlohmann/json        |
-| libpng        | `1.6.37`   | http://libpng.org/pub/png/libpng.html   |
-| libunibreak   | `5.0`      | https://github.com/adah1972/libunibreak |
-| msdfgen       | `1.9.2`    | https://github.com/Chlumsky/msdfgen/    |
-| SoLoud        | `20200207` | https://github.com/jarikomppa/soloud    |
-| stb_image     | `v2.27`    | https://github.com/nothings/stb         |
-| stb_rect_pack | `v1.0.1`   | https://github.com/nothings/stb         |
-| UTF8-CPP      | `3.2.1`    | https://github.com/nemtrif/utfcpp       |
-| zlib          | `1.2.12`   | https://www.zlib.net/                   |
+| Package       | Version    | URL                                     | Vendored / Fetched |
+|---------------|------------|-----------------------------------------|--------------------|
+| {fmt}         | `8.1.1`    | https://github.com/fmtlib/fmt           | 💾                 |
+| fpng          | `bfe5f9c`  | https://github.com/richgel999/fpng      | 💾                 |
+| FreeType      | `2.12.0`   | https://freetype.org/                   | 💾                 |
+| glm           | `0.9.9.8`  | https://github.com/g-truc/glm           | 💾                 |
+| HarfBuzz      | `4.2.0`    | https://github.com/harfbuzz/harfbuzz    | 💾                 |
+| json          | `3.10.5`   | https://github.com/nlohmann/json        | 📥                 |
+| libpng        | `1.6.37`   | http://libpng.org/pub/png/libpng.html   | 💾                 |
+| libunibreak   | `5.0`      | https://github.com/adah1972/libunibreak | 💾                 |
+| msdfgen       | `1.9.2`    | https://github.com/Chlumsky/msdfgen/    | 💾                 |
+| SoLoud        | `20200207` | https://github.com/jarikomppa/soloud    | 💾                 |
+| stb_image     | `v2.27`    | https://github.com/nothings/stb         | 💾                 |
+| stb_rect_pack | `v1.0.1`   | https://github.com/nothings/stb         | 💾                 |
+| UTF8-CPP      | `3.2.1`    | https://github.com/nemtrif/utfcpp       | 💾                 |
+| zlib          | `1.2.12`   | https://www.zlib.net/                   | 💾                 |
 
 ## Modifications
 
