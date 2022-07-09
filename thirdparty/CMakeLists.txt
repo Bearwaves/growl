@@ -8,6 +8,16 @@ add_subdirectory(glm)
 add_subdirectory(utfcpp)
 add_subdirectory(soloud)
 
+# Get third-party stuff not to log
+function(message)
+	if (NOT MESSAGE_QUIET)
+		_message(${ARGN})
+	endif()
+endfunction()
+
+message(STATUS "Third-party stuff, feel free to ignore any messages...")
+set(MESSAGE_QUIET ON)
+
 FetchContent_Declare(
 	json
 	URL https://github.com/nlohmann/json/releases/download/v3.10.5/json.tar.xz
@@ -22,6 +32,8 @@ FetchContent_Declare(
 	)
 
 FetchContent_MakeAvailable(json fmt zlib)
+unset(MESSAGE_QUIET)
+message(STATUS "All done with third-party.")
 
 add_library(thirdparty::json ALIAS nlohmann_json)
 add_library(thirdparty::fmt ALIAS fmt)
