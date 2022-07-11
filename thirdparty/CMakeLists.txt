@@ -30,8 +30,12 @@ FetchContent_Declare(
 	zlib
 	URL https://github.com/madler/zlib/archive/refs/tags/v1.2.12.tar.gz
 	)
+FetchContent_Declare(
+	libpng
+	URL https://github.com/glennrp/libpng/archive/refs/tags/v1.6.35.tar.gz
+	)
 
-FetchContent_MakeAvailable(json fmt zlib)
+FetchContent_MakeAvailable(json fmt zlib libpng)
 unset(MESSAGE_QUIET)
 message(STATUS "All done with third-party.")
 
@@ -82,22 +86,6 @@ set(SOURCES
 
 	"harfbuzz/src/harfbuzz.cc"
 
-	"libpng/png.c"
-	"libpng/pngerror.c"
-	"libpng/pngget.c"
-	"libpng/pngmem.c"
-	"libpng/pngpread.c"
-	"libpng/pngread.c"
-	"libpng/pngrio.c"
-	"libpng/pngrtran.c"
-	"libpng/pngrutil.c"
-	"libpng/pngset.c"
-	"libpng/pngtrans.c"
-	"libpng/pngwio.c"
-	"libpng/pngwrite.c"
-	"libpng/pngwtran.c"
-	"libpng/pngwutil.c"
-
 	"libunibreak/src/unibreakdef.c"
 	"libunibreak/src/unibreakbase.c"
 	"libunibreak/src/linebreakdef.c"
@@ -130,14 +118,6 @@ set(SOURCES
 
 set(HEADERS
 	"fpng/fpng.h"
-
-	"libpng/png.h"
-	"libpng/pngconf.h"
-	"libpng/pngdebug.h"
-	"libpng/pnginfo.h"
-	"libpng/pnglibconf.h"
-	"libpng/pngpriv.h"
-	"libpng/pngstruct.h"
 
 	"stb_image/stb_image.h"
 	"stb_rect_pack/stb_rect_pack.h"
@@ -191,7 +171,8 @@ target_link_libraries(growl-thirdparty
 	utf8cpp
 	soloud
 	PRIVATE
-	zlib
+	zlibstatic
+	png_static
 	)
 
 if (OpenMP_CXX_FOUND)
