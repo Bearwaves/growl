@@ -17,4 +17,9 @@ set(HEADERS
 	)
 
 add_executable(growl-cmd ${SOURCES} ${HEADERS})
-target_link_libraries(growl-cmd growl-version growl-util)
+target_link_libraries(growl-cmd
+	PRIVATE
+	growl-version
+	growl-util
+	growl-thirdparty
+	)

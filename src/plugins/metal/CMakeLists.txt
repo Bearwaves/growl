@@ -24,6 +24,7 @@ target_link_libraries(
 	growl-plugin-metal
 	PRIVATE
 	growl-core
+	growl-thirdparty
 	growl-plugin-sdl2
 	"-framework Foundation"
 	"-framework Metal"

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../../../thirdparty/harfbuzz/src/hb.h"
 #include "../../../thirdparty/stb_rect_pack/stb_rect_pack.h"
 #include "freetype/freetype.h"
 #include "growl/util/text/glyph_layout.h"
+#include "hb.h"
 #include <vector>
 
 class Growl::FTFontData {

@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../log.h"
 #include "fmt/color.h"
 #include "fmt/core.h"
-#include "../log.h"
 #include "growl/core/input/processor.h"
 #include "growl/util/error.h"
 #include <memory>

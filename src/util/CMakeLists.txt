@@ -2,8 +2,6 @@ cmake_minimum_required (VERSION 3.19)
 
 project(growl-util)
 
-include_directories("include" "../../thirdparty/freetype/include")
-
 set(SOURCES
 	"src/bundle.cpp"
 	"src/image.cpp"
@@ -17,19 +15,12 @@ set(SOURCES
 	"src/timer.cpp"
 	)
 
-set(HEADERS
-	"include/growl/util/error.h"
-	"include/growl/util/timer.h"
-
-	"include/growl/util/assets/bundle.h"
-	"include/growl/util/assets/error.h"
-	"include/growl/util/assets/image.h"
-	"include/growl/util/assets/atlas.h"
-	"include/growl/util/assets/font_face.h"
-	"include/growl/util/assets/audio.h"
-
-	"include/growl/util/text/glyph_layout.h"
+add_library(growl-util ${SOURCES})
+target_link_libraries(growl-util
+	PRIVATE
+	growl-thirdparty
 	)
-
-add_library(growl-util ${SOURCES} ${HEADERS})
-target_link_libraries(growl-util growl-thirdparty)
+target_include_directories(growl-util
+	PUBLIC
+	"include"
+	)

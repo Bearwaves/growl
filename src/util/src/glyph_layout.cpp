@@ -1,9 +1,9 @@
 #include "growl/util/text/glyph_layout.h"
-#include "../../../../thirdparty/harfbuzz/src/hb-ft.h"
 #include "../../../../thirdparty/libunibreak/src/linebreak.h"
 #include "font_internal.h"
 #include "freetype/freetype.h"
 #include "growl/util/assets/font_face.h"
+#include "hb-ft.h"
 #include <cctype>
 
 using Growl::FontFace;

@@ -1,4 +1,4 @@
-#include "../../include/growl/core/input/processor.h"
+#include "growl/core/input/processor.h"
 #include <iostream>
 
 using Growl::InputEvent;

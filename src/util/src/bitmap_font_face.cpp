@@ -1,4 +1,3 @@
-#include "../../../thirdparty/harfbuzz/src/hb-ft.h"
 #include "../../../thirdparty/stb_rect_pack/stb_rect_pack.h"
 #include "font_internal.h"
 #include "growl/util/assets/atlas.h"
@@ -6,6 +5,7 @@
 #include "growl/util/assets/font_face.h"
 #include "growl/util/assets/image.h"
 #include "growl/util/error.h"
+#include "hb-ft.h"
 #include <memory>
 #include <set>
 #include <utf8.h>

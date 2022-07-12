@@ -30,5 +30,9 @@ set(HEADERS
 	)
 
 add_library(growl-plugin-sdl2 ${SOURCES} ${HEADERS})
-target_link_libraries(growl-plugin-sdl2 PRIVATE growl-core ${SDL_LINK_LIBS})
+target_link_libraries(growl-plugin-sdl2
+	PRIVATE
+	growl-core
+	${SDL_LINK_LIBS}
+	)
 target_include_directories(growl-plugin-sdl2 PUBLIC ${SDL2_INCLUDE_DIR})
