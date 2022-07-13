@@ -9,7 +9,7 @@
 | HarfBuzz      | `4.4.1`    | https://github.com/harfbuzz/harfbuzz    | 💾                 |
 | json          | `3.10.5`   | https://github.com/nlohmann/json        | 📥                 |
 | libunibreak   | `5.0`      | https://github.com/adah1972/libunibreak | 💾                 |
-| msdfgen       | `1.9.2`    | https://github.com/Chlumsky/msdfgen/    | 💾                 |
+| msdfgen       | `1.9.2`    | https://github.com/Chlumsky/msdfgen/    | 📥                 |
 | SoLoud        | `20200207` | https://github.com/jarikomppa/soloud    | 💾                 |
 | stb_image     | `v2.27`    | https://github.com/nothings/stb         | 💾                 |
 | stb_rect_pack | `v1.0.1`   | https://github.com/nothings/stb         | 💾                 |
@@ -18,11 +18,6 @@
 ## Modifications
 
 This section lists modifications to third-party dependencies from their source.
-
-### FreeType
-
-Included only `src/` and `include/` directories, minus the `tools/` and `dlg/`
-directories and `.mk` files.
 
 ### Harfbuzz
 
@@ -37,11 +32,6 @@ Only the base C files (`unibreakbase.*`, `unibreakdef.*`), plus files needed for
 linebreaks (`linebreak.*`, `linebreakdef.*`, `linebreakdata.c`) are included.
 
 Generators, templates, emoji/word/grapheme data are not included.
-
-### msdfgen
-
-Included `core/`, `ext/`, `include/` and `lib/`, along with top-level headers
-and license.
 
 ### SoLoud
 

@@ -5,9 +5,9 @@
 #include "growl/util/assets/image.h"
 #include "growl/util/error.h"
 // Must go after FreeType.
-#include "../../../thirdparty/msdfgen/msdfgen-ext.h"
-#include "../../../thirdparty/msdfgen/msdfgen.h"
 #include "hb-ft.h"
+#include "msdfgen-ext.h"
+#include "msdfgen.h"
 #include <set>
 
 using Growl::AssetsError;

@@ -4,6 +4,12 @@ project(growl-thirdparty)
 
 include(FetchContent)
 
+if (MSVC)
+	set(CMAKE_CXX_FLAGS "/W0")
+else ()
+	set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
+endif ()
+
 add_subdirectory(glm)
 add_subdirectory(utfcpp)
 add_subdirectory(soloud)
@@ -30,21 +36,25 @@ FetchContent_Declare(
 	freetype
 	URL https://download.savannah.gnu.org/releases/freetype/freetype-2.12.0.tar.gz
 	)
+FetchContent_Declare(
+	msdfgen
+	URL https://github.com/Chlumsky/msdfgen/archive/refs/tags/v1.9.2.tar.gz
+	)
 
-FetchContent_MakeAvailable(json fmt freetype)
+set(MSDFGEN_BUILD_STANDALONE OFF)
+set(MSDFGEN_INSTALL OFF)
+find_package(OpenMP)
+if (OpenMP)
+	set(MSDFGEN_USE_OPENMP ON)
+endif()
+
+FetchContent_MakeAvailable(json fmt freetype msdfgen)
 unset(MESSAGE_QUIET)
 message(STATUS "All done with third-party.")
 
 add_library(growl-thirdparty::json ALIAS nlohmann_json)
 add_library(growl-thirdparty::fmt ALIAS fmt)
-
-if (MSVC)
-	set(CMAKE_CXX_FLAGS "/W0")
-else ()
-	set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
-endif ()
-
-find_package(OpenMP)
+add_library(Freetype::Freetype ALIAS freetype) # Used by msdfgen
 
 set(SOURCES
 	"fpng/fpng.cpp"
@@ -59,29 +69,6 @@ set(SOURCES
 	"libunibreak/src/linebreakdef.c"
 	"libunibreak/src/linebreak.c"
 	"libunibreak/src/linebreakdata.c"
-
-	"msdfgen/core/msdfgen.cpp"
-	"msdfgen/core/Shape.cpp"
-	"msdfgen/core/EdgeHolder.cpp"
-	"msdfgen/core/sdf-error-estimation.cpp"
-	"msdfgen/core/SignedDistance.cpp"
-	"msdfgen/core/save-tiff.cpp"
-	"msdfgen/core/render-sdf.cpp"
-	"msdfgen/core/Contour.cpp"
-	"msdfgen/core/Projection.cpp"
-	"msdfgen/core/msdf-error-correction.cpp"
-	"msdfgen/core/edge-coloring.cpp"
-	"msdfgen/core/equation-solver.cpp"
-	"msdfgen/core/shape-description.cpp"
-	"msdfgen/core/MSDFErrorCorrection.cpp"
-	"msdfgen/core/save-bmp.cpp"
-	"msdfgen/core/contour-combiners.cpp"
-	"msdfgen/core/Scanline.cpp"
-	"msdfgen/core/edge-selectors.cpp"
-	"msdfgen/core/Vector2.cpp"
-	"msdfgen/core/edge-segments.cpp"
-	"msdfgen/core/rasterization.cpp"
-	"msdfgen/ext/import-font.cpp"
 	)
 
 set(HEADERS
@@ -94,40 +81,6 @@ set(HEADERS
 	"libunibreak/src/unibreakbase.h"
 	"libunibreak/src/linebreakdef.h"
 	"libunibreak/src/linebreak.h"
-
-	"msdfgen/msdfgen.h"
-	"msdfgen/msdfgen-ext.h"
-	"msdfgen/core/save-bmp.h"
-	"msdfgen/core/contour-combiners.h"
-	"msdfgen/core/Bitmap.hpp"
-	"msdfgen/core/Contour.h"
-	"msdfgen/core/generator-config.h"
-	"msdfgen/core/edge-coloring.h"
-	"msdfgen/core/save-tiff.h"
-	"msdfgen/core/Shape.h"
-	"msdfgen/core/MSDFErrorCorrection.h"
-	"msdfgen/core/ShapeDistanceFinder.h"
-	"msdfgen/core/msdf-error-correction.h"
-	"msdfgen/core/Scanline.h"
-	"msdfgen/core/BitmapRef.hpp"
-	"msdfgen/core/Bitmap.h"
-	"msdfgen/core/arithmetics.hpp"
-	"msdfgen/core/edge-segments.h"
-	"msdfgen/core/shape-description.h"
-	"msdfgen/core/sdf-error-estimation.h"
-	"msdfgen/core/render-sdf.h"
-	"msdfgen/core/rasterization.h"
-	"msdfgen/core/equation-solver.h"
-	"msdfgen/core/bitmap-interpolation.hpp"
-	"msdfgen/core/Projection.h"
-	"msdfgen/core/EdgeColor.h"
-	"msdfgen/core/ShapeDistanceFinder.hpp"
-	"msdfgen/core/edge-selectors.h"
-	"msdfgen/core/EdgeHolder.h"
-	"msdfgen/core/SignedDistance.h"
-	"msdfgen/core/pixel-conversion.hpp"
-	"msdfgen/core/Vector2.h"
-	"msdfgen/ext/import-font.h"
 	)
 
 add_library(growl-thirdparty ${SOURCES} ${HEADERS})
@@ -138,6 +91,7 @@ target_link_libraries(growl-thirdparty
 	growl-thirdparty::json
 	utf8cpp
 	soloud
+	msdfgen-ext
 	PUBLIC
 	freetype
 	)
@@ -149,8 +103,3 @@ target_compile_definitions(growl-thirdparty
 	PRIVATE
 	"HAVE_FREETYPE"
 	)
-
-if (OpenMP_CXX_FOUND)
-	target_link_libraries(growl-thirdparty PRIVATE OpenMP::OpenMP_CXX)
-	add_compile_definitions(MSDFGEN_USE_OPENMP)
-endif ()
