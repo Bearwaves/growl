@@ -41,6 +41,7 @@ FetchContent_Declare(
 	URL https://github.com/Chlumsky/msdfgen/archive/refs/tags/v1.9.2.tar.gz
 	)
 
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(MSDFGEN_BUILD_STANDALONE OFF)
 set(MSDFGEN_INSTALL OFF)
 find_package(OpenMP)
@@ -48,13 +49,14 @@ if (OpenMP)
 	set(MSDFGEN_USE_OPENMP ON)
 endif()
 
-FetchContent_MakeAvailable(json fmt freetype msdfgen)
+FetchContent_MakeAvailable(json fmt freetype)
+add_library(Freetype::Freetype ALIAS freetype) # Used by msdfgen
+FetchContent_MakeAvailable(msdfgen)
 unset(MESSAGE_QUIET)
 message(STATUS "All done with third-party.")
 
 add_library(growl-thirdparty::json ALIAS nlohmann_json)
 add_library(growl-thirdparty::fmt ALIAS fmt)
-add_library(Freetype::Freetype ALIAS freetype) # Used by msdfgen
 
 set(SOURCES
 	"fpng/fpng.cpp"
