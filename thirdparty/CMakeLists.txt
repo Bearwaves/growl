@@ -12,7 +12,6 @@ else ()
 	set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
 endif ()
 
-add_subdirectory(utfcpp)
 add_subdirectory(soloud)
 
 # Get third-party stuff not to log
@@ -49,6 +48,10 @@ FetchContent_Declare(
 	glm
 	URL https://github.com/g-truc/glm/archive/refs/tags/0.9.9.8.tar.gz
 	)
+FetchContent_Declare(
+	utf8cpp
+	URL https://github.com/nemtrif/utfcpp/archive/refs/tags/v3.2.1.tar.gz
+	)
 
 # Stop FreeType/libpng from finding these in system paths.
 set(FT_DISABLE_ZLIB ON)
@@ -61,7 +64,7 @@ set(PNG_TESTS OFF)
 set(PNG_BUILD_ZLIB ON)
 set(SKIP_INSTALL_ALL ON)
 
-FetchContent_MakeAvailable(json fmt libpng freetype glm)
+FetchContent_MakeAvailable(json fmt libpng freetype glm utf8cpp)
 
 target_compile_definitions(freetype
 	PRIVATE

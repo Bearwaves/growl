@@ -14,7 +14,7 @@
 | SoLoud        | `20200207` | https://github.com/jarikomppa/soloud    | 💾                 |
 | stb_image     | `v2.27`    | https://github.com/nothings/stb         | 💾                 |
 | stb_rect_pack | `v1.0.1`   | https://github.com/nothings/stb         | 💾                 |
-| UTF8-CPP      | `3.2.1`    | https://github.com/nemtrif/utfcpp       | 💾                 |
+| UTF8-CPP      | `3.2.1`    | https://github.com/nemtrif/utfcpp       | 📥                 |
 | zlib          | `1.2.12`   | https://www.zlib.net/                   | 💾                 |
 
 ## Modifications
