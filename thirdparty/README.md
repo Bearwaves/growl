@@ -5,7 +5,7 @@
 | {fmt}         | `8.1.1`    | https://github.com/fmtlib/fmt           | 📥                 |
 | fpng          | `bfe5f9c`  | https://github.com/richgel999/fpng      | 💾                 |
 | FreeType      | `2.12.0`   | https://freetype.org/                   | 📥                 |
-| glm           | `0.9.9.8`  | https://github.com/g-truc/glm           | 💾                 |
+| glm           | `0.9.9.8`  | https://github.com/g-truc/glm           | 📥                 |
 | HarfBuzz      | `4.4.1`    | https://github.com/harfbuzz/harfbuzz    | 💾                 |
 | json          | `3.10.5`   | https://github.com/nlohmann/json        | 📥                 |
 | libpng        | `1.6.37`   | http://libpng.org/pub/png/libpng.html   | 📥                 |

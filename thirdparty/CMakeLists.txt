@@ -12,7 +12,6 @@ else ()
 	set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
 endif ()
 
-add_subdirectory(glm)
 add_subdirectory(utfcpp)
 add_subdirectory(soloud)
 
@@ -46,6 +45,10 @@ FetchContent_Declare(
 	msdfgen
 	URL https://github.com/Chlumsky/msdfgen/archive/refs/tags/v1.9.2.tar.gz
 	)
+FetchContent_Declare(
+	glm
+	URL https://github.com/g-truc/glm/archive/refs/tags/0.9.9.8.tar.gz
+	)
 
 # Stop FreeType/libpng from finding these in system paths.
 set(FT_DISABLE_ZLIB ON)
@@ -58,7 +61,7 @@ set(PNG_TESTS OFF)
 set(PNG_BUILD_ZLIB ON)
 set(SKIP_INSTALL_ALL ON)
 
-FetchContent_MakeAvailable(json fmt libpng freetype)
+FetchContent_MakeAvailable(json fmt libpng freetype glm)
 
 target_compile_definitions(freetype
 	PRIVATE
