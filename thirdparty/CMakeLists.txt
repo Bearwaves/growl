@@ -35,10 +35,6 @@ FetchContent_Declare(
 	URL https://github.com/fmtlib/fmt/releases/download/8.1.1/fmt-8.1.1.zip
 	)
 FetchContent_Declare(
-	zlib
-	URL https://github.com/madler/zlib/archive/refs/tags/v1.2.12.tar.gz
-	)
-FetchContent_Declare(
 	libpng
 	URL https://github.com/glennrp/libpng/archive/refs/tags/v1.6.35.tar.gz
 	)
@@ -62,7 +58,7 @@ set(PNG_TESTS OFF)
 set(PNG_BUILD_ZLIB ON)
 set(SKIP_INSTALL_ALL ON)
 
-FetchContent_MakeAvailable(json fmt zlib libpng freetype)
+FetchContent_MakeAvailable(json fmt libpng freetype)
 
 target_compile_definitions(freetype
 	PRIVATE
@@ -101,6 +97,18 @@ set(SOURCES
 	"libunibreak/src/linebreakdef.c"
 	"libunibreak/src/linebreak.c"
 	"libunibreak/src/linebreakdata.c"
+
+	"zlib/adler32.c"
+	"zlib/compress.c"
+	"zlib/crc32.c"
+	"zlib/deflate.c"
+	"zlib/infback.c"
+	"zlib/inffast.c"
+	"zlib/inflate.c"
+	"zlib/inftrees.c"
+	"zlib/trees.c"
+	"zlib/uncompr.c"
+	"zlib/zutil.c"
 	)
 
 set(HEADERS
@@ -113,6 +121,17 @@ set(HEADERS
 	"libunibreak/src/unibreakbase.h"
 	"libunibreak/src/linebreakdef.h"
 	"libunibreak/src/linebreak.h"
+
+	"zlib/crc32.h"
+	"zlib/deflate.h"
+	"zlib/inffast.h"
+	"zlib/inffixed.h"
+	"zlib/inflate.h"
+	"zlib/inftrees.h"
+	"zlib/trees.h"
+	"zlib/zconf.h"
+	"zlib/zlib.h"
+	"zlib/zutil.h"
 	)
 
 add_library(growl-thirdparty ${SOURCES} ${HEADERS})
@@ -128,7 +147,6 @@ target_link_libraries(growl-thirdparty
 	freetype
 	PRIVATE
 	png_static
-	zlibstatic
 	)
 target_include_directories(growl-thirdparty
 	PUBLIC
