@@ -12,6 +12,7 @@ else ()
 	set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
 endif ()
 
+add_subdirectory(zlib)
 add_subdirectory(soloud)
 
 # Get third-party stuff not to log
@@ -66,6 +67,8 @@ set(SKIP_INSTALL_ALL ON)
 
 FetchContent_MakeAvailable(json fmt libpng freetype glm utf8cpp)
 
+target_link_libraries(png_static zlib)
+
 target_compile_definitions(freetype
 	PRIVATE
 	FT_CONFIG_OPTION_ERROR_STRINGS
@@ -73,7 +76,12 @@ target_compile_definitions(freetype
 	FT_CONFIG_OPTION_USE_PNG
 	FT_CONFIG_OPTION_SYSTEM_ZLIB
 	)
-target_include_directories(freetype PRIVATE "harfbuzz/src" ${libpng_SOURCE_DIR} ${libpng_BINARY_DIR})
+target_include_directories(freetype
+	PRIVATE
+	"harfbuzz/src"
+	${libpng_SOURCE_DIR}
+	${libpng_BINARY_DIR}
+	)
 
 set(MSDFGEN_BUILD_STANDALONE OFF)
 set(MSDFGEN_INSTALL OFF)
@@ -103,18 +111,6 @@ set(SOURCES
 	"libunibreak/src/linebreakdef.c"
 	"libunibreak/src/linebreak.c"
 	"libunibreak/src/linebreakdata.c"
-
-	"zlib/adler32.c"
-	"zlib/compress.c"
-	"zlib/crc32.c"
-	"zlib/deflate.c"
-	"zlib/infback.c"
-	"zlib/inffast.c"
-	"zlib/inflate.c"
-	"zlib/inftrees.c"
-	"zlib/trees.c"
-	"zlib/uncompr.c"
-	"zlib/zutil.c"
 	)
 
 set(HEADERS
@@ -127,17 +123,6 @@ set(HEADERS
 	"libunibreak/src/unibreakbase.h"
 	"libunibreak/src/linebreakdef.h"
 	"libunibreak/src/linebreak.h"
-
-	"zlib/crc32.h"
-	"zlib/deflate.h"
-	"zlib/inffast.h"
-	"zlib/inffixed.h"
-	"zlib/inflate.h"
-	"zlib/inftrees.h"
-	"zlib/trees.h"
-	"zlib/zconf.h"
-	"zlib/zlib.h"
-	"zlib/zutil.h"
 	)
 
 add_library(growl-thirdparty ${SOURCES} ${HEADERS})
