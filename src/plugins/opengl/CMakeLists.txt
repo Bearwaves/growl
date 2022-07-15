@@ -51,5 +51,6 @@ target_link_libraries(
 	PRIVATE
 	growl-plugin-sdl2
 	growl-core
+	growl-thirdparty
 	${OPENGL_LIBRARIES}
 	)
