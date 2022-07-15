@@ -113,19 +113,7 @@ set(SOURCES
 	"libunibreak/src/linebreakdata.c"
 	)
 
-set(HEADERS
-	"fpng/fpng.h"
-
-	"stb_image/stb_image.h"
-	"stb_rect_pack/stb_rect_pack.h"
-
-	"libunibreak/src/unibreakdef.h"
-	"libunibreak/src/unibreakbase.h"
-	"libunibreak/src/linebreakdef.h"
-	"libunibreak/src/linebreak.h"
-	)
-
-add_library(growl-thirdparty ${SOURCES} ${HEADERS})
+add_library(growl-thirdparty ${SOURCES})
 target_link_libraries(growl-thirdparty
 	INTERFACE
 	glm::glm
@@ -142,6 +130,10 @@ target_link_libraries(growl-thirdparty
 target_include_directories(growl-thirdparty
 	PUBLIC
 	"harfbuzz/src"
+	"libunibreak/src"
+	"fpng"
+	"stb_image"
+	"stb_rect_pack"
 	)
 target_compile_definitions(growl-thirdparty
 	PRIVATE

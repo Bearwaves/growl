@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../thirdparty/stb_rect_pack/stb_rect_pack.h"
+#include "stb_rect_pack.h"
 #include "freetype/freetype.h"
 #include "growl/core/text/glyph_layout.h"
 #include "hb.h"
@@ -72,6 +72,8 @@ private:
 	FT_Error ft_err;
 };
 } // namespace
+
+struct stbrp_rect;
 
 namespace Growl::Internal {
 Growl::Error

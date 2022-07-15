@@ -1,6 +1,6 @@
 #include "growl/core/assets/atlas.h"
-#include "../../../../thirdparty/fpng/fpng.h"
-#include "../../../../thirdparty/stb_image/stb_image.h"
+#include "fpng.h"
+#include "stb_image.h"
 #include "../thirdparty/rang.hpp"
 #include "assets_config.h"
 #include "error.h"

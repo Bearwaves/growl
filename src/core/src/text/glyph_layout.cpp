@@ -1,5 +1,5 @@
 #include "growl/core/text/glyph_layout.h"
-#include "../../../../thirdparty/libunibreak/src/linebreak.h"
+#include "linebreak.h"
 #include "../assets/font_internal.h"
 #include "freetype/freetype.h"
 #include "growl/core/assets/font_face.h"
