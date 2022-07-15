@@ -1,7 +1,7 @@
 #pragma once
 
 #include "controller.h"
-#include "growl/util/error.h"
+#include "growl/core/error.h"
 #include "keyboard.h"
 #include <string>
 #include <variant>

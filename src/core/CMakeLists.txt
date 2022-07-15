@@ -7,6 +7,18 @@ set(SOURCES
 	"src/game/game.cpp"
 	"src/input/processor.cpp"
 	"src/graphics/font_texture_atlas.cpp"
+
+	"src/assets/atlas.cpp"
+	"src/assets/audio.cpp"
+	"src/assets/bitmap_font_face.cpp"
+	"src/assets/bundle.cpp"
+	"src/assets/distance_field_font_face.cpp"
+	"src/assets/font_face.cpp"
+	"src/assets/font_internal.cpp"
+	"src/assets/image.cpp"
+
+	"src/text/glyph_layout.cpp"
+	"src/util/timer.cpp"
 	)
 
 add_library(growl-core ${SOURCES})
@@ -16,6 +28,5 @@ target_link_libraries(growl-core
 	growl-thirdparty::json
 	growl-thirdparty::fmt
 	PRIVATE
-	growl-util
 	growl-thirdparty
 	)

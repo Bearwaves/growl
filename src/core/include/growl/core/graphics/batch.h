@@ -1,7 +1,7 @@
 #pragma once
 
 #include "font_texture_atlas.h"
-#include "growl/util/text/glyph_layout.h"
+#include "growl/core/text/glyph_layout.h"
 #include "texture.h"
 #include "texture_atlas.h"
 

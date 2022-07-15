@@ -1,4 +1,4 @@
-#include "growl/util/assets/audio.h"
+#include "growl/core/assets/audio.h"
 #include "soloud_wavstream.h"
 
 bool Growl::isValidAudio(std::string path) {

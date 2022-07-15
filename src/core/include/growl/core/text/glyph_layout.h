@@ -1,6 +1,6 @@
 #pragma once
 
-#include "growl/util/assets/font_face.h"
+#include "growl/core/assets/font_face.h"
 #include <string>
 
 namespace Growl {

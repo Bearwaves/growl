@@ -1,6 +1,6 @@
 #include "soloud_audio.h"
 #include "growl/core/audio/device.h"
-#include "growl/util/error.h"
+#include "growl/core/error.h"
 #include "soloud.h"
 #include <memory>
 #include <vector>

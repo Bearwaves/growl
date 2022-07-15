@@ -1,8 +1,8 @@
-#include "growl/util/assets/atlas.h"
+#include "growl/core/assets/atlas.h"
 
 #include "../../../thirdparty/stb_image/stb_image.h"
 #include "../../../thirdparty/stb_rect_pack/stb_rect_pack.h"
-#include "growl/util/assets/error.h"
+#include "growl/core/assets/error.h"
 #include <algorithm>
 #include <cstring>
 

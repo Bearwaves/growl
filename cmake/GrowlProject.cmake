@@ -21,7 +21,6 @@ endif()
 
 set(GROWL_INCLUDE_DIRS
 	${GROWL_PATH}/src/core/include
-	${GROWL_PATH}/src/util/include
 	)
 
 set(GROWL_INCLUDE_DIRS

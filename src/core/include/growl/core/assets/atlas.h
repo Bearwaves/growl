@@ -1,7 +1,7 @@
 #pragma once
 
-#include "growl/util/assets/image.h"
-#include "growl/util/error.h"
+#include "growl/core/assets/image.h"
+#include "growl/core/error.h"
 #include "nlohmann/json.hpp"
 #include <filesystem>
 #include <memory>

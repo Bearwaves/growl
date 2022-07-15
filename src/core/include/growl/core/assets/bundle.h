@@ -2,7 +2,7 @@
 
 #include "atlas.h"
 #include "font_face.h"
-#include "growl/util/error.h"
+#include "growl/core/error.h"
 #include "image.h"
 #include "nlohmann/json.hpp"
 #include <cstdint>

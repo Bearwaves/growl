@@ -2,7 +2,7 @@
 #include "SDL_video.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
-#include "growl/util/assets/font_face.h"
+#include "growl/core/assets/font_face.h"
 #include "opengl.h"
 #include "opengl_batch.h"
 #include "opengl_shader.h"

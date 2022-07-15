@@ -1,6 +1,6 @@
 #pragma once
 
-#include "growl/util/assets/error.h"
+#include "growl/core/assets/error.h"
 
 namespace Growl {
 

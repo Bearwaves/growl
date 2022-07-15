@@ -1,7 +1,7 @@
 #include "metal_graphics.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
-#include "growl/util/assets/font_face.h"
+#include "growl/core/assets/font_face.h"
 #include "metal_batch.h"
 #include "metal_shader.h"
 #include "metal_texture.h"

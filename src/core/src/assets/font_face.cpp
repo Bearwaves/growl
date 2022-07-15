@@ -1,10 +1,10 @@
-#include "growl/util/assets/font_face.h"
+#include "growl/core/assets/font_face.h"
 #include "font_internal.h"
 #include "freetype/freetype.h"
 #include "freetype/ftmodapi.h"
-#include "growl/util/assets/atlas.h"
-#include "growl/util/assets/image.h"
-#include "growl/util/error.h"
+#include "growl/core/assets/atlas.h"
+#include "growl/core/assets/image.h"
+#include "growl/core/error.h"
 #include <memory>
 #include <string>
 

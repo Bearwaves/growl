@@ -1,8 +1,8 @@
-#include "growl/util/text/glyph_layout.h"
+#include "growl/core/text/glyph_layout.h"
 #include "../../../../thirdparty/libunibreak/src/linebreak.h"
-#include "font_internal.h"
+#include "../assets/font_internal.h"
 #include "freetype/freetype.h"
-#include "growl/util/assets/font_face.h"
+#include "growl/core/assets/font_face.h"
 #include "hb-ft.h"
 #include <cctype>
 

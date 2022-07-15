@@ -1,5 +1,5 @@
 #include "metal_batch.h"
-#include "growl/util/assets/font_face.h"
+#include "growl/core/assets/font_face.h"
 #include "metal_texture.h"
 #include <cmath>
 #include <memory>

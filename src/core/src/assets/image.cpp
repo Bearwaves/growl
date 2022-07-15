@@ -1,4 +1,4 @@
-#include "growl/util/assets/image.h"
+#include "growl/core/assets/image.h"
 
 #include "../../../thirdparty/fpng/fpng.h"
 #include "../../../thirdparty/stb_image/stb_image.h"

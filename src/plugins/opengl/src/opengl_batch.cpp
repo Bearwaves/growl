@@ -1,5 +1,5 @@
 #include "opengl_batch.h"
-#include "growl/util/assets/font_face.h"
+#include "growl/core/assets/font_face.h"
 #include "opengl.h"
 #include "opengl_texture.h"
 #include <cmath>

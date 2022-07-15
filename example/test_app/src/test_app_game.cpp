@@ -1,9 +1,9 @@
 #include "test_app_game.h"
-#include "growl/util/assets/bundle.h"
-#include "growl/util/assets/font_face.h"
-#include "growl/util/assets/image.h"
-#include "growl/util/text/glyph_layout.h"
-#include "growl/util/timer.h"
+#include "growl/core/assets/bundle.h"
+#include "growl/core/assets/font_face.h"
+#include "growl/core/assets/image.h"
+#include "growl/core/text/glyph_layout.h"
+#include "growl/core/util/timer.h"
 #include <memory>
 #include <string>
 

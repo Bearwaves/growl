@@ -1,7 +1,7 @@
 #pragma once
 
 #include "atlas.h"
-#include "growl/util/error.h"
+#include "growl/core/error.h"
 #include "image.h"
 #include <memory>
 #include <string>

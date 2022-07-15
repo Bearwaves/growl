@@ -1,8 +1,8 @@
-#include "growl/util/assets/bundle.h"
+#include "growl/core/assets/bundle.h"
 
-#include "growl/util/assets/error.h"
-#include "growl/util/assets/font_face.h"
-#include "growl/util/assets/image.h"
+#include "growl/core/assets/error.h"
+#include "growl/core/assets/font_face.h"
+#include "growl/core/assets/image.h"
 #include <cstdint>
 #include <memory>
 #include <stdexcept>

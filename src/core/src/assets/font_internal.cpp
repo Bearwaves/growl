@@ -1,5 +1,5 @@
 #include "font_internal.h"
-#include "growl/util/error.h"
+#include "growl/core/error.h"
 
 using Growl::Error;
 using Growl::FTFontData;

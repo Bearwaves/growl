@@ -2,7 +2,7 @@
 
 #include "growl/core/api/api_internal.h"
 #include "growl/core/api/system_api.h"
-#include "growl/util/assets/font_face.h"
+#include "growl/core/assets/font_face.h"
 #include "opengl_shader.h"
 #include <SDL.h>
 #include <chrono>
