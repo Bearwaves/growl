@@ -12,7 +12,7 @@ set(SOURCES
 add_library(growl-core ${SOURCES})
 target_include_directories(growl-core PUBLIC "include")
 target_link_libraries(growl-core
-	PUBLIC
+	INTERFACE
 	growl-thirdparty::json
 	growl-thirdparty::fmt
 	PRIVATE

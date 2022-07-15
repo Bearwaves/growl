@@ -24,17 +24,11 @@ set(GROWL_INCLUDE_DIRS
 	${GROWL_PATH}/src/util/include
 	)
 
-set(GROWL_LIBS
-	growl-core
-	growl-util
-	)
-
 set(GROWL_INCLUDE_DIRS
 	${GROWL_INCLUDE_DIRS}
 	${GROWL_PATH}/src/platforms/desktop/include
 	)
 set(GROWL_LIBS
-	${GROWL_LIBS}
 	growl-platform-desktop
 	)
 

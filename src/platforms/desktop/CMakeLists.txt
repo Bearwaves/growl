@@ -21,8 +21,9 @@ endif()
 
 add_library(growl-platform-desktop ${SOURCES})
 target_link_libraries(growl-platform-desktop
-	PRIVATE
+	PUBLIC
 	growl-core
+	PRIVATE
 	growl-plugin-sdl2
 	growl-plugin-soloud
 	${GROWL_DESKTOP_LIBS}
