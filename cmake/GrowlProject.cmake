@@ -1,7 +1,7 @@
-# growlProject provides a utility function to detect and link the
+# growl_project provides a utility function to detect and link the
 # Growl modules needed for the platform the game is being built for.
 
-function (growlProject target)
+function (growl_project target)
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
 		set(GROWL_METAL 1)
 		add_definitions(-DGROWL_METAL)

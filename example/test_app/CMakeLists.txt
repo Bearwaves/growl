@@ -24,4 +24,4 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GROWL_PATH}/cmake/")
 include(GrowlProject)
 
 add_executable(growl-test-app ${SOURCES} ${HEADERS})
-growlProject(growl-test-app)
+growl_project(growl-test-app)
