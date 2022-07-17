@@ -1,34 +1,19 @@
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# growlProject provides a utility function to detect and link the
+# Growl modules needed for the platform the game is being built for.
 
-if (MSVC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
-else ()
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -ggdb3")
-	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+function (growlProject target)
+	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
+		set(GROWL_METAL 1)
+		add_definitions(-DGROWL_METAL)
+	else ()
+		set(GROWL_OPENGL 1)
+		add_definitions(-DGROWL_OPENGL)
 	endif()
-endif()
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+	set(GROWL_DESKTOP 1)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
-	set(GROWL_METAL 1)
-	add_definitions(-DGROWL_METAL)
-else ()
-	set(GROWL_OPENGL 1)
-	add_definitions(-DGROWL_OPENGL)
-endif()
+	add_subdirectory(${GROWL_PATH} ${CMAKE_CURRENT_BINARY_DIR}/growl)
 
-set(GROWL_INCLUDE_DIRS
-	${GROWL_PATH}/src/core/include
-	)
-
-set(GROWL_INCLUDE_DIRS
-	${GROWL_INCLUDE_DIRS}
-	${GROWL_PATH}/src/platforms/desktop/include
-	)
-set(GROWL_LIBS
-	growl-platform-desktop
-	)
-
-include_directories(${GROWL_INCLUDE_DIRS})
+	if (GROWL_DESKTOP)
+		target_link_libraries(${target} PRIVATE growl-platform-desktop)
+	endif ()
+endfunction ()
