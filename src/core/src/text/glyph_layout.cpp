@@ -1,9 +1,9 @@
 #include "growl/core/text/glyph_layout.h"
-#include "linebreak.h"
 #include "../assets/font_internal.h"
 #include "freetype/freetype.h"
 #include "growl/core/assets/font_face.h"
 #include "hb-ft.h"
+#include "linebreak.h"
 #include <cctype>
 
 using Growl::FontFace;

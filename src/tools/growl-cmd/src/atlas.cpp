@@ -1,12 +1,12 @@
 #include "growl/core/assets/atlas.h"
-#include "fpng.h"
-#include "stb_image.h"
 #include "../thirdparty/rang.hpp"
 #include "assets_config.h"
 #include "error.h"
+#include "fpng.h"
 #include "growl/core/assets/bundle.h"
 #include "growl/core/assets/error.h"
 #include "growl/core/error.h"
+#include "stb_image.h"
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>

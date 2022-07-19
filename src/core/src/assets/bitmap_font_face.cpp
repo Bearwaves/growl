@@ -1,4 +1,3 @@
-#include "stb_rect_pack.h"
 #include "font_internal.h"
 #include "growl/core/assets/atlas.h"
 #include "growl/core/assets/error.h"
@@ -6,6 +5,7 @@
 #include "growl/core/assets/image.h"
 #include "growl/core/error.h"
 #include "hb-ft.h"
+#include "stb_rect_pack.h"
 #include <memory>
 #include <set>
 #include <utf8.h>

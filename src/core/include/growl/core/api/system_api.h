@@ -3,8 +3,8 @@
 #include "../log.h"
 #include "fmt/color.h"
 #include "fmt/core.h"
-#include "growl/core/input/processor.h"
 #include "growl/core/error.h"
+#include "growl/core/input/processor.h"
 #include <memory>
 #include <string>
 #include <string_view>

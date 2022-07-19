@@ -1,9 +1,9 @@
 #pragma once
 
-#include "stb_rect_pack.h"
 #include "freetype/freetype.h"
 #include "growl/core/text/glyph_layout.h"
 #include "hb.h"
+#include "stb_rect_pack.h"
 #include <vector>
 
 class Growl::FTFontData {
