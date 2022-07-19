@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.19)
 
 project(growl-plugin-metal LANGUAGES OBJCXX)
 
+message(STATUS "[Growl] Enabled Metal plugin.")
+
 set(SOURCES
 	"src/metal_plugin.mm"
 	"src/metal_graphics.mm"

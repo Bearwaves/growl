@@ -20,8 +20,7 @@ else ()
 endif ()
 
 set(GROWL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GROWL_PATH}/cmake/")
-include(GrowlProject)
+add_subdirectory(${GROWL_PATH} ${CMAKE_CURRENT_BINARY_DIR}/growl)
 
 add_executable(growl-test-app ${SOURCES} ${HEADERS})
-growl_project(growl-test-app)
+target_link_libraries(growl-test-app PRIVATE growl-platform-desktop)

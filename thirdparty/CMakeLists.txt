@@ -22,7 +22,7 @@ function(message)
 	endif()
 endfunction()
 
-message(STATUS "Third-party stuff, feel free to ignore any messages...")
+message(STATUS "[Growl] Third-party stuff, feel free to ignore any messages...")
 set(MESSAGE_QUIET ON)
 
 FetchContent_Declare(
@@ -93,7 +93,7 @@ endif()
 add_library(Freetype::Freetype ALIAS freetype) # Used by msdfgen
 FetchContent_MakeAvailable(msdfgen)
 unset(MESSAGE_QUIET)
-message(STATUS "All done with third-party.")
+message(STATUS "[Growl] All done with third-party.")
 
 add_library(growl-thirdparty::json ALIAS nlohmann_json)
 add_library(growl-thirdparty::fmt ALIAS fmt)

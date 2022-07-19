@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.19)
 
 project(growl-plugin-opengl)
 
+message(STATUS "[Growl] Enabled OpenGL plugin.")
+
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 

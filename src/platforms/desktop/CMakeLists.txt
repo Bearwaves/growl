@@ -2,9 +2,23 @@ cmake_minimum_required (VERSION 3.19)
 
 project(growl-platform-desktop)
 
+message(STATUS "[Growl] Enabled Desktop platform.")
+
 set(SOURCES
 	"src/game_adapter.cpp"
 	)
+
+add_library(growl-platform-desktop ${SOURCES})
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
+	set(GROWL_METAL ON)
+	set(GROWL_METAL ON PARENT_SCOPE)
+	target_compile_definitions(growl-platform-desktop PRIVATE "GROWL_METAL")
+else ()
+	set(GROWL_OPENGL ON)
+	set(GROWL_OPENGL ON PARENT_SCOPE)
+	target_compile_definitions(growl-platform-desktop PRIVATE "GROWL_OPENGL")
+endif()
 
 if (GROWL_METAL)
 	set(GROWL_DESKTOP_LIBS
@@ -19,7 +33,6 @@ if (GROWL_OPENGL)
 		)
 endif()
 
-add_library(growl-platform-desktop ${SOURCES})
 target_link_libraries(growl-platform-desktop
 	PUBLIC
 	growl-core

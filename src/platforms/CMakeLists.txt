@@ -1,1 +1,6 @@
-add_subdirectory(desktop)
+if (GROWL_DESKTOP)
+	add_subdirectory(desktop)
+endif ()
+
+set(GROWL_OPENGL ${GROWL_OPENGL} PARENT_SCOPE)
+set(GROWL_METAL ${GROWL_METAL} PARENT_SCOPE)
