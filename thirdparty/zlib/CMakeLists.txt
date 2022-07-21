@@ -28,4 +28,4 @@ set(HEADERS
 	)
 
 add_library(zlib ${SOURCES} ${HEADERS})
-target_include_directories(zlib PUBLIC ${CMAKE_SOURCE_DIR})
+target_include_directories(zlib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

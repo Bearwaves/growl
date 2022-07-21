@@ -79,7 +79,7 @@ AssetsIncludeError includeFont(
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
 	std::ofstream& outfile) noexcept {
 	// Try to create a font
-	if (!Growl::isValidFont(entry.path())) {
+	if (!Growl::isValidFont(entry.path().string())) {
 		return AssetsIncludeErrorCode::WrongType;
 	}
 
@@ -103,7 +103,7 @@ AssetsIncludeError includeFont(
 	if (config.msdf) {
 		std::cout << "Generating MSDF font atlas..." << std::endl;
 		auto dist_result = Growl::createDistanceFieldFontFaceFromFile(
-			entry.path(), config.msdfSize, config.msdfCharacters);
+			entry.path().string(), config.msdfSize, config.msdfCharacters);
 		if (dist_result.hasError()) {
 			return AssetsIncludeError(
 				"failed to create MSDF font: " +
@@ -133,7 +133,7 @@ AssetsIncludeError includeAudio(
 	const std::filesystem::directory_entry& entry,
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
 	std::ofstream& outfile) noexcept {
-	if (!Growl::isValidAudio(entry.path())) {
+	if (!Growl::isValidAudio(entry.path().string())) {
 		return AssetsIncludeErrorCode::WrongType;
 	}
 
@@ -192,7 +192,7 @@ Error processDirectory(
 			std::filesystem::relative(file_entry, assets_dir);
 
 		AssetConfig asset_config;
-		if (auto it = config.find(file_entry.path().filename());
+		if (auto it = config.find(file_entry.path().filename().string());
 			it != config.end()) {
 			asset_config = it->second;
 		} else if (auto it = config.find("*"); it != config.end()) {
@@ -293,10 +293,10 @@ void listAssets(std::string assets_bundle) {
 			 << assets_bundle_result.error()->message() << style::reset << endl;
 		exit(1);
 	}
-	auto assets_map = assets_bundle_result.get().getAssetsMap();
+	auto& assets_map = assets_bundle_result.get().getAssetsMap();
 	cout << "Found " << style::bold << assets_map.size() << style::reset
 		 << " assets." << endl;
-	for (auto [asset, info] : assets_map) {
+	for (auto& [asset, info] : assets_map) {
 		cout << " • [" << style::bold << Growl::getAssetTypeName(info.type)
 			 << style::reset << "] " << asset << endl;
 		if (info.type == AssetType::Atlas && info.atlas_regions.has_value()) {

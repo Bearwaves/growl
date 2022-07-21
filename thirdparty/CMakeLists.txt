@@ -68,6 +68,7 @@ set(SKIP_INSTALL_ALL ON)
 FetchContent_MakeAvailable(json fmt libpng freetype glm utf8cpp)
 
 target_link_libraries(png_static zlib)
+target_link_libraries(freetype PRIVATE zlib)
 
 target_compile_definitions(freetype
 	PRIVATE
