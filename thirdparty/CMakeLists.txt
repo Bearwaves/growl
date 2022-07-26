@@ -64,14 +64,14 @@ target_link_libraries(growl-thirdparty
 	soloud
 	)
 target_include_directories(growl-thirdparty
+	PRIVATE
+	${THIRDPARTY_INCLUDES_PRIVATE}
 	PUBLIC
 	"harfbuzz/src"
 	"fpng"
 	"stb_image"
 	"stb_rect_pack"
 	${THIRDPARTY_INCLUDES_PUBLIC}
-	PRIVATE
-	${THIRDPARTY_INCLUDES_PRIVATE}
 	)
 target_compile_definitions(growl-thirdparty
 	PRIVATE

@@ -25,6 +25,14 @@ set(THIRDPARTY_INCLUDES_PUBLIC
 	"${SOURCE_PREFIX}/include"
 	)
 
+configure_file("${CMAKE_CURRENT_LIST_DIR}/ftmodule.h.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/freetype/include/freetype/config/ftmodule.h"
+	)
+set(THIRDPARTY_INCLUDES_PRIVATE
+	${THIRDPARTY_INCLUDES_PRIVATE}
+	"${CMAKE_CURRENT_BINARY_DIR}/freetype/include"
+	)
+
 set(THIRDPARTY_COMPILE_DEFINITIONS
 	${THIRDPARTY_COMPILE_DEFINITIONS}
 	FT2_BUILD_LIBRARY
@@ -34,6 +42,3 @@ set(THIRDPARTY_COMPILE_DEFINITIONS
 	FT_CONFIG_OPTION_SYSTEM_ZLIB
 	)
 
-configure_file("${CMAKE_CURRENT_LIST_DIR}/ftmodule.h.in"
-	"${SOURCE_PREFIX}/include/freetype/config/ftmodule.h"
-	)

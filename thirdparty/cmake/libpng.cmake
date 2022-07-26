@@ -18,11 +18,12 @@ set(THIRDPARTY_SOURCES
 	"${SOURCE_PREFIX}/pngwutil.c"
 	)
 
-set(THIRDPARTY_INCLUDES_PRIVATE
-	${THIRDPARTY_INCLUDES_PRIVATE}
-	"${SOURCE_PREFIX}/libpng"
+configure_file("${SOURCE_PREFIX}/scripts/pnglibconf.h.prebuilt"
+	"${CMAKE_CURRENT_BINARY_DIR}/libpng/pnglibconf.h"
 	)
 
-configure_file("${SOURCE_PREFIX}/scripts/pnglibconf.h.prebuilt"
-	"${SOURCE_PREFIX}/pnglibconf.h"
+set(THIRDPARTY_INCLUDES_PRIVATE
+	${THIRDPARTY_INCLUDES_PRIVATE}
+	"${CMAKE_CURRENT_BINARY_DIR}/libpng"
+	"${SOURCE_PREFIX}/libpng"
 	)
