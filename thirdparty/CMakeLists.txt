@@ -13,6 +13,7 @@ else ()
 endif ()
 
 add_subdirectory(glm)
+add_subdirectory(json)
 add_subdirectory(zlib)
 add_subdirectory(soloud)
 
@@ -26,10 +27,6 @@ endfunction()
 message(STATUS "[Growl] Third-party stuff, feel free to ignore any messages...")
 set(MESSAGE_QUIET ON)
 
-FetchContent_Declare(
-	json
-	URL https://github.com/nlohmann/json/releases/download/v3.10.5/json.tar.xz
-	)
 FetchContent_Declare(
 	fmt
 	URL https://github.com/fmtlib/fmt/releases/download/8.1.1/fmt-8.1.1.zip
@@ -62,7 +59,7 @@ set(PNG_TESTS OFF)
 set(PNG_BUILD_ZLIB ON)
 set(SKIP_INSTALL_ALL ON)
 
-FetchContent_MakeAvailable(json fmt libpng freetype utf8cpp)
+FetchContent_MakeAvailable(fmt libpng freetype utf8cpp)
 
 target_link_libraries(png_static zlib)
 target_link_libraries(freetype PRIVATE zlib)

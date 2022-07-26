@@ -2,3 +2,7 @@
 	path = thirdparty/glm
 	url = git@github.com:g-truc/glm.git
 	shallow = true
+[submodule "thirdparty/json"]
+	path = thirdparty/json
+	url = git@github.com:nlohmann/json.git
+	shallow = true
