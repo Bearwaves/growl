@@ -27,11 +27,8 @@ set(MESSAGE_QUIET ON)
 
 add_subdirectory(glm)
 add_subdirectory(json)
+add_subdirectory(fmt)
 
-FetchContent_Declare(
-	fmt
-	URL https://github.com/fmtlib/fmt/releases/download/8.1.1/fmt-8.1.1.zip
-	)
 FetchContent_Declare(
 	libpng
 	URL https://github.com/glennrp/libpng/archive/refs/tags/v1.6.35.tar.gz
@@ -60,7 +57,7 @@ set(PNG_TESTS OFF)
 set(PNG_BUILD_ZLIB ON)
 set(SKIP_INSTALL_ALL ON)
 
-FetchContent_MakeAvailable(fmt libpng freetype utf8cpp)
+FetchContent_MakeAvailable(libpng freetype utf8cpp)
 
 target_link_libraries(png_static zlib)
 target_link_libraries(freetype PRIVATE zlib)

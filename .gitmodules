@@ -6,3 +6,7 @@
 	path = thirdparty/json
 	url = git@github.com:nlohmann/json.git
 	shallow = true
+[submodule "thirdparty/fmt"]
+	path = thirdparty/fmt
+	url = git@github.com:fmtlib/fmt.git
+	shallow = true
