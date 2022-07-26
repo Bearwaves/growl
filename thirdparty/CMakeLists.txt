@@ -28,6 +28,7 @@ set(MESSAGE_QUIET ON)
 add_subdirectory(glm)
 add_subdirectory(json)
 add_subdirectory(fmt)
+add_subdirectory(utfcpp)
 
 FetchContent_Declare(
 	libpng
@@ -41,10 +42,6 @@ FetchContent_Declare(
 	msdfgen
 	URL https://github.com/Chlumsky/msdfgen/archive/refs/tags/v1.9.2.tar.gz
 	)
-FetchContent_Declare(
-	utf8cpp
-	URL https://github.com/nemtrif/utfcpp/archive/refs/tags/v3.2.1.tar.gz
-	)
 
 # Stop FreeType/libpng from finding these in system paths.
 set(FT_DISABLE_ZLIB ON)
@@ -57,7 +54,7 @@ set(PNG_TESTS OFF)
 set(PNG_BUILD_ZLIB ON)
 set(SKIP_INSTALL_ALL ON)
 
-FetchContent_MakeAvailable(libpng freetype utf8cpp)
+FetchContent_MakeAvailable(libpng freetype)
 
 target_link_libraries(png_static zlib)
 target_link_libraries(freetype PRIVATE zlib)

@@ -42,10 +42,6 @@ Included `src/` (with exception of `src/c_api/`), `include/`, and license.
 
 Added custom CMakeLists.txt.
 
-### UTF8-CPP
-
-Included only `source/` and `CMakeLists.txt`, along with license and README.
-
 ### zlib
 
 Generated from source directly as its included CMake config adds a bunch

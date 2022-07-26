@@ -14,3 +14,7 @@
 	path = thirdparty/libunibreak
 	url = git@github.com:adah1972/libunibreak.git
 	shallow = true
+[submodule "thirdparty/utfcpp"]
+	path = thirdparty/utfcpp
+	url = git@github.com:nemtrif/utfcpp.git
+	shallow = true
