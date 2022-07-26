@@ -10,3 +10,7 @@
 	path = thirdparty/fmt
 	url = git@github.com:fmtlib/fmt.git
 	shallow = true
+[submodule "thirdparty/libunibreak"]
+	path = thirdparty/libunibreak
+	url = git@github.com:adah1972/libunibreak.git
+	shallow = true

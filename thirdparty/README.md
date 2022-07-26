@@ -1,21 +1,29 @@
 # Growl third-party dependencies
 
-| Package       | Version    | URL                                     | Vendored / Fetched |
-|---------------|------------|-----------------------------------------|--------------------|
-| {fmt}         | `9.0.0`    | https://github.com/fmtlib/fmt           | 📥                 |
-| fpng          | `bfe5f9c`  | https://github.com/richgel999/fpng      | 💾                 |
-| FreeType      | `2.12.0`   | https://freetype.org/                   | 📥                 |
-| glm           | `0.9.9.8`  | https://github.com/g-truc/glm           | 📥                 |
-| HarfBuzz      | `4.4.1`    | https://github.com/harfbuzz/harfbuzz    | 💾                 |
-| json          | `3.10.5`   | https://github.com/nlohmann/json        | 📥                 |
-| libpng        | `1.6.37`   | http://libpng.org/pub/png/libpng.html   | 📥                 |
-| libunibreak   | `5.0`      | https://github.com/adah1972/libunibreak | 💾                 |
-| msdfgen       | `1.9.2`    | https://github.com/Chlumsky/msdfgen/    | 📥                 |
-| SoLoud        | `20200207` | https://github.com/jarikomppa/soloud    | 💾                 |
-| stb_image     | `v2.27`    | https://github.com/nothings/stb         | 💾                 |
-| stb_rect_pack | `v1.0.1`   | https://github.com/nothings/stb         | 💾                 |
-| UTF8-CPP      | `3.2.1`    | https://github.com/nemtrif/utfcpp       | 📥                 |
-| zlib          | `1.2.12`   | https://www.zlib.net/                   | 💾                 |
+| Package       | Version    | URL                                     |
+|---------------|------------|-----------------------------------------|
+| {fmt}         | `9.0.0`    | https://github.com/fmtlib/fmt           |
+| fpng          | `bfe5f9c`  | https://github.com/richgel999/fpng      |
+| FreeType      | `2.12.0`   | https://freetype.org/                   |
+| glm           | `0.9.9.8`  | https://github.com/g-truc/glm           |
+| HarfBuzz      | `4.4.1`    | https://github.com/harfbuzz/harfbuzz    |
+| json          | `3.10.5`   | https://github.com/nlohmann/json        |
+| libpng        | `1.6.37`   | http://libpng.org/pub/png/libpng.html   |
+| libunibreak   | `5.0`      | https://github.com/adah1972/libunibreak |
+| msdfgen       | `1.9.2`    | https://github.com/Chlumsky/msdfgen/    |
+| SoLoud        | `20200207` | https://github.com/jarikomppa/soloud    |
+| stb_image     | `v2.27`    | https://github.com/nothings/stb         |
+| stb_rect_pack | `v1.0.1`   | https://github.com/nothings/stb         |
+| UTF8-CPP      | `3.2.1`    | https://github.com/nemtrif/utfcpp       |
+| zlib          | `1.2.12`   | https://www.zlib.net/                   |
+
+Dependencies are submodules, except in cases where that doesn't make sense.
+The Growl root CMakeLists.txt ensures a submodule fetch happens at configure
+time, so you can use Growl via FetchContent or similar.
+
+Some things are built using their own CMake config. In other cases, where the
+included config is problematic, Growl builds the dependency as part of
+the growl-thirdparty target.
 
 ## Modifications
 
@@ -27,13 +35,6 @@ HarfBuzz is vendored because their CMake config is rubbish.
 
 Only `src/` directory is included, with all non-C files removed (e.g. Python,
 templates).
-
-### libunibreak
-
-Only the base C files (`unibreakbase.*`, `unibreakdef.*`), plus files needed for
-linebreaks (`linebreak.*`, `linebreakdef.*`, `linebreakdata.c`) are included.
-
-Generators, templates, emoji/word/grapheme data are not included.
 
 ### SoLoud
 

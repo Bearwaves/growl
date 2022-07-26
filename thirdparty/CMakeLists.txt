@@ -91,22 +91,18 @@ message(STATUS "[Growl] All done with third-party.")
 add_library(growl-thirdparty::json ALIAS nlohmann_json)
 add_library(growl-thirdparty::fmt ALIAS fmt)
 
-set(SOURCES
+set(THIRDPARTY_SOURCES
 	"fpng/fpng.cpp"
 
 	"stb_image/stb_image.c"
 	"stb_rect_pack/stb_rect_pack.c"
 
 	"harfbuzz/src/harfbuzz.cc"
-
-	"libunibreak/src/unibreakdef.c"
-	"libunibreak/src/unibreakbase.c"
-	"libunibreak/src/linebreakdef.c"
-	"libunibreak/src/linebreak.c"
-	"libunibreak/src/linebreakdata.c"
 	)
 
-add_library(growl-thirdparty ${SOURCES})
+include(cmake/libunibreak.cmake)
+
+add_library(growl-thirdparty ${THIRDPARTY_SOURCES})
 target_link_libraries(growl-thirdparty
 	INTERFACE
 	glm::glm
@@ -123,10 +119,10 @@ target_link_libraries(growl-thirdparty
 target_include_directories(growl-thirdparty
 	PUBLIC
 	"harfbuzz/src"
-	"libunibreak/src"
 	"fpng"
 	"stb_image"
 	"stb_rect_pack"
+	${THIRDPARTY_INCLUDES}
 	)
 target_compile_definitions(growl-thirdparty
 	PRIVATE
