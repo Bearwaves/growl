@@ -12,6 +12,7 @@ else ()
 	set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
 endif ()
 
+add_subdirectory(glm)
 add_subdirectory(zlib)
 add_subdirectory(soloud)
 
@@ -46,10 +47,6 @@ FetchContent_Declare(
 	URL https://github.com/Chlumsky/msdfgen/archive/refs/tags/v1.9.2.tar.gz
 	)
 FetchContent_Declare(
-	glm
-	URL https://github.com/g-truc/glm/archive/refs/tags/0.9.9.8.tar.gz
-	)
-FetchContent_Declare(
 	utf8cpp
 	URL https://github.com/nemtrif/utfcpp/archive/refs/tags/v3.2.1.tar.gz
 	)
@@ -65,7 +62,7 @@ set(PNG_TESTS OFF)
 set(PNG_BUILD_ZLIB ON)
 set(SKIP_INSTALL_ALL ON)
 
-FetchContent_MakeAvailable(json fmt libpng freetype glm utf8cpp)
+FetchContent_MakeAvailable(json fmt libpng freetype utf8cpp)
 
 target_link_libraries(png_static zlib)
 target_link_libraries(freetype PRIVATE zlib)

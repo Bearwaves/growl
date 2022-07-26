@@ -1,0 +1,4 @@
+[submodule "thirdparty/glm"]
+	path = thirdparty/glm
+	url = git@github.com:g-truc/glm.git
+	shallow = true
