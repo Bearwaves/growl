@@ -18,3 +18,19 @@
 	path = thirdparty/utfcpp
 	url = git@github.com:nemtrif/utfcpp.git
 	shallow = true
+[submodule "thirdparty/freetype"]
+	path = thirdparty/freetype
+	url = git@github.com:freetype/freetype.git
+	shallow = true
+[submodule "thirdparty/zlib"]
+	path = thirdparty/zlib
+	url = git@github.com:madler/zlib.git
+	shallow = true
+[submodule "thirdparty/libpng"]
+	path = thirdparty/libpng
+	url = git@github.com:glennrp/libpng.git
+	shallow = true
+[submodule "thirdparty/msdfgen"]
+	path = thirdparty/msdfgen
+	url = git@github.com:Chlumsky/msdfgen.git
+	shallow = true

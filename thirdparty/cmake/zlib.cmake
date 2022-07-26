@@ -1,0 +1,20 @@
+set(SOURCE_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/zlib)
+set(THIRDPARTY_SOURCES
+	${THIRDPARTY_SOURCES}
+	"${SOURCE_PREFIX}/adler32.c"
+	"${SOURCE_PREFIX}/compress.c"
+	"${SOURCE_PREFIX}/crc32.c"
+	"${SOURCE_PREFIX}/deflate.c"
+	"${SOURCE_PREFIX}/infback.c"
+	"${SOURCE_PREFIX}/inffast.c"
+	"${SOURCE_PREFIX}/inflate.c"
+	"${SOURCE_PREFIX}/inftrees.c"
+	"${SOURCE_PREFIX}/trees.c"
+	"${SOURCE_PREFIX}/uncompr.c"
+	"${SOURCE_PREFIX}/zutil.c"
+	)
+
+set(THIRDPARTY_INCLUDES_PRIVATE
+	${THIRDPARTY_INCLUDES_PRIVATE}
+	"${SOURCE_PREFIX}"
+	)
