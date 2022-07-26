@@ -12,8 +12,6 @@ else ()
 	set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
 endif ()
 
-add_subdirectory(glm)
-add_subdirectory(json)
 add_subdirectory(zlib)
 add_subdirectory(soloud)
 
@@ -26,6 +24,9 @@ endfunction()
 
 message(STATUS "[Growl] Third-party stuff, feel free to ignore any messages...")
 set(MESSAGE_QUIET ON)
+
+add_subdirectory(glm)
+add_subdirectory(json)
 
 FetchContent_Declare(
 	fmt
