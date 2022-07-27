@@ -25,5 +25,5 @@ configure_file("${SOURCE_PREFIX}/scripts/pnglibconf.h.prebuilt"
 set(THIRDPARTY_INCLUDES_PRIVATE
 	${THIRDPARTY_INCLUDES_PRIVATE}
 	"${CMAKE_CURRENT_BINARY_DIR}/libpng"
-	"${SOURCE_PREFIX}/libpng"
+	"${SOURCE_PREFIX}"
 	)
