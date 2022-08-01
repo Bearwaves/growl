@@ -38,3 +38,7 @@
 	path = thirdparty/soloud
 	url = git@github.com:jarikomppa/soloud.git
 	shallow = true
+[submodule "thirdparty/harfbuzz"]
+	path = thirdparty/harfbuzz
+	url = git@github.com:harfbuzz/harfbuzz.git
+	shallow = true

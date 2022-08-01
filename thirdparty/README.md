@@ -6,7 +6,7 @@
 | fpng          | `bfe5f9c`  | https://github.com/richgel999/fpng      |
 | FreeType      | `2.12.1`   | https://freetype.org/                   |
 | glm           | `0.9.9.8`  | https://github.com/g-truc/glm           |
-| HarfBuzz      | `4.4.1`    | https://github.com/harfbuzz/harfbuzz    |
+| HarfBuzz      | `5.1.0`    | https://github.com/harfbuzz/harfbuzz    |
 | json          | `3.10.5`   | https://github.com/nlohmann/json        |
 | libpng        | `1.6.37`   | http://libpng.org/pub/png/libpng.html   |
 | libunibreak   | `5.0`      | https://github.com/adah1972/libunibreak |
@@ -24,14 +24,3 @@ time, so you can use Growl via FetchContent or similar.
 Some things are built using their own CMake config. In other cases, where the
 included config is problematic, Growl builds the dependency as part of
 the growl-thirdparty target.
-
-## Modifications
-
-This section lists modifications to third-party dependencies from their source.
-
-### Harfbuzz
-
-HarfBuzz is vendored because their CMake config is rubbish.
-
-Only `src/` directory is included, with all non-C files removed (e.g. Python,
-templates).

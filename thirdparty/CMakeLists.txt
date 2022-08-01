@@ -34,14 +34,13 @@ set(THIRDPARTY_SOURCES
 
 	"stb_image/stb_image.c"
 	"stb_rect_pack/stb_rect_pack.c"
-
-	"harfbuzz/src/harfbuzz.cc"
 	)
 
 set(THIRDPARTY_INCLUDES_PUBLIC)
 set(THIRDPARTY_INCLUDES_PRIVATE)
 set(THIRDPARTY_COMPILE_DEFINITIONS)
 
+include(cmake/harfbuzz.cmake)
 include(cmake/libunibreak.cmake)
 include(cmake/zlib.cmake)
 include(cmake/freetype.cmake)
@@ -61,7 +60,6 @@ target_include_directories(growl-thirdparty
 	PRIVATE
 	${THIRDPARTY_INCLUDES_PRIVATE}
 	PUBLIC
-	"harfbuzz/src"
 	"fpng"
 	"stb_image"
 	"stb_rect_pack"
