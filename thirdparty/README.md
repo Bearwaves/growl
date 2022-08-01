@@ -35,16 +35,3 @@ HarfBuzz is vendored because their CMake config is rubbish.
 
 Only `src/` directory is included, with all non-C files removed (e.g. Python,
 templates).
-
-### SoLoud
-
-Included `src/` (with exception of `src/c_api/`), `include/`, and license.
-
-Added custom CMakeLists.txt.
-
-### zlib
-
-Generated from source directly as its included CMake config adds a bunch
-of extra stuff we can't turn off and don't need.
-
-Included all `.c` and `.h` files from the root.

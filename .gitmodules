@@ -34,3 +34,7 @@
 	path = thirdparty/msdfgen
 	url = git@github.com:Chlumsky/msdfgen.git
 	shallow = true
+[submodule "thirdparty/soloud"]
+	path = thirdparty/soloud
+	url = git@github.com:jarikomppa/soloud.git
+	shallow = true

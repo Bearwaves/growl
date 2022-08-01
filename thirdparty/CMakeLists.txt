@@ -2,17 +2,11 @@ cmake_minimum_required (VERSION 3.19)
 
 project(growl-thirdparty)
 
-include(FetchContent)
-set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-set(CMAKE_POLICY_DEFAULT_CMP0042 NEW)
-
 if (MSVC)
 	set(CMAKE_CXX_FLAGS "/W0")
 else ()
 	set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
 endif ()
-
-add_subdirectory(soloud)
 
 # Get third-party stuff not to log
 function(message)
@@ -53,6 +47,7 @@ include(cmake/zlib.cmake)
 include(cmake/freetype.cmake)
 include(cmake/libpng.cmake)
 include(cmake/msdfgen.cmake)
+include(cmake/soloud.cmake)
 
 add_library(growl-thirdparty ${THIRDPARTY_SOURCES})
 target_link_libraries(growl-thirdparty
@@ -61,7 +56,6 @@ target_link_libraries(growl-thirdparty
 	growl-thirdparty::fmt
 	growl-thirdparty::json
 	utf8cpp
-	soloud
 	)
 target_include_directories(growl-thirdparty
 	PRIVATE
