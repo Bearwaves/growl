@@ -227,3 +227,20 @@ Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 		std::make_unique<Image>(std::move(image_result.get())),
 		std::move(info.font.value().glyphs));
 }
+
+Result<std::vector<unsigned char>>
+AssetsBundle::getRawData(std::string name) noexcept {
+	auto info_find = assetsMap.find(name);
+	if (info_find == assetsMap.end()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load asset " + name + "; not found in asset map."));
+	}
+	auto& info = info_find->second;
+
+	std::vector<unsigned char> data;
+	data.resize(info.size);
+	file.seekg(info.position);
+	file.read(reinterpret_cast<char*>(data.data()), info.size);
+
+	return std::move(data);
+}

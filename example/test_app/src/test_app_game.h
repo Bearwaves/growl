@@ -1,6 +1,7 @@
 #pragma once
 
 #include "growl/core/assets/atlas.h"
+#include "growl/core/assets/audio.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/assets/image.h"
 #include "growl/core/game/game.h"
@@ -35,11 +36,14 @@ private:
 	std::unique_ptr<FontTextureAtlas> font_atlas;
 	std::unique_ptr<GlyphLayout> layout;
 
+	std::unique_ptr<SFX> meow;
+
 	double counter = 0;
 	constexpr const static float SPEED = 500; // px/s
 	int frames = 0;
 	float catX = 0;
 	float catY = 0;
+	bool caught = false;
 };
 
 } // namespace Growl

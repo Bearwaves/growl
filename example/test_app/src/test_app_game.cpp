@@ -1,7 +1,9 @@
 #include "test_app_game.h"
+#include "growl/core/assets/audio.h"
 #include "growl/core/assets/bundle.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/assets/image.h"
+#include "growl/core/error.h"
 #include "growl/core/text/glyph_layout.h"
 #include "growl/core/util/timer.h"
 #include <memory>
@@ -50,6 +52,13 @@ Error TestAppGame::init() {
 	}
 	grass = getAPI().graphics().createTexture(image_result.get());
 
+	Result<std::unique_ptr<SFX>> meow_result =
+		getAPI().audio().loadSFXFromBundle(bundle_result.get(), "sfx/meow.wav");
+	if (meow_result.hasError()) {
+		return std::move(meow_result.error());
+	}
+	meow = std::move(meow_result.get());
+
 	return nullptr;
 }
 
@@ -78,6 +87,19 @@ void TestAppGame::render() {
 			(input->leftPressed() ? -1 : (input->rightPressed() ? 1 : 0));
 	catY += getAPI().graphics().getDeltaTime() * SPEED *
 			(input->upPressed() ? -1 : (input->downPressed() ? 1 : 0));
+	// If cat catches mouse, meow
+	if (catX < input->getMouseX() + 100 &&
+		catX + 500 > input->getMouseX() - 100 &&
+		catY < input->getMouseY() + 100 &&
+		catY + 500 > input->getMouseY() - 100) {
+		if (!caught) {
+			caught = true;
+			getAPI().audio().play(*meow);
+		}
+	} else {
+		caught = false;
+	}
+
 	getAPI().graphics().clear(0, 0, 0);
 
 	auto batch = getAPI().graphics().createBatch();

@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 using nlohmann::json;
 
@@ -70,6 +71,7 @@ public:
 	Result<FontFace> getBitmapFont(
 		std::string name, int size, std::string characters = "") noexcept;
 	Result<FontFace> getDistanceFieldFont(std::string name) noexcept;
+	Result<std::vector<unsigned char>> getRawData(std::string name) noexcept;
 
 private:
 	std::ifstream file;
