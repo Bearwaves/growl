@@ -36,7 +36,7 @@ private:
 	std::unique_ptr<FontTextureAtlas> font_atlas;
 	std::unique_ptr<GlyphLayout> layout;
 
-	std::unique_ptr<SFX> meow;
+	std::unique_ptr<Clip> meow;
 
 	double counter = 0;
 	constexpr const static float SPEED = 500; // px/s

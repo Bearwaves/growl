@@ -52,7 +52,7 @@ Error TestAppGame::init() {
 	}
 	grass = getAPI().graphics().createTexture(image_result.get());
 
-	Result<std::unique_ptr<SFX>> meow_result =
+	Result<std::unique_ptr<Clip>> meow_result =
 		getAPI().audio().loadSFXFromBundle(bundle_result.get(), "sfx/meow.wav");
 	if (meow_result.hasError()) {
 		return std::move(meow_result.error());

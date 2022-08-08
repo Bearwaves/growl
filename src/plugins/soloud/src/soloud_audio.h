@@ -9,14 +9,14 @@
 #include <memory>
 namespace Growl {
 
-class SoLoudSFX : public SFX {
+class SoLoudClip : public Clip {
 	friend class SoLoudAudioAPI;
 
 public:
-	SoLoudSFX(
+	SoLoudClip(
 		std::string name, std::unique_ptr<SoLoud::Wav> wav,
 		std::vector<unsigned char>&& raw)
-		: SFX(name)
+		: Clip(name)
 		, sample{std::move(wav)}
 		, raw{std::move(raw)} {}
 
@@ -36,10 +36,10 @@ public:
 		return devices;
 	}
 
-	Result<std::unique_ptr<SFX>>
+	Result<std::unique_ptr<Clip>>
 	loadSFXFromBundle(AssetsBundle& bundle, std::string path) override;
 
-	void play(SFX& sfx) override;
+	void play(Clip& sfx) override;
 
 private:
 	SystemAPI& system;
