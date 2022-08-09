@@ -3,16 +3,16 @@
 #include <string>
 namespace Growl {
 
-class Clip {
+class AudioClip {
 public:
-	Clip(std::string name)
+	AudioClip(std::string name)
 		: name{name} {}
-	virtual ~Clip() = default;
+	virtual ~AudioClip() = default;
 	// SFX is move-only
-	Clip(const Clip&) = delete;
-	Clip& operator=(const Clip&) = delete;
-	Clip(Clip&&) = default;
-	Clip& operator=(Clip&&) = default;
+	AudioClip(const AudioClip&) = delete;
+	AudioClip& operator=(const AudioClip&) = delete;
+	AudioClip(AudioClip&&) = default;
+	AudioClip& operator=(AudioClip&&) = default;
 
 private:
 	std::string name;

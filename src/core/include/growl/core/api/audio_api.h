@@ -13,10 +13,10 @@ public:
 
 	virtual const std::vector<AudioDevice>& getDevices() = 0;
 
-	virtual Result<std::unique_ptr<Clip>>
-	loadSFXFromBundle(AssetsBundle& bundle, std::string asset) = 0;
+	virtual Result<std::unique_ptr<AudioClip>>
+	loadClipFromBundle(AssetsBundle& bundle, std::string asset) = 0;
 
-	virtual void play(Clip& sfx) = 0;
+	virtual void play(AudioClip& sfx) = 0;
 };
 
 } // namespace Growl

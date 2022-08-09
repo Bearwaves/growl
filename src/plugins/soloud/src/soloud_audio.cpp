@@ -11,11 +11,11 @@
 #include <vector>
 
 using Growl::AssetsBundle;
-using Growl::Clip;
+using Growl::AudioClip;
 using Growl::Error;
 using Growl::Result;
 using Growl::SoLoudAudioAPI;
-using Growl::SoLoudClip;
+using Growl::SoLoudAudioClip;
 
 Error SoLoudAudioAPI::init() {
 	soloud = std::make_unique<SoLoud::Soloud>();
@@ -39,8 +39,8 @@ void SoLoudAudioAPI::dispose() {
 	soloud->deinit();
 }
 
-Result<std::unique_ptr<Clip>>
-SoLoudAudioAPI::loadSFXFromBundle(AssetsBundle& bundle, std::string path) {
+Result<std::unique_ptr<AudioClip>>
+SoLoudAudioAPI::loadClipFromBundle(AssetsBundle& bundle, std::string path) {
 	auto wav = std::make_unique<SoLoud::Wav>();
 	auto bundle_result = bundle.getRawData(path);
 	if (bundle_result.hasError()) {
@@ -53,12 +53,12 @@ SoLoudAudioAPI::loadSFXFromBundle(AssetsBundle& bundle, std::string path) {
 			"Failed to load SFX: got SoLoud error code " +
 			std::to_string(error)));
 	}
-	std::unique_ptr<Clip> ret(
-		std::make_unique<SoLoudClip>(path, std::move(wav), std::move(raw)));
+	std::unique_ptr<AudioClip> ret(std::make_unique<SoLoudAudioClip>(
+		path, std::move(wav), std::move(raw)));
 	return std::move(ret);
 }
 
-void SoLoudAudioAPI::play(Clip& sfx) {
-	auto& soloud_sfx = static_cast<SoLoudClip&>(sfx);
+void SoLoudAudioAPI::play(AudioClip& sfx) {
+	auto& soloud_sfx = static_cast<SoLoudAudioClip&>(sfx);
 	soloud->play(*soloud_sfx.sample);
 }
