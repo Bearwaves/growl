@@ -3,7 +3,9 @@
 #include "growl/core/assets/error.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/assets/image.h"
+#include "growl/core/error.h"
 #include <cstdint>
+#include <fstream>
 #include <memory>
 #include <stdexcept>
 #include <vector>
@@ -42,7 +44,7 @@ Result<AssetsBundle> Growl::loadAssetsBundle(std::string file_path) noexcept {
 			"Failed to load assets map JSON: " + std::string(e.what())));
 	}
 
-	return AssetsBundle(file, resource_map);
+	return AssetsBundle(file, file_path, resource_map);
 }
 
 void Growl::to_json(json& j, const AssetInfo& r) {
@@ -243,4 +245,14 @@ AssetsBundle::getRawData(std::string name) noexcept {
 	file.read(reinterpret_cast<char*>(data.data()), info.size);
 
 	return std::move(data);
+}
+
+Result<std::ifstream> AssetsBundle::openNewStream() noexcept {
+	std::ifstream file;
+	file.open(path, std::ios::binary | std::ios::in);
+	if (file.fail()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to open file " + path + "; has it moved?"));
+	}
+	return std::move(file);
 }

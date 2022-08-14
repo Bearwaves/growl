@@ -16,7 +16,11 @@ public:
 	virtual Result<std::unique_ptr<AudioClip>>
 	loadClipFromBundle(AssetsBundle& bundle, std::string asset) = 0;
 
-	virtual void play(AudioClip& sfx) = 0;
+	virtual Result<std::unique_ptr<AudioStream>>
+	createStreamFromBundle(AssetsBundle& bundle, std::string asset) = 0;
+
+	virtual void play(AudioClip& clip) = 0;
+	virtual void play(AudioStream& stream) = 0;
 };
 
 } // namespace Growl

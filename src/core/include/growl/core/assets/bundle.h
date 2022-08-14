@@ -58,8 +58,10 @@ using AssetsMap = std::map<std::string, AssetInfo>;
 
 class AssetsBundle {
 public:
-	explicit AssetsBundle(std::ifstream& file, AssetsMap& assets_map) noexcept
+	explicit AssetsBundle(
+		std::ifstream& file, std::string path, AssetsMap& assets_map) noexcept
 		: file{std::move(file)}
+		, path{path}
 		, assetsMap{std::move(assets_map)} {}
 
 	AssetsMap& getAssetsMap() {
@@ -73,8 +75,12 @@ public:
 	Result<FontFace> getDistanceFieldFont(std::string name) noexcept;
 	Result<std::vector<unsigned char>> getRawData(std::string name) noexcept;
 
+	// Returns a new stream into the same file.
+	Result<std::ifstream> openNewStream() noexcept;
+
 private:
 	std::ifstream file;
+	std::string path;
 	AssetsMap assetsMap;
 };
 

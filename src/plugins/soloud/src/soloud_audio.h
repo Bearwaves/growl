@@ -5,7 +5,9 @@
 #include "growl/core/assets/bundle.h"
 #include "growl/core/error.h"
 #include "soloud.h"
+#include "soloud_file.h"
 #include "soloud_wav.h"
+#include "soloud_wavstream.h"
 #include <memory>
 namespace Growl {
 
@@ -25,6 +27,22 @@ private:
 	std::vector<unsigned char> raw;
 };
 
+class SoLoudAudioStream : public AudioStream {
+	friend class SoLoudAudioAPI;
+
+public:
+	SoLoudAudioStream(
+		std::string name, std::unique_ptr<SoLoud::WavStream> wav,
+		std::unique_ptr<SoLoud::File> file)
+		: AudioStream(name)
+		, stream{std::move(wav)}
+		, file{std::move(file)} {}
+
+private:
+	std::unique_ptr<SoLoud::WavStream> stream;
+	std::unique_ptr<SoLoud::File> file;
+};
+
 class SoLoudAudioAPI : public AudioAPIInternal {
 public:
 	explicit SoLoudAudioAPI(SystemAPI& system)
@@ -37,9 +55,13 @@ public:
 	}
 
 	Result<std::unique_ptr<AudioClip>>
-	loadClipFromBundle(AssetsBundle& bundle, std::string path) override;
+	loadClipFromBundle(AssetsBundle& bundle, std::string name) override;
+
+	Result<std::unique_ptr<AudioStream>>
+	createStreamFromBundle(AssetsBundle& bundle, std::string name) override;
 
 	void play(AudioClip& sfx) override;
+	void play(AudioStream& stream) override;
 
 private:
 	SystemAPI& system;

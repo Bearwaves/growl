@@ -60,6 +60,14 @@ Error TestAppGame::init() {
 	}
 	meow = std::move(meow_result.get());
 
+	Result<std::unique_ptr<AudioStream>> music_result =
+		getAPI().audio().createStreamFromBundle(
+			bundle_result.get(), "mfx/I pasta way - William Watson.ogg");
+	if (music_result.hasError()) {
+		return std::move(music_result.error());
+	}
+	music = std::move(music_result.get());
+
 	return nullptr;
 }
 
@@ -80,6 +88,7 @@ void TestAppGame::render() {
 		}
 		batch->end();
 		grass = nullptr;
+		getAPI().audio().play(*music);
 	}
 
 	counter += getAPI().graphics().getDeltaTime();
