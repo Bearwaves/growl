@@ -88,7 +88,8 @@ void SoLoudAudioAPI::play(AudioClip& clip) {
 	soloud->play(*soloud_clip.sample);
 }
 
-void SoLoudAudioAPI::play(AudioStream& stream) {
+void SoLoudAudioAPI::play(AudioStream& stream, bool loop) {
 	auto& soloud_stream = static_cast<SoLoudAudioStream&>(stream);
-	soloud->play(*soloud_stream.stream);
+	int handle = soloud->play(*soloud_stream.stream);
+	soloud->setLooping(handle, loop);
 }

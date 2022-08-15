@@ -20,7 +20,7 @@ public:
 	createStreamFromBundle(AssetsBundle& bundle, std::string asset) = 0;
 
 	virtual void play(AudioClip& clip) = 0;
-	virtual void play(AudioStream& stream) = 0;
+	virtual void play(AudioStream& stream, bool loop = true) = 0;
 };
 
 } // namespace Growl

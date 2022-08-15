@@ -61,7 +61,7 @@ public:
 	createStreamFromBundle(AssetsBundle& bundle, std::string name) override;
 
 	void play(AudioClip& sfx) override;
-	void play(AudioStream& stream) override;
+	void play(AudioStream& stream, bool loop = true) override;
 
 private:
 	SystemAPI& system;
