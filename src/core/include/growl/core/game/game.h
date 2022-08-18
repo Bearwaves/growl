@@ -17,6 +17,7 @@ public:
 	virtual ~Game() = default;
 
 	virtual Error init() = 0;
+	virtual Error dispose() = 0;
 	virtual void render() = 0;
 	virtual void resize(const int width, const int height) = 0;
 

@@ -1,6 +1,7 @@
 #include "growl/platforms/desktop/game_adapter.h"
 #include "growl/core/graphics/window.h"
 #include "growl/core/log.h"
+#include "imgui.h"
 #include <chrono>
 #include <iostream>
 
@@ -16,6 +17,10 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 	: m_api(std::make_unique<API>())
 	, m_game(std::move(game))
 	, m_window_config(std::move(window_config)) {
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
 
 	initSDL2Plugin(*m_api);
 	initSoLoudPlugin(*m_api);
@@ -47,10 +52,17 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 }
 
 GameAdapter::~GameAdapter() {
+	if (auto err = m_game->dispose(); err) {
+		m_api->system().log(
+			LogLevel::FATAL, "GameAdapter", "Failed to dispose game: {}",
+			err.get()->message());
+		exit(4);
+	}
 	m_api->system().log("GameAdapter", "Desktop adapter destroying");
 	m_api->graphicsInternal->dispose();
 	m_api->audioInternal->dispose();
 	m_api->systemInternal->dispose();
+	ImGui::DestroyContext();
 }
 
 void GameAdapter::run() {

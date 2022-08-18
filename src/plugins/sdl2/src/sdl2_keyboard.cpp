@@ -1,4 +1,5 @@
 #include "growl/core/input/event.h"
+#include "growl/core/input/keyboard.h"
 #include "sdl2_system.h"
 
 using Growl::Key;
@@ -11,6 +12,10 @@ void SDL2SystemAPI::handleKeyboardEvent(SDL_Event& event) {
 			InputEventType::KEYBOARD,
 			InputKeyboardEvent{getKeyEventType(event.key), getKey(event.key)});
 		inputProcessor->onEvent(e);
+		if (event.type == SDL_KEYUP &&
+			event.key.keysym.scancode == SDL_SCANCODE_F12) {
+			api.setImguiVisible(!api.imguiVisible());
+		}
 	}
 }
 

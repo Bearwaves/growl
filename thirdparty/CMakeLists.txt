@@ -22,12 +22,14 @@ add_subdirectory(glm)
 add_subdirectory(json)
 add_subdirectory(fmt)
 add_subdirectory(utfcpp)
+include(cmake/dearimgui.cmake)
 
 unset(MESSAGE_QUIET)
 message(STATUS "[Growl] All done with third-party.")
 
 add_library(growl-thirdparty::json ALIAS nlohmann_json)
 add_library(growl-thirdparty::fmt ALIAS fmt)
+add_library(growl-thirdparty::imgui ALIAS imgui)
 
 set(THIRDPARTY_SOURCES
 	"fpng/fpng.cpp"
@@ -54,6 +56,7 @@ target_link_libraries(growl-thirdparty
 	glm::glm
 	growl-thirdparty::fmt
 	growl-thirdparty::json
+	growl-thirdparty::imgui
 	utf8cpp
 	)
 target_include_directories(growl-thirdparty

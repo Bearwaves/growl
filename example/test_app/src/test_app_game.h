@@ -21,8 +21,8 @@ constexpr int FPS_SAMPLE_SECONDS = 1;
 class TestAppGame : public Game {
 public:
 	explicit TestAppGame() = default;
-	virtual ~TestAppGame();
 	Error init() override;
+	Error dispose() override;
 	void render() override;
 	void resize(const int width, const int height) override;
 
@@ -45,6 +45,7 @@ private:
 	float catX = 0;
 	float catY = 0;
 	bool caught = false;
+	int font_size = 50;
 };
 
 } // namespace Growl

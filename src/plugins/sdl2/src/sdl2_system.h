@@ -1,6 +1,7 @@
 #pragma once
 
 #include "growl/core/api/api.h"
+#include "imgui.h"
 #include <SDL.h>
 #include <memory>
 
@@ -25,6 +26,8 @@ private:
 
 class SDL2SystemAPI : public SystemAPIInternal {
 public:
+	explicit SDL2SystemAPI(API& api)
+		: api{api} {}
 	Error init() override;
 	void tick() override;
 	void dispose() override;
@@ -51,8 +54,10 @@ private:
 	ControllerButton getButton(SDL_Event& event);
 	void openGameController(int id);
 
+	API& api;
 	bool running;
 	std::unique_ptr<SDL2Controller> controller;
+	ImGuiIO* imgui_io;
 };
 
 } // namespace Growl

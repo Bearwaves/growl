@@ -42,3 +42,7 @@
 	path = thirdparty/harfbuzz
 	url = git@github.com:harfbuzz/harfbuzz.git
 	shallow = true
+[submodule "thirdparty/imgui"]
+	path = thirdparty/imgui
+	url = git@github.com:ocornut/imgui.git
+	shallow = true

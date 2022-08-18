@@ -16,7 +16,7 @@ namespace Growl {
 
 class MetalGraphicsAPI : public GraphicsAPIInternal {
 public:
-	explicit MetalGraphicsAPI(SystemAPI& system);
+	explicit MetalGraphicsAPI(API& api);
 	Error init() override;
 	void dispose() override;
 	void begin() override;
@@ -40,7 +40,7 @@ public:
 	std::unique_ptr<Batch> createBatch(const Texture& texture) override;
 
 private:
-	SystemAPI& system;
+	API& api;
 	std::unique_ptr<Window> window;
 	CAMetalLayer* swap_chain;
 	id<CAMetalDrawable> surface;
@@ -48,6 +48,8 @@ private:
 	id<MTLCommandQueue> command_queue;
 	NSAutoreleasePool* pool;
 	id<MTLCommandBuffer> command_buffer;
+	id<MTLRenderCommandEncoder> imgui_encoder;
+	MTLRenderPassDescriptor* imgui_pass;
 	std::unique_ptr<MetalShader> default_shader;
 	std::unique_ptr<MetalShader> rect_shader;
 	std::unique_ptr<MetalShader> sdf_shader;

@@ -2,6 +2,7 @@
 
 | Package       | Version    | URL                                     |
 |---------------|------------|-----------------------------------------|
+| Dear ImGui    | `2685650`  | https://github.com/ocornut/imgui        |
 | {fmt}         | `9.0.0`    | https://github.com/fmtlib/fmt           |
 | fpng          | `bfe5f9c`  | https://github.com/richgel999/fpng      |
 | FreeType      | `2.12.1`   | https://freetype.org/                   |

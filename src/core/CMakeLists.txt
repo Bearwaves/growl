@@ -27,6 +27,7 @@ target_link_libraries(growl-core
 	INTERFACE
 	growl-thirdparty::json
 	growl-thirdparty::fmt
+	growl-thirdparty::imgui
 	PRIVATE
 	growl-thirdparty
 	)

@@ -6,6 +6,7 @@
 #include "growl/core/error.h"
 #include "growl/core/text/glyph_layout.h"
 #include "growl/core/util/timer.h"
+#include "imgui.h"
 #include <memory>
 #include <string>
 
@@ -72,6 +73,13 @@ Error TestAppGame::init() {
 }
 
 void TestAppGame::render() {
+	ImGui::Begin("Growl Test App");
+	ImGui::Text(
+		"Application average %.2f ms/frame (%.1f FPS)",
+		1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImGui::SliderInt("Font size", &font_size, 1, 150);
+	ImGui::End();
+
 	if (!grass_tiled) {
 		// Pre-tile some grass to demo render-to-texture.
 		grass_tiled = getAPI().graphics().createTexture(
@@ -128,6 +136,10 @@ void TestAppGame::render() {
 	batch->draw(
 		texture_atlas->getRegion("mouse.jpg").get(), input->getMouseX() - 100,
 		input->getMouseY() - 100, 200, 200);
+
+	if (font_size != layout->getFontSize()) {
+		layout->setFontSize(font_size);
+	}
 	batch->draw(
 		*layout, *font_atlas,
 		batch->getTargetWidth() - (layout->getWidth() * 1.05), 50);
@@ -141,6 +153,7 @@ void TestAppGame::render() {
 
 void TestAppGame::resize(const int width, const int height) {}
 
-TestAppGame::~TestAppGame() {
+Error TestAppGame::dispose() {
 	getAPI().system().log("TestAppGame", "Game destroy");
+	return nullptr;
 }

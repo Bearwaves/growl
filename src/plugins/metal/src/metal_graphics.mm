@@ -2,6 +2,9 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
 #include "growl/core/assets/font_face.h"
+#include "imgui.h"
+#include "imgui_impl_metal.h"
+#include "imgui_impl_sdl.h"
 #include "metal_batch.h"
 #include "metal_shader.h"
 #include "metal_texture.h"
@@ -23,15 +26,17 @@ using std::chrono::seconds;
 
 constexpr int BUFFER_MAX_SIZE = 2 << 22; // 8MB
 
-MetalGraphicsAPI::MetalGraphicsAPI(SystemAPI& system)
-	: system{system} {}
+MetalGraphicsAPI::MetalGraphicsAPI(API& api)
+	: api{api} {}
 
 Error MetalGraphicsAPI::init() {
 	last_render = high_resolution_clock::now();
 	return nullptr;
 }
 
-void MetalGraphicsAPI::dispose() {}
+void MetalGraphicsAPI::dispose() {
+	ImGui_ImplMetal_Shutdown();
+}
 
 void MetalGraphicsAPI::begin() {
 	pool = [[NSAutoreleasePool alloc] init];
@@ -44,9 +49,31 @@ void MetalGraphicsAPI::begin() {
 	current_buffer = (current_buffer + 1) % swap_chain.maximumDrawableCount;
 	constant_buffer_offset = 0;
 	vertex_buffer_offset = 0;
+
+	// ImGui
+	imgui_pass = [MTLRenderPassDescriptor renderPassDescriptor];
+	imgui_pass.colorAttachments[0].loadAction = MTLLoadActionLoad;
+	imgui_pass.colorAttachments[0].storeAction = MTLStoreActionStore;
+	imgui_pass.colorAttachments[0].texture = surface.texture;
+
+	// Start the Dear ImGui frame
+	ImGui_ImplMetal_NewFrame(imgui_pass);
+	ImGui_ImplSDL2_NewFrame();
+	ImGui::NewFrame();
 }
 
 void MetalGraphicsAPI::end() {
+	ImGui::Render();
+	if (api.imguiVisible()) {
+		imgui_encoder =
+			[command_buffer renderCommandEncoderWithDescriptor:imgui_pass];
+		[imgui_encoder pushDebugGroup:@"ImGui"];
+		ImGui_ImplMetal_RenderDrawData(
+			ImGui::GetDrawData(), command_buffer, imgui_encoder);
+		[imgui_encoder popDebugGroup];
+		[imgui_encoder endEncoding];
+	}
+
 	[command_buffer presentDrawable:surface];
 	[command_buffer addCompletedHandler:^(id<MTLCommandBuffer> command_buffer) {
 	  dispatch_semaphore_signal(frame_boundary_semaphore);
@@ -56,7 +83,7 @@ void MetalGraphicsAPI::end() {
 }
 
 Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
-	auto window_result = system.createWindow(config);
+	auto window_result = api.system().createWindow(config);
 	if (window_result.hasError()) {
 		return std::move(window_result.error());
 	}
@@ -69,6 +96,8 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 	SDL_DestroyRenderer(renderer);
 	swap_chain.pixelFormat = MTLPixelFormatBGRA8Unorm;
 	device = swap_chain.device;
+	ImGui_ImplMetal_Init(device);
+	ImGui_ImplSDL2_InitForMetal(native_window);
 	frame_boundary_semaphore =
 		dispatch_semaphore_create(swap_chain.maximumDrawableCount);
 	current_buffer = 0;

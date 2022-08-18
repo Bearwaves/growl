@@ -61,6 +61,10 @@ public:
 		return overflowed;
 	}
 
+	const int getFontSize() const {
+		return size;
+	}
+
 private:
 	std::string text;
 	std::string lang;

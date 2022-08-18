@@ -28,10 +28,19 @@ public:
 	void addGraphicsAPI(std::unique_ptr<GraphicsAPIInternal> internal);
 	void addAudioAPI(std::unique_ptr<AudioAPIInternal> internal);
 
+	bool imguiVisible() const {
+		return imgui_visible;
+	}
+
+	void setImguiVisible(bool visible) {
+		this->imgui_visible = visible;
+	}
+
 private:
 	std::unique_ptr<SystemAPIInternal> systemInternal;
 	std::unique_ptr<GraphicsAPIInternal> graphicsInternal;
 	std::unique_ptr<AudioAPIInternal> audioInternal;
+	bool imgui_visible = false;
 };
 
 } // namespace Growl
