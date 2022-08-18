@@ -1,7 +1,9 @@
 #include "growl/platforms/desktop/game_adapter.h"
 #include "growl/core/graphics/window.h"
 #include "growl/core/log.h"
+#ifdef GROWL_IMGUI
 #include "imgui.h"
+#endif
 #include <chrono>
 #include <iostream>
 
@@ -18,9 +20,11 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 	, m_game(std::move(game))
 	, m_window_config(std::move(window_config)) {
 
+#ifdef GROWL_IMGUI
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
+#endif
 
 	initSDL2Plugin(*m_api);
 	initSoLoudPlugin(*m_api);
@@ -62,7 +66,9 @@ GameAdapter::~GameAdapter() {
 	m_api->graphicsInternal->dispose();
 	m_api->audioInternal->dispose();
 	m_api->systemInternal->dispose();
+#ifdef GROWL_IMGUI
 	ImGui::DestroyContext();
+#endif
 }
 
 void GameAdapter::run() {

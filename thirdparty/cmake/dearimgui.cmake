@@ -30,3 +30,8 @@ target_include_directories(
 	PRIVATE
 	${SDL2_INCLUDE_DIR}
 	)
+target_compile_definitions(
+	imgui
+	INTERFACE
+	GROWL_IMGUI
+	)

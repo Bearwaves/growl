@@ -1,8 +1,10 @@
 #include "sdl2_system.h"
 #include "SDL.h"
 #include "growl/core/input/event.h"
+#ifdef GROWL_IMGUI
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
+#endif
 #include "sdl2_error.h"
 #include "sdl2_window.h"
 #include <assert.h>
@@ -24,7 +26,9 @@ Error SDL2SystemAPI::init() {
 	}
 	SDL_ShowCursor(SDL_DISABLE);
 
+#ifdef GROWL_IMGUI
 	imgui_io = &ImGui::GetIO();
+#endif
 
 	this->log("SDL2SystemAPI", "Initialised SDL system");
 
@@ -52,9 +56,11 @@ SDL2SystemAPI::createWindow(const WindowConfig& config) {
 void SDL2SystemAPI::tick() {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
+#ifdef GROWL_IMGUI
 		if (api.imguiVisible()) {
 			ImGui_ImplSDL2_ProcessEvent(&event);
 		}
+#endif
 		switch (event.type) {
 		case SDL_QUIT: {
 			log("SDL2SystemAPI", "Got stop signal");
@@ -85,7 +91,9 @@ void SDL2SystemAPI::tick() {
 void SDL2SystemAPI::dispose() {
 	controller = nullptr;
 	SDL_Quit();
+#ifdef GROWL_IMGUI
 	ImGui_ImplSDL2_Shutdown();
+#endif
 }
 
 void SDL2SystemAPI::setLogLevel(LogLevel log_level) {
@@ -116,7 +124,11 @@ SDL_LogPriority SDL2SystemAPI::getLogPriority(LogLevel log_level) {
 }
 
 void SDL2SystemAPI::handleMouseEvent(SDL_Event& event) {
-	if (inputProcessor && !(api.imguiVisible() && imgui_io->WantCaptureMouse)) {
+	if (inputProcessor
+#ifdef GROWL_IMGUI
+		&& !(api.imguiVisible() && imgui_io->WantCaptureMouse)
+#endif
+	) {
 		InputEvent e(
 			InputEventType::MOUSE,
 			InputMouseEvent{event.motion.x, event.motion.y});

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "growl/core/api/api.h"
+#ifdef GROWL_IMGUI
 #include "imgui.h"
+#endif
 #include <SDL.h>
 #include <memory>
 
@@ -57,7 +59,9 @@ private:
 	API& api;
 	bool running;
 	std::unique_ptr<SDL2Controller> controller;
+#ifdef GROWL_IMGUI
 	ImGuiIO* imgui_io;
+#endif
 };
 
 } // namespace Growl

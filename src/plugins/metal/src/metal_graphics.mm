@@ -2,9 +2,11 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
 #include "growl/core/assets/font_face.h"
+#ifdef GROWL_IMGUI
 #include "imgui.h"
 #include "imgui_impl_metal.h"
 #include "imgui_impl_sdl.h"
+#endif
 #include "metal_batch.h"
 #include "metal_shader.h"
 #include "metal_texture.h"
@@ -35,7 +37,9 @@ Error MetalGraphicsAPI::init() {
 }
 
 void MetalGraphicsAPI::dispose() {
+#ifdef GROWL_IMGUI
 	ImGui_ImplMetal_Shutdown();
+#endif
 }
 
 void MetalGraphicsAPI::begin() {
@@ -50,6 +54,7 @@ void MetalGraphicsAPI::begin() {
 	constant_buffer_offset = 0;
 	vertex_buffer_offset = 0;
 
+#ifdef GROWL_IMGUI
 	// ImGui
 	imgui_pass = [MTLRenderPassDescriptor renderPassDescriptor];
 	imgui_pass.colorAttachments[0].loadAction = MTLLoadActionLoad;
@@ -60,9 +65,11 @@ void MetalGraphicsAPI::begin() {
 	ImGui_ImplMetal_NewFrame(imgui_pass);
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
+#endif
 }
 
 void MetalGraphicsAPI::end() {
+#ifdef GROWL_IMGUI
 	ImGui::Render();
 	if (api.imguiVisible()) {
 		imgui_encoder =
@@ -73,6 +80,7 @@ void MetalGraphicsAPI::end() {
 		[imgui_encoder popDebugGroup];
 		[imgui_encoder endEncoding];
 	}
+#endif
 
 	[command_buffer presentDrawable:surface];
 	[command_buffer addCompletedHandler:^(id<MTLCommandBuffer> command_buffer) {
@@ -96,8 +104,10 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 	SDL_DestroyRenderer(renderer);
 	swap_chain.pixelFormat = MTLPixelFormatBGRA8Unorm;
 	device = swap_chain.device;
+#ifdef GROWL_IMGUI
 	ImGui_ImplMetal_Init(device);
 	ImGui_ImplSDL2_InitForMetal(native_window);
+#endif
 	frame_boundary_semaphore =
 		dispatch_semaphore_create(swap_chain.maximumDrawableCount);
 	current_buffer = 0;

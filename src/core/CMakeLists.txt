@@ -23,11 +23,22 @@ set(SOURCES
 
 add_library(growl-core ${SOURCES})
 target_include_directories(growl-core PUBLIC "include")
-target_link_libraries(growl-core
-	INTERFACE
+
+set(INTERFACE_LIBS
 	growl-thirdparty::json
 	growl-thirdparty::fmt
-	growl-thirdparty::imgui
+	)
+
+if(GROWL_IMGUI)
+	set(INTERFACE_LIBS
+		${INTERFACE_LIBS}
+		growl-thirdparty::imgui
+		)
+endif()
+
+target_link_libraries(growl-core
+	INTERFACE
+	${INTERFACE_LIBS}
 	PRIVATE
 	growl-thirdparty
 	)

@@ -13,6 +13,7 @@ option(GROWL_DESKTOP "Whether to build the included Desktop platform" ON)
 option(GROWL_OPENGL "Whether to build the OpenGL plugin" OFF)
 option(GROWL_METAL "Whether to build the Metal plugin" OFF)
 option(GROWL_TOOLS "Whether to build the tools, e.g. growl-cmd" ON)
+option(GROWL_IMGUI "Whether to include Dear ImGui for debug UIs" ON)
 
 # Deal with third-party stuff that's in submodules
 find_package(Git QUIET)
