@@ -3,6 +3,10 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
 #include "growl/core/assets/font_face.h"
+#ifdef GROWL_IMGUI
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_sdl.h"
+#endif
 #include "opengl.h"
 #include "opengl_batch.h"
 #include "opengl_shader.h"
@@ -22,8 +26,8 @@ using Growl::TextureOptions;
 using std::chrono::duration;
 using std::chrono::seconds;
 
-OpenGLGraphicsAPI::OpenGLGraphicsAPI(SystemAPI& system)
-	: system{system} {}
+OpenGLGraphicsAPI::OpenGLGraphicsAPI(API& api)
+	: api{api} {}
 
 Error OpenGLGraphicsAPI::init() {
 	last_render = high_resolution_clock::now();
@@ -38,14 +42,30 @@ void OpenGLGraphicsAPI::begin() {
 	auto tp = high_resolution_clock::now();
 	deltaTime = duration<double, seconds::period>(tp - last_render).count();
 	last_render = tp;
+
+#ifdef GROWL_IMGUI
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
+	ImGui::NewFrame();
+#endif
 }
 
 void OpenGLGraphicsAPI::end() {
+#ifdef GROWL_IMGUI
+	ImGui::Render();
+	if (api.imguiVisible()) {
+		int w, h;
+		SDL_GetWindowSize(
+			static_cast<SDL_Window*>(window->getNative()), &w, &h);
+		glViewport(0, 0, w, h);
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+#endif
 	SDL_GL_SwapWindow(static_cast<SDL_Window*>(window->getNative()));
 }
 
 Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
-	auto window_result = system.createWindow(config);
+	auto window_result = api.system().createWindow(config);
 	if (window_result.hasError()) {
 		return std::move(window_result.error());
 	}
@@ -72,8 +92,14 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 	GLint major, minor;
 	glGetIntegerv(GL_MAJOR_VERSION, &major);
 	glGetIntegerv(GL_MINOR_VERSION, &minor);
-	system.log(
+	api.system().log(
 		"OpenGLGraphicsAPI", "Loaded OpenGL version {}.{}", major, minor);
+
+#ifdef GROWL_IMGUI
+	ImGui_ImplSDL2_InitForOpenGL(
+		static_cast<SDL_Window*>(window->getNative()), context);
+	ImGui_ImplOpenGL3_Init("#version 150 core");
+#endif
 
 	glViewport(0, 0, config.getWidth(), config.getHeight());
 	default_shader = std::make_unique<OpenGLShader>(*this);
@@ -197,7 +223,7 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
 void OpenGLGraphicsAPI::checkGLError(const char* file, long line) {
 	int err = glGetError();
 	if (err) {
-		system.log(
+		api.system().log(
 			LogLevel::ERROR, "OpenGL", "Error {:#04x} at {}:{}", err, file,
 			line);
 	};
@@ -211,7 +237,7 @@ void OpenGLGraphicsAPI::checkShaderCompileError(unsigned int shader) {
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_len);
 		char* log = new char[info_len];
 		glGetShaderInfoLog(shader, info_len, &info_len, log);
-		system.log(
+		api.system().log(
 			LogLevel::ERROR, "OpenGL", "Error compiling shader: {}", log);
 		delete[] log;
 	}
@@ -238,7 +264,7 @@ void OpenGLGraphicsAPI::onGLDebugMessage(
 #ifdef GROWL_OPENGL_4_5
 	if (severity == GL_DEBUG_SEVERITY_HIGH ||
 		severity == GL_DEBUG_SEVERITY_MEDIUM) {
-		system.log(LogLevel::ERROR, "OpenGL", "{}", message);
+		api.system().log(LogLevel::ERROR, "OpenGL", "{}", message);
 	}
 #endif
 }

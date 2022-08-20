@@ -1,7 +1,7 @@
 #pragma once
 
+#include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
-#include "growl/core/api/system_api.h"
 #include "growl/core/assets/font_face.h"
 #include "opengl_shader.h"
 #include <SDL.h>
@@ -13,7 +13,7 @@ using std::chrono::time_point;
 namespace Growl {
 class OpenGLGraphicsAPI : public GraphicsAPIInternal {
 public:
-	explicit OpenGLGraphicsAPI(SystemAPI& system);
+	explicit OpenGLGraphicsAPI(API& api);
 	Error init() override;
 	void dispose() override;
 	void begin() override;
@@ -40,7 +40,7 @@ public:
 	void checkShaderCompileError(unsigned int shader);
 
 private:
-	SystemAPI& system;
+	API& api;
 	std::unique_ptr<Window> window;
 	std::unique_ptr<OpenGLShader> default_shader;
 	std::unique_ptr<OpenGLShader> sdf_shader;

@@ -1,6 +1,10 @@
 cmake_minimum_required (VERSION 3.19)
 
-project(growl-thirdparty::imgui LANGUAGES OBJCXX)
+if (GROWL_METAL)
+	project(growl-thirdparty::imgui LANGUAGES OBJCXX)
+else()
+	project(growl-thirdparty::imgui LANGUAGES CXX)
+endif()
 
 set(SOURCE_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 
@@ -14,8 +18,18 @@ set(IMGUI_SOURCES
 
 set(IMGUI_BACKEND_SOURCES
 	${SOURCE_PREFIX}/backends/imgui_impl_sdl.cpp
-	${SOURCE_PREFIX}/backends/imgui_impl_metal.mm
 	)
+if (GROWL_METAL)
+	set(IMGUI_BACKEND_SOURCES
+		${IMGUI_BACKEND_SOURCES}
+		${SOURCE_PREFIX}/backends/imgui_impl_metal.mm
+		)
+else()
+	set(IMGUI_BACKEND_SOURCES
+		${IMGUI_BACKEND_SOURCES}
+		${SOURCE_PREFIX}/backends/imgui_impl_opengl3.cpp
+		)
+endif()
 
 set(SDL2_BUILDING_LIBRARY 1)
 find_package(SDL2 REQUIRED)

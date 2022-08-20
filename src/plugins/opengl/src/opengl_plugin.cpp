@@ -5,5 +5,5 @@ using Growl::API;
 using Growl::OpenGLGraphicsAPI;
 
 void initOpenGLPlugin(API& api) {
-	api.addGraphicsAPI(std::make_unique<OpenGLGraphicsAPI>(api.system()));
+	api.addGraphicsAPI(std::make_unique<OpenGLGraphicsAPI>(api));
 }
