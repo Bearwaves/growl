@@ -27,7 +27,7 @@ unsigned int SoLoudBundleFile::length() {
 }
 
 void SoLoudBundleFile::seek(int offset) {
-	int seek_to =
+	unsigned int seek_to =
 		offset < 0 ? (this->offset + size) + offset : this->offset + offset;
 	if (seek_to < this->offset) {
 		seek_to = this->offset;
