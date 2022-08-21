@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.19)
 
-if (GROWL_METAL)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
 	project(growl-thirdparty::imgui LANGUAGES OBJCXX)
 else()
 	project(growl-thirdparty::imgui LANGUAGES CXX)
@@ -19,7 +19,7 @@ set(IMGUI_SOURCES
 set(IMGUI_BACKEND_SOURCES
 	${SOURCE_PREFIX}/backends/imgui_impl_sdl.cpp
 	)
-if (GROWL_METAL)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
 	set(IMGUI_BACKEND_SOURCES
 		${IMGUI_BACKEND_SOURCES}
 		${SOURCE_PREFIX}/backends/imgui_impl_metal.mm
