@@ -12,10 +12,10 @@ void SDL2SystemAPI::handleKeyboardEvent(SDL_Event& event) {
 			InputEventType::KEYBOARD,
 			InputKeyboardEvent{getKeyEventType(event.key), getKey(event.key)});
 		inputProcessor->onEvent(e);
-		if (event.type == SDL_KEYUP &&
-			event.key.keysym.scancode == SDL_SCANCODE_F12) {
-			api.setImguiVisible(!api.imguiVisible());
-		}
+	}
+	if (event.type == SDL_KEYUP &&
+		event.key.keysym.scancode == SDL_SCANCODE_F12) {
+		api.setImguiVisible(!api.imguiVisible());
 	}
 }
 

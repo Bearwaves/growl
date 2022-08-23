@@ -24,7 +24,6 @@ public:
 	Game(const Game&) = delete;
 	Game& operator=(const Game&) = delete;
 
-protected:
 	API& getAPI();
 
 private:
