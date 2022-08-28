@@ -35,6 +35,9 @@ Error OpenGLGraphicsAPI::init() {
 }
 
 void OpenGLGraphicsAPI::dispose() {
+#ifdef GROWL_IMGUI
+	ImGui_ImplOpenGL3_Shutdown();
+#endif
 	SDL_GL_DeleteContext(context);
 }
 
