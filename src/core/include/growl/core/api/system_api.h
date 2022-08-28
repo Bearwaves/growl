@@ -43,7 +43,7 @@ public:
 protected:
 	virtual void
 	logInternal(LogLevel log_level, std::string tag, std::string formatted) = 0;
-	InputProcessor* inputProcessor;
+	InputProcessor* inputProcessor = nullptr;
 };
 
 } // namespace Growl
