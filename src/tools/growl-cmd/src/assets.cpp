@@ -65,12 +65,12 @@ AssetsIncludeError includeImage(
 		return AssetsIncludeError("Failed to encode image.");
 	}
 	auto ptr = static_cast<unsigned int>(outfile.tellp());
-	assets_map[resolved_path.string()] = {
+	assets_map[resolved_path.generic_string()] = {
 		ptr, out_buf.size(), AssetType::Image};
 	outfile.write(
 		reinterpret_cast<const char*>(out_buf.data()), out_buf.size());
 
-	std::cout << "Included " << style::bold << resolved_path.string()
+	std::cout << "Included " << style::bold << resolved_path.generic_string()
 			  << style::reset << "." << endl;
 	return AssetsIncludeErrorCode::None;
 }
@@ -90,7 +90,7 @@ AssetsIncludeError includeFont(
 	file.open(entry.path(), std::ios::binary | std::ios::in);
 	if (file.fail()) {
 		return AssetsIncludeError(
-			"Failed to open file " + resolved_path.string());
+			"Failed to open file " + resolved_path.generic_string());
 	}
 	file.read(reinterpret_cast<char*>(data.data()), size);
 
@@ -98,7 +98,7 @@ AssetsIncludeError includeFont(
 	AssetInfo info{ptr, size, AssetType::Font};
 	outfile.write(reinterpret_cast<const char*>(data.data()), size);
 
-	std::cout << "Included font " << style::bold << resolved_path.string()
+	std::cout << "Included font " << style::bold << resolved_path.generic_string()
 			  << style::reset << "." << endl;
 
 	if (config.msdf) {
@@ -123,9 +123,9 @@ AssetsIncludeError includeFont(
 		outfile.write(
 			reinterpret_cast<const char*>(out_buf.data()), out_buf.size());
 		std::cout << "Included MSDF font atlas for " << style::bold
-				  << resolved_path.string() << style::reset << "." << std::endl;
+				  << resolved_path.generic_string() << style::reset << "." << std::endl;
 	}
-	assets_map[resolved_path.string()] = info;
+	assets_map[resolved_path.generic_string()] = info;
 
 	return AssetsIncludeErrorCode::None;
 }
@@ -144,7 +144,7 @@ AssetsIncludeError includeAudio(
 	file.open(entry.path(), std::ios::binary | std::ios::in);
 	if (file.fail()) {
 		return AssetsIncludeError(
-			"Failed to open file " + resolved_path.string());
+			"Failed to open file " + resolved_path.generic_string());
 	}
 	file.read(reinterpret_cast<char*>(data.data()), size);
 
@@ -152,10 +152,10 @@ AssetsIncludeError includeAudio(
 	AssetInfo info{ptr, size, AssetType::Audio};
 	outfile.write(reinterpret_cast<const char*>(data.data()), size);
 
-	std::cout << "Included audio " << style::bold << resolved_path.string()
+	std::cout << "Included audio " << style::bold << resolved_path.generic_string()
 			  << style::reset << "." << std::endl;
 
-	assets_map[resolved_path.string()] = info;
+	assets_map[resolved_path.generic_string()] = info;
 
 	return AssetsIncludeErrorCode::None;
 }
@@ -168,7 +168,7 @@ AssetsIncludeError includeText(
 	file.open(entry.path(), std::ios::in);
 	if (file.fail()) {
 		return AssetsIncludeError(
-			"Failed to open file " + resolved_path.string());
+			"Failed to open file " + resolved_path.generic_string());
 	}
 
 	auto start = static_cast<unsigned int>(outfile.tellp());
@@ -186,10 +186,10 @@ AssetsIncludeError includeText(
 	AssetInfo info{
 		start, static_cast<unsigned int>(outfile.tellp()) - start,
 		AssetType::Text};
-	std::cout << "Included text file " << style::bold << resolved_path.string()
+	std::cout << "Included text file " << style::bold << resolved_path.generic_string()
 			  << style::reset << "." << std::endl;
 
-	assets_map[resolved_path.string()] = info;
+	assets_map[resolved_path.generic_string()] = info;
 
 	return AssetsIncludeErrorCode::None;
 }
@@ -212,7 +212,7 @@ Error processDirectory(
 	if (auto it = config.find(".");
 		it != config.end() && it->second.atlas.has_value()) {
 		cout << "Building atlas for " << style::bold
-			 << dir_resolved_path.string() << style::reset << "." << endl;
+			 << dir_resolved_path.generic_string() << style::reset << "." << endl;
 		if (auto err = includeAtlas(
 				it->second.atlas.value(), path, dir_resolved_path, assets_map,
 				outfile);
@@ -227,7 +227,7 @@ Error processDirectory(
 			std::filesystem::relative(file_entry, assets_dir);
 
 		AssetConfig asset_config;
-		if (auto it = config.find(file_entry.path().filename().string());
+		if (auto it = config.find(file_entry.path().filename().generic_string());
 			it != config.end()) {
 			asset_config = it->second;
 		} else if (auto it = config.find("*"); it != config.end()) {

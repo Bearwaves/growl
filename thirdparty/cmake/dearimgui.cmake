@@ -1,9 +1,9 @@
 cmake_minimum_required (VERSION 3.19)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
-	project(growl-thirdparty::imgui LANGUAGES OBJCXX)
+	project(growl-thirdparty-imgui LANGUAGES OBJCXX)
 else()
-	project(growl-thirdparty::imgui LANGUAGES CXX)
+	project(growl-thirdparty-imgui LANGUAGES CXX)
 endif()
 
 set(SOURCE_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
