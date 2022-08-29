@@ -8,6 +8,7 @@
 #include <fstream>
 #include <memory>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 using Growl::AssetInfo;
@@ -93,6 +94,8 @@ std::string Growl::getAssetTypeName(AssetType type) {
 		return "Font";
 	case AssetType::Audio:
 		return "Sound";
+	case AssetType::Text:
+		return "Text";
 	default:
 		return "Unknown";
 	}
@@ -228,6 +231,29 @@ Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 		std::move(font_data),
 		std::make_unique<Image>(std::move(image_result.get())),
 		std::move(info.font.value().glyphs));
+}
+
+Result<std::string>
+AssetsBundle::getTextFileAsString(std::string name) noexcept {
+	auto info_find = assetsMap.find(name);
+	if (info_find == assetsMap.end()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load text file " + name + "; not found in asset map."));
+	}
+	auto& info = info_find->second;
+
+	if (info.type != AssetType::Text) {
+		auto type_name = getAssetTypeName(info.type);
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load text file " + name +
+			"; expected Text type but was " + type_name + "."));
+	}
+
+	std::string data(info.size, 0);
+	file.seekg(info.position);
+	file.read(reinterpret_cast<char*>(data.data()), info.size);
+
+	return std::move(data);
 }
 
 Result<std::vector<unsigned char>>

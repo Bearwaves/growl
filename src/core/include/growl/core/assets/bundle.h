@@ -21,7 +21,7 @@ typedef uint64_t AssetsBundleVersion;
 
 constexpr AssetsBundleVersion ASSETS_BUNDLE_LATEST_VERSION = 1;
 
-enum class AssetType : uint64_t { Unknown, Image, Atlas, Font, Audio };
+enum class AssetType : uint64_t { Unknown, Image, Atlas, Font, Audio, Text };
 
 std::string getAssetTypeName(AssetType type);
 
@@ -73,6 +73,7 @@ public:
 	Result<FontFace> getBitmapFont(
 		std::string name, int size, std::string characters = "") noexcept;
 	Result<FontFace> getDistanceFieldFont(std::string name) noexcept;
+	Result<std::string> getTextFileAsString(std::string name) noexcept;
 	Result<std::vector<unsigned char>> getRawData(std::string name) noexcept;
 
 	// Returns a new stream into the same file.

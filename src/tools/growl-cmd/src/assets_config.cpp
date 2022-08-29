@@ -7,6 +7,7 @@ void Growl::from_json(const json& j, AssetConfig& s) {
 	if (j.contains("font")) {
 		s.font = j.at("font").get<FontConfig>();
 	}
+	s.text = j.value("text", s.text);
 }
 
 void Growl::from_json(const json& j, AtlasConfig& s) {

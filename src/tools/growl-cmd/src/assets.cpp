@@ -8,6 +8,7 @@
 #include "growl/core/assets/font_face.h"
 #include "nlohmann/json.hpp"
 #include "stb_image.h"
+#include "utf8/core.h"
 #include <cstdint>
 #include <exception>
 #include <filesystem>
@@ -159,6 +160,40 @@ AssetsIncludeError includeAudio(
 	return AssetsIncludeErrorCode::None;
 }
 
+AssetsIncludeError includeText(
+	const std::filesystem::directory_entry& entry,
+	std::filesystem::path& resolved_path, AssetsMap& assets_map,
+	std::ofstream& outfile) noexcept {
+	std::ifstream file;
+	file.open(entry.path(), std::ios::in);
+	if (file.fail()) {
+		return AssetsIncludeError(
+			"Failed to open file " + resolved_path.string());
+	}
+
+	auto start = static_cast<unsigned int>(outfile.tellp());
+	std::string line;
+	// Check for valid UTF-8 and convert Windows line endings to Unix.
+	while (std::getline(file, line)) {
+		std::string::size_type pos = line.find_last_not_of("\r\n");
+		line.erase(pos + 1);
+		if (!utf8::is_valid(line.begin(), line.end())) {
+			return AssetsIncludeError("Line " + line + " is not valid UTF-8.");
+		}
+		outfile << line << '\n';
+	}
+
+	AssetInfo info{
+		start, static_cast<unsigned int>(outfile.tellp()) - start,
+		AssetType::Text};
+	std::cout << "Included text file " << style::bold << resolved_path.string()
+			  << style::reset << "." << std::endl;
+
+	assets_map[resolved_path.string()] = info;
+
+	return AssetsIncludeErrorCode::None;
+}
+
 Error processDirectory(
 	std::string& assets_dir, std::filesystem::path path, AssetsMap& assets_map,
 	std::ofstream& outfile) {
@@ -197,6 +232,17 @@ Error processDirectory(
 			asset_config = it->second;
 		} else if (auto it = config.find("*"); it != config.end()) {
 			asset_config = it->second;
+		}
+
+		if (asset_config.text) {
+			// Attempt to include file as plain text
+			if (auto err =
+					includeText(file_entry, resolved_path, assets_map, outfile);
+				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
+				return std::make_unique<AssetsError>(
+					"Failed to include text file: " + err.message());
+			}
+			continue;
 		}
 
 		// Try to import things as different asset types

@@ -21,6 +21,7 @@ struct FontConfig {
 struct AssetConfig {
 	std::optional<AtlasConfig> atlas;
 	std::optional<FontConfig> font;
+	bool text = false;
 };
 
 // Turn off name linting as json library needs these.
