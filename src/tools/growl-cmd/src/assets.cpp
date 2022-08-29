@@ -98,8 +98,8 @@ AssetsIncludeError includeFont(
 	AssetInfo info{ptr, size, AssetType::Font};
 	outfile.write(reinterpret_cast<const char*>(data.data()), size);
 
-	std::cout << "Included font " << style::bold << resolved_path.generic_string()
-			  << style::reset << "." << endl;
+	std::cout << "Included font " << style::bold
+			  << resolved_path.generic_string() << style::reset << "." << endl;
 
 	if (config.msdf) {
 		std::cout << "Generating MSDF font atlas..." << std::endl;
@@ -123,7 +123,8 @@ AssetsIncludeError includeFont(
 		outfile.write(
 			reinterpret_cast<const char*>(out_buf.data()), out_buf.size());
 		std::cout << "Included MSDF font atlas for " << style::bold
-				  << resolved_path.generic_string() << style::reset << "." << std::endl;
+				  << resolved_path.generic_string() << style::reset << "."
+				  << std::endl;
 	}
 	assets_map[resolved_path.generic_string()] = info;
 
@@ -152,8 +153,9 @@ AssetsIncludeError includeAudio(
 	AssetInfo info{ptr, size, AssetType::Audio};
 	outfile.write(reinterpret_cast<const char*>(data.data()), size);
 
-	std::cout << "Included audio " << style::bold << resolved_path.generic_string()
-			  << style::reset << "." << std::endl;
+	std::cout << "Included audio " << style::bold
+			  << resolved_path.generic_string() << style::reset << "."
+			  << std::endl;
 
 	assets_map[resolved_path.generic_string()] = info;
 
@@ -186,8 +188,9 @@ AssetsIncludeError includeText(
 	AssetInfo info{
 		start, static_cast<unsigned int>(outfile.tellp()) - start,
 		AssetType::Text};
-	std::cout << "Included text file " << style::bold << resolved_path.generic_string()
-			  << style::reset << "." << std::endl;
+	std::cout << "Included text file " << style::bold
+			  << resolved_path.generic_string() << style::reset << "."
+			  << std::endl;
 
 	assets_map[resolved_path.generic_string()] = info;
 
@@ -212,7 +215,8 @@ Error processDirectory(
 	if (auto it = config.find(".");
 		it != config.end() && it->second.atlas.has_value()) {
 		cout << "Building atlas for " << style::bold
-			 << dir_resolved_path.generic_string() << style::reset << "." << endl;
+			 << dir_resolved_path.generic_string() << style::reset << "."
+			 << endl;
 		if (auto err = includeAtlas(
 				it->second.atlas.value(), path, dir_resolved_path, assets_map,
 				outfile);
@@ -227,7 +231,8 @@ Error processDirectory(
 			std::filesystem::relative(file_entry, assets_dir);
 
 		AssetConfig asset_config;
-		if (auto it = config.find(file_entry.path().filename().generic_string());
+		if (auto it =
+				config.find(file_entry.path().filename().generic_string());
 			it != config.end()) {
 			asset_config = it->second;
 		} else if (auto it = config.find("*"); it != config.end()) {
