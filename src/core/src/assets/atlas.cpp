@@ -91,8 +91,8 @@ Result<Atlas> Growl::packAtlasFromFiles(
 		mappings[image.path.filename().string()] = AtlasRegion{
 			(rect.x + padding) * inv_tex_width,
 			(rect.y + padding) * inv_tex_height,
-			(rect.x + img_width - padding) * inv_tex_width,
-			(rect.y + img_height - padding) * inv_tex_height};
+			(rect.x + img_width + padding) * inv_tex_width,
+			(rect.y + img_height + padding) * inv_tex_height};
 
 		uint32_t* img_32 = reinterpret_cast<uint32_t*>(img_data);
 
