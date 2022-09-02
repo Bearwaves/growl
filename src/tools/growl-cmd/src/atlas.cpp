@@ -40,7 +40,8 @@ AssetsIncludeError includeAtlas(
 		images.push_back(AtlasImagePackInfo(entry.path(), width, height));
 	}
 
-	auto result = packAtlasFromFiles(images, config.padding);
+	auto result =
+		packAtlasFromFiles(images, config.padding, config.bleed_passes);
 	if (result.hasError()) {
 		return AssetsIncludeError(result.error()->message());
 	}

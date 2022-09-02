@@ -9,7 +9,8 @@ using nlohmann::json;
 namespace Growl {
 
 struct AtlasConfig {
-	int padding = 4;
+	int padding = 2;
+	int bleed_passes = 2;
 };
 
 struct FontConfig {

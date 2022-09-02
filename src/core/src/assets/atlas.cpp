@@ -4,6 +4,7 @@
 #include "stb_image.h"
 #include "stb_rect_pack.h"
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 
 using Growl::AssetsError;
@@ -23,6 +24,13 @@ static int nextPowerOfTwo(int n) {
 	return i;
 }
 
+struct Pixel {
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+	uint8_t a;
+};
+
 Result<AtlasRegion> Atlas::getRegion(const std::string& name) noexcept {
 	if (auto it = mappings.find(name); it != mappings.end()) {
 		return it->second;
@@ -32,7 +40,8 @@ Result<AtlasRegion> Atlas::getRegion(const std::string& name) noexcept {
 }
 
 Result<Atlas> Growl::packAtlasFromFiles(
-	std::vector<AtlasImagePackInfo>& images, int padding) noexcept {
+	std::vector<AtlasImagePackInfo>& images, int padding,
+	int bleed_passes) noexcept {
 	stbrp_context ctx;
 	std::vector<stbrp_rect> rects;
 	int i = 0;
@@ -96,31 +105,47 @@ Result<Atlas> Growl::packAtlasFromFiles(
 
 		uint32_t* img_32 = reinterpret_cast<uint32_t*>(img_data);
 
-		// Dilation passes
-		// TODO improve performance and correctness
-		for (int py = 0; py <= padding * 2; py++) {
-			for (int px = 0; px <= padding * 2; px++) {
-				if (px == padding && py == padding) {
-					// Do centre draw after
-					continue;
-				}
-				for (int j = 0; j < img_height; j++) {
-					auto dst = texture_data.data() +
-							   sizeof(uint32_t) *
-								   ((rect.y + py + j) * width + rect.x + px);
-					std::memcpy(
-						dst, img_32 + (j * img_width),
-						img_width * sizeof(uint32_t));
-				}
-			}
-		}
-
 		for (int j = 0; j < img_height; j++) {
 			auto dst = texture_data.data() +
 					   sizeof(uint32_t) *
 						   ((rect.y + padding + j) * width + rect.x + padding);
 			std::memcpy(
 				dst, img_32 + (j * img_width), img_width * sizeof(uint32_t));
+		}
+	}
+
+	for (int pass = 0; pass < bleed_passes; pass++) {
+		std::vector<unsigned char> previous_data = texture_data;
+		Pixel* old_pixels = reinterpret_cast<Pixel*>(previous_data.data());
+		Pixel* new_pixel = reinterpret_cast<Pixel*>(texture_data.data());
+		for (int i = 0; i < texture_data.size() / 4; i++) {
+			if (*reinterpret_cast<uint32_t*>(new_pixel) == 0) {
+				uint32_t r = 0, g = 0, b = 0;
+				uint8_t sum = 0;
+				for (int x = -1; x <= 1; x++) {
+					for (int y = -1; y <= 1; y++) {
+						int index = i + (y * width) + x;
+						if (index == i || index < 0 ||
+							index > texture_data.size() / 4) {
+							continue;
+						}
+						Pixel* p = old_pixels + index;
+						if (!(p->r || p->g || p->b)) {
+							continue;
+						}
+						r += p->r;
+						g += p->g;
+						b += p->b;
+						sum++;
+					}
+				}
+				if (sum) {
+					new_pixel->r = r / sum;
+					new_pixel->g = g / sum;
+					new_pixel->b = b / sum;
+				}
+			}
+			new_pixel++;
 		}
 	}
 
