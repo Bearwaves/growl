@@ -118,13 +118,13 @@ Result<Atlas> Growl::packAtlasFromFiles(
 		std::vector<unsigned char> previous_data = texture_data;
 		Pixel* old_pixels = reinterpret_cast<Pixel*>(previous_data.data());
 		Pixel* new_pixel = reinterpret_cast<Pixel*>(texture_data.data());
-		for (int i = 0; i < texture_data.size() / 4; i++) {
+		for (size_t i = 0; i < texture_data.size() / 4; i++) {
 			if (*reinterpret_cast<uint32_t*>(new_pixel) == 0) {
 				uint32_t r = 0, g = 0, b = 0;
 				uint8_t sum = 0;
 				for (int x = -1; x <= 1; x++) {
 					for (int y = -1; y <= 1; y++) {
-						int index = i + (y * width) + x;
+						size_t index = i + (y * width) + x;
 						if (index == i || index < 0 ||
 							index > texture_data.size() / 4) {
 							continue;
