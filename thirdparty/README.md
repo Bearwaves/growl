@@ -4,7 +4,7 @@
 |---------------|------------|-----------------------------------------|
 | Dear ImGui    | `2685650`  | https://github.com/ocornut/imgui        |
 | {fmt}         | `9.0.0`    | https://github.com/fmtlib/fmt           |
-| fpng          | `bfe5f9c`  | https://github.com/richgel999/fpng      |
+| fpng          | `b5267e5`  | https://github.com/richgel999/fpng      |
 | FreeType      | `2.12.1`   | https://freetype.org/                   |
 | glm           | `0.9.9.8`  | https://github.com/g-truc/glm           |
 | HarfBuzz      | `5.1.0`    | https://github.com/harfbuzz/harfbuzz    |
