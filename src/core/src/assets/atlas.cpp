@@ -126,7 +126,7 @@ Result<Atlas> Growl::packAtlasFromFiles(
 					for (int y = -1; y <= 1; y++) {
 						size_t index = i + (y * width) + x;
 						if (index == i || index < 0 ||
-							index > texture_data.size() / 4) {
+							index >= texture_data.size() / 4) {
 							continue;
 						}
 						Pixel* p = old_pixels + index;
