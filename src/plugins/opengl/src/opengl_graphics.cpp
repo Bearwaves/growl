@@ -194,7 +194,8 @@ OpenGLGraphicsAPI::createFontTextureAtlas(const FontFace& face) {
 
 std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {
 	int w, h;
-	SDL_GetWindowSize(static_cast<SDL_Window*>(window->getNative()), &w, &h);
+	SDL_GL_GetDrawableSize(
+		static_cast<SDL_Window*>(window->getNative()), &w, &h);
 	glViewport(0, 0, w, h);
 	auto projection = glm::ortho<float>(
 		0, static_cast<float>(w), static_cast<float>(h), 0, 1, -1);

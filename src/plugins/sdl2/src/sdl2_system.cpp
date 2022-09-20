@@ -39,7 +39,8 @@ Error SDL2SystemAPI::init() {
 Result<std::unique_ptr<Window>>
 SDL2SystemAPI::createWindow(const WindowConfig& config) {
 	int flags = SDL_WINDOW_INPUT_FOCUS;
-	flags |= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
+	flags |= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL |
+			 SDL_WINDOW_ALLOW_HIGHDPI;
 
 	SDL_Window* win = SDL_CreateWindow(
 		config.getTitle().c_str(),
@@ -129,9 +130,13 @@ void SDL2SystemAPI::handleMouseEvent(SDL_Event& event) {
 		&& !(api.imguiVisible() && imgui_io->WantCaptureMouse)
 #endif
 	) {
-		InputEvent e(
-			InputEventType::MOUSE,
-			InputMouseEvent{event.motion.x, event.motion.y});
+		int display_w, display_h, window_w, window_h;
+		SDL_Window* window = SDL_GetWindowFromID(event.motion.windowID);
+		SDL_GetWindowSize(window, &window_w, &window_h);
+		SDL_GL_GetDrawableSize(window, &display_w, &display_h);
+		int x = event.motion.x * (display_w / (float)window_w);
+		int y = event.motion.y * (display_h / (float)window_h);
+		InputEvent e(InputEventType::MOUSE, InputMouseEvent{x, y});
 		inputProcessor->onEvent(e);
 	}
 }
