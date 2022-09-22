@@ -27,8 +27,8 @@ void MetalBatch::draw(
 	tex.bind(encoder);
 	default_shader->bind(surface, encoder);
 
-	float right = x + width;
-	float bottom = y + height;
+	float right = std::round(x + width);
+	float bottom = std::round(y + height);
 	std::vector<float> vertices;
 	addVertex(vertices, right, bottom, 1.f, 1.f);
 	addVertex(vertices, x, bottom, 0.f, 1.f);

@@ -246,7 +246,10 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch() {
 		0, surface.texture.width, surface.texture.height, 0, 1, -1);
 	auto buffer = constant_buffers_ring[current_buffer];
 	uint32_t pre_offset = constant_buffer_offset;
-	memcpy(buffer.contents, &projection, sizeof(projection));
+	memcpy(
+		reinterpret_cast<unsigned char*>(buffer.contents) +
+			constant_buffer_offset,
+		&projection, sizeof(projection));
 	constant_buffer_offset += sizeof(projection);
 
 	return std::make_unique<MetalBatch>(
@@ -262,7 +265,10 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
 		0, metal_texture.getWidth(), metal_texture.getHeight(), 0, 1, -1);
 	auto buffer = constant_buffers_ring[current_buffer];
 	uint32_t pre_offset = constant_buffer_offset;
-	memcpy(buffer.contents, &projection, sizeof(projection));
+	memcpy(
+		reinterpret_cast<unsigned char*>(buffer.contents) +
+			constant_buffer_offset,
+		&projection, sizeof(projection));
 	constant_buffer_offset += sizeof(projection);
 
 	return std::make_unique<MetalBatch>(
