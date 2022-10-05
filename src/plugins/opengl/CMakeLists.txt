@@ -56,3 +56,4 @@ target_link_libraries(
 	growl-thirdparty
 	${OPENGL_LIBRARIES}
 	)
+target_compile_definitions(growl-plugin-opengl INTERFACE "GROWL_OPENGL")
