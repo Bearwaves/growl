@@ -7,13 +7,27 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-# Note that the Desktop platform will turn on plugins according to its own logic.
-# See src/platforms/desktop/CMakeLists.txt
-option(GROWL_DESKTOP "Whether to build the included Desktop platform" ON)
+set(GROWL_DEFAULT_IMGUI ON)
+set(GROWL_DEFAULT_DESKTOP ON)
+set(GROWL_DEFAULT_IOS OFF)
+set(GROWL_DEFAULT_TOOLS ON)
+
+if (IOS)
+	set(GROWL_DEFAULT_IMGUI OFF)
+	set(GROWL_DEFAULT_DESKTOP OFF)
+	set(GROWL_DEFAULT_IOS ON)
+	set(GROWL_DEFAULT_TOOLS OFF)
+endif()
+
+# Note that the platforms turn on plugins according to their own logic.
+# See src/platforms/*/CMakeLists.txt
+option(GROWL_DESKTOP "Whether to build the Desktop platform" ${GROWL_DEFAULT_DESKTOP})
+option(GROWL_IOS "Whether to build the iOS platform" ${GROWL_DEFAULT_IOS})
 option(GROWL_OPENGL "Whether to build the OpenGL plugin" OFF)
 option(GROWL_METAL "Whether to build the Metal plugin" OFF)
-option(GROWL_TOOLS "Whether to build the tools, e.g. growl-cmd" ON)
-option(GROWL_IMGUI "Whether to include Dear ImGui for debug UIs" ON)
+option(GROWL_SDL2 "Whether to build the SDL2 plugin" OFF)
+option(GROWL_TOOLS "Whether to build the tools, e.g. growl-cmd" ${GROWL_DEFAULT_TOOLS})
+option(GROWL_IMGUI "Whether to include Dear ImGui for debug UIs" ${GROWL_DEFAULT_IMGUI})
 
 # Deal with third-party stuff that's in submodules
 find_package(Git QUIET)
