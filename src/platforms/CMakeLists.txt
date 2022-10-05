@@ -1,6 +1,10 @@
 if (GROWL_DESKTOP)
 	add_subdirectory(desktop)
 endif ()
+if (GROWL_IOS)
+	add_subdirectory(ios)
+endif ()
 
+set(GROWL_SDL2 ${GROWL_SDL2} PARENT_SCOPE)
 set(GROWL_OPENGL ${GROWL_OPENGL} PARENT_SCOPE)
 set(GROWL_METAL ${GROWL_METAL} PARENT_SCOPE)

@@ -1,4 +1,7 @@
-add_subdirectory(sdl2)
+if (GROWL_SDL2)
+	add_subdirectory(sdl2)
+endif()
+
 add_subdirectory(soloud)
 
 if (GROWL_METAL)
@@ -7,4 +10,8 @@ endif ()
 
 if (GROWL_OPENGL)
 	add_subdirectory(opengl)
+endif ()
+
+if (GROWL_IOS)
+	add_subdirectory(ios)
 endif ()

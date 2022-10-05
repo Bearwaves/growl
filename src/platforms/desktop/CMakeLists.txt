@@ -10,14 +10,15 @@ set(SOURCES
 
 add_library(growl-platform-desktop ${SOURCES})
 
+set(GROWL_SDL2 ON)
+set(GROWL_SDL2 ON PARENT_SCOPE)
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
 	set(GROWL_METAL ON)
 	set(GROWL_METAL ON PARENT_SCOPE)
-	target_compile_definitions(growl-platform-desktop PRIVATE "GROWL_METAL")
 else ()
 	set(GROWL_OPENGL ON)
 	set(GROWL_OPENGL ON PARENT_SCOPE)
-	target_compile_definitions(growl-platform-desktop PRIVATE "GROWL_OPENGL")
 endif()
 
 if (GROWL_METAL)
@@ -42,3 +43,4 @@ target_link_libraries(growl-platform-desktop
 	${GROWL_DESKTOP_LIBS}
 	)
 target_include_directories(growl-platform-desktop PUBLIC "include")
+target_compile_definitions(growl-platform-desktop INTERFACE "GROWL_DESKTOP")

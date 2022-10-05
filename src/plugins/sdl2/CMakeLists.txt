@@ -1,5 +1,7 @@
 project(growl-plugin-sdl2)
 
+message(STATUS "[Growl] Enabled SDL2 plugin.")
+
 set(SDL2_BUILDING_LIBRARY 1)
 find_package(SDL2 REQUIRED)
 
@@ -36,3 +38,4 @@ target_link_libraries(growl-plugin-sdl2
 	${SDL_LINK_LIBS}
 	)
 target_include_directories(growl-plugin-sdl2 PUBLIC ${SDL2_INCLUDE_DIR})
+target_compile_definitions(growl-plugin-sdl2 INTERFACE "GROWL_SDL2")
