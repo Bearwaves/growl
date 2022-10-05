@@ -18,6 +18,16 @@ set(THIRDPARTY_SOURCES
 	"${SOURCE_PREFIX}/pngwutil.c"
 	)
 
+if (IOS)
+	set(THIRDPARTY_SOURCES
+		${THIRDPARTY_SOURCES}
+		"${SOURCE_PREFIX}/arm/arm_init.c"
+		"${SOURCE_PREFIX}/arm/filter_neon.S"
+		"${SOURCE_PREFIX}/arm/filter_neon_intrinsics.c"
+		"${SOURCE_PREFIX}/arm/palette_neon_intrinsics.c"
+		)
+endif()
+
 configure_file("${SOURCE_PREFIX}/scripts/pnglibconf.h.prebuilt"
 	"${CMAKE_CURRENT_BINARY_DIR}/libpng/pnglibconf.h"
 	)
