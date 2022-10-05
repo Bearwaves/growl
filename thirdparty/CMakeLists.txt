@@ -4,8 +4,10 @@ project(growl-thirdparty)
 
 if (MSVC)
 	set(CMAKE_CXX_FLAGS "/W0")
-else ()
-	set(CMAKE_CXX_FLAGS "-Wno-all -msse4.1 -mpclmul")
+elseif (IOS)
+	set(CMAKE_CXX_FLAGS "-Wno-all -Wno-deprecated-declarations -x objective-c++")
+else()
+	set(CMAKE_CXX_FLAGS "-Wno-all -Wno-deprecated-declarations -msse4.1 -mpclmul")
 endif ()
 
 # Get third-party stuff not to log
@@ -36,6 +38,11 @@ set(THIRDPARTY_LINK_LIBRARIES
 	utf8cpp
 	)
 
+set(THIRDPARTY_LINK_LIBRARIES_PRIVATE)
+set(THIRDPARTY_INCLUDES_PUBLIC)
+set(THIRDPARTY_INCLUDES_PRIVATE)
+set(THIRDPARTY_COMPILE_DEFINITIONS)
+
 if (GROWL_IMGUI)
 	include(cmake/dearimgui.cmake)
 	add_library(growl-thirdparty::imgui ALIAS imgui)
@@ -45,16 +52,21 @@ if (GROWL_IMGUI)
 		)
 endif()
 
+if (GROWL_IOS)
+	set(THIRDPARTY_LINK_LIBRARIES_PRIVATE
+		${THIRDPARTY_LINK_LIBRARIES_PRIVATE}
+		"-framework CoreFoundation"
+		"-framework AVFAudio"
+		"-framework AudioToolbox"
+		)
+endif()
+
 set(THIRDPARTY_SOURCES
 	"fpng/fpng.cpp"
 
 	"stb_image/stb_image.c"
 	"stb_rect_pack/stb_rect_pack.c"
 	)
-
-set(THIRDPARTY_INCLUDES_PUBLIC)
-set(THIRDPARTY_INCLUDES_PRIVATE)
-set(THIRDPARTY_COMPILE_DEFINITIONS)
 
 include(cmake/harfbuzz.cmake)
 include(cmake/libunibreak.cmake)
@@ -68,6 +80,8 @@ add_library(growl-thirdparty ${THIRDPARTY_SOURCES})
 target_link_libraries(growl-thirdparty
 	INTERFACE
 	${THIRDPARTY_LINK_LIBRARIES}
+	PRIVATE
+	${THIRDPARTY_LINK_LIBRARIES_PRIVATE}
 	)
 target_include_directories(growl-thirdparty
 	PRIVATE
