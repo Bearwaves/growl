@@ -39,6 +39,7 @@ elseif (GROWL_IOS)
 	set_target_properties(growl-test-app
 		PROPERTIES
 		XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.bearwaves.growl.testapp"
+		MACOSX_BUNDLE_GUI_IDENTIFIER "com.bearwaves.growl.testapp"
 		XCODE_ATTRIBUTE_PRODUCT_NAME "Growl Test App"
 		)
 	target_compile_options(growl-test-app PRIVATE -x objective-c++)
