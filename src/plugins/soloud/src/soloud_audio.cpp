@@ -52,7 +52,9 @@ SoLoudAudioAPI::loadClipFromBundle(AssetsBundle& bundle, std::string path) {
 			"Failed to load clip: " + bundle_result.error()->message()));
 	}
 	auto raw = std::move(bundle_result.get());
-	if (int error = wav->loadMem(raw.data(), raw.size(), false, false); error) {
+	if (int error = wav->loadMem(
+			raw.data(), static_cast<unsigned int>(raw.size()), false, false);
+		error) {
 		return Error(std::make_unique<AssetsError>(
 			"Failed to load clip: got SoLoud error code " +
 			std::to_string(error)));

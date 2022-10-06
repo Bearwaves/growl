@@ -16,10 +16,10 @@ int SoLoudBundleFile::eof() {
 
 unsigned int SoLoudBundleFile::read(unsigned char* dst, unsigned int n_bytes) {
 	if ((unsigned int)file.tellg() + n_bytes >= offset + size) {
-		n_bytes = (offset + size) - file.tellg();
+		n_bytes = (offset + size) - static_cast<unsigned int>(file.tellg());
 	}
 	file.read(reinterpret_cast<char*>(dst), n_bytes);
-	return file.gcount();
+	return static_cast<unsigned int>(file.gcount());
 }
 
 unsigned int SoLoudBundleFile::length() {
