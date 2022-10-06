@@ -134,11 +134,11 @@ void MetalBatch::drawRect(float x, float y, float width, float height) {
 }
 
 int MetalBatch::getTargetWidth() {
-	return surface.width;
+	return static_cast<int>(surface.width);
 }
 
 int MetalBatch::getTargetHeight() {
-	return surface.height;
+	return static_cast<int>(surface.height);
 }
 
 MTLRenderPassDescriptor* MetalBatch::renderPassDescriptor() {
