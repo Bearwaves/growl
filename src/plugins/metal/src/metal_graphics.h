@@ -22,6 +22,7 @@ public:
 	void begin() override;
 	void end() override;
 	Error setWindow(const WindowConfig& window_config) override;
+	void onWindowResize(int width, int height) override;
 	void clear(float r, float g, float b) override;
 
 	std::unique_ptr<Texture>
@@ -48,8 +49,10 @@ private:
 	id<MTLCommandQueue> command_queue;
 	NSAutoreleasePool* pool;
 	id<MTLCommandBuffer> command_buffer;
+#ifdef GROWL_IMGUI
 	id<MTLRenderCommandEncoder> imgui_encoder;
 	MTLRenderPassDescriptor* imgui_pass;
+#endif
 	std::unique_ptr<MetalShader> default_shader;
 	std::unique_ptr<MetalShader> rect_shader;
 	std::unique_ptr<MetalShader> sdf_shader;

@@ -11,7 +11,11 @@
 #include "metal_shader.h"
 #include "metal_texture.h"
 #include "metal_texture_atlas.h"
+#ifdef GROWL_SDL2
 #include <SDL.h>
+#elif GROWL_IOS
+#include <UIKit/UIKit.h>
+#endif
 #include <memory>
 #include <vector>
 
@@ -96,12 +100,18 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 		return std::move(window_result.error());
 	}
 	window = std::move(window_result.get());
+#ifdef GROWL_SDL2
 	SDL_Window* native_window = static_cast<SDL_Window*>(window->getNative());
 	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal");
 	SDL_Renderer* renderer =
 		SDL_CreateRenderer(native_window, -1, SDL_RENDERER_PRESENTVSYNC);
 	swap_chain = static_cast<CAMetalLayer*>(SDL_RenderGetMetalLayer(renderer));
 	SDL_DestroyRenderer(renderer);
+#elif GROWL_IOS
+	UIWindow* ios_window = static_cast<UIWindow*>(window->getNative());
+	UIView* top_view = ios_window.rootViewController.view;
+	swap_chain = static_cast<CAMetalLayer*>(top_view.layer);
+#endif
 	swap_chain.pixelFormat = MTLPixelFormatBGRA8Unorm;
 	device = swap_chain.device;
 #ifdef GROWL_IMGUI
@@ -111,24 +121,24 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 	frame_boundary_semaphore =
 		dispatch_semaphore_create(swap_chain.maximumDrawableCount);
 	current_buffer = 0;
-	NSMutableArray* constant_buffers =
-		[NSMutableArray arrayWithCapacity:swap_chain.maximumDrawableCount];
+	NSMutableArray* constant_buffers = [[NSMutableArray
+		arrayWithCapacity:swap_chain.maximumDrawableCount] retain];
 	for (int i = 0; i < swap_chain.maximumDrawableCount; i++) {
 		id<MTLBuffer> buffer =
 			[device newBufferWithLength:BUFFER_MAX_SIZE
 								options:MTLResourceStorageModeShared];
 		[constant_buffers addObject:buffer];
 	}
-	constant_buffers_ring = std::move(constant_buffers);
-	NSMutableArray* vertex_buffers =
-		[NSMutableArray arrayWithCapacity:swap_chain.maximumDrawableCount];
+	constant_buffers_ring = constant_buffers;
+	NSMutableArray* vertex_buffers = [[NSMutableArray
+		arrayWithCapacity:swap_chain.maximumDrawableCount] retain];
 	for (int i = 0; i < swap_chain.maximumDrawableCount; i++) {
 		id<MTLBuffer> buffer =
 			[device newBufferWithLength:BUFFER_MAX_SIZE
 								options:MTLResourceStorageModeShared];
 		[vertex_buffers addObject:buffer];
 	}
-	vertex_buffers_ring = std::move(vertex_buffers);
+	vertex_buffers_ring = vertex_buffers;
 	command_queue = [device newCommandQueue];
 	default_shader =
 		std::make_unique<MetalShader>(device, MetalShader::DEFAULT_SHADER);
@@ -136,6 +146,12 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 		std::make_unique<MetalShader>(device, MetalShader::RECT_SHADER);
 	sdf_shader = std::make_unique<MetalShader>(device, MetalShader::SDF_SHADER);
 	return nullptr;
+}
+
+void MetalGraphicsAPI::onWindowResize(int width, int height) {
+	[swap_chain setDrawableSize:CGSize{
+									.width = static_cast<CGFloat>(width),
+									.height = static_cast<CGFloat>(height)}];
 }
 
 void MetalGraphicsAPI::clear(float r, float g, float b) {

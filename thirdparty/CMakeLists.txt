@@ -3,11 +3,12 @@ cmake_minimum_required (VERSION 3.19)
 project(growl-thirdparty)
 
 if (MSVC)
-	set(CMAKE_CXX_FLAGS "/W0")
+	add_compile_options(/W0)
 elseif (IOS)
-	set(CMAKE_CXX_FLAGS "-Wno-all -Wno-deprecated-declarations -x objective-c++")
+	add_compile_options(-w)
+	set(CMAKE_CXX_FLAGS "-x objective-c++")
 else()
-	set(CMAKE_CXX_FLAGS "-Wno-all -Wno-deprecated-declarations -msse4.1 -mpclmul")
+	add_compile_options(-w -msse4.1 -mpclmul)
 endif ()
 
 # Get third-party stuff not to log

@@ -20,7 +20,8 @@ Error TestAppGame::init() {
 	getAPI().system().log("TestAppGame", "Game starting up!");
 
 	getAPI().system().log("TestAppGame", "Loading asset bundle");
-	Result<AssetsBundle> bundle_result = loadAssetsBundle("./assets.growl");
+	Result<AssetsBundle> bundle_result =
+		loadAssetsBundle(getAPI().system().getResourcePath("./assets.growl"));
 	if (bundle_result.hasError()) {
 		return std::move(bundle_result.error());
 	}
@@ -49,7 +50,8 @@ Error TestAppGame::init() {
 	}
 	texture_atlas = getAPI().graphics().createTextureAtlas(atlas_result.get());
 
-	Result<Image> image_result = loadImageFromFile("../assets/gfx/grass.png");
+	Result<Image> image_result = loadImageFromFile(
+		getAPI().system().getResourcePath("../assets/gfx/grass.png"));
 	if (image_result.hasError()) {
 		return std::move(image_result.error());
 	}
