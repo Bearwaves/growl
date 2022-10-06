@@ -7,7 +7,11 @@ using Growl::KeyEventType;
 using Growl::SDL2SystemAPI;
 
 void SDL2SystemAPI::handleKeyboardEvent(SDL_Event& event) {
-	if (inputProcessor) {
+	if (inputProcessor
+#ifdef GROWL_IMGUI
+		&& !(api.imguiVisible() && imgui_io->WantCaptureKeyboard)
+#endif
+	) {
 		InputEvent e(
 			InputEventType::KEYBOARD,
 			InputKeyboardEvent{getKeyEventType(event.key), getKey(event.key)});
