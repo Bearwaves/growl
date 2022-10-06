@@ -10,8 +10,6 @@ class GameAdapter;
 
 class Game {
 
-	friend class GameAdapter;
-
 public:
 	explicit Game() = default;
 	virtual ~Game() = default;
@@ -25,6 +23,10 @@ public:
 	Game& operator=(const Game&) = delete;
 
 	API& getAPI();
+
+	void setAPI(API* api) {
+		m_api = api;
+	}
 
 private:
 	API* m_api;

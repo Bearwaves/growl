@@ -6,11 +6,7 @@
 
 namespace Growl {
 
-class GameAdapter;
-
 class API {
-	friend class GameAdapter;
-
 public:
 	SystemAPI& system() {
 		return *systemInternal;
@@ -34,6 +30,18 @@ public:
 
 	void setImguiVisible(bool visible) {
 		this->imgui_visible = visible;
+	}
+
+	void setSystemAPI(std::unique_ptr<SystemAPIInternal> system) {
+		systemInternal = std::move(system);
+	}
+
+	void setGraphicsAPI(std::unique_ptr<GraphicsAPIInternal> graphics) {
+		graphicsInternal = std::move(graphics);
+	}
+
+	void setAudioAPI(std::unique_ptr<AudioAPIInternal> audio) {
+		audioInternal = std::move(audio);
 	}
 
 private:

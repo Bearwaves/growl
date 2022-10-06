@@ -27,6 +27,7 @@ class GraphicsAPIInternal : public GraphicsAPI, public APIInternal {
 public:
 	virtual ~GraphicsAPIInternal() {}
 	virtual Error setWindow(const WindowConfig& window_descriptor) = 0;
+	virtual void onWindowResize(int width, int height) = 0;
 	virtual void begin() = 0;
 	virtual void end() = 0;
 };

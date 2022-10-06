@@ -1,4 +1,5 @@
 #include "growl/platforms/desktop/game_adapter.h"
+#include "growl/core/api/api_internal.h"
 #include "growl/core/graphics/window.h"
 #include "growl/core/log.h"
 #ifdef GROWL_IMGUI
@@ -33,20 +34,22 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 #else
 	initOpenGLPlugin(*m_api);
 #endif
-	m_game->m_api = m_api.get();
+	m_game->setAPI(m_api.get());
 
-	if (auto err = m_api->systemInternal->init(); err) {
+	if (auto err = static_cast<SystemAPIInternal&>(m_api->system()).init();
+		err) {
 		std::cout << "Failed to init system API: " << err.get()->message()
 				  << std::endl;
 		exit(1);
 	}
-	if (auto err = m_api->graphicsInternal->init(); err) {
+	if (auto err = static_cast<GraphicsAPIInternal&>(m_api->graphics()).init();
+		err) {
 		m_api->system().log(
 			LogLevel::FATAL, "GameAdapter", "Failed to init graphics API: {}",
 			err.get()->message());
 		exit(2);
 	}
-	if (auto err = m_api->audioInternal->init(); err) {
+	if (auto err = static_cast<AudioAPIInternal&>(m_api->audio()).init(); err) {
 		m_api->system().log(
 			LogLevel::FATAL, "GameAdapter", "Failed to init audio API: {}",
 			err.get()->message());
@@ -63,16 +66,18 @@ GameAdapter::~GameAdapter() {
 		exit(4);
 	}
 	m_api->system().log("GameAdapter", "Desktop adapter destroying");
-	m_api->graphicsInternal->dispose();
-	m_api->audioInternal->dispose();
-	m_api->systemInternal->dispose();
+	static_cast<SystemAPIInternal&>(m_api->system()).dispose();
+	static_cast<GraphicsAPIInternal&>(m_api->graphics()).dispose();
+	static_cast<AudioAPIInternal&>(m_api->audio()).dispose();
 #ifdef GROWL_IMGUI
 	ImGui::DestroyContext();
 #endif
 }
 
 void GameAdapter::run() {
-	if (auto err = m_api->graphicsInternal->setWindow(m_window_config); err) {
+	if (auto err = static_cast<GraphicsAPIInternal&>(m_api->graphics())
+					   .setWindow(m_window_config);
+		err) {
 		m_api->system().log(
 			LogLevel::FATAL, "GameAdapter", "Failed to create window: {}",
 			err.get()->message());
@@ -85,10 +90,10 @@ void GameAdapter::run() {
 		return;
 	}
 	m_api->system().log("GameAdapter", "Run!");
-	while (m_api->systemInternal->isRunning()) {
+	while (static_cast<SystemAPIInternal&>(m_api->system()).isRunning()) {
 		m_api->system().tick();
-		m_api->graphicsInternal->begin();
+		static_cast<GraphicsAPIInternal&>(m_api->graphics()).begin();
 		m_game->render();
-		m_api->graphicsInternal->end();
+		static_cast<GraphicsAPIInternal&>(m_api->graphics()).end();
 	}
 }

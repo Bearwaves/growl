@@ -40,6 +40,10 @@ public:
 
 	virtual void setLogLevel(LogLevel log_level) = 0;
 
+	virtual std::string getResourcePath(std::string path) {
+		return path;
+	}
+
 protected:
 	virtual void
 	logInternal(LogLevel log_level, std::string tag, std::string formatted) = 0;
