@@ -139,6 +139,8 @@ createBitmapFontFace(FTFontData font_data, int size, std::string characters) {
 		}
 
 		glyphs[rect.id] = AtlasRegion{
+			static_cast<int>(bitmap.width),
+			static_cast<int>(bitmap.rows),
 			(rect.x + SPACING) * inv_tex_width,
 			(rect.y + SPACING) * inv_tex_height,
 			(rect.x + (rect.w - SPACING)) * inv_tex_width,

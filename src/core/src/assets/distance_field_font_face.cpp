@@ -142,6 +142,8 @@ Result<FontFace> createDistanceFieldFontFace(
 
 			int border_calc = border * scale;
 			glyphs[rect.id] = AtlasRegion{
+				bitmap.width(),
+				bitmap.height(),
 				(rect.x + pack_border + border_calc) * inv_tex_width,
 				(rect.y + pack_border + border_calc) * inv_tex_height,
 				(rect.x + (rect.w - (pack_border + border_calc))) *

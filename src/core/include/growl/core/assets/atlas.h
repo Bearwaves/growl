@@ -33,6 +33,8 @@ private:
 };
 
 struct AtlasRegion {
+	int width;
+	int height;
 	float u0;
 	float v0;
 	float u1;

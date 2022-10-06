@@ -98,6 +98,8 @@ Result<Atlas> Growl::packAtlasFromFiles(
 		}
 
 		mappings[image.path.filename().string()] = AtlasRegion{
+			img_width,
+			img_height,
 			(rect.x + padding) * inv_tex_width,
 			(rect.y + padding) * inv_tex_height,
 			(rect.x + img_width + padding) * inv_tex_width,
@@ -154,10 +156,13 @@ Result<Atlas> Growl::packAtlasFromFiles(
 }
 
 void Growl::to_json(json& j, const AtlasRegion& r) {
-	j = json{{"u0", r.u0}, {"v0", r.v0}, {"u1", r.u1}, {"v1", r.v1}};
+	j = json{{"w", r.width}, {"h", r.height}, {"u0", r.u0},
+			 {"v0", r.v0},	 {"u1", r.u1},	  {"v1", r.v1}};
 }
 
 void Growl::from_json(const json& j, AtlasRegion& r) {
+	j.at("w").get_to(r.width);
+	j.at("h").get_to(r.height);
 	j.at("u0").get_to(r.u0);
 	j.at("v0").get_to(r.v0);
 	j.at("u1").get_to(r.u1);
