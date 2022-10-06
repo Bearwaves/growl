@@ -28,7 +28,6 @@ public:
 
 private:
 	std::unique_ptr<TextureAtlas> texture_atlas;
-	std::unique_ptr<Texture> grass;
 	std::unique_ptr<Texture> grass_tiled;
 	std::unique_ptr<InputHandler> input;
 

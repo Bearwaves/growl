@@ -50,13 +50,6 @@ Error TestAppGame::init() {
 	}
 	texture_atlas = getAPI().graphics().createTextureAtlas(atlas_result.get());
 
-	Result<Image> image_result = loadImageFromFile(
-		getAPI().system().getResourcePath("../assets/gfx/grass.png"));
-	if (image_result.hasError()) {
-		return std::move(image_result.error());
-	}
-	grass = getAPI().graphics().createTexture(image_result.get());
-
 	Result<std::unique_ptr<AudioClip>> meow_result =
 		getAPI().audio().loadClipFromBundle(
 			bundle_result.get(), "sfx/meow.wav");
@@ -87,21 +80,22 @@ void TestAppGame::render() {
 #endif
 
 	if (!grass_tiled) {
+		auto grass_region = texture_atlas->getRegion("grass.png").get();
 		// Pre-tile some grass to demo render-to-texture.
 		grass_tiled = getAPI().graphics().createTexture(
-			grass->getWidth() * 2, grass->getHeight() * 2);
+			grass_region.region.width * 2, grass_region.region.height * 2);
 
 		auto batch = getAPI().graphics().createBatch(*grass_tiled);
 		batch->begin();
 		for (int x = 0; x < 2; x++) {
 			for (int y = 0; y < 2; y++) {
 				batch->draw(
-					*grass, x * grass->getWidth(), y * grass->getHeight(),
-					grass->getWidth(), grass->getHeight());
+					grass_region, x * grass_region.region.width,
+					y * grass_region.region.height, grass_region.region.width,
+					grass_region.region.height);
 			}
 		}
 		batch->end();
-		grass = nullptr;
 		getAPI().audio().play(*music);
 	}
 
