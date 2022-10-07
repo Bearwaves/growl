@@ -19,5 +19,6 @@ add_library(growl-plugin-ios ${SOURCES} ${HEADERS})
 target_link_libraries(growl-plugin-ios
 	PRIVATE
 	growl-core
+	"-framework GameController"
 	)
 target_compile_definitions(growl-plugin-ios INTERFACE "GROWL_IOS")

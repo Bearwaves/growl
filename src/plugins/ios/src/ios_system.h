@@ -2,6 +2,7 @@
 
 #include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
+#include <GameController/GameController.h>
 
 namespace Growl {
 
@@ -24,9 +25,19 @@ public:
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
+	void openGameController(GCController* controller);
+	void closeGameController(GCController* controller);
+	void handleControllerInput(
+		GCExtendedGamepad* gamepad, GCControllerElement* element);
+	void dispatchControllerEvent(
+		ControllerButton button, ControllerEventType eventType);
+	ControllerEventType controllerEventTypeForButtonPressed(bool pressed);
 
 	API& api;
 	bool running;
+	GCController* controller = nullptr;
+	id game_controller_connect_observer;
+	id game_controller_disconnect_observer;
 };
 
 } // namespace Growl
