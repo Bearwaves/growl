@@ -12,6 +12,7 @@ public:
 	Error init() override;
 	void tick() override;
 	void dispose() override;
+	void onTouch(InputTouchEvent) override;
 	bool isRunning() override {
 		return running;
 	}

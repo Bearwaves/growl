@@ -21,6 +21,8 @@ public:
 class SystemAPIInternal : public SystemAPI, public APIInternal {
 public:
 	virtual ~SystemAPIInternal() {}
+	// Used in push-style touch input e.g. on iOS.
+	virtual void onTouch(InputTouchEvent touch) {}
 };
 
 class GraphicsAPIInternal : public GraphicsAPI, public APIInternal {

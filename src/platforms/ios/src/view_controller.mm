@@ -61,6 +61,8 @@ std::unique_ptr<Growl::Game> createGame();
 		return;
 	}
 
+	[(GrowlMetalView*)self.view setSystemAPI:&systemInternal];
+
 	if (auto err = game->init(); err) {
 		api->system().log(
 			Growl::LogLevel::FATAL, "GameAdapter", "Failed to init game: {}",

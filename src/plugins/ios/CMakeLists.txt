@@ -20,3 +20,4 @@ target_link_libraries(growl-plugin-ios
 	PRIVATE
 	growl-core
 	)
+target_compile_definitions(growl-plugin-ios INTERFACE "GROWL_IOS")

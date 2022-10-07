@@ -1,6 +1,7 @@
 #pragma once
 
 #include "growl/core/api/system_api.h"
+#include "growl/core/input/event.h"
 #include "growl/core/input/processor.h"
 
 namespace Growl {
@@ -15,6 +16,8 @@ public:
 	void onKeyboardEvent(InputKeyboardEvent& event) override;
 
 	void onControllerEvent(InputControllerEvent& event) override;
+
+	void onTouchEvent(InputTouchEvent& event) override;
 
 	int getMouseX() {
 		return mouseX;

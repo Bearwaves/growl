@@ -7,6 +7,7 @@ using Growl::IOSSystemAPI;
 using Growl::Error;
 using Growl::Window;
 using Growl::Result;
+using Growl::InputTouchEvent;
 
 Error IOSSystemAPI::init() {
 	return nullptr;
@@ -15,6 +16,12 @@ Error IOSSystemAPI::init() {
 void IOSSystemAPI::tick() {}
 
 void IOSSystemAPI::dispose() {}
+
+void IOSSystemAPI::onTouch(InputTouchEvent event) {
+	if (inputProcessor) {
+		inputProcessor->onTouchEvent(event);
+	}
+}
 
 Result<std::unique_ptr<Window>>
 IOSSystemAPI::createWindow(const WindowConfig& config) {

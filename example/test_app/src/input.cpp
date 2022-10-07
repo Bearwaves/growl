@@ -9,6 +9,11 @@ void InputHandler::onMouseEvent(InputMouseEvent& event) {
 	mouseY = event.mouseY;
 }
 
+void InputHandler::onTouchEvent(InputTouchEvent& event) {
+	mouseX = event.touchX;
+	mouseY = event.touchY;
+}
+
 void InputHandler::onKeyboardEvent(InputKeyboardEvent& event) {
 	switch (event.type) {
 	case KeyEventType::Unknown:
