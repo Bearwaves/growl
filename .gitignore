@@ -12,8 +12,7 @@ CMakeSettings.json
 _deps
 
 build/
-build_xcode/
-build_ios/
+build.*/
 .cache/
 .DS_Store
 .vs/
