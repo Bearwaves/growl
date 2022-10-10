@@ -120,6 +120,8 @@ void OpenGLGraphicsAPI::clear(float r, float g, float b) {
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
+void OpenGLGraphicsAPI::onWindowResize(int width, int height) {}
+
 std::unique_ptr<Texture> OpenGLGraphicsAPI::createTexture(
 	const Image& image, const TextureOptions options) {
 	unsigned int texture_id;
