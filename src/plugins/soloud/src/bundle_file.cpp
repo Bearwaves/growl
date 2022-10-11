@@ -19,11 +19,11 @@ int SoLoudBundleFile::eof() {
 }
 
 unsigned int SoLoudBundleFile::read(unsigned char* dst, unsigned int n_bytes) {
-	return file->read(dst, n_bytes);
+	return static_cast<unsigned int>(file->read(dst, n_bytes));
 }
 
 unsigned int SoLoudBundleFile::length() {
-	return file->length();
+	return static_cast<unsigned int>(file->length());
 }
 
 void SoLoudBundleFile::seek(int offset) {
@@ -31,7 +31,7 @@ void SoLoudBundleFile::seek(int offset) {
 }
 
 unsigned int SoLoudBundleFile::pos() {
-	return file->pos();
+	return static_cast<unsigned int>(file->pos());
 }
 
 Result<std::unique_ptr<SoLoudBundleFile>> Growl::openFileFromBundle(

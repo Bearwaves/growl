@@ -20,7 +20,8 @@ public:
 	virtual Result<std::unique_ptr<Window>>
 	createWindow(const WindowConfig& config) override;
 	void setLogLevel(LogLevel log_level) override;
-	std::string getResourcePath(std::string path) override;
+	Result<std::unique_ptr<File>>
+	openFile(std::string path, size_t start = 0, size_t end = 0) override;
 
 private:
 	void

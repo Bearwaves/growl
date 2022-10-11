@@ -1,10 +1,14 @@
 #include "ios_system.h"
+#include "growl/core/assets/local_file.h"
 #include "growl/core/error.h"
+#include "ios_error.h"
 #include "ios_window.h"
 #include <os/log.h>
 
 using Growl::IOSSystemAPI;
 using Growl::Error;
+using Growl::File;
+using Growl::LocalFile;
 using Growl::Window;
 using Growl::Result;
 using Growl::InputTouchEvent;
@@ -85,11 +89,26 @@ void IOSSystemAPI::logInternal(
 		OS_LOG_DEFAULT, OS_LOG_TYPE_DEBUG, "[%s] %s", tag.c_str(), msg.c_str());
 }
 
-std::string IOSSystemAPI::getResourcePath(std::string path) {
-	return [[NSBundle mainBundle]
-			   pathForResource:[NSString stringWithUTF8String:path.c_str()]
-						ofType:@""]
-		.UTF8String;
+Result<std::unique_ptr<File>>
+IOSSystemAPI::openFile(std::string path, size_t start, size_t end) {
+	auto full_path =
+		[[NSBundle mainBundle]
+			pathForResource:[NSString stringWithUTF8String:path.c_str()]
+					 ofType:@""]
+			.UTF8String;
+	std::ifstream file;
+	file.open(full_path, std::ios::binary | std::ios::in);
+	if (file.fail()) {
+		return Error(std::make_unique<IOSError>("Failed to open file " + path));
+	}
+	if (end == 0) {
+		auto ptr = file.tellg();
+		file.seekg(0, std::ios::end);
+		end = file.tellg();
+		file.seekg(ptr);
+	}
+	return std::unique_ptr<File>(
+		std::make_unique<LocalFile>(std::move(file), start, end));
 }
 
 void IOSSystemAPI::openGameController(GCController* controller) {

@@ -7,7 +7,6 @@
 #include "growl/core/assets/image.h"
 #include "growl/core/error.h"
 #include <cstdint>
-#include <fstream>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -43,7 +42,7 @@ Result<AssetsBundle> Growl::loadAssetsBundle(
 	file->read(reinterpret_cast<unsigned char*>(&version), sizeof(version));
 	AssetsBundleMapInfo map_info;
 	file->read(reinterpret_cast<unsigned char*>(&map_info), sizeof(map_info));
-	file->seek(map_info.position);
+	file->seek(static_cast<int>(map_info.position));
 	std::string resource_map_json(map_info.size, '\0');
 	file->read(
 		reinterpret_cast<unsigned char*>(resource_map_json.data()),
@@ -129,7 +128,7 @@ Result<Image> AssetsBundle::getImage(std::string name) noexcept {
 
 	std::vector<unsigned char> img_data;
 	img_data.reserve(info.size);
-	file->seek(info.position);
+	file->seek(static_cast<int>(info.position));
 	file->read(img_data.data(), info.size);
 
 	return loadImageFromMemory(img_data.data(), info.size);
@@ -158,7 +157,7 @@ Result<Atlas> AssetsBundle::getAtlas(std::string name) noexcept {
 
 	std::vector<unsigned char> img_data;
 	img_data.reserve(info.size);
-	file->seek(info.position);
+	file->seek(static_cast<int>(info.position));
 	file->read(img_data.data(), info.size);
 
 	Result<Image> image_result =
@@ -192,7 +191,7 @@ Result<FontFace> AssetsBundle::getBitmapFont(
 
 	std::vector<unsigned char> font_data;
 	font_data.resize(info.size);
-	file->seek(info.position);
+	file->seek(static_cast<int>(info.position));
 	file->read(font_data.data(), info.size);
 
 	return createBitmapFontFaceFromMemory(
@@ -216,7 +215,7 @@ Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 
 	std::vector<unsigned char> font_data;
 	font_data.resize(info.size);
-	file->seek(info.position);
+	file->seek(static_cast<int>(info.position));
 	file->read(font_data.data(), info.size);
 
 	if (!info.font.has_value()) {
@@ -226,7 +225,7 @@ Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 
 	std::vector<unsigned char> image_data;
 	image_data.resize(info.font.value().msdf_size);
-	file->seek(info.font.value().msdf_position);
+	file->seek(static_cast<int>(info.font.value().msdf_position));
 	file->read(image_data.data(), info.font.value().msdf_size);
 
 	Result<Image> image_result =
@@ -259,7 +258,7 @@ AssetsBundle::getTextFileAsString(std::string name) noexcept {
 	}
 
 	std::string data(info.size, 0);
-	file->seek(info.position);
+	file->seek(static_cast<int>(info.position));
 	file->read(reinterpret_cast<unsigned char*>(data.data()), info.size);
 
 	return std::move(data);
@@ -276,7 +275,7 @@ AssetsBundle::getRawData(std::string name) noexcept {
 
 	std::vector<unsigned char> data;
 	data.resize(info.size);
-	file->seek(info.position);
+	file->seek(static_cast<int>(info.position));
 	file->read(data.data(), info.size);
 
 	return std::move(data);

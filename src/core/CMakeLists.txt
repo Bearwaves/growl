@@ -16,6 +16,7 @@ set(SOURCES
 	"src/assets/font_face.cpp"
 	"src/assets/font_internal.cpp"
 	"src/assets/image.cpp"
+	"src/assets/local_file.cpp"
 
 	"src/text/glyph_layout.cpp"
 	"src/util/timer.cpp"

@@ -5,12 +5,13 @@
 #include <cstddef>
 #include <fstream>
 #include <memory>
+
 namespace Growl {
 
 class LocalFile : public File {
 public:
-	explicit LocalFile(std::ifstream fp);
-	~LocalFile();
+	explicit LocalFile(std::ifstream fp, size_t start, size_t end);
+	~LocalFile() = default;
 
 	bool eof() override;
 	size_t read(unsigned char* dst, size_t n_bytes) override;
@@ -20,8 +21,9 @@ public:
 
 private:
 	std::ifstream fp;
+	size_t start;
+	size_t end;
+	size_t ptr;
 };
-
-Result<std::unique_ptr<File>> openLocalFile(std::string path);
 
 } // namespace Growl

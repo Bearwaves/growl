@@ -1,13 +1,13 @@
 #include "../thirdparty/rang.hpp"
 #include "assets_config.h"
 #include "error.h"
-#include "file.h"
 #include "fpng.h"
 #include "growl/core/assets/audio.h"
 #include "growl/core/assets/bundle.h"
 #include "growl/core/assets/error.h"
 #include "growl/core/assets/file.h"
 #include "growl/core/assets/font_face.h"
+#include "growl/core/assets/local_file.h"
 #include "nlohmann/json.hpp"
 #include "stb_image.h"
 #include "utf8/core.h"
@@ -36,6 +36,8 @@ using Growl::Error;
 using Growl::File;
 using Growl::FontConfig;
 using Growl::Image;
+using Growl::LocalFile;
+using Growl::Result;
 using nlohmann::json;
 using rang::fg;
 using rang::style;
@@ -340,8 +342,23 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 	outfile.write(reinterpret_cast<const char*>(&info), sizeof(info));
 }
 
+Result<std::unique_ptr<File>> openLocalFile(std::string path) {
+	std::ifstream file;
+	file.open(path, std::ios::binary | std::ios::in);
+	if (file.fail()) {
+		return Error(
+			std::make_unique<AssetsError>("Failed to open file " + path));
+	}
+	auto ptr = file.tellg();
+	file.seekg(0, file.end);
+	auto end = file.tellg();
+	file.seekg(ptr);
+	return std::unique_ptr<File>(
+		std::make_unique<LocalFile>(std::move(file), 0, end));
+}
+
 void listAssets(std::string assets_bundle) {
-	auto file_result = Growl::openLocalFile(assets_bundle);
+	auto file_result = openLocalFile(assets_bundle);
 	if (file_result.hasError()) {
 		cout << fg::red
 			 << "Failed to load file: " << file_result.error()->message()
