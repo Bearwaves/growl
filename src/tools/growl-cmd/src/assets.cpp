@@ -1,10 +1,12 @@
 #include "../thirdparty/rang.hpp"
 #include "assets_config.h"
 #include "error.h"
+#include "file.h"
 #include "fpng.h"
 #include "growl/core/assets/audio.h"
 #include "growl/core/assets/bundle.h"
 #include "growl/core/assets/error.h"
+#include "growl/core/assets/file.h"
 #include "growl/core/assets/font_face.h"
 #include "nlohmann/json.hpp"
 #include "stb_image.h"
@@ -31,6 +33,7 @@ using Growl::AssetsMap;
 using Growl::AssetType;
 using Growl::AtlasConfig;
 using Growl::Error;
+using Growl::File;
 using Growl::FontConfig;
 using Growl::Image;
 using nlohmann::json;
@@ -338,7 +341,15 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 }
 
 void listAssets(std::string assets_bundle) {
-	auto assets_bundle_result = Growl::loadAssetsBundle(assets_bundle);
+	auto file_result = Growl::openLocalFile(assets_bundle);
+	if (file_result.hasError()) {
+		cout << fg::red
+			 << "Failed to load file: " << file_result.error()->message()
+			 << style::reset << endl;
+		exit(1);
+	}
+	auto assets_bundle_result =
+		Growl::loadAssetsBundle(std::move(file_result.get()), assets_bundle);
 	if (assets_bundle_result.hasError()) {
 		cout << fg::red << "Failed to load asset bundle: "
 			 << assets_bundle_result.error()->message() << style::reset << endl;

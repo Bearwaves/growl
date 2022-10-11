@@ -1,6 +1,8 @@
 #include "growl/core/assets/bundle.h"
 
+#include "growl/core/api/system_api.h"
 #include "growl/core/assets/error.h"
+#include "growl/core/assets/file.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/assets/image.h"
 #include "growl/core/error.h"
@@ -19,24 +21,33 @@ using Growl::AssetsError;
 using Growl::AssetsMap;
 using Growl::Atlas;
 using Growl::Error;
+using Growl::File;
 using Growl::FontFace;
 using Growl::Image;
 using Growl::Result;
+using Growl::SystemAPI;
 
-Result<AssetsBundle> Growl::loadAssetsBundle(std::string file_path) noexcept {
-	std::ifstream file;
-	file.open(file_path, std::ios::binary | std::ios::in);
-	if (file.fail()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to open file " + file_path + "; does it exist?"));
+Result<AssetsBundle>
+Growl::loadAssetsBundle(SystemAPI& system, std::string file_path) noexcept {
+	auto file_result = system.openFile(file_path);
+	if (file_result.hasError()) {
+		return std::move(file_result.error());
 	}
+	std::unique_ptr<File> file = std::move(file_result.get());
+	return loadAssetsBundle(std::move(file), file_path);
+}
+
+Result<AssetsBundle> Growl::loadAssetsBundle(
+	std::unique_ptr<File> file, std::string file_path) noexcept {
 	AssetsBundleVersion version;
-	file.read(reinterpret_cast<char*>(&version), sizeof(version));
+	file->read(reinterpret_cast<unsigned char*>(&version), sizeof(version));
 	AssetsBundleMapInfo map_info;
-	file.read(reinterpret_cast<char*>(&map_info), sizeof(map_info));
-	file.seekg(map_info.position);
+	file->read(reinterpret_cast<unsigned char*>(&map_info), sizeof(map_info));
+	file->seek(map_info.position);
 	std::string resource_map_json(map_info.size, '\0');
-	file.read(resource_map_json.data(), map_info.size);
+	file->read(
+		reinterpret_cast<unsigned char*>(resource_map_json.data()),
+		map_info.size);
 	AssetsMap resource_map;
 	try {
 		resource_map = json::parse(resource_map_json);
@@ -45,7 +56,7 @@ Result<AssetsBundle> Growl::loadAssetsBundle(std::string file_path) noexcept {
 			"Failed to load assets map JSON: " + std::string(e.what())));
 	}
 
-	return AssetsBundle(file, file_path, resource_map);
+	return AssetsBundle(std::move(file), file_path, resource_map);
 }
 
 void Growl::to_json(json& j, const AssetInfo& r) {
@@ -118,8 +129,8 @@ Result<Image> AssetsBundle::getImage(std::string name) noexcept {
 
 	std::vector<unsigned char> img_data;
 	img_data.reserve(info.size);
-	file.seekg(info.position);
-	file.read(reinterpret_cast<char*>(img_data.data()), info.size);
+	file->seek(info.position);
+	file->read(img_data.data(), info.size);
 
 	return loadImageFromMemory(img_data.data(), info.size);
 }
@@ -147,8 +158,8 @@ Result<Atlas> AssetsBundle::getAtlas(std::string name) noexcept {
 
 	std::vector<unsigned char> img_data;
 	img_data.reserve(info.size);
-	file.seekg(info.position);
-	file.read(reinterpret_cast<char*>(img_data.data()), info.size);
+	file->seek(info.position);
+	file->read(img_data.data(), info.size);
 
 	Result<Image> image_result =
 		loadImageFromMemory(img_data.data(), info.size);
@@ -181,8 +192,8 @@ Result<FontFace> AssetsBundle::getBitmapFont(
 
 	std::vector<unsigned char> font_data;
 	font_data.resize(info.size);
-	file.seekg(info.position);
-	file.read(reinterpret_cast<char*>(font_data.data()), info.size);
+	file->seek(info.position);
+	file->read(font_data.data(), info.size);
 
 	return createBitmapFontFaceFromMemory(
 		std::move(font_data), size, characters);
@@ -205,8 +216,8 @@ Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 
 	std::vector<unsigned char> font_data;
 	font_data.resize(info.size);
-	file.seekg(info.position);
-	file.read(reinterpret_cast<char*>(font_data.data()), info.size);
+	file->seek(info.position);
+	file->read(font_data.data(), info.size);
 
 	if (!info.font.has_value()) {
 		return Error(std::make_unique<AssetsError>(
@@ -215,10 +226,8 @@ Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 
 	std::vector<unsigned char> image_data;
 	image_data.resize(info.font.value().msdf_size);
-	file.seekg(info.font.value().msdf_position);
-	file.read(
-		reinterpret_cast<char*>(image_data.data()),
-		info.font.value().msdf_size);
+	file->seek(info.font.value().msdf_position);
+	file->read(image_data.data(), info.font.value().msdf_size);
 
 	Result<Image> image_result =
 		loadImageFromMemory(image_data.data(), info.font.value().msdf_size);
@@ -250,8 +259,8 @@ AssetsBundle::getTextFileAsString(std::string name) noexcept {
 	}
 
 	std::string data(info.size, 0);
-	file.seekg(info.position);
-	file.read(reinterpret_cast<char*>(data.data()), info.size);
+	file->seek(info.position);
+	file->read(reinterpret_cast<unsigned char*>(data.data()), info.size);
 
 	return std::move(data);
 }
@@ -267,18 +276,28 @@ AssetsBundle::getRawData(std::string name) noexcept {
 
 	std::vector<unsigned char> data;
 	data.resize(info.size);
-	file.seekg(info.position);
-	file.read(reinterpret_cast<char*>(data.data()), info.size);
+	file->seek(info.position);
+	file->read(data.data(), info.size);
 
 	return std::move(data);
 }
 
-Result<std::ifstream> AssetsBundle::openNewStream() noexcept {
-	std::ifstream file;
-	file.open(path, std::ios::binary | std::ios::in);
-	if (file.fail()) {
+Result<std::unique_ptr<File>>
+AssetsBundle::getAssetAsFile(SystemAPI& system, std::string name) noexcept {
+	auto info_find = assetsMap.find(name);
+	if (info_find == assetsMap.end()) {
 		return Error(std::make_unique<AssetsError>(
-			"Failed to open file " + path + "; has it moved?"));
+			"Failed to load asset " + name +
+			" as file; not found in asset map."));
 	}
-	return std::move(file);
+	auto& info = info_find->second;
+
+	auto file_result =
+		system.openFile(path, info.position, info.position + info.size);
+	if (file_result.hasError()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to open file " + path + ": " +
+			file_result.error()->message()));
+	}
+	return std::move(file_result.get());
 }

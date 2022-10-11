@@ -1,6 +1,9 @@
 #include "sdl2_system.h"
 #include "SDL.h"
+#include "SDL_rwops.h"
+#include "growl/core/assets/file.h"
 #include "growl/core/input/event.h"
+#include "sdl2_file.h"
 #ifdef GROWL_IMGUI
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
@@ -11,6 +14,7 @@
 #include <memory>
 
 using Growl::Error;
+using Growl::File;
 using Growl::InputEvent;
 using Growl::Result;
 using Growl::SDL2SystemAPI;
@@ -99,6 +103,20 @@ void SDL2SystemAPI::dispose() {
 
 void SDL2SystemAPI::setLogLevel(LogLevel log_level) {
 	SDL_LogSetPriority(SDL_LOG_CATEGORY_CUSTOM, getLogPriority(log_level));
+}
+
+Result<std::unique_ptr<File>>
+SDL2SystemAPI::openFile(std::string path, size_t start, size_t end) {
+	auto fp = SDL_RWFromFile(path.c_str(), "rb");
+	if (!fp) {
+		return Error(std::make_unique<SDL2Error>(SDL_GetError()));
+	}
+
+	if (end == 0) {
+		end = SDL_RWsize(fp);
+	}
+
+	return std::unique_ptr<File>(std::make_unique<SDL2File>(fp, start, end));
 }
 
 void SDL2SystemAPI::logInternal(

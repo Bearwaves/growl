@@ -1,17 +1,16 @@
 #pragma once
 
+#include "growl/core/api/system_api.h"
 #include "growl/core/assets/bundle.h"
+#include "growl/core/assets/file.h"
 #include "soloud_file.h"
-#include <fstream>
+#include <memory>
 namespace Growl {
 
 class SoLoudBundleFile : public SoLoud::File {
 public:
-	explicit SoLoudBundleFile(
-		std::ifstream file, unsigned int offset, unsigned int size)
-		: file{std::move(file)}
-		, offset{offset}
-		, size{size} {}
+	explicit SoLoudBundleFile(std::unique_ptr<Growl::File> file)
+		: file{std::move(file)} {}
 	~SoLoudBundleFile() = default;
 
 	// SoLoudBundleFile is move-only
@@ -28,12 +27,10 @@ public:
 	virtual unsigned int pos() override;
 
 private:
-	std::ifstream file;
-	unsigned int offset;
-	unsigned int size;
+	std::unique_ptr<Growl::File> file;
 };
 
-Result<std::unique_ptr<SoLoudBundleFile>>
-openFileFromBundle(AssetsBundle& bundle, std::string name) noexcept;
+Result<std::unique_ptr<SoLoudBundleFile>> openFileFromBundle(
+	SystemAPI& system, AssetsBundle& bundle, std::string name) noexcept;
 
 } // namespace Growl

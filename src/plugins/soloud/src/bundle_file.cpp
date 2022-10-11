@@ -1,61 +1,45 @@
 #include "bundle_file.h"
+#include "growl/core/api/system_api.h"
 #include "growl/core/assets/bundle.h"
 #include "growl/core/assets/error.h"
+#include "growl/core/assets/file.h"
 #include "growl/core/error.h"
 #include <fstream>
 #include <string_view>
 
 using Growl::AssetsBundle;
 using Growl::AssetsError;
+using Growl::File;
 using Growl::Result;
 using Growl::SoLoudBundleFile;
+using Growl::SystemAPI;
 
 int SoLoudBundleFile::eof() {
-	return file.tellg() >= offset + size;
+	return file->eof();
 }
 
 unsigned int SoLoudBundleFile::read(unsigned char* dst, unsigned int n_bytes) {
-	if ((unsigned int)file.tellg() + n_bytes >= offset + size) {
-		n_bytes = (offset + size) - static_cast<unsigned int>(file.tellg());
-	}
-	file.read(reinterpret_cast<char*>(dst), n_bytes);
-	return static_cast<unsigned int>(file.gcount());
+	return file->read(dst, n_bytes);
 }
 
 unsigned int SoLoudBundleFile::length() {
-	return size;
+	return file->length();
 }
 
 void SoLoudBundleFile::seek(int offset) {
-	unsigned int seek_to =
-		offset < 0 ? (this->offset + size) + offset : this->offset + offset;
-	if (seek_to < this->offset) {
-		seek_to = this->offset;
-	} else if (seek_to > this->offset + size - 1) {
-		seek_to = this->offset + size - 1;
-	}
-	file.seekg(seek_to);
+	file->seek(offset);
 }
 
 unsigned int SoLoudBundleFile::pos() {
-	return (unsigned int)file.tellg() - offset;
+	return file->pos();
 }
 
-Result<std::unique_ptr<SoLoudBundleFile>>
-Growl::openFileFromBundle(AssetsBundle& bundle, std::string name) noexcept {
-	Result<std::ifstream> file_result = bundle.openNewStream();
+Result<std::unique_ptr<SoLoudBundleFile>> Growl::openFileFromBundle(
+	SystemAPI& system, AssetsBundle& bundle, std::string name) noexcept {
+	Result<std::unique_ptr<File>> file_result =
+		bundle.getAssetAsFile(system, name);
 	if (file_result.hasError()) {
 		return std::move(file_result.error());
 	}
-	std::ifstream file = std::move(file_result.get());
-	auto info_find = bundle.getAssetsMap().find(name);
-	if (info_find == bundle.getAssetsMap().end()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load file " + name +
-			" from bundle; not found in asset map."));
-	}
-	auto& info = info_find->second;
-	file.seekg(info.position);
-	return std::make_unique<SoLoudBundleFile>(
-		std::move(file), info.position, info.size);
+	return std::make_unique<SoLoudBundleFile>(std::move(file_result.get()));
 }

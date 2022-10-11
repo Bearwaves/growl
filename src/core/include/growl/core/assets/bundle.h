@@ -2,6 +2,8 @@
 
 #include "atlas.h"
 #include "font_face.h"
+#include "growl/core/api/system_api.h"
+#include "growl/core/assets/file.h"
 #include "growl/core/error.h"
 #include "image.h"
 #include "nlohmann/json.hpp"
@@ -59,7 +61,8 @@ using AssetsMap = std::map<std::string, AssetInfo>;
 class AssetsBundle {
 public:
 	explicit AssetsBundle(
-		std::ifstream& file, std::string path, AssetsMap& assets_map) noexcept
+		std::unique_ptr<File> file, std::string path,
+		AssetsMap& assets_map) noexcept
 		: file{std::move(file)}
 		, path{path}
 		, assetsMap{std::move(assets_map)} {}
@@ -76,15 +79,19 @@ public:
 	Result<std::string> getTextFileAsString(std::string name) noexcept;
 	Result<std::vector<unsigned char>> getRawData(std::string name) noexcept;
 
-	// Returns a new stream into the same file.
-	Result<std::ifstream> openNewStream() noexcept;
+	// Returns a File pointer to a specific asset.
+	Result<std::unique_ptr<File>>
+	getAssetAsFile(SystemAPI& system, std::string name) noexcept;
 
 private:
-	std::ifstream file;
+	std::unique_ptr<File> file;
 	std::string path;
 	AssetsMap assetsMap;
 };
 
-Result<AssetsBundle> loadAssetsBundle(std::string file_path) noexcept;
+Result<AssetsBundle>
+loadAssetsBundle(SystemAPI& system, std::string file_path) noexcept;
+Result<AssetsBundle>
+loadAssetsBundle(std::unique_ptr<File> file, std::string file_path) noexcept;
 
 } // namespace Growl

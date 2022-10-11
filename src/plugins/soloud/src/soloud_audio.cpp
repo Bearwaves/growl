@@ -1,5 +1,6 @@
 #include "soloud_audio.h"
 #include "bundle_file.h"
+#include "growl/core/api/system_api.h"
 #include "growl/core/assets/audio.h"
 #include "growl/core/assets/bundle.h"
 #include "growl/core/assets/error.h"
@@ -20,6 +21,7 @@ using Growl::Result;
 using Growl::SoLoudAudioAPI;
 using Growl::SoLoudAudioClip;
 using Growl::SoLoudAudioStream;
+using Growl::SystemAPI;
 
 Error SoLoudAudioAPI::init() {
 	soloud = std::make_unique<SoLoud::Soloud>();
@@ -67,7 +69,7 @@ SoLoudAudioAPI::loadClipFromBundle(AssetsBundle& bundle, std::string path) {
 Result<std::unique_ptr<AudioStream>>
 SoLoudAudioAPI::createStreamFromBundle(AssetsBundle& bundle, std::string name) {
 	Result<std::unique_ptr<SoLoudBundleFile>> bundle_file_result =
-		openFileFromBundle(bundle, name);
+		openFileFromBundle(system, bundle, name);
 	if (bundle_file_result.hasError()) {
 		return Error(std::make_unique<AssetsError>(
 			"Failed to load file from bundle: " +
