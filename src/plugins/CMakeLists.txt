@@ -15,3 +15,7 @@ endif ()
 if (GROWL_IOS)
 	add_subdirectory(ios)
 endif ()
+
+if (GROWL_ANDROID)
+	add_subdirectory(android)
+endif ()
