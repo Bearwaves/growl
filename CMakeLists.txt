@@ -19,10 +19,19 @@ if (IOS)
 	set(GROWL_DEFAULT_TOOLS OFF)
 endif()
 
+if (ANDROID)
+	set(GROWL_DEFAULT_IMGUI OFF)
+	set(GROWL_DEFAULT_DESKTOP OFF)
+	set(GROWL_DEFAULT_ANDROID ON)
+	set(GROWL_DEFAULT_TOOLS OFF)
+	add_compile_options(-fPIC)
+endif()
+
 # Note that the platforms turn on plugins according to their own logic.
 # See src/platforms/*/CMakeLists.txt
 option(GROWL_DESKTOP "Whether to build the Desktop platform" ${GROWL_DEFAULT_DESKTOP})
 option(GROWL_IOS "Whether to build the iOS platform" ${GROWL_DEFAULT_IOS})
+option(GROWL_ANDROID "Whether to build the Android platform" ${GROWL_DEFAULT_ANDROID})
 option(GROWL_OPENGL "Whether to build the OpenGL plugin" OFF)
 option(GROWL_METAL "Whether to build the Metal plugin" OFF)
 option(GROWL_SDL2 "Whether to build the SDL2 plugin" OFF)
