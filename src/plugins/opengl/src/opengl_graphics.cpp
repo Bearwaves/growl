@@ -1,5 +1,11 @@
 #include "opengl_graphics.h"
+#include "opengl_error.h"
+#ifdef GROWL_SDL2
 #include "SDL_video.h"
+#endif
+#ifdef GROWL_ANDROID
+#include <EGL/egl.h>
+#endif
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
 #include "growl/core/assets/font_face.h"
@@ -19,6 +25,7 @@ using Growl::Atlas;
 using Growl::Batch;
 using Growl::Error;
 using Growl::FontTextureAtlas;
+using Growl::OpenGLError;
 using Growl::OpenGLGraphicsAPI;
 using Growl::Texture;
 using Growl::TextureAtlas;
@@ -38,7 +45,21 @@ void OpenGLGraphicsAPI::dispose() {
 #ifdef GROWL_IMGUI
 	ImGui_ImplOpenGL3_Shutdown();
 #endif
+#ifdef GROWL_SDL2
 	SDL_GL_DeleteContext(context);
+#endif
+#ifdef GROWL_ANDROID
+	if (display != EGL_NO_DISPLAY) {
+		eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+		if (context != EGL_NO_CONTEXT) {
+			eglDestroyContext(display, context);
+		}
+		if (surface != EGL_NO_SURFACE) {
+			eglDestroySurface(display, surface);
+		}
+		eglTerminate(display);
+	}
+#endif
 }
 
 void OpenGLGraphicsAPI::begin() {
@@ -64,7 +85,12 @@ void OpenGLGraphicsAPI::end() {
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 #endif
+#ifdef GROWL_SDL2
 	SDL_GL_SwapWindow(static_cast<SDL_Window*>(window->getNative()));
+#endif
+#ifdef GROWL_ANDROID
+	eglSwapBuffers(display, surface);
+#endif
 }
 
 Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
@@ -74,6 +100,7 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 	}
 	window = std::move(window_result.get());
 
+#ifdef GROWL_SDL2
 #ifdef GROWL_OPENGL_4_1
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
@@ -88,8 +115,66 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 
 	context =
 		SDL_GL_CreateContext(static_cast<SDL_Window*>(window->getNative()));
+	glViewport(0, 0, config.getWidth(), config.getHeight());
+#endif
 #ifdef GROWL_OPENGL_4_5
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
+#endif
+
+#ifdef GROWL_ANDROID
+	const EGLint attribs[] = {EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+							  EGL_BLUE_SIZE,	8,
+							  EGL_GREEN_SIZE,	8,
+							  EGL_RED_SIZE,		8,
+							  EGL_NONE};
+	EGLint num_configs;
+	EGLConfig egl_config = nullptr;
+	display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+	eglInitialize(display, nullptr, nullptr);
+
+	// Choose the best config
+	eglChooseConfig(display, attribs, nullptr, 0, &num_configs);
+	std::unique_ptr<EGLConfig[]> supported_configs(new EGLConfig[num_configs]);
+	eglChooseConfig(
+		display, attribs, supported_configs.get(), num_configs, &num_configs);
+	if (!num_configs) {
+		return std::make_unique<OpenGLError>("Failed to find EGL configs");
+	}
+	auto i = 0;
+	for (; i < num_configs; i++) {
+		auto& cfg = supported_configs[i];
+		EGLint r, g, b, d;
+		if (eglGetConfigAttrib(display, cfg, EGL_RED_SIZE, &r) &&
+			eglGetConfigAttrib(display, cfg, EGL_GREEN_SIZE, &g) &&
+			eglGetConfigAttrib(display, cfg, EGL_BLUE_SIZE, &b) &&
+			eglGetConfigAttrib(display, cfg, EGL_DEPTH_SIZE, &d) && r == 8 &&
+			g == 8 && b == 8 && d == 0) {
+
+			egl_config = supported_configs[i];
+			break;
+		}
+	}
+	if (i == num_configs) {
+		egl_config = supported_configs[0];
+	}
+
+	// todo handle error
+	surface = eglCreateWindowSurface(
+		display, egl_config, static_cast<ANativeWindow*>(window->getNative()),
+		nullptr);
+	const EGLint context_attribs[] = {EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE};
+	context = eglCreateContext(display, egl_config, nullptr, context_attribs);
+
+	if (eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {
+		return std::make_unique<OpenGLError>(
+			"Failed to get an EGL display: code " +
+			std::to_string(eglGetError()));
+	}
+
+	EGLint w, h;
+	eglQuerySurface(display, surface, EGL_WIDTH, &w);
+	eglQuerySurface(display, surface, EGL_HEIGHT, &h);
+	glViewport(0, 0, w, h);
 #endif
 
 	GLint major, minor;
@@ -104,7 +189,6 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 	ImGui_ImplOpenGL3_Init("#version 150 core");
 #endif
 
-	glViewport(0, 0, config.getWidth(), config.getHeight());
 	default_shader = std::make_unique<OpenGLShader>(*this);
 	sdf_shader = std::make_unique<OpenGLShader>(
 		*this, OpenGLShader::default_vertex, OpenGLShader::sdf_fragment);
@@ -119,8 +203,6 @@ void OpenGLGraphicsAPI::clear(float r, float g, float b) {
 	glClearColor(r, g, b, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
-
-void OpenGLGraphicsAPI::onWindowResize(int width, int height) {}
 
 std::unique_ptr<Texture> OpenGLGraphicsAPI::createTexture(
 	const Image& image, const TextureOptions options) {
@@ -196,8 +278,14 @@ OpenGLGraphicsAPI::createFontTextureAtlas(const FontFace& face) {
 
 std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {
 	int w, h;
+#ifdef GROWL_SDL2
 	SDL_GL_GetDrawableSize(
 		static_cast<SDL_Window*>(window->getNative()), &w, &h);
+#endif
+#ifdef GROWL_ANDROID
+	eglQuerySurface(display, surface, EGL_WIDTH, &w);
+	eglQuerySurface(display, surface, EGL_HEIGHT, &h);
+#endif
 	glViewport(0, 0, w, h);
 	auto projection = glm::ortho<float>(
 		0, static_cast<float>(w), static_cast<float>(h), 0, 1, -1);
@@ -225,6 +313,8 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
 		default_shader.get(), sdf_shader.get(), rect_shader.get(), projection,
 		texture.getWidth(), texture.getHeight(), fbo);
 }
+
+void OpenGLGraphicsAPI::onWindowResize(int width, int height) {}
 
 void OpenGLGraphicsAPI::checkGLError(const char* file, long line) {
 	int err = glGetError();

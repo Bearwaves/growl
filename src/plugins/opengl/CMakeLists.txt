@@ -4,15 +4,33 @@ project(growl-plugin-opengl)
 
 message(STATUS "[Growl] Enabled OpenGL plugin.")
 
-set(OpenGL_GL_PREFERENCE GLVND)
-find_package(OpenGL REQUIRED)
-
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(GROWL_OPENGL_4_1 1)
 	add_definitions(-DGROWL_OPENGL_4_1)
+elseif (ANDROID)
+	set(GROWL_OPENGL_ES 1)
+	add_definitions(-DGROWL_OPENGL_ES)
 else ()
 	set(GROWL_OPENGL_4_5 1)
 	add_definitions(-DGROWL_OPENGL_4_5)
+endif ()
+
+if (ANDROID)
+	find_path(OPENGL_INCLUDE_DIRS GLES3/gl3.h HINTS ${ANDROID_NDK})
+	find_library(OPENGL_LIBRARIES libGLESv3.so HINTS ${ANDROID_NDK})
+	find_library(EGL_LIBRARY libEGL.so HINTS ${ANDROID_NDK})
+	set(OPENGL_LIBRARIES
+		${OPENGL_LIBRARIES}
+		${EGL_LIBRARY}
+		growl-plugin-android
+		)
+else ()
+	set(OpenGL_GL_PREFERENCE GLVND)
+	find_package(OpenGL REQUIRED)
+	set(OPENGL_LIBRARIES
+		${OPENGL_LIBRARIES}
+		growl-plugin-sdl2
+		)
 endif ()
 
 set(SOURCES
@@ -33,6 +51,7 @@ set(HEADERS
 	"src/opengl_texture.h"
 	"src/opengl_texture_atlas.h"
 	"src/opengl_shader.h"
+	"src/opengl_error.h"
 	)
 
 if (GROWL_OPENGL_4_5)
@@ -51,9 +70,9 @@ add_library(growl-plugin-opengl ${SOURCES} ${HEADERS})
 target_link_libraries(
 	growl-plugin-opengl
 	PRIVATE
-	growl-plugin-sdl2
 	growl-core
 	growl-thirdparty
 	${OPENGL_LIBRARIES}
 	)
 target_compile_definitions(growl-plugin-opengl INTERFACE "GROWL_OPENGL")
+target_include_directories(growl-plugin-opengl PRIVATE ${OPENGL_INCLUDE_DIRS})

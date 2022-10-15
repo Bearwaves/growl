@@ -4,7 +4,12 @@
 #include "growl/core/api/api_internal.h"
 #include "growl/core/assets/font_face.h"
 #include "opengl_shader.h"
+#ifdef GROWL_SDL2
 #include <SDL.h>
+#endif
+#ifdef GROWL_ANDROID
+#include <EGL/egl.h>
+#endif
 #include <chrono>
 
 using std::chrono::high_resolution_clock;
@@ -46,8 +51,15 @@ private:
 	std::unique_ptr<OpenGLShader> default_shader;
 	std::unique_ptr<OpenGLShader> sdf_shader;
 	std::unique_ptr<OpenGLShader> rect_shader;
-	SDL_GLContext context = nullptr;
 	time_point<high_resolution_clock> last_render;
+#ifdef GROWL_SDL2
+	SDL_GLContext context = nullptr;
+#endif
+#ifdef GROWL_ANDROID
+	EGLDisplay display;
+	EGLSurface surface;
+	EGLContext context;
+#endif
 
 	std::unique_ptr<Texture> setupTexture(
 		unsigned int texture_id, int width, int height,

@@ -8,14 +8,16 @@ OpenGLShader::OpenGLShader(
 	OpenGLGraphicsAPI& graphics, std::string vertex_src,
 	std::string fragment_src) {
 	GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-	const char* vertex_source = vertex_src.c_str();
-	glShaderSource(vertex, 1, &vertex_source, nullptr);
+	auto vertex_source = header + vertex_src;
+	const char* vertex_source_c = vertex_source.c_str();
+	glShaderSource(vertex, 1, &vertex_source_c, nullptr);
 	glCompileShader(vertex);
 	graphics.checkShaderCompileError(vertex);
 
 	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	const char* fragment_source = fragment_src.c_str();
-	glShaderSource(fragment, 1, &fragment_source, nullptr);
+	auto fragment_source = header + fragment_src;
+	const char* fragment_source_c = fragment_source.c_str();
+	glShaderSource(fragment, 1, &fragment_source_c, nullptr);
 	glCompileShader(fragment);
 	graphics.checkShaderCompileError(fragment);
 
@@ -51,9 +53,14 @@ void OpenGLShader::bind(glm::mat4 mvp, Color color) {
 	glUniform4f(color_id, color.r, color.g, color.b, color.a);
 }
 
-std::string const OpenGLShader::default_vertex = R"(
-#version 150 core
+std::string const OpenGLShader::header =
+#ifdef GROWL_OPENGL_ES
+	"#version 300 es";
+#else
+	"#version 150 core";
+#endif
 
+std::string const OpenGLShader::default_vertex = R"(
 in vec2 position;
 in vec2 texCoord;
 
@@ -68,8 +75,6 @@ void main() {
 )";
 
 std::string const OpenGLShader::default_fragment = R"(
-#version 150 core
-
 in vec2 TexCoord;
 out vec4 outCol;
 uniform sampler2D texture0;
@@ -81,8 +86,6 @@ void main() {
 )";
 
 std::string const OpenGLShader::sdf_fragment = R"(
-#version 150 core
-
 in vec2 TexCoord;
 out vec4 outCol;
 uniform sampler2D texture0;
@@ -103,8 +106,6 @@ void main() {
 )";
 
 std::string const OpenGLShader::rect_fragment = R"(
-#version 150 core
-
 out vec4 outCol;
 uniform vec4 color;
 

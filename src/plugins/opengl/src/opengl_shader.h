@@ -23,6 +23,7 @@ public:
 
 private:
 	GLuint program;
+	static std::string const header;
 };
 
 } // namespace Growl
