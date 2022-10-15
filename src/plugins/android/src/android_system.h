@@ -2,6 +2,8 @@
 
 #include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
+#include "growl/core/input/event.h"
+#include <android/input.h>
 #include <android_native_app_glue.h>
 
 namespace Growl {
@@ -30,6 +32,8 @@ private:
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
 	int logPriorityForLevel(LogLevel log_level);
 	static void handleAppCmd(android_app* app, int32_t cmd);
+	static int32_t handleInput(android_app* app, AInputEvent* cmd);
+	static TouchEventType getTouchEventType(AInputEvent* event);
 
 	API& api;
 	android_app* android_state;

@@ -4,8 +4,11 @@
 #include "growl/core/assets/error.h"
 #include "growl/core/assets/file.h"
 #include "growl/core/error.h"
+#include "growl/core/input/event.h"
 #include "growl/core/log.h"
+#include <android/input.h>
 #include <android/log.h>
+#include <android_native_app_glue.h>
 #include <memory>
 
 using Growl::AndroidFile;
@@ -14,10 +17,12 @@ using Growl::Error;
 using Growl::File;
 using Growl::LogLevel;
 using Growl::Result;
+using Growl::TouchEventType;
 using Growl::Window;
 
 Error AndroidSystemAPI::init() {
 	android_state->onAppCmd = handleAppCmd;
+	android_state->onInputEvent = handleInput;
 	android_state->userData = &api;
 	this->log("AndroidSystemAPI", "Initialised Android system");
 	return nullptr;
@@ -44,9 +49,48 @@ void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 	}
 }
 
+int32_t AndroidSystemAPI::handleInput(android_app* app, AInputEvent* event) {
+	API* api = (API*)app->userData;
+	switch (AInputEvent_getType(event)) {
+	case AINPUT_EVENT_TYPE_MOTION:
+		switch (AInputEvent_getSource(event)) {
+		case AINPUT_SOURCE_TOUCHSCREEN:
+			static_cast<AndroidSystemAPI&>(api->system())
+				.onTouch(InputTouchEvent{
+					getTouchEventType(event),
+					static_cast<int>(AMotionEvent_getX(event, 0)),
+					static_cast<int>(AMotionEvent_getY(event, 0)),
+				});
+			return 1;
+		}
+		return 0;
+	}
+	return 0;
+}
+
+TouchEventType AndroidSystemAPI::getTouchEventType(AInputEvent* event) {
+	switch (AMotionEvent_getAction(event)) {
+	case AMOTION_EVENT_ACTION_DOWN:
+		return TouchEventType::DOWN;
+	case AMOTION_EVENT_ACTION_UP:
+		return TouchEventType::UP;
+	case AMOTION_EVENT_ACTION_MOVE:
+		return TouchEventType::MOVE;
+	}
+	return TouchEventType::UNKNOWN;
+}
+
 void AndroidSystemAPI::dispose() {}
 
-void AndroidSystemAPI::onTouch(InputTouchEvent event) {}
+void AndroidSystemAPI::onTouch(InputTouchEvent event) {
+	if (!inputProcessor) {
+		return;
+	}
+	if (event.type == TouchEventType::UNKNOWN) {
+		return;
+	}
+	inputProcessor->onTouchEvent(event);
+}
 
 Result<std::unique_ptr<Window>>
 AndroidSystemAPI::createWindow(const WindowConfig& config) {

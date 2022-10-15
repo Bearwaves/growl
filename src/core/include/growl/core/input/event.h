@@ -22,7 +22,7 @@ struct InputMouseEvent {
 	int mouseY;
 };
 
-enum class TouchEventType { UP, DOWN, MOVE };
+enum class TouchEventType { UNKNOWN, UP, DOWN, MOVE };
 
 struct InputTouchEvent {
 	TouchEventType type;
