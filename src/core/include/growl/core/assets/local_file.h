@@ -4,7 +4,6 @@
 #include "growl/core/error.h"
 #include <cstddef>
 #include <fstream>
-#include <memory>
 
 namespace Growl {
 
