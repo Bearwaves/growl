@@ -40,11 +40,18 @@ if (GROWL_DESKTOP)
 	target_link_libraries(growl-test-app PRIVATE growl-platform-desktop)
 elseif (GROWL_IOS)
 	target_link_libraries(growl-test-app PRIVATE growl-platform-ios)
+	set(IOS_ASSETS res/ios/Assets.xcassets)
+	target_sources(growl-test-app PRIVATE ${IOS_ASSETS})
 	set_target_properties(growl-test-app
 		PROPERTIES
+		MACOSX_BUNDLE YES
 		XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.bearwaves.growl.testapp"
 		MACOSX_BUNDLE_GUI_IDENTIFIER "com.bearwaves.growl.testapp"
+		XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
 		XCODE_ATTRIBUTE_PRODUCT_NAME "Growl Test App"
+		XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "13.0"
+		XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "Icon"
+		RESOURCE "${IOS_ASSETS}"
 		)
 	target_compile_options(growl-test-app PRIVATE -x objective-c++)
 elseif (GROWL_ANDROID)
