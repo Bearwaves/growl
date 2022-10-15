@@ -21,7 +21,7 @@ Error TestAppGame::init() {
 
 	getAPI().system().log("TestAppGame", "Loading asset bundle");
 	Result<AssetsBundle> bundle_result =
-		loadAssetsBundle(getAPI().system(), "./assets.growl");
+		loadAssetsBundle(getAPI().system(), "assets.growl");
 	if (bundle_result.hasError()) {
 		return std::move(bundle_result.error());
 	}
