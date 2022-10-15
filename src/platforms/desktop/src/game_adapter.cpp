@@ -66,9 +66,9 @@ GameAdapter::~GameAdapter() {
 		exit(4);
 	}
 	m_api->system().log("GameAdapter", "Desktop adapter destroying");
-	static_cast<SystemAPIInternal&>(m_api->system()).dispose();
-	static_cast<GraphicsAPIInternal&>(m_api->graphics()).dispose();
 	static_cast<AudioAPIInternal&>(m_api->audio()).dispose();
+	static_cast<GraphicsAPIInternal&>(m_api->graphics()).dispose();
+	static_cast<SystemAPIInternal&>(m_api->system()).dispose();
 #ifdef GROWL_IMGUI
 	ImGui::DestroyContext();
 #endif
