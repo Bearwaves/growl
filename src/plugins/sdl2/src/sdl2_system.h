@@ -63,6 +63,7 @@ private:
 	API& api;
 	bool running;
 	std::unique_ptr<SDL2Controller> controller;
+
 #ifdef GROWL_IMGUI
 	ImGuiIO* imgui_io;
 #endif

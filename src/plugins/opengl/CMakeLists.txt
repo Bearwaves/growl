@@ -18,19 +18,9 @@ endif ()
 if (ANDROID)
 	find_path(OPENGL_INCLUDE_DIRS GLES3/gl3.h HINTS ${ANDROID_NDK})
 	find_library(OPENGL_LIBRARIES libGLESv3.so HINTS ${ANDROID_NDK})
-	find_library(EGL_LIBRARY libEGL.so HINTS ${ANDROID_NDK})
-	set(OPENGL_LIBRARIES
-		${OPENGL_LIBRARIES}
-		${EGL_LIBRARY}
-		growl-plugin-android
-		)
 else ()
 	set(OpenGL_GL_PREFERENCE GLVND)
 	find_package(OpenGL REQUIRED)
-	set(OPENGL_LIBRARIES
-		${OPENGL_LIBRARIES}
-		growl-plugin-sdl2
-		)
 endif ()
 
 set(SOURCES

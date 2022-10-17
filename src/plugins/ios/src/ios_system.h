@@ -31,7 +31,7 @@ private:
 	void handleControllerInput(
 		GCExtendedGamepad* gamepad, GCControllerElement* element);
 	void dispatchControllerEvent(
-		ControllerButton button, ControllerEventType eventType);
+		ControllerButton button, ControllerEventType event_type);
 	ControllerEventType controllerEventTypeForButtonPressed(bool pressed);
 
 	API& api;

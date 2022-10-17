@@ -21,20 +21,12 @@ set(HEADERS
 	"src/metal_shader.h"
 	)
 
-set(SYSTEM_PLUGIN "")
-if (GROWL_SDL2)
-	set(SYSTEM_PLUGIN growl-plugin-sdl2)
-elseif (GROWL_IOS)
-	set(SYSTEM_PLUGIN growl-plugin-ios)
-endif()
-
 add_library(growl-plugin-metal ${SOURCES} ${HEADERS})
 target_link_libraries(
 	growl-plugin-metal
 	PRIVATE
 	growl-core
 	growl-thirdparty
-	${SYSTEM_PLUGIN}
 	"-framework Foundation"
 	"-framework Metal"
 	"-framework QuartzCore"

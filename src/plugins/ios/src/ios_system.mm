@@ -234,11 +234,11 @@ void IOSSystemAPI::handleControllerInput(
 }
 
 void IOSSystemAPI::dispatchControllerEvent(
-	ControllerButton button, ControllerEventType eventType) {
+	ControllerButton button, ControllerEventType event_type) {
 	if (!inputProcessor) {
 		return;
 	}
-	auto event = InputControllerEvent{.button = button, .type = eventType};
+	auto event = InputControllerEvent{.button = button, .type = event_type};
 	inputProcessor->onControllerEvent(event);
 }
 

@@ -7,6 +7,7 @@ message(STATUS "[Growl] Enabled iOS plugin.")
 set(SOURCES
 	"src/ios_plugin.mm"
 	"src/ios_system.mm"
+	"src/ios_window.mm"
 	)
 
 set(HEADERS

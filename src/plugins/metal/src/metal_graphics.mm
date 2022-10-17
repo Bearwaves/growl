@@ -11,11 +11,6 @@
 #include "metal_shader.h"
 #include "metal_texture.h"
 #include "metal_texture_atlas.h"
-#ifdef GROWL_SDL2
-#include <SDL.h>
-#elif GROWL_IOS
-#include <UIKit/UIKit.h>
-#endif
 #include <memory>
 #include <vector>
 
@@ -67,7 +62,7 @@ void MetalGraphicsAPI::begin() {
 
 	// Start the Dear ImGui frame
 	ImGui_ImplMetal_NewFrame(imgui_pass);
-	ImGui_ImplSDL2_NewFrame();
+	window->newImguiFrame();
 	ImGui::NewFrame();
 #endif
 }
@@ -100,23 +95,12 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 		return std::move(window_result.error());
 	}
 	window = std::move(window_result.get());
-#ifdef GROWL_SDL2
-	SDL_Window* native_window = static_cast<SDL_Window*>(window->getNative());
-	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal");
-	SDL_Renderer* renderer =
-		SDL_CreateRenderer(native_window, -1, SDL_RENDERER_PRESENTVSYNC);
-	swap_chain = static_cast<CAMetalLayer*>(SDL_RenderGetMetalLayer(renderer));
-	SDL_DestroyRenderer(renderer);
-#elif GROWL_IOS
-	UIWindow* ios_window = static_cast<UIWindow*>(window->getNative());
-	UIView* top_view = ios_window.rootViewController.view;
-	swap_chain = static_cast<CAMetalLayer*>(top_view.layer);
-#endif
+	swap_chain = static_cast<CAMetalLayer*>(window->getMetalLayer());
 	swap_chain.pixelFormat = MTLPixelFormatBGRA8Unorm;
 	device = swap_chain.device;
 #ifdef GROWL_IMGUI
 	ImGui_ImplMetal_Init(device);
-	ImGui_ImplSDL2_InitForMetal(native_window);
+	window->initImgui();
 #endif
 	frame_boundary_semaphore =
 		dispatch_semaphore_create(swap_chain.maximumDrawableCount);

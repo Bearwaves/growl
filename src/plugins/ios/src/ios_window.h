@@ -9,9 +9,8 @@ class IOSWindow final : public Window {
 public:
 	explicit IOSWindow(UIWindow* window)
 		: native{window} {}
-	void* getNative() const override {
-		return native;
-	}
+
+	void* getMetalLayer() override;
 
 private:
 	UIWindow* native;
