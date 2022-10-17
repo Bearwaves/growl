@@ -97,51 +97,52 @@ TouchEventType AndroidSystemAPI::getTouchEventType(AInputEvent* event) {
 }
 
 ControllerButton AndroidSystemAPI::getControllerButton(AInputEvent* event) {
-	switch(AKeyEvent_getKeyCode(event)) {
-		case AKEYCODE_BUTTON_A:
-			return ControllerButton::A;
-		case AKEYCODE_BUTTON_B:
-			return ControllerButton::B;
-		case AKEYCODE_BUTTON_X:
-			return ControllerButton::X;
-		case AKEYCODE_BUTTON_Y:
-			return ControllerButton::Y;
-		case AKEYCODE_BUTTON_L1:
-			return ControllerButton::LB;
-		case AKEYCODE_BUTTON_R1:
-			return ControllerButton::RB;
-		case AKEYCODE_BUTTON_L2:
-			return ControllerButton::LT;
-		case AKEYCODE_BUTTON_R2:
-			return ControllerButton::RT;
-		case AKEYCODE_DPAD_UP:
-			return ControllerButton::DpadUp;
-		case AKEYCODE_DPAD_DOWN:
-			return ControllerButton::DpadDown;
-		case AKEYCODE_DPAD_LEFT:
-			return ControllerButton::DpadLeft;
-		case AKEYCODE_DPAD_RIGHT:
-			return ControllerButton::DpadRight;
-		case AKEYCODE_BUTTON_THUMBL:
-			return ControllerButton::LeftStick;
-		case AKEYCODE_BUTTON_THUMBR:
-			return ControllerButton::RightStick;
-		case AKEYCODE_BUTTON_START:
-			return ControllerButton::Start;
-		case AKEYCODE_BUTTON_SELECT:
-			return ControllerButton::Select;
-		case AKEYCODE_BUTTON_MODE:
-			return ControllerButton::Home;
+	switch (AKeyEvent_getKeyCode(event)) {
+	case AKEYCODE_BUTTON_A:
+		return ControllerButton::A;
+	case AKEYCODE_BUTTON_B:
+		return ControllerButton::B;
+	case AKEYCODE_BUTTON_X:
+		return ControllerButton::X;
+	case AKEYCODE_BUTTON_Y:
+		return ControllerButton::Y;
+	case AKEYCODE_BUTTON_L1:
+		return ControllerButton::LB;
+	case AKEYCODE_BUTTON_R1:
+		return ControllerButton::RB;
+	case AKEYCODE_BUTTON_L2:
+		return ControllerButton::LT;
+	case AKEYCODE_BUTTON_R2:
+		return ControllerButton::RT;
+	case AKEYCODE_DPAD_UP:
+		return ControllerButton::DpadUp;
+	case AKEYCODE_DPAD_DOWN:
+		return ControllerButton::DpadDown;
+	case AKEYCODE_DPAD_LEFT:
+		return ControllerButton::DpadLeft;
+	case AKEYCODE_DPAD_RIGHT:
+		return ControllerButton::DpadRight;
+	case AKEYCODE_BUTTON_THUMBL:
+		return ControllerButton::LeftStick;
+	case AKEYCODE_BUTTON_THUMBR:
+		return ControllerButton::RightStick;
+	case AKEYCODE_BUTTON_START:
+		return ControllerButton::Start;
+	case AKEYCODE_BUTTON_SELECT:
+		return ControllerButton::Select;
+	case AKEYCODE_BUTTON_MODE:
+		return ControllerButton::Home;
 	}
-		return ControllerButton::Unknown;
+	return ControllerButton::Unknown;
 }
 
-ControllerEventType AndroidSystemAPI::getControllerEventType(AInputEvent* event) {
+ControllerEventType
+AndroidSystemAPI::getControllerEventType(AInputEvent* event) {
 	switch (AKeyEvent_getAction(event)) {
-		case AKEY_EVENT_ACTION_DOWN:
-			return ControllerEventType::ButtonDown;
-		case AKEY_EVENT_ACTION_UP:
-			return ControllerEventType::ButtonUp;
+	case AKEY_EVENT_ACTION_DOWN:
+		return ControllerEventType::ButtonDown;
+	case AKEY_EVENT_ACTION_UP:
+		return ControllerEventType::ButtonUp;
 	}
 	return ControllerEventType::Unknown;
 }
@@ -156,7 +157,8 @@ void AndroidSystemAPI::onTouch(InputTouchEvent event) {
 }
 
 void AndroidSystemAPI::onControllerEvent(InputControllerEvent event) {
-	if (!inputProcessor || event.type == ControllerEventType::Unknown || event.button == ControllerButton::Unknown) {
+	if (!inputProcessor || event.type == ControllerEventType::Unknown ||
+		event.button == ControllerButton::Unknown) {
 		return;
 	}
 	inputProcessor->onControllerEvent(event);
