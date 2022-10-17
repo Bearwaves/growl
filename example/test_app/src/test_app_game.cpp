@@ -44,27 +44,43 @@ Error TestAppGame::init() {
 	getAPI().system().setInputProcessor(input.get());
 	getAPI().system().setLogLevel(LogLevel::DEBUG);
 
-	Result<Atlas> atlas_result = bundle_result.get().getAtlas("gfx");
-	if (atlas_result.hasError()) {
-		return std::move(atlas_result.error());
+	getAPI().system().log("TestAppGame", "Loading texture atlas");
+	{
+		Timer timer(getAPI().system(), "TestAppGame", "Loading texture atlas");
+		Result<Atlas> atlas_result = bundle_result.get().getAtlas("gfx");
+		if (atlas_result.hasError()) {
+			return std::move(atlas_result.error());
+		}
+		{
+			Timer t(getAPI().system(), "TestAppGame", "Creating texture");
+			texture_atlas =
+				getAPI().graphics().createTextureAtlas(atlas_result.get());
+		}
 	}
-	texture_atlas = getAPI().graphics().createTextureAtlas(atlas_result.get());
 
-	Result<std::unique_ptr<AudioClip>> meow_result =
-		getAPI().audio().loadClipFromBundle(
-			bundle_result.get(), "sfx/meow.wav");
-	if (meow_result.hasError()) {
-		return std::move(meow_result.error());
+	getAPI().system().log("TestAppGame", "Loading SFX");
+	{
+		Timer timer(getAPI().system(), "TestAppGame", "Loading SFX");
+		Result<std::unique_ptr<AudioClip>> meow_result =
+			getAPI().audio().loadClipFromBundle(
+				bundle_result.get(), "sfx/meow.wav");
+		if (meow_result.hasError()) {
+			return std::move(meow_result.error());
+		}
+		meow = std::move(meow_result.get());
 	}
-	meow = std::move(meow_result.get());
 
-	Result<std::unique_ptr<AudioStream>> music_result =
-		getAPI().audio().createStreamFromBundle(
-			bundle_result.get(), "mfx/I pasta way - William Watson.ogg");
-	if (music_result.hasError()) {
-		return std::move(music_result.error());
+	getAPI().system().log("TestAppGame", "Loading music");
+	{
+		Timer timer(getAPI().system(), "TestAppGame", "Loading music");
+		Result<std::unique_ptr<AudioStream>> music_result =
+			getAPI().audio().createStreamFromBundle(
+				bundle_result.get(), "mfx/I pasta way - William Watson.ogg");
+		if (music_result.hasError()) {
+			return std::move(music_result.error());
+		}
+		music = std::move(music_result.get());
 	}
-	music = std::move(music_result.get());
 
 	return nullptr;
 }
