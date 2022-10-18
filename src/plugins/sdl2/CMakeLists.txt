@@ -2,8 +2,12 @@ project(growl-plugin-sdl2)
 
 message(STATUS "[Growl] Enabled SDL2 plugin.")
 
-set(SDL2_BUILDING_LIBRARY 1)
-find_package(SDL2 REQUIRED)
+if ("${CMAKE_SYSTEM_NAME}" MATCHES "Emscripten")
+	set(SDL2_INCLUDE_DIR "")
+else ()
+	set(SDL2_BUILDING_LIBRARY 1)
+	find_package(SDL2 REQUIRED)
+endif()
 
 set(SDL_LINK_LIBS
 	${SDL2_LIBRARY}
@@ -41,3 +45,7 @@ target_link_libraries(growl-plugin-sdl2
 	)
 target_include_directories(growl-plugin-sdl2 PUBLIC ${SDL2_INCLUDE_DIR})
 target_compile_definitions(growl-plugin-sdl2 INTERFACE "GROWL_SDL2")
+if ("${CMAKE_SYSTEM_NAME}" MATCHES "Emscripten")
+	target_compile_options(growl-plugin-sdl2 PRIVATE -sUSE_SDL=2)
+	target_link_options(growl-plugin-sdl2 INTERFACE -sUSE_SDL=2)
+endif()

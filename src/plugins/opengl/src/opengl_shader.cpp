@@ -55,7 +55,7 @@ void OpenGLShader::bind(glm::mat4 mvp, Color color) {
 
 std::string const OpenGLShader::header =
 #ifdef GROWL_OPENGL_ES
-	"#version 300 es";
+	"#version 300 es\nprecision highp float;";
 #else
 	"#version 150 core";
 #endif

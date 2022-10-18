@@ -35,7 +35,8 @@ void* SDL2Window::getMetalLayer() {
 	return layer;
 }
 
-Error SDL2Window::createGLContext(int major_version, int minor_version, bool es) {
+Error SDL2Window::createGLContext(
+	int major_version, int minor_version, bool es) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major_version);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor_version);
 	if (!es) {

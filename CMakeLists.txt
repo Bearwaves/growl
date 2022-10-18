@@ -10,6 +10,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(GROWL_DEFAULT_IMGUI ON)
 set(GROWL_DEFAULT_DESKTOP ON)
 set(GROWL_DEFAULT_IOS OFF)
+set(GROWL_DEFAULT_ANDROID OFF)
+set(GROWL_DEFAULT_WEB OFF)
 set(GROWL_DEFAULT_TOOLS ON)
 
 if (IOS)
@@ -27,11 +29,19 @@ if (ANDROID)
 	add_compile_options(-fPIC)
 endif()
 
+if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
+	set(GROWL_DEFAULT_IMGUI OFF)
+	set(GROWL_DEFAULT_DESKTOP OFF)
+	set(GROWL_DEFAULT_TOOLS OFF)
+	set(GROWL_DEFAULT_WEB ON)
+endif()
+
 # Note that the platforms turn on plugins according to their own logic.
 # See src/platforms/*/CMakeLists.txt
 option(GROWL_DESKTOP "Whether to build the Desktop platform" ${GROWL_DEFAULT_DESKTOP})
 option(GROWL_IOS "Whether to build the iOS platform" ${GROWL_DEFAULT_IOS})
 option(GROWL_ANDROID "Whether to build the Android platform" ${GROWL_DEFAULT_ANDROID})
+option(GROWL_WEB "Whether to build the Web platform" ${GROWL_DEFAULT_WEB})
 option(GROWL_OPENGL "Whether to build the OpenGL plugin" OFF)
 option(GROWL_METAL "Whether to build the Metal plugin" OFF)
 option(GROWL_SDL2 "Whether to build the SDL2 plugin" OFF)

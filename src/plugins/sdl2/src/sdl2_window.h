@@ -14,7 +14,8 @@ public:
 	void getSize(int* w, int* h) override;
 
 	void* getMetalLayer() override;
-	Error createGLContext(int major_version, int minor_version, bool es) override;
+	Error
+	createGLContext(int major_version, int minor_version, bool es) override;
 	void* (*glLibraryLoaderFunc(void))(const char*) override;
 
 #ifdef GROWL_IMGUI

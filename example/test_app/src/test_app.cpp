@@ -5,6 +5,8 @@
 #include "growl/platforms/ios/app_delegate.h"
 #include <UIKit/UIKit.h>
 #include <exception>
+#elif GROWL_WEB
+#include "growl/platforms/web/game_adapter.h"
 #endif
 #include "test_app_game.h"
 #include <memory>
@@ -29,5 +31,10 @@ int main(int argc, char** argv) {
 			NSLog(@"Got exception: %s", e.what());
 		}
 	}
+#elif GROWL_WEB
+	auto adapter = Growl::GameAdapter{
+		std::make_unique<Growl::TestAppGame>(),
+		Growl::WindowConfig{"Growl Test App", 1000, 1000, true}};
+	adapter.run();
 #endif
 }

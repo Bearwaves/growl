@@ -56,4 +56,13 @@ elseif (GROWL_IOS)
 	target_compile_options(growl-test-app PRIVATE -x objective-c++)
 elseif (GROWL_ANDROID)
 	target_link_libraries(growl-test-app PUBLIC growl-platform-android)
+elseif (GROWL_WEB)
+	target_link_libraries(growl-test-app PRIVATE growl-platform-web)
+	target_link_options(growl-test-app PRIVATE --preload-file assets.growl)
+	set(CMAKE_EXECUTABLE_SUFFIX .html)
+	# We need to use this over the more modern target_link_options as CMake
+	# currently struggles with dollar signs in linker flags.
+	set(CMAKE_EXE_LINKER_FLAGS
+		"${CMAKE_EXE_LINKER_FLAGS} -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=$ccall"
+		)
 endif()
