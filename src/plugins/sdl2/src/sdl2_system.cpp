@@ -75,7 +75,6 @@ void SDL2SystemAPI::tick() {
 		case SDL_MOUSEMOTION:
 		case SDL_MOUSEBUTTONDOWN:
 		case SDL_MOUSEBUTTONUP:
-		case SDL_MOUSEWHEEL:
 			handleMouseEvent(event);
 			break;
 		case SDL_KEYDOWN:
