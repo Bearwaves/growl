@@ -21,7 +21,7 @@ void SDL2Window::flip() {
 }
 
 void SDL2Window::getSize(int* w, int* h) {
-	SDL_GetWindowSize(native, w, h);
+	SDL_GL_GetDrawableSize(native, w, h);
 }
 
 void* SDL2Window::getMetalLayer() {
