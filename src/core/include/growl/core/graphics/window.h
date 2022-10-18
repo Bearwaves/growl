@@ -40,7 +40,7 @@ public:
 	virtual void* getMetalLayer() {
 		return nullptr;
 	}
-	virtual Error createGLContext(int major_version, int minor_version) {
+	virtual Error createGLContext(int major_version, int minor_version, bool es = false) {
 		return nullptr;
 	}
 	virtual void* (*glLibraryLoaderFunc(void))(const char*) {

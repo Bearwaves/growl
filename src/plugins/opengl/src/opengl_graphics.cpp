@@ -80,7 +80,7 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 	}
 	gladLoadGLLoader(window->glLibraryLoaderFunc());
 #elif GROWL_OPENGL_ES
-	if (auto err = window->createGLContext(3, 0); err) {
+	if (auto err = window->createGLContext(3, 0, true); err) {
 		return err;
 	}
 #endif

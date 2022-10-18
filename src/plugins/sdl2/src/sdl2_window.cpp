@@ -1,7 +1,9 @@
 #include "sdl2_window.h"
 #include "SDL_video.h"
 #include "growl/core/error.h"
+#ifdef GROWL_IMGUI
 #include "imgui_impl_sdl.h"
+#endif
 
 using Growl::Error;
 using Growl::SDL2Window;
@@ -33,13 +35,16 @@ void* SDL2Window::getMetalLayer() {
 	return layer;
 }
 
-Error SDL2Window::createGLContext(int major_version, int minor_version) {
+Error SDL2Window::createGLContext(int major_version, int minor_version, bool es) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major_version);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor_version);
+	if (!es) {
+		SDL_GL_SetAttribute(
+			SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+	}
 	SDL_GL_SetAttribute(
-		SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-	SDL_GL_SetAttribute(
-		SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+		SDL_GL_CONTEXT_PROFILE_MASK,
+		es ? SDL_GL_CONTEXT_PROFILE_ES : SDL_GL_CONTEXT_PROFILE_CORE);
 
 	gl_context = SDL_GL_CreateContext(static_cast<SDL_Window*>(native));
 	return nullptr;

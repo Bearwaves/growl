@@ -16,7 +16,7 @@ public:
 	void flip() override;
 	void getSize(int* w, int* h) override;
 
-	Error createGLContext(int major_version, int minor_version) override;
+	Error createGLContext(int major_version, int minor_version, bool es) override;
 
 private:
 	ANativeWindow* native;
