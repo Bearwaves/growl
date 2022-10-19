@@ -21,12 +21,6 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 	, m_game(std::move(game))
 	, m_window_config(std::move(window_config)) {
 
-#ifdef GROWL_IMGUI
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-#endif
-
 	initSDL2Plugin(*m_api);
 	initSoLoudPlugin(*m_api);
 #ifdef GROWL_METAL
@@ -69,9 +63,6 @@ GameAdapter::~GameAdapter() {
 	static_cast<AudioAPIInternal&>(m_api->audio()).dispose();
 	static_cast<GraphicsAPIInternal&>(m_api->graphics()).dispose();
 	static_cast<SystemAPIInternal&>(m_api->system()).dispose();
-#ifdef GROWL_IMGUI
-	ImGui::DestroyContext();
-#endif
 }
 
 void GameAdapter::run() {

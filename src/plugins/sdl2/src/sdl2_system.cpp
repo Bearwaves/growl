@@ -31,6 +31,9 @@ Error SDL2SystemAPI::init() {
 	SDL_ShowCursor(SDL_DISABLE);
 
 #ifdef GROWL_IMGUI
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
 	imgui_io = &ImGui::GetIO();
 #endif
 
@@ -97,6 +100,7 @@ void SDL2SystemAPI::dispose() {
 	SDL_Quit();
 #ifdef GROWL_IMGUI
 	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
 #endif
 }
 

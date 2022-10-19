@@ -94,7 +94,7 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 #ifdef GROWL_IMGUI
 	window->initImgui();
 #ifdef GROWL_OPENGL_ES
-	ImGui_ImplOpenGL3_Init("#version 330 es");
+	ImGui_ImplOpenGL3_Init("#version 300 es");
 #else
 	ImGui_ImplOpenGL3_Init("#version 150 core");
 #endif

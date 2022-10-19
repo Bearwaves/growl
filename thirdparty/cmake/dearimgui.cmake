@@ -31,10 +31,16 @@ else()
 		)
 endif()
 
-set(SDL2_BUILDING_LIBRARY 1)
-find_package(SDL2 REQUIRED)
-
 add_library(imgui ${IMGUI_SOURCES} ${IMGUI_BACKEND_SOURCES})
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+	set(SDL2_INCLUDE_DIR "")
+	target_compile_options(imgui PRIVATE -sUSE_SDL=2)
+else ()
+	set(SDL2_BUILDING_LIBRARY 1)
+	find_package(SDL2 REQUIRED)
+endif ()
+
 target_link_libraries(imgui PRIVATE ${SDL2_LIBRARY})
 target_include_directories(
 	imgui
