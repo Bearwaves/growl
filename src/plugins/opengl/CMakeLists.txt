@@ -66,6 +66,3 @@ target_link_libraries(
 	)
 target_compile_definitions(growl-plugin-opengl INTERFACE "GROWL_OPENGL")
 target_include_directories(growl-plugin-opengl PRIVATE ${OPENGL_INCLUDE_DIRS})
-if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-	target_link_options(growl-plugin-opengl INTERFACE -sUSE_WEBGL2=1)
-endif ()
