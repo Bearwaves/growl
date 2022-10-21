@@ -104,6 +104,7 @@ target_link_libraries(growl-thirdparty
 	PRIVATE
 	${THIRDPARTY_LINK_LIBRARIES_PRIVATE}
 	growl-thirdparty::libpng
+	growl-thirdparty::zlib
 	)
 target_include_directories(growl-thirdparty
 	PRIVATE
