@@ -1,6 +1,5 @@
 set(SOURCE_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/libpng)
-set(THIRDPARTY_SOURCES
-	${THIRDPARTY_SOURCES}
+set(SOURCES
 	"${SOURCE_PREFIX}/png.c"
 	"${SOURCE_PREFIX}/pngerror.c"
 	"${SOURCE_PREFIX}/pngget.c"
@@ -19,8 +18,8 @@ set(THIRDPARTY_SOURCES
 	)
 
 if (GROWL_IOS OR GROWL_ANDROID)
-	set(THIRDPARTY_SOURCES
-		${THIRDPARTY_SOURCES}
+	set(SOURCES
+		${SOURCES}
 		"${SOURCE_PREFIX}/arm/arm_init.c"
 		"${SOURCE_PREFIX}/arm/filter_neon.S"
 		"${SOURCE_PREFIX}/arm/filter_neon_intrinsics.c"
@@ -32,8 +31,9 @@ configure_file("${SOURCE_PREFIX}/scripts/pnglibconf.h.prebuilt"
 	"${CMAKE_CURRENT_BINARY_DIR}/libpng/pnglibconf.h"
 	)
 
-set(THIRDPARTY_INCLUDES_PRIVATE
-	${THIRDPARTY_INCLUDES_PRIVATE}
+set(INCLUDES
 	"${CMAKE_CURRENT_BINARY_DIR}/libpng"
 	"${SOURCE_PREFIX}"
 	)
+
+growl_thirdparty_lib(libpng "${SOURCES}" "${INCLUDES}")
