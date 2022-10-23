@@ -4,7 +4,7 @@ project(growl-thirdparty)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 function(growl_thirdparty_lib name)
-	cmake_parse_arguments(PARSE_ARGV 1 THIRDPARTY_PREFIX "INCLUDES" "" "SOURCES;PUBLIC;PRIVATE")
+	cmake_parse_arguments(PARSE_ARGV 1 THIRDPARTY_PREFIX "INCLUDES" "" "SOURCES;PUBLIC;PRIVATE;DEFINITIONS;LINK")
 
 	string(TOUPPER ${name} name_upper)
 	set(lib "GROWL_THIRDPARTY_${name_upper}_LIBRARY")
@@ -18,9 +18,11 @@ function(growl_thirdparty_lib name)
 	else ()
 		add_library(${name} ${THIRDPARTY_PREFIX_SOURCES})
 		target_include_directories(${name}
+			PRIVATE ${THIRDPARTY_PREFIX_PRIVATE}
 			PUBLIC ${THIRDPARTY_PREFIX_PUBLIC}
-			PRIVATE ${THIRDPARTY_PREFIX_PUBLIC}
 			)
+		target_compile_definitions(${name} PRIVATE ${THIRDPARTY_PREFIX_DEFINITIONS})
+		target_link_libraries(${name} PRIVATE ${THIRDPARTY_PREFIX_LINK})
 		set_property(TARGET ${name} PROPERTY FOLDER "growl-thirdparty")
 	endif()
 	add_library(growl-thirdparty::${name} ALIAS ${name})
@@ -107,6 +109,9 @@ add_library(growl-thirdparty ${THIRDPARTY_SOURCES})
 target_link_libraries(growl-thirdparty
 	INTERFACE
 	${THIRDPARTY_LINK_LIBRARIES}
+	growl-thirdparty::freetype
+	growl-thirdparty::harfbuzz
+	growl-thirdparty::msdfgen
 	PRIVATE
 	${THIRDPARTY_LINK_LIBRARIES_PRIVATE}
 	growl-thirdparty::libpng
@@ -123,6 +128,5 @@ target_include_directories(growl-thirdparty
 	)
 target_compile_definitions(growl-thirdparty
 	PRIVATE
-	HAVE_FREETYPE
 	"${THIRDPARTY_COMPILE_DEFINITIONS}"
 	)

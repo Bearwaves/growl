@@ -1,6 +1,5 @@
 set(SOURCE_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/msdfgen)
-set(THIRDPARTY_SOURCES
-	${THIRDPARTY_SOURCES}
+set(SOURCES
 	"${SOURCE_PREFIX}/core/msdfgen.cpp"
 	"${SOURCE_PREFIX}/core/Shape.cpp"
 	"${SOURCE_PREFIX}/core/EdgeHolder.cpp"
@@ -25,7 +24,8 @@ set(THIRDPARTY_SOURCES
 	"${SOURCE_PREFIX}/ext/import-font.cpp"
 	)
 
-set(THIRDPARTY_INCLUDES_PUBLIC
-	${THIRDPARTY_INCLUDES_PUBLIC}
-	"${SOURCE_PREFIX}"
+growl_thirdparty_lib(msdfgen
+	SOURCES ${SOURCES}
+	INCLUDES PUBLIC ${SOURCE_PREFIX}
+	LINK growl-thirdparty::freetype
 	)

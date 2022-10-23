@@ -1,11 +1,8 @@
 set(SOURCE_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/harfbuzz)
 
-set(THIRDPARTY_SOURCES
-	${THIRDPARTY_SOURCES}
-	"${SOURCE_PREFIX}/src/harfbuzz.cc"
-	)
-
-set(THIRDPARTY_INCLUDES_PUBLIC
-	${THIRDPARTY_INCLUDES_PUBLIC}
-	"${SOURCE_PREFIX}/src"
+growl_thirdparty_lib(harfbuzz
+	SOURCES "${SOURCE_PREFIX}/src/harfbuzz.cc"
+	INCLUDES PUBLIC "${SOURCE_PREFIX}/src"
+	DEFINITIONS "HAVE_FREETYPE"
+	LINK growl-thirdparty::freetype
 	)

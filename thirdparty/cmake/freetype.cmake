@@ -1,6 +1,5 @@
 set(SOURCE_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/freetype)
-set(THIRDPARTY_SOURCES
-	${THIRDPARTY_SOURCES}
+set(SOURCES
 	"${SOURCE_PREFIX}/src/base/ftinit.c"
 	"${SOURCE_PREFIX}/src/base/ftbase.c"
 	"${SOURCE_PREFIX}/src/base/ftbitmap.c"
@@ -20,21 +19,11 @@ set(THIRDPARTY_SOURCES
 	"${SOURCE_PREFIX}/src/gzip/ftgzip.c"
 	)
 
-set(THIRDPARTY_INCLUDES_PUBLIC
-	${THIRDPARTY_INCLUDES_PUBLIC}
-	"${SOURCE_PREFIX}/include"
-	)
-
 configure_file("${CMAKE_CURRENT_LIST_DIR}/ftmodule.h.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/freetype/include/freetype/config/ftmodule.h"
 	)
-set(THIRDPARTY_INCLUDES_PRIVATE
-	${THIRDPARTY_INCLUDES_PRIVATE}
-	"${CMAKE_CURRENT_BINARY_DIR}/freetype/include"
-	)
 
-set(THIRDPARTY_COMPILE_DEFINITIONS
-	${THIRDPARTY_COMPILE_DEFINITIONS}
+set(DEFINITIONS
 	FT2_BUILD_LIBRARY
 	FT_CONFIG_OPTION_ERROR_STRINGS
 	FT_CONFIG_OPTION_USE_PNG
@@ -42,3 +31,14 @@ set(THIRDPARTY_COMPILE_DEFINITIONS
 	FT_CONFIG_OPTION_SYSTEM_ZLIB
 	)
 
+growl_thirdparty_lib(freetype
+	SOURCES ${SOURCES}
+	DEFINITIONS ${DEFINITIONS}
+	INCLUDES
+		PUBLIC "${SOURCE_PREFIX}/include"
+		PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/freetype/include"
+	LINK
+		growl-thirdparty::libpng
+		growl-thirdparty::zlib
+		growl-thirdparty::harfbuzz
+	)
