@@ -59,22 +59,8 @@ message(STATUS "[Growl] All done with third-party.")
 
 add_library(growl-thirdparty::json ALIAS nlohmann_json)
 add_library(growl-thirdparty::fmt ALIAS fmt)
-
-set(THIRDPARTY_LINK_LIBRARIES
-	glm::glm
-	growl-thirdparty::fmt
-	growl-thirdparty::json
-	utf8cpp
-	)
-
-if (GROWL_IMGUI)
-	include(cmake/dearimgui.cmake)
-	add_library(growl-thirdparty::imgui ALIAS imgui)
-	set(THIRDPARTY_LINK_LIBRARIES
-		${THIRDPARTY_LINK_LIBRARIES}
-		growl-thirdparty::imgui
-		)
-endif()
+add_library(growl-thirdparty::utf8cpp ALIAS utf8cpp)
+add_library(growl-thirdparty::glm ALIAS glm)
 
 if (GROWL_IOS)
 	set(THIRDPARTY_LINK_LIBRARIES_PRIVATE
@@ -99,6 +85,10 @@ add_library(growl-thirdparty INTERFACE)
 target_link_libraries(growl-thirdparty
 	INTERFACE
 	${THIRDPARTY_LINK_LIBRARIES}
+	growl-thirdparty::glm
+	growl-thirdparty::fmt
+	growl-thirdparty::json
+	growl-thirdparty::utf8cpp
 	growl-thirdparty::freetype
 	growl-thirdparty::harfbuzz
 	growl-thirdparty::msdfgen
@@ -107,3 +97,8 @@ target_link_libraries(growl-thirdparty
 	growl-thirdparty::fpng
 	growl-thirdparty::stb
 	)
+
+if (GROWL_IMGUI)
+	include(cmake/dearimgui.cmake)
+	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::imgui)
+endif()

@@ -31,8 +31,6 @@ else()
 		)
 endif()
 
-add_library(imgui ${IMGUI_SOURCES} ${IMGUI_BACKEND_SOURCES})
-
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 	set(SDL2_INCLUDE_DIR "")
 	target_compile_options(imgui PRIVATE -sUSE_SDL=2)
@@ -41,17 +39,11 @@ else ()
 	find_package(SDL2 REQUIRED)
 endif ()
 
-target_link_libraries(imgui PRIVATE ${SDL2_LIBRARY})
-target_include_directories(
-	imgui
-	PUBLIC
-	${SOURCE_PREFIX}
-	${SOURCE_PREFIX}/backends
-	PRIVATE
-	${SDL2_INCLUDE_DIR}
+growl_thirdparty_lib(imgui
+	SOURCES ${IMGUI_SOURCES} ${IMGUI_BACKEND_SOURCES}
+	INCLUDES
+		PUBLIC ${SOURCE_PREFIX} "${SOURCE_PREFIX}/backends"
+		PRIVATE ${SDL2_INCLUDE_DIR}
+	LINK ${SDL2_LIBRARY}
 	)
-target_compile_definitions(
-	imgui
-	INTERFACE
-	GROWL_IMGUI
-	)
+target_compile_definitions(imgui INTERFACE GROWL_IMGUI)
