@@ -23,5 +23,7 @@ The Growl root CMakeLists.txt ensures a submodule fetch happens at configure
 time, so you can use Growl via FetchContent or similar.
 
 Some things are built using their own CMake config. In other cases, where the
-included config is problematic, Growl builds the dependency as part of
-the growl-thirdparty target.
+included config is problematic, Growl builds the dependency into its own module.
+
+One need only link against `growl-thirdparty` to link against all dependencies,
+or `growl-thirdparty::[name]` can be used to select a specific one.
