@@ -67,11 +67,6 @@ set(THIRDPARTY_LINK_LIBRARIES
 	utf8cpp
 	)
 
-set(THIRDPARTY_LINK_LIBRARIES_PRIVATE)
-set(THIRDPARTY_INCLUDES_PUBLIC)
-set(THIRDPARTY_INCLUDES_PRIVATE)
-set(THIRDPARTY_COMPILE_DEFINITIONS)
-
 if (GROWL_IMGUI)
 	include(cmake/dearimgui.cmake)
 	add_library(growl-thirdparty::imgui ALIAS imgui)
@@ -90,13 +85,6 @@ if (GROWL_IOS)
 		)
 endif()
 
-set(THIRDPARTY_SOURCES
-	"fpng/fpng.cpp"
-
-	"stb_image/stb_image.c"
-	"stb_rect_pack/stb_rect_pack.c"
-	)
-
 include(cmake/harfbuzz.cmake)
 include(cmake/libunibreak.cmake)
 include(cmake/zlib.cmake)
@@ -104,8 +92,10 @@ include(cmake/freetype.cmake)
 include(cmake/libpng.cmake)
 include(cmake/msdfgen.cmake)
 include(cmake/soloud.cmake)
+include(cmake/fpng.cmake)
+include(cmake/stb.cmake)
 
-add_library(growl-thirdparty ${THIRDPARTY_SOURCES})
+add_library(growl-thirdparty INTERFACE)
 target_link_libraries(growl-thirdparty
 	INTERFACE
 	${THIRDPARTY_LINK_LIBRARIES}
@@ -114,21 +104,6 @@ target_link_libraries(growl-thirdparty
 	growl-thirdparty::msdfgen
 	growl-thirdparty::libunibreak
 	growl-thirdparty::soloud
-	PRIVATE
-	${THIRDPARTY_LINK_LIBRARIES_PRIVATE}
-	growl-thirdparty::libpng
-	growl-thirdparty::zlib
-	)
-target_include_directories(growl-thirdparty
-	PRIVATE
-	${THIRDPARTY_INCLUDES_PRIVATE}
-	PUBLIC
-	"fpng"
-	"stb_image"
-	"stb_rect_pack"
-	${THIRDPARTY_INCLUDES_PUBLIC}
-	)
-target_compile_definitions(growl-thirdparty
-	PRIVATE
-	"${THIRDPARTY_COMPILE_DEFINITIONS}"
+	growl-thirdparty::fpng
+	growl-thirdparty::stb
 	)
