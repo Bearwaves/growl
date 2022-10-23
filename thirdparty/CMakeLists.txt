@@ -33,10 +33,12 @@ if (MSVC)
 elseif (IOS)
 	add_compile_options(-w)
 	set(CMAKE_CXX_FLAGS "-x objective-c++")
-elseif (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
+else ()
 	add_compile_options(-w)
-else()
-	add_compile_options(-w -msse4.1 -mpclmul)
+endif ()
+
+if (GROWL_DESKTOP)
+	add_compile_options(-msse4.1 -mpclmul)
 endif ()
 
 # Get third-party stuff not to log
