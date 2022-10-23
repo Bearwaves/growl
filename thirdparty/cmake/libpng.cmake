@@ -39,4 +39,5 @@ set(INCLUDES
 growl_thirdparty_lib(libpng
 	SOURCES ${SOURCES}
 	INCLUDES PUBLIC ${INCLUDES}
+	LINK growl-thirdparty::zlib
 	)

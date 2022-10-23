@@ -33,7 +33,6 @@ endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 	set(SDL2_INCLUDE_DIR "")
-	target_compile_options(imgui PRIVATE -sUSE_SDL=2)
 else ()
 	set(SDL2_BUILDING_LIBRARY 1)
 	find_package(SDL2 REQUIRED)
@@ -47,3 +46,6 @@ growl_thirdparty_lib(imgui
 	LINK ${SDL2_LIBRARY}
 	)
 target_compile_definitions(imgui INTERFACE GROWL_IMGUI)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+	target_compile_options(imgui PRIVATE -sUSE_SDL=2)
+endif ()
