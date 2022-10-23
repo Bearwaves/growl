@@ -112,6 +112,7 @@ target_link_libraries(growl-thirdparty
 	growl-thirdparty::freetype
 	growl-thirdparty::harfbuzz
 	growl-thirdparty::msdfgen
+	growl-thirdparty::libunibreak
 	PRIVATE
 	${THIRDPARTY_LINK_LIBRARIES_PRIVATE}
 	growl-thirdparty::libpng

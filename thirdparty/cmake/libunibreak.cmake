@@ -1,6 +1,5 @@
 set(SOURCE_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/libunibreak)
-set(THIRDPARTY_SOURCES
-	${THIRDPARTY_SOURCES}
+set(SOURCES
 	"${SOURCE_PREFIX}/src/unibreakdef.c"
 	"${SOURCE_PREFIX}/src/unibreakbase.c"
 	"${SOURCE_PREFIX}/src/linebreakdef.c"
@@ -8,7 +7,7 @@ set(THIRDPARTY_SOURCES
 	"${SOURCE_PREFIX}/src/linebreakdata.c"
 	)
 
-set(THIRDPARTY_INCLUDES_PUBLIC
-	${THIRDPARTY_INCLUDES_PUBLIC}
-	"${SOURCE_PREFIX}/src"
+growl_thirdparty_lib(libunibreak
+	SOURCES ${SOURCES}
+	INCLUDES PUBLIC "${SOURCE_PREFIX}/src"
 	)
