@@ -36,4 +36,7 @@ set(INCLUDES
 	"${SOURCE_PREFIX}"
 	)
 
-growl_thirdparty_lib(libpng "${SOURCES}" "${INCLUDES}")
+growl_thirdparty_lib(libpng
+	SOURCES ${SOURCES}
+	INCLUDES PUBLIC ${INCLUDES}
+	)

@@ -3,19 +3,25 @@ cmake_minimum_required (VERSION 3.19)
 project(growl-thirdparty)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-function(growl_thirdparty_lib name sources includes)
+function(growl_thirdparty_lib name)
+	cmake_parse_arguments(PARSE_ARGV 1 THIRDPARTY_PREFIX "INCLUDES" "" "SOURCES;PUBLIC;PRIVATE")
+
 	string(TOUPPER ${name} name_upper)
 	set(lib "GROWL_THIRDPARTY_${name_upper}_LIBRARY")
 	set(include_dir "GROWL_THIRDPARTY_${name_upper}_INCLUDE_DIR")
+
 	if (DEFINED ${lib} AND DEFINED ${include_dir})
 		message(STATUS "[Growl] Using user-provided ${name} at ${GROWL_THIRDPARTY_${name_upper}_LIBRARY}")
 		add_library(${name} INTERFACE)
 		target_link_libraries(${name} INTERFACE ${${lib}})
 		target_include_directories(${name} INTERFACE ${${include_dir}})
 	else ()
-		add_library(${name} ${sources})
-		target_include_directories(${name} PUBLIC ${includes})
-		set_property(TARGET ${name} PROPERTY FOLDER "thirdparty")
+		add_library(${name} ${THIRDPARTY_PREFIX_SOURCES})
+		target_include_directories(${name}
+			PUBLIC ${THIRDPARTY_PREFIX_PUBLIC}
+			PRIVATE ${THIRDPARTY_PREFIX_PUBLIC}
+			)
+		set_property(TARGET ${name} PROPERTY FOLDER "growl-thirdparty")
 	endif()
 	add_library(growl-thirdparty::${name} ALIAS ${name})
 endfunction ()

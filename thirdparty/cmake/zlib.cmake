@@ -17,4 +17,7 @@ set(INCLUDES
 	"${SOURCE_PREFIX}"
 	)
 
-growl_thirdparty_lib(zlib "${SOURCES}" "${INCLUDES}")
+growl_thirdparty_lib(zlib
+	SOURCES	${SOURCES}
+	INCLUDES PUBLIC ${INCLUDES}
+	)
