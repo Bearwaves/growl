@@ -61,8 +61,18 @@ set(SOURCES
 	${BACKENDS_SOURCES}
 	)
 
+set(LINKS "")
+if (GROWL_IOS)
+	set(LINKS
+		"-framework CoreFoundation"
+		"-framework AVFAudio"
+		"-framework AudioToolbox"
+		)
+endif()
+
 growl_thirdparty_lib(soloud
 	SOURCES ${SOURCES}
 	INCLUDES PUBLIC "${SOURCE_PREFIX}/include"
 	DEFINITIONS "WITH_MINIAUDIO"
+	LINK ${LINKS}
 	)

@@ -62,15 +62,6 @@ add_library(growl-thirdparty::fmt ALIAS fmt)
 add_library(growl-thirdparty::utf8cpp ALIAS utf8cpp)
 add_library(growl-thirdparty::glm ALIAS glm)
 
-if (GROWL_IOS)
-	set(THIRDPARTY_LINK_LIBRARIES_PRIVATE
-		${THIRDPARTY_LINK_LIBRARIES_PRIVATE}
-		"-framework CoreFoundation"
-		"-framework AVFAudio"
-		"-framework AudioToolbox"
-		)
-endif()
-
 include(cmake/harfbuzz.cmake)
 include(cmake/libunibreak.cmake)
 include(cmake/zlib.cmake)
