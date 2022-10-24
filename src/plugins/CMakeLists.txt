@@ -2,7 +2,9 @@ if (GROWL_SDL2)
 	add_subdirectory(sdl2)
 endif()
 
-add_subdirectory(soloud)
+if (GROWL_SOLOUD)
+	add_subdirectory(soloud)
+endif()
 
 if (GROWL_METAL)
 	add_subdirectory(metal)

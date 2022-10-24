@@ -44,6 +44,7 @@ option(GROWL_WEB "Whether to build the Web platform" ${GROWL_DEFAULT_WEB})
 option(GROWL_OPENGL "Whether to build the OpenGL plugin" OFF)
 option(GROWL_METAL "Whether to build the Metal plugin" OFF)
 option(GROWL_SDL2 "Whether to build the SDL2 plugin" OFF)
+option(GROWL_SOLOUD "Whether to build the SoLoud plugin" ON)
 option(GROWL_TOOLS "Whether to build the tools, e.g. growl-cmd" ${GROWL_DEFAULT_TOOLS})
 option(GROWL_IMGUI "Whether to include Dear ImGui for debug UIs" ${GROWL_DEFAULT_IMGUI})
 

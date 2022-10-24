@@ -70,7 +70,6 @@ include(cmake/zlib.cmake)
 include(cmake/freetype.cmake)
 include(cmake/libpng.cmake)
 include(cmake/msdfgen.cmake)
-include(cmake/soloud.cmake)
 include(cmake/fpng.cmake)
 include(cmake/stb.cmake)
 
@@ -86,7 +85,6 @@ target_link_libraries(growl-thirdparty
 	growl-thirdparty::harfbuzz
 	growl-thirdparty::msdfgen
 	growl-thirdparty::libunibreak
-	growl-thirdparty::soloud
 	growl-thirdparty::fpng
 	growl-thirdparty::stb
 	)
@@ -94,4 +92,9 @@ target_link_libraries(growl-thirdparty
 if (GROWL_IMGUI)
 	include(cmake/dearimgui.cmake)
 	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::imgui)
+endif()
+
+if (GROWL_SOLOUD)
+	include(cmake/soloud.cmake)
+	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::soloud)
 endif()
