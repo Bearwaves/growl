@@ -33,6 +33,4 @@ private:
 	std::string name;
 };
 
-bool isValidAudio(std::string path);
-
 } // namespace Growl

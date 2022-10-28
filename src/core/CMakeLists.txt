@@ -9,7 +9,6 @@ set(SOURCES
 	"src/graphics/font_texture_atlas.cpp"
 
 	"src/assets/atlas.cpp"
-	"src/assets/audio.cpp"
 	"src/assets/bitmap_font_face.cpp"
 	"src/assets/bundle.cpp"
 	"src/assets/distance_field_font_face.cpp"

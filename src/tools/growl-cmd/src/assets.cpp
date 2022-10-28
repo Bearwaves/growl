@@ -9,6 +9,7 @@
 #include "growl/core/assets/font_face.h"
 #include "growl/core/assets/local_file.h"
 #include "nlohmann/json.hpp"
+#include "soloud_wavstream.h"
 #include "stb_image.h"
 #include "utf8/core.h"
 #include <cstdint>
@@ -43,6 +44,11 @@ using rang::fg;
 using rang::style;
 using std::cout;
 using std::endl;
+
+bool isValidAudio(std::string path) {
+	SoLoud::WavStream sound;
+	return sound.load(path.c_str()) == SoLoud::SO_NO_ERROR;
+}
 
 AssetsIncludeError includeAtlas(
 	const AtlasConfig& config, const std::filesystem::path& path,
@@ -140,7 +146,7 @@ AssetsIncludeError includeAudio(
 	const std::filesystem::directory_entry& entry,
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
 	std::ofstream& outfile) noexcept {
-	if (!Growl::isValidAudio(entry.path().string())) {
+	if (!isValidAudio(entry.path().string())) {
 		return AssetsIncludeErrorCode::WrongType;
 	}
 
