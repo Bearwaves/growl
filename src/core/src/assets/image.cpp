@@ -27,7 +27,7 @@ Result<Image> Growl::loadImageFromFile(std::string file_path) {
 
 Result<Image>
 Growl::loadImageFromMemory(const unsigned char* address, uint64_t size) {
-	int32_t width, height, channels;
+	int width, height, channels;
 	std::vector<unsigned char> data;
 	unsigned char* img =
 		stbi_load_from_memory(address, size, &width, &height, &channels, 4);
