@@ -1,6 +1,5 @@
 #include "growl/core/assets/image.h"
 
-#include "fpng.h"
 #include "stb_image.h"
 #include <memory>
 
@@ -28,15 +27,14 @@ Result<Image> Growl::loadImageFromFile(std::string file_path) {
 
 Result<Image>
 Growl::loadImageFromMemory(const unsigned char* address, uint64_t size) {
-	fpng::fpng_init();
-	uint32_t width, height, channels;
+	int32_t width, height, channels;
 	std::vector<unsigned char> data;
-	if (fpng::fpng_decode_memory(
-			address, static_cast<uint32_t>(size), data, width, height, channels,
-			4) != fpng::FPNG_DECODE_SUCCESS) {
+	unsigned char* img =
+		stbi_load_from_memory(address, size, &width, &height, &channels, 4);
+	if (img == nullptr) {
 		return Error(std::make_unique<ImageLoadError>());
 	}
-	return Image(width, height, channels, std::move(data));
+	return Image(width, height, channels, img);
 }
 
 void Image::StbiDeleter::operator()(unsigned char* data) const {
