@@ -9,7 +9,6 @@
 #include "opengl_batch.h"
 #include "opengl_shader.h"
 #include "opengl_texture.h"
-#include "opengl_texture_atlas.h"
 #include <memory>
 #include <vector>
 
@@ -176,7 +175,7 @@ std::unique_ptr<Texture> OpenGLGraphicsAPI::setupTexture(
 
 std::unique_ptr<TextureAtlas> OpenGLGraphicsAPI::createTextureAtlas(
 	const Atlas& atlas, const TextureOptions options) {
-	return std::make_unique<OpenGLTextureAtlas>(
+	return std::make_unique<TextureAtlas>(
 		atlas, createTexture(atlas.getImage(), options));
 }
 

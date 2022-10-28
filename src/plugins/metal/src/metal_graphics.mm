@@ -10,7 +10,6 @@
 #include "metal_batch.h"
 #include "metal_shader.h"
 #include "metal_texture.h"
-#include "metal_texture_atlas.h"
 #include <memory>
 #include <vector>
 
@@ -20,7 +19,6 @@ using Growl::Texture;
 using Growl::TextureAtlas;
 using Growl::FontTextureAtlas;
 using Growl::TextureOptions;
-using Growl::MetalTextureAtlas;
 using Growl::Batch;
 using std::chrono::duration;
 using std::chrono::seconds;
@@ -230,7 +228,7 @@ std::unique_ptr<Texture> MetalGraphicsAPI::setupTexture(
 
 std::unique_ptr<TextureAtlas> MetalGraphicsAPI::createTextureAtlas(
 	const Atlas& atlas, const TextureOptions options) {
-	return std::make_unique<MetalTextureAtlas>(
+	return std::make_unique<TextureAtlas>(
 		atlas, createTexture(atlas.getImage(), options));
 }
 

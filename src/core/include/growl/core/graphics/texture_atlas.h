@@ -1,6 +1,7 @@
 #pragma once
 
 #include "growl/core/assets/atlas.h"
+#include "growl/core/assets/error.h"
 #include "growl/core/error.h"
 #include "texture.h"
 #include <memory>
@@ -29,7 +30,13 @@ public:
 	TextureAtlas& operator=(TextureAtlas&&) = default;
 
 	virtual ~TextureAtlas() = default;
-	virtual Result<TextureAtlasRegion> getRegion(const std::string& name) = 0;
+	virtual Result<TextureAtlasRegion> getRegion(const std::string& name) {
+		if (auto it = mappings.find(name); it != mappings.end()) {
+			return TextureAtlasRegion{this, it->second};
+		}
+		return Error(std::make_unique<AssetsError>(
+			"Failed to find region " + name + " in atlas."));
+	}
 
 	const Texture& getTexture() const {
 		return *texture;

@@ -8,7 +8,6 @@ set(SOURCES
 	"src/metal_plugin.mm"
 	"src/metal_graphics.mm"
 	"src/metal_texture.mm"
-	"src/metal_texture_atlas.mm"
 	"src/metal_batch.mm"
 	"src/metal_shader.mm"
 	)
@@ -16,7 +15,6 @@ set(SOURCES
 set(HEADERS
 	"src/metal_graphics.h"
 	"src/metal_texture.h"
-	"src/metal_texture_atlas.h"
 	"src/metal_batch.h"
 	"src/metal_shader.h"
 	)
