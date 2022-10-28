@@ -69,6 +69,7 @@ void SDL2SystemAPI::tick() {
 			ImGui_ImplSDL2_ProcessEvent(&event);
 		}
 #endif
+		log("SDL2SystemAPI", "Got event: {}", event.type);
 		switch (event.type) {
 		case SDL_QUIT: {
 			log("SDL2SystemAPI", "Got stop signal");
@@ -93,6 +94,10 @@ void SDL2SystemAPI::tick() {
 			break;
 		}
 	}
+}
+
+void SDL2SystemAPI::stop() {
+	SDL_Quit();
 }
 
 void SDL2SystemAPI::dispose() {

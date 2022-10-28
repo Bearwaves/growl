@@ -19,6 +19,7 @@ class SystemAPI {
 public:
 	virtual ~SystemAPI() {}
 	virtual bool isRunning() = 0;
+	virtual void stop() {}
 	virtual void tick() = 0;
 	virtual Result<std::unique_ptr<Window>>
 	createWindow(const WindowConfig& window) = 0;

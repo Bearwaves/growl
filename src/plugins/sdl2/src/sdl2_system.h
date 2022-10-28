@@ -37,6 +37,7 @@ public:
 	bool isRunning() override {
 		return running;
 	}
+	void stop() override;
 	virtual Result<std::unique_ptr<Window>>
 	createWindow(const WindowConfig& config) override;
 	void setLogLevel(LogLevel log_level) override;
