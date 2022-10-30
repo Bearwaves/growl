@@ -80,7 +80,7 @@ e.g. `make -j 4` to build with four threads.
 ```bash
 ./growl-test-app
 ```
-![testapp](_media/testapp.png)
+![testapp](./docs/_media/testapp.png)
 
 The test app demonstrates asset loading, rendering, audio, input, text
 rendering and the debug menu (try pressing F12).
@@ -90,11 +90,11 @@ rendering and the debug menu (try pressing F12).
 Once you've got the test app running, you're ready to start building your game
 in Growl. Here are some topics you might want to read about next.
 
-- [Overview](https://bearwaves.github.com/growl/overview) - read about Growl's high level architecture, concepts
+- [Overview](https://bearwaves.github.com/growl/#/overview) - read about Growl's high level architecture, concepts
 and design approach.
-- [Building](https://bearwaves.github.com/growl/building) - learn how to build Growl for a variety of systems,
+- [Building](https://bearwaves.github.com/growl/#/building) - learn how to build Growl for a variety of systems,
 such as iOS or web.
-- [Using Growl](https://bearwaves.github.com/growl/using) - learn about the various features and components
+- [Using Growl](https://bearwaves.github.com/growl/#/using) - learn about the various features and components
 available to build your game.
-- [Extending](https://bearwaves.github.com/growl/extending) - learn how to build plugins for Growl to add
+- [Extending](https://bearwaves.github.com/growl/#/extending) - learn how to build plugins for Growl to add
 functionality or port it to a new platform.
