@@ -54,7 +54,7 @@ line, but you can use the CMake GUI if you like.
 1. Clone the repository to your local system. Ensure you clone recursively so
 that submodules (for third-party dependencies) get pulled too.
 ```bash
-git clone git@github.com:Bearwaves/growl.git
+git clone --recursive git@github.com:Bearwaves/growl.git
 ```
 
 1. From the root of the repository, navigate to `example/testapp`, and create
