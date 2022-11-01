@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: recursive
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install gcc cmake libsdl2-dev
       - name: Configure CMake
