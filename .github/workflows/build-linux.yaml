@@ -3,12 +3,12 @@ name: build-linux
 on:
   push:
     branches:
-      - main
+      - master
     tags:
       - "*.*.*"
   pull_request:
     branches:
-      - main
+      - master
 
 permissions:
   contents: read
