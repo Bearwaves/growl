@@ -32,7 +32,7 @@ jobs:
   macOS:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@3
+      - uses: actions/checkout@v3
       - name: Install dependencies
         run: HOMEBREW_NO_AUTO_UPDATE=1 brew install cmake sdl2
       - name: Configure CMake
