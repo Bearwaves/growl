@@ -29,7 +29,7 @@ jobs:
         run: make -j 4
         working-directory: example/test_app/build
 
-  macos:
+  macOS:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@3
