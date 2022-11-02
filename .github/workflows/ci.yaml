@@ -1,4 +1,4 @@
-name: build-linux
+name: CI
 
 on:
   push:
@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  linux:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -22,6 +22,19 @@ jobs:
           submodules: recursive
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install gcc cmake libsdl2-dev
+      - name: Configure CMake
+        run: cmake -S . -B build
+        working-directory: example/test_app
+      - name: Build
+        run: make -j 4
+        working-directory: example/test_app/build
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@3
+      - name: Install dependencies
+        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install cmake sdl2
       - name: Configure CMake
         run: cmake -S . -B build
         working-directory: example/test_app
