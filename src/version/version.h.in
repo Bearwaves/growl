@@ -1,0 +1,2 @@
+#pragma once
+const char* GROWL_VERSION = "${GROWL_VERSION}";
