@@ -60,7 +60,7 @@ jobs:
         run: 7z x D:\SDL2.zip
       - name: Configure CMake
         run: |
-          cmake -DSDL2_LIBRARY=D:\SDL2-2.24.2\lib\x64\SDL2.dll `
+          cmake -DSDL2_LIBRARY=D:\SDL2-2.24.2\lib\x64\SDL2.lib `
             -DSDL2_INCLUDE_DIR=D:\SDL2-2.24.2\include `
             -S . -B build
         working-directory: example/test_app
