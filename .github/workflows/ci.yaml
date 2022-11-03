@@ -55,11 +55,14 @@ jobs:
         run: |
           Invoke-RestMethod `
             -Uri https://github.com/libsdl-org/SDL/releases/download/release-2.24.2/SDL2-devel-2.24.2-VC.zip `
-            -OutFile SDL2.zip
+            -OutFile D:\SDL2.zip
       - name: Unzip SDL
-        run: 7z x SDL2.zip
+        run: 7z x D:\SDL2.zip
       - name: Configure CMake
-        run: cmake -S . -B build
+        run: |
+          cmake -DSDL2_LIBRARY=D:\SDL2-2.24.2\lib\x64\SDL2.dll `
+            -DSDL2_INCLUDE_DIR=D:\SDL2-2.24.2\include `
+            -S . -B build
         working-directory: example/test_app
       - name: Build
         run: make -j 4
