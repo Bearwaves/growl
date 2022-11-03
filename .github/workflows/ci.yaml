@@ -43,3 +43,27 @@ jobs:
       - name: Build
         run: make -j 4
         working-directory: example/test_app/build
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Fetch SDL2
+        shell: powershell
+        run: |
+          Invoke-RestMethod `
+            -Uri https://github.com/libsdl-org/SDL/releases/download/release-2.24.2/SDL2-devel-2.24.2-VC.zip `
+            -OutFile D:\SDL2.zip
+      - name: Unzip SDL
+        run: 7z x D:\SDL2.zip -oD:\
+      - name: Configure CMake
+        run: |
+          cmake -DSDL2_LIBRARY="D:\SDL2-2.24.2\lib\x64\SDL2.lib" `
+            -DSDL2_INCLUDE_DIR="D:\SDL2-2.24.2\include" `
+            -S . -B build
+        working-directory: example/test_app
+      - name: Build
+        run: cmake --build . --parallel 4
+        working-directory: example/test_app/build

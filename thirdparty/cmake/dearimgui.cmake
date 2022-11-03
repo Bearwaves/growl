@@ -8,7 +8,7 @@ endif()
 
 set(SOURCE_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 
-set(IMGUI_SOURCES
+set(SOURCES
 	${SOURCE_PREFIX}/imgui.cpp
 	${SOURCE_PREFIX}/imgui_tables.cpp
 	${SOURCE_PREFIX}/imgui_widgets.cpp
@@ -16,17 +16,18 @@ set(IMGUI_SOURCES
 	${SOURCE_PREFIX}/imgui_demo.cpp
 	)
 
-set(IMGUI_BACKEND_SOURCES
+set(SOURCES
+	${SOURCES}
 	${SOURCE_PREFIX}/backends/imgui_impl_sdl.cpp
 	)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
-	set(IMGUI_BACKEND_SOURCES
-		${IMGUI_BACKEND_SOURCES}
+	set(SOURCES
+		${SOURCES}
 		${SOURCE_PREFIX}/backends/imgui_impl_metal.mm
 		)
 else()
-	set(IMGUI_BACKEND_SOURCES
-		${IMGUI_BACKEND_SOURCES}
+	set(SOURCES
+		${SOURCES}
 		${SOURCE_PREFIX}/backends/imgui_impl_opengl3.cpp
 		)
 endif()
@@ -39,7 +40,7 @@ else ()
 endif ()
 
 growl_thirdparty_lib(imgui
-	SOURCES ${IMGUI_SOURCES} ${IMGUI_BACKEND_SOURCES}
+	SOURCES ${SOURCES}
 	INCLUDES
 		PUBLIC ${SOURCE_PREFIX} "${SOURCE_PREFIX}/backends"
 		PRIVATE ${SDL2_INCLUDE_DIR}
