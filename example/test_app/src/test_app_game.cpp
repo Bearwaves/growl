@@ -42,7 +42,7 @@ Error TestAppGame::init() {
 
 	input = std::make_unique<InputHandler>(getAPI().system());
 	getAPI().system().setInputProcessor(input.get());
-	getAPI().system().setLogLevel(LogLevel::DEBUG);
+	getAPI().system().setLogLevel(LogLevel::Debug);
 
 	getAPI().system().log("TestAppGame", "Loading texture atlas");
 	{

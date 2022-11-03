@@ -37,7 +37,7 @@ public:
 
 	template <class... Args>
 	void log(std::string tag, std::string_view msg, Args&&... args) {
-		log(LogLevel::INFO, tag, msg, args...);
+		log(LogLevel::Info, tag, msg, args...);
 	}
 
 	virtual void setLogLevel(LogLevel log_level) = 0;

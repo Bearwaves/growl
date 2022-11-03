@@ -223,7 +223,7 @@ void OpenGLGraphicsAPI::checkGLError(const char* file, long line) {
 	int err = glGetError();
 	if (err) {
 		api.system().log(
-			LogLevel::ERROR, "OpenGL", "Error {:#04x} at {}:{}", err, file,
+			LogLevel::Error, "OpenGL", "Error {:#04x} at {}:{}", err, file,
 			line);
 	};
 }
@@ -237,7 +237,7 @@ void OpenGLGraphicsAPI::checkShaderCompileError(unsigned int shader) {
 		char* log = new char[info_len];
 		glGetShaderInfoLog(shader, info_len, &info_len, log);
 		api.system().log(
-			LogLevel::ERROR, "OpenGL", "Error compiling shader: {}", log);
+			LogLevel::Error, "OpenGL", "Error compiling shader: {}", log);
 		delete[] log;
 	}
 }
@@ -263,7 +263,7 @@ void OpenGLGraphicsAPI::onGLDebugMessage(
 #ifdef GROWL_OPENGL_4_5
 	if (severity == GL_DEBUG_SEVERITY_HIGH ||
 		severity == GL_DEBUG_SEVERITY_MEDIUM) {
-		api.system().log(LogLevel::ERROR, "OpenGL", "{}", message);
+		api.system().log(LogLevel::Error, "OpenGL", "{}", message);
 	}
 #endif
 }

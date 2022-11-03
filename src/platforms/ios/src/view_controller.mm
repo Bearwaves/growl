@@ -40,13 +40,13 @@ std::unique_ptr<Growl::Game> createGame();
 	}
 	if (auto err = graphicsInternal.init(); err) {
 		api->system().log(
-			Growl::LogLevel::FATAL, "ViewController",
+			Growl::LogLevel::Fatal, "ViewController",
 			"Failed to init graphics API: {}", err.get()->message());
 		exit(2);
 	}
 	if (auto err = audioInternal.init(); err) {
 		api->system().log(
-			Growl::LogLevel::FATAL, "ViewController",
+			Growl::LogLevel::Fatal, "ViewController",
 			"Failed to init audio API: {}", err.get()->message());
 		exit(3);
 	}
@@ -56,7 +56,7 @@ std::unique_ptr<Growl::Game> createGame();
 			graphicsInternal.setWindow(Growl::WindowConfig{"", 0, 0, false});
 		err) {
 		api->system().log(
-			Growl::LogLevel::FATAL, "GameAdapter",
+			Growl::LogLevel::Fatal, "GameAdapter",
 			"Failed to create window: {}", err.get()->message());
 		return;
 	}
@@ -65,7 +65,7 @@ std::unique_ptr<Growl::Game> createGame();
 
 	if (auto err = game->init(); err) {
 		api->system().log(
-			Growl::LogLevel::FATAL, "GameAdapter", "Failed to init game: {}",
+			Growl::LogLevel::Fatal, "GameAdapter", "Failed to init game: {}",
 			err.get()->message());
 		return;
 	}
@@ -95,7 +95,7 @@ std::unique_ptr<Growl::Game> createGame();
 	int w = size.width * self.view.contentScaleFactor;
 	int h = size.height * self.view.contentScaleFactor;
 	api->system().log(
-		Growl::LogLevel::DEBUG, "ViewController",
+		Growl::LogLevel::Debug, "ViewController",
 		"Got new screen size ({}, {}).", w, h);
 	[coordinator
 		animateAlongsideTransition:^(

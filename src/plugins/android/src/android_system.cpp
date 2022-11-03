@@ -196,15 +196,15 @@ AndroidSystemAPI::openFile(std::string path, size_t start, size_t end) {
 
 int AndroidSystemAPI::logPriorityForLevel(LogLevel level) {
 	switch (level) {
-	case LogLevel::DEBUG:
+	case LogLevel::Debug:
 		return ANDROID_LOG_DEBUG;
-	case LogLevel::INFO:
+	case LogLevel::Info:
 		return ANDROID_LOG_INFO;
-	case LogLevel::WARN:
+	case LogLevel::Warn:
 		return ANDROID_LOG_WARN;
-	case LogLevel::ERROR:
+	case LogLevel::Error:
 		return ANDROID_LOG_ERROR;
-	case LogLevel::FATAL:
+	case LogLevel::Fatal:
 		return ANDROID_LOG_FATAL;
 	}
 }

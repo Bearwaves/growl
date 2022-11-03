@@ -1,4 +1,5 @@
 #include "sdl2_file.h"
+#include <cstdio>
 
 using Growl::SDL2File;
 

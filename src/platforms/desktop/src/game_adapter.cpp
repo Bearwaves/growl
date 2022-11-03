@@ -39,13 +39,13 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 	if (auto err = static_cast<GraphicsAPIInternal&>(m_api->graphics()).init();
 		err) {
 		m_api->system().log(
-			LogLevel::FATAL, "GameAdapter", "Failed to init graphics API: {}",
+			LogLevel::Fatal, "GameAdapter", "Failed to init graphics API: {}",
 			err.get()->message());
 		exit(2);
 	}
 	if (auto err = static_cast<AudioAPIInternal&>(m_api->audio()).init(); err) {
 		m_api->system().log(
-			LogLevel::FATAL, "GameAdapter", "Failed to init audio API: {}",
+			LogLevel::Fatal, "GameAdapter", "Failed to init audio API: {}",
 			err.get()->message());
 		exit(3);
 	}
@@ -55,7 +55,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 GameAdapter::~GameAdapter() {
 	if (auto err = m_game->dispose(); err) {
 		m_api->system().log(
-			LogLevel::FATAL, "GameAdapter", "Failed to dispose game: {}",
+			LogLevel::Fatal, "GameAdapter", "Failed to dispose game: {}",
 			err.get()->message());
 		exit(4);
 	}
@@ -70,13 +70,13 @@ void GameAdapter::run() {
 					   .setWindow(m_window_config);
 		err) {
 		m_api->system().log(
-			LogLevel::FATAL, "GameAdapter", "Failed to create window: {}",
+			LogLevel::Fatal, "GameAdapter", "Failed to create window: {}",
 			err.get()->message());
 		return;
 	}
 	if (auto err = m_game->init(); err) {
 		m_api->system().log(
-			LogLevel::FATAL, "GameAdapter", "Failed to init game: {}",
+			LogLevel::Fatal, "GameAdapter", "Failed to init game: {}",
 			err.get()->message());
 		return;
 	}

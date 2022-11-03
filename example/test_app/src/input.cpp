@@ -17,7 +17,7 @@ void InputHandler::onTouchEvent(InputTouchEvent& event) {
 void InputHandler::onKeyboardEvent(InputKeyboardEvent& event) {
 	switch (event.type) {
 	case KeyEventType::Unknown:
-		system.log(LogLevel::WARN, "InputHandler", "Got unknown key event!");
+		system.log(LogLevel::Warn, "InputHandler", "Got unknown key event!");
 		break;
 	case KeyEventType::KeyDown:
 	case KeyEventType::KeyUp:
@@ -49,7 +49,7 @@ void InputHandler::onControllerEvent(InputControllerEvent& event) {
 	switch (event.type) {
 	case ControllerEventType::Unknown:
 		system.log(
-			LogLevel::WARN, "InputHandler", "Got unknown controller event!");
+			LogLevel::Warn, "InputHandler", "Got unknown controller event!");
 		break;
 	case ControllerEventType::ButtonDown:
 	case ControllerEventType::ButtonUp:

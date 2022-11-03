@@ -21,5 +21,5 @@ Timer::~Timer() {
 	auto time_seconds = duration<double, milliseconds::period>(
 							high_resolution_clock::now() - start)
 							.count();
-	system_api.log(LogLevel::INFO, tag, "{} took {}ms", prefix, time_seconds);
+	system_api.log(LogLevel::Info, tag, "{} took {}ms", prefix, time_seconds);
 }

@@ -2,6 +2,6 @@
 
 namespace Growl {
 
-enum class LogLevel { DEBUG, INFO, WARN, ERROR, FATAL };
+enum class LogLevel { Debug, Info, Warn, Error, Fatal };
 
 }

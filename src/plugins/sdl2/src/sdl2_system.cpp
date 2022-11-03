@@ -135,15 +135,15 @@ void SDL2SystemAPI::logInternal(
 
 SDL_LogPriority SDL2SystemAPI::getLogPriority(LogLevel log_level) {
 	switch (log_level) {
-	case LogLevel::DEBUG:
+	case LogLevel::Debug:
 		return SDL_LOG_PRIORITY_DEBUG;
-	case LogLevel::INFO:
+	case LogLevel::Info:
 		return SDL_LOG_PRIORITY_INFO;
-	case LogLevel::WARN:
+	case LogLevel::Warn:
 		return SDL_LOG_PRIORITY_WARN;
-	case LogLevel::ERROR:
+	case LogLevel::Error:
 		return SDL_LOG_PRIORITY_ERROR;
-	case LogLevel::FATAL:
+	case LogLevel::Fatal:
 		return SDL_LOG_PRIORITY_CRITICAL;
 	}
 	return SDL_LOG_PRIORITY_VERBOSE;

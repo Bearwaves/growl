@@ -82,13 +82,13 @@ void android_main(struct android_app* state) {
 	if (auto err = static_cast<GraphicsAPIInternal&>(api->graphics()).init();
 		err) {
 		api->system().log(
-			LogLevel::FATAL, "android_main", "Failed to init graphics API: {}",
+			LogLevel::Fatal, "android_main", "Failed to init graphics API: {}",
 			err.get()->message());
 		exit(2);
 	}
 	if (auto err = static_cast<AudioAPIInternal&>(api->audio()).init(); err) {
 		api->system().log(
-			LogLevel::FATAL, "android_main", "Failed to init audio API: {}",
+			LogLevel::Fatal, "android_main", "Failed to init audio API: {}",
 			err.get()->message());
 		exit(3);
 	}
@@ -108,7 +108,7 @@ void android_main(struct android_app* state) {
 					   .setWindow(WindowConfig{"", 0, 0, false});
 		err) {
 		api->system().log(
-			LogLevel::FATAL, "android_main", "Failed to create window: {}",
+			LogLevel::Fatal, "android_main", "Failed to create window: {}",
 			err.get()->message());
 		exit(4);
 	}
@@ -117,7 +117,7 @@ void android_main(struct android_app* state) {
 
 	if (auto err = game->init(); err) {
 		api->system().log(
-			LogLevel::FATAL, "android_main", "Failed to init game: {}",
+			LogLevel::Fatal, "android_main", "Failed to init game: {}",
 			err.get()->message());
 		exit(5);
 	}
@@ -132,7 +132,7 @@ void android_main(struct android_app* state) {
 
 	if (auto err = game->dispose(); err) {
 		api->system().log(
-			LogLevel::FATAL, "android_main", "Failed to dispose game: {}",
+			LogLevel::Fatal, "android_main", "Failed to dispose game: {}",
 			err.get()->message());
 		exit(6);
 	}
