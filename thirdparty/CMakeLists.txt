@@ -21,6 +21,7 @@ function(growl_thirdparty_lib name)
 			PRIVATE ${THIRDPARTY_PREFIX_PRIVATE}
 			PUBLIC ${THIRDPARTY_PREFIX_PUBLIC}
 			)
+		message(STATUS "PRivate includes for ${name}: ${THIRDPARTY_PREFIX_PRIVATE}")
 		target_compile_definitions(${name} PRIVATE ${THIRDPARTY_PREFIX_DEFINITIONS})
 		target_link_libraries(${name} PRIVATE ${THIRDPARTY_PREFIX_LINK})
 		set_property(TARGET ${name} PROPERTY FOLDER "growl-thirdparty")
