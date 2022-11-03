@@ -65,5 +65,5 @@ jobs:
             -S . -B build
         working-directory: example/test_app
       - name: Build
-        run: make -j 4
+        run: cmake --build . --parallel 4
         working-directory: example/test_app/build
