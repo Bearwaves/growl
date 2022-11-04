@@ -67,3 +67,27 @@ jobs:
       - name: Build
         run: cmake --build . --parallel 4
         working-directory: example/test_app/build
+
+  android:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        abi:
+          - "arm64-v8a"
+          - "armeabi-v7a"
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Configure CMake
+        run: |
+          cmake -DCMAKE_SYSTEM_NAME="Android" -DANDROID_NDK="${ANDROID_NDK}" \
+            -DCMAKE_ANDROID_ARCH_ABI=${{ matrix.abi }} \
+            -S . -B build
+        working-directory: example/test_app
+      - name: Build
+        run: make -j 4
+        working-directory: example/test_app/build
