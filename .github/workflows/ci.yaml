@@ -75,7 +75,9 @@ jobs:
         with:
           submodules: recursive
       - name: Configure CMake
-        run: cmake -DANDROID_NDK="${ANDROID_NDK}" -S . -B build
+        run: |
+          cmake -DCMAKE_SYSTEM_NAME="Android" -DANDROID_NDK="${ANDROID_NDK}" \
+            -S . -B build
         working-directory: example/test_app
       - name: Build
         run: make -j 4
