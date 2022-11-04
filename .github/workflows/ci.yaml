@@ -67,3 +67,16 @@ jobs:
       - name: Build
         run: cmake --build . --parallel 4
         working-directory: example/test_app/build
+
+  android:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Configure CMake
+        run: cmake -DANDROID_NDK="${ANDROID_NDK}" -S . -B build
+        working-directory: example/test_app
+      - name: Build
+        run: make -j 4
+        working-directory: example/test_app/build
