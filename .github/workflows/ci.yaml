@@ -91,3 +91,22 @@ jobs:
       - name: Build
         run: make -j 4
         working-directory: example/test_app/build
+
+  iOS:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Configure CMake
+        run: |
+          cmake -DCMAKE_SYSTEM_NAME="iOS" -GXcode \
+            -S . -B build
+        working-directory: example/test_app
+      - name: Build
+        run: |
+          xcodebuild -project growl-test-app.xcodeproj -target "growl-test-app" \
+            -configuration Debug -sdk iphoneos -parallelizeTargets \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
+            build
+        working-directory: example/test_app/build
