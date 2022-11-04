@@ -74,9 +74,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - { abi: "arm64-v8a" }
-          - { abi: "armeabi-v7a" }
+        abi:
+          - "arm64-v8a"
+          - "armeabi-v7a"
 
     steps:
       - uses: actions/checkout@v3
