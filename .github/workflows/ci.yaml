@@ -85,7 +85,7 @@ jobs:
       - name: Configure CMake
         run: |
           cmake -DCMAKE_SYSTEM_NAME="Android" -DANDROID_NDK="${ANDROID_NDK}" \
-            -DANDROID_ABI=${{ matrix.abi }} \
+            -DCMAKE_ANDROID_ARCH_ABI=${{ matrix.abi }} \
             -S . -B build
         working-directory: example/test_app
       - name: Build
