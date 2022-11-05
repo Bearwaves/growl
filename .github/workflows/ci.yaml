@@ -29,6 +29,23 @@ jobs:
         run: make -j 4
         working-directory: example/test_app/build
 
+  web:
+    runs-on: ubuntu-22.04
+      #needs: linux
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: mymindstorm/setup-emsdk@v10
+        with:
+          version: 2.0.32
+      - name: Configure CMake
+        run: emcmake cmake -S . -B build
+        working-directory: example/test_app
+      - name: Build
+        run: make -j 4
+        working-directory: example/test_app/build
+
   macOS:
     runs-on: macos-latest
     steps:
