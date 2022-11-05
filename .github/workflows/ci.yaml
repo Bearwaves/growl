@@ -92,14 +92,19 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: Cache SDL2
+        id: cache-sdl2
+        uses: actions/cache@v3
+        with:
+          path: D:\SDL2-2.24.2
+          key: sdl2-devel-2.24.2-vc
       - name: Fetch SDL2
+        if: ${{ steps.cache-sdl2.outputs.cache-hit != 'true' }}
         shell: powershell
         run: |
           Invoke-RestMethod `
             -Uri https://github.com/libsdl-org/SDL/releases/download/release-2.24.2/SDL2-devel-2.24.2-VC.zip `
-            -OutFile D:\SDL2.zip
-      - name: Unzip SDL
-        run: 7z x D:\SDL2.zip -oD:\
+            -OutFile D:\SDL2.zip && 7z x D:\SDL2.zip -oD:\
       - name: Configure CMake
         run: |
           cmake -DSDL2_LIBRARY="D:\SDL2-2.24.2\lib\x64\SDL2.lib" `
