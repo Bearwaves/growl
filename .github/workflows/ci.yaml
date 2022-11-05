@@ -28,19 +28,21 @@ jobs:
       - name: Build
         run: make -j 4
         working-directory: example/test_app/build
-      - name: Build assets
-        run: ./build/growl-cmd assets bundle ./assets
-        working-directory: example/test_app
       - name: Cache assets bundle
+        id: cache-assets
         uses: actions/cache@v2
         with:
           path: example/test_app/assets.growl
-          key: growl-assets
+          key: growl-assets-{{ hashFiles(example/test_app/assets) }}
+      - name: Build assets
+        if: ${{ steps.cache-assets.outputs.cache-hit != 'true' }}
+        run: ./build/growl-cmd assets bundle ./assets
+        working-directory: example/test_app
 
 
   web:
     runs-on: ubuntu-22.04
-    #needs: linux
+    needs: linux
     steps:
       - uses: actions/checkout@v3
         with:
@@ -51,6 +53,11 @@ jobs:
       - name: Configure CMake
         run: emcmake cmake -S . -B build
         working-directory: example/test_app
+      - name: Cache assets bundle
+        uses: actions/cache@v2
+        with:
+          path: example/test_app/assets.growl
+          key: growl-assets-{{ hashFiles(example/test_app/assets) }}
       - name: Build
         run: cp ../assets.growl . && make -j 4
         working-directory: example/test_app/build
