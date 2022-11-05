@@ -30,7 +30,7 @@ jobs:
         working-directory: example/test_app/build
       - name: Cache assets bundle
         id: cache-assets
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: example/test_app/assets.growl
           key: growl-assets-${{ hashFiles('example/test_app/assets') }}
@@ -56,6 +56,7 @@ jobs:
         working-directory: example/test_app
       - name: Cache assets bundle
         uses: actions/cache@v3
+        id: cache-assets
         with:
           path: example/test_app/assets.growl
           key: growl-assets-${{ hashFiles('example/test_app/assets') }}
