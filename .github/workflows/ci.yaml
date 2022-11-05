@@ -28,10 +28,19 @@ jobs:
       - name: Build
         run: make -j 4
         working-directory: example/test_app/build
+      - name: Build assets
+        run: ./build/growl-cmd assets bundle ./assets
+        working-directory: example/test_app
+      - name: Cache assets bundle
+        uses: actions/cache@v2
+        with:
+          path: example/test_app/assets.growl
+          key: growl-assets
+
 
   web:
     runs-on: ubuntu-22.04
-      #needs: linux
+    #needs: linux
     steps:
       - uses: actions/checkout@v3
         with:
@@ -43,7 +52,7 @@ jobs:
         run: emcmake cmake -S . -B build
         working-directory: example/test_app
       - name: Build
-        run: make -j 4
+        run: cp ../assets.growl . && make -j 4
         working-directory: example/test_app/build
 
   macOS:
