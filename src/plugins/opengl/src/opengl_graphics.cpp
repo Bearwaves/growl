@@ -183,7 +183,7 @@ std::unique_ptr<FontTextureAtlas>
 OpenGLGraphicsAPI::createFontTextureAtlas(const FontFace& face) {
 	bool is_msdf = face.getType() != FontFaceType::Bitmap;
 	return std::make_unique<FontTextureAtlas>(
-		face, createTexture(face.getImage(), {is_msdf, is_msdf}));
+		face, createTexture(face.getImage(), {is_msdf, false}));
 }
 
 std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {
