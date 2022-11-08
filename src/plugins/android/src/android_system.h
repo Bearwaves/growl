@@ -35,7 +35,7 @@ private:
 	void onControllerEvent(InputControllerEvent event);
 	static void handleAppCmd(android_app* app, int32_t cmd);
 	static int32_t handleInput(android_app* app, AInputEvent* cmd);
-	static TouchEventType getTouchEventType(AInputEvent* event);
+	static PointerEventType getPointerEventType(AInputEvent* event);
 	static ControllerButton getControllerButton(AInputEvent* event);
 	static ControllerEventType getControllerEventType(AInputEvent* event);
 

@@ -20,8 +20,8 @@ using Growl::Error;
 using Growl::File;
 using Growl::InputControllerEvent;
 using Growl::LogLevel;
+using Growl::PointerEventType;
 using Growl::Result;
-using Growl::TouchEventType;
 using Growl::Window;
 
 Error AndroidSystemAPI::init() {
@@ -61,7 +61,7 @@ int32_t AndroidSystemAPI::handleInput(android_app* app, AInputEvent* event) {
 		case AINPUT_SOURCE_TOUCHSCREEN:
 			static_cast<AndroidSystemAPI&>(api->system())
 				.onTouch(InputTouchEvent{
-					getTouchEventType(event),
+					getPointerEventType(event),
 					static_cast<int>(AMotionEvent_getX(event, 0)),
 					static_cast<int>(AMotionEvent_getY(event, 0)),
 				});
@@ -84,16 +84,16 @@ int32_t AndroidSystemAPI::handleInput(android_app* app, AInputEvent* event) {
 	return 0;
 }
 
-TouchEventType AndroidSystemAPI::getTouchEventType(AInputEvent* event) {
+PointerEventType AndroidSystemAPI::getPointerEventType(AInputEvent* event) {
 	switch (AMotionEvent_getAction(event)) {
 	case AMOTION_EVENT_ACTION_DOWN:
-		return TouchEventType::Down;
+		return PointerEventType::Down;
 	case AMOTION_EVENT_ACTION_UP:
-		return TouchEventType::Up;
+		return PointerEventType::Up;
 	case AMOTION_EVENT_ACTION_MOVE:
-		return TouchEventType::Move;
+		return PointerEventType::Move;
 	}
-	return TouchEventType::Unknown;
+	return PointerEventType::Unknown;
 }
 
 ControllerButton AndroidSystemAPI::getControllerButton(AInputEvent* event) {
@@ -150,7 +150,7 @@ AndroidSystemAPI::getControllerEventType(AInputEvent* event) {
 void AndroidSystemAPI::dispose() {}
 
 void AndroidSystemAPI::onTouch(InputTouchEvent event) {
-	if (!inputProcessor || event.type == TouchEventType::Unknown) {
+	if (!inputProcessor || event.type == PointerEventType::Unknown) {
 		return;
 	}
 	InputEvent e{InputEventType::Touch, event};
