@@ -26,15 +26,15 @@
 }
 
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-	[self handleTouches:touches withEventType:Growl::TouchEventType::DOWN];
+	[self handleTouches:touches withEventType:Growl::TouchEventType::Down];
 }
 
 - (void)touchesMoved:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-	[self handleTouches:touches withEventType:Growl::TouchEventType::MOVE];
+	[self handleTouches:touches withEventType:Growl::TouchEventType::Move];
 }
 
 - (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-	[self handleTouches:touches withEventType:Growl::TouchEventType::UP];
+	[self handleTouches:touches withEventType:Growl::TouchEventType::Up];
 }
 
 @end

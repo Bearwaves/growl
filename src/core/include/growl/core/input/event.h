@@ -9,23 +9,26 @@
 namespace Growl {
 
 enum class InputEventType {
-	UNKNOWN,
-	KEYBOARD,
-	MOUSE,
-	TOUCH,
-	CONTROLLER,
-	CUSTOM
+	Unknown,
+	Keyboard,
+	Mouse,
+	Touch,
+	Controller,
+	Custom
 };
 
+enum class PointerEventType { Unknown, Up, Down, Move };
+
+enum class MouseButton { Unknown, LeftClick, RightClick, MiddleClick };
+
 struct InputMouseEvent {
+	PointerEventType type;
 	int mouseX;
 	int mouseY;
 };
 
-enum class TouchEventType { UNKNOWN, UP, DOWN, MOVE };
-
 struct InputTouchEvent {
-	TouchEventType type;
+	PointerEventType type;
 	int touchX;
 	int touchY;
 	int id;

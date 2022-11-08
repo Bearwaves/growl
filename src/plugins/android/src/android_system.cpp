@@ -87,13 +87,13 @@ int32_t AndroidSystemAPI::handleInput(android_app* app, AInputEvent* event) {
 TouchEventType AndroidSystemAPI::getTouchEventType(AInputEvent* event) {
 	switch (AMotionEvent_getAction(event)) {
 	case AMOTION_EVENT_ACTION_DOWN:
-		return TouchEventType::DOWN;
+		return TouchEventType::Down;
 	case AMOTION_EVENT_ACTION_UP:
-		return TouchEventType::UP;
+		return TouchEventType::Up;
 	case AMOTION_EVENT_ACTION_MOVE:
-		return TouchEventType::MOVE;
+		return TouchEventType::Move;
 	}
-	return TouchEventType::UNKNOWN;
+	return TouchEventType::Unknown;
 }
 
 ControllerButton AndroidSystemAPI::getControllerButton(AInputEvent* event) {
@@ -150,10 +150,11 @@ AndroidSystemAPI::getControllerEventType(AInputEvent* event) {
 void AndroidSystemAPI::dispose() {}
 
 void AndroidSystemAPI::onTouch(InputTouchEvent event) {
-	if (!inputProcessor || event.type == TouchEventType::UNKNOWN) {
+	if (!inputProcessor || event.type == TouchEventType::Unknown) {
 		return;
 	}
-	inputProcessor->onTouchEvent(event);
+	InputEvent e{InputEventType::Touch, event};
+	inputProcessor->onEvent(e);
 }
 
 void AndroidSystemAPI::onControllerEvent(InputControllerEvent event) {
@@ -161,7 +162,8 @@ void AndroidSystemAPI::onControllerEvent(InputControllerEvent event) {
 		event.button == ControllerButton::Unknown) {
 		return;
 	}
-	inputProcessor->onControllerEvent(event);
+	InputEvent e{InputEventType::Controller, event};
+	inputProcessor->onEvent(e);
 }
 
 Result<std::unique_ptr<Window>>

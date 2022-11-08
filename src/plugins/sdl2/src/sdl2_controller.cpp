@@ -1,3 +1,4 @@
+#include "growl/core/input/controller.h"
 #include "growl/core/input/event.h"
 #include "sdl2_system.h"
 #include <SDL.h>
@@ -17,8 +18,10 @@ void SDL2SystemAPI::openGameController(int id) {
 }
 
 void SDL2SystemAPI::handleControllerEvent(SDL_Event& event) {
-	InputControllerEvent e{getControllerEventType(event), getButton(event)};
-	inputProcessor->onControllerEvent(e);
+	InputEvent e{
+		InputEventType::Controller,
+		InputControllerEvent{getControllerEventType(event), getButton(event)}};
+	inputProcessor->onEvent(e);
 }
 
 ControllerEventType SDL2SystemAPI::getControllerEventType(SDL_Event& event) {
