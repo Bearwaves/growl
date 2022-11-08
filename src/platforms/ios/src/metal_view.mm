@@ -13,7 +13,7 @@
 }
 
 - (void)handleTouches:(NSSet<UITouch*>*)touches
-		withEventType:(Growl::TouchEventType)type {
+		withEventType:(Growl::PointerEventType)type {
 	for (UITouch* touch in touches) {
 		CGPoint point = [touch locationInView:self];
 		point.x *= self.contentScaleFactor;
@@ -26,15 +26,15 @@
 }
 
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-	[self handleTouches:touches withEventType:Growl::TouchEventType::DOWN];
+	[self handleTouches:touches withEventType:Growl::PointerEventType::Down];
 }
 
 - (void)touchesMoved:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-	[self handleTouches:touches withEventType:Growl::TouchEventType::MOVE];
+	[self handleTouches:touches withEventType:Growl::PointerEventType::Move];
 }
 
 - (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-	[self handleTouches:touches withEventType:Growl::TouchEventType::UP];
+	[self handleTouches:touches withEventType:Growl::PointerEventType::Up];
 }
 
 @end

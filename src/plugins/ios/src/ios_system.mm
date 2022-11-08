@@ -1,6 +1,7 @@
 #include "ios_system.h"
 #include "growl/core/assets/local_file.h"
 #include "growl/core/error.h"
+#include "growl/core/input/event.h"
 #include "ios_error.h"
 #include "ios_window.h"
 #include <os/log.h>
@@ -12,6 +13,8 @@ using Growl::LocalFile;
 using Growl::Window;
 using Growl::Result;
 using Growl::InputTouchEvent;
+using Growl::InputEvent;
+using Growl::InputEventType;
 using Growl::ControllerButton;
 using Growl::ControllerEventType;
 
@@ -71,7 +74,8 @@ void IOSSystemAPI::dispose() {
 
 void IOSSystemAPI::onTouch(InputTouchEvent event) {
 	if (inputProcessor) {
-		inputProcessor->onTouchEvent(event);
+		InputEvent e{InputEventType::Touch, event};
+		inputProcessor->onEvent(e);
 	}
 }
 
@@ -238,8 +242,10 @@ void IOSSystemAPI::dispatchControllerEvent(
 	if (!inputProcessor) {
 		return;
 	}
-	auto event = InputControllerEvent{.button = button, .type = event_type};
-	inputProcessor->onControllerEvent(event);
+	auto event = InputEvent{
+		InputEventType::Controller,
+		InputControllerEvent{.button = button, .type = event_type}};
+	inputProcessor->onEvent(event);
 }
 
 ControllerEventType

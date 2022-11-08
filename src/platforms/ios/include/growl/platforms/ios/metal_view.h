@@ -5,6 +5,6 @@
 
 - (void)setSystemAPI:(Growl::SystemAPIInternal*)system;
 - (void)handleTouches:(NSSet<UITouch*>*)touches
-		withEventType:(Growl::TouchEventType)type;
+		withEventType:(Growl::PointerEventType)type;
 
 @end

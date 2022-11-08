@@ -13,7 +13,7 @@ void SDL2SystemAPI::handleKeyboardEvent(SDL_Event& event) {
 #endif
 	) {
 		InputEvent e(
-			InputEventType::KEYBOARD,
+			InputEventType::Keyboard,
 			InputKeyboardEvent{getKeyEventType(event.key), getKey(event.key)});
 		inputProcessor->onEvent(e);
 	}

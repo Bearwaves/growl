@@ -20,8 +20,8 @@ using Growl::Error;
 using Growl::File;
 using Growl::InputControllerEvent;
 using Growl::LogLevel;
+using Growl::PointerEventType;
 using Growl::Result;
-using Growl::TouchEventType;
 using Growl::Window;
 
 Error AndroidSystemAPI::init() {
@@ -61,7 +61,7 @@ int32_t AndroidSystemAPI::handleInput(android_app* app, AInputEvent* event) {
 		case AINPUT_SOURCE_TOUCHSCREEN:
 			static_cast<AndroidSystemAPI&>(api->system())
 				.onTouch(InputTouchEvent{
-					getTouchEventType(event),
+					getPointerEventType(event),
 					static_cast<int>(AMotionEvent_getX(event, 0)),
 					static_cast<int>(AMotionEvent_getY(event, 0)),
 				});
@@ -84,16 +84,16 @@ int32_t AndroidSystemAPI::handleInput(android_app* app, AInputEvent* event) {
 	return 0;
 }
 
-TouchEventType AndroidSystemAPI::getTouchEventType(AInputEvent* event) {
+PointerEventType AndroidSystemAPI::getPointerEventType(AInputEvent* event) {
 	switch (AMotionEvent_getAction(event)) {
 	case AMOTION_EVENT_ACTION_DOWN:
-		return TouchEventType::DOWN;
+		return PointerEventType::Down;
 	case AMOTION_EVENT_ACTION_UP:
-		return TouchEventType::UP;
+		return PointerEventType::Up;
 	case AMOTION_EVENT_ACTION_MOVE:
-		return TouchEventType::MOVE;
+		return PointerEventType::Move;
 	}
-	return TouchEventType::UNKNOWN;
+	return PointerEventType::Unknown;
 }
 
 ControllerButton AndroidSystemAPI::getControllerButton(AInputEvent* event) {
@@ -150,10 +150,11 @@ AndroidSystemAPI::getControllerEventType(AInputEvent* event) {
 void AndroidSystemAPI::dispose() {}
 
 void AndroidSystemAPI::onTouch(InputTouchEvent event) {
-	if (!inputProcessor || event.type == TouchEventType::UNKNOWN) {
+	if (!inputProcessor || event.type == PointerEventType::Unknown) {
 		return;
 	}
-	inputProcessor->onTouchEvent(event);
+	InputEvent e{InputEventType::Touch, event};
+	inputProcessor->onEvent(e);
 }
 
 void AndroidSystemAPI::onControllerEvent(InputControllerEvent event) {
@@ -161,7 +162,8 @@ void AndroidSystemAPI::onControllerEvent(InputControllerEvent event) {
 		event.button == ControllerButton::Unknown) {
 		return;
 	}
-	inputProcessor->onControllerEvent(event);
+	InputEvent e{InputEventType::Controller, event};
+	inputProcessor->onEvent(e);
 }
 
 Result<std::unique_ptr<Window>>

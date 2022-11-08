@@ -161,7 +161,9 @@ void SDL2SystemAPI::handleMouseEvent(SDL_Event& event) {
 		SDL_GL_GetDrawableSize(window, &display_w, &display_h);
 		int x = event.motion.x * (display_w / (float)window_w);
 		int y = event.motion.y * (display_h / (float)window_h);
-		InputEvent e(InputEventType::MOUSE, InputMouseEvent{x, y});
+		InputEvent e(
+			InputEventType::Mouse,
+			InputMouseEvent{PointerEventType::Move, x, y});
 		inputProcessor->onEvent(e);
 	}
 }
