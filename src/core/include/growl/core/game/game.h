@@ -1,12 +1,10 @@
 #pragma once
 
-#include "growl/core/api/api.h"
 #include "growl/core/error.h"
-#include <memory>
 
 namespace Growl {
 
-class GameAdapter;
+class API;
 
 class Game {
 

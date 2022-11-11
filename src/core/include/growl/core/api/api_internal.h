@@ -3,6 +3,7 @@
 #include "audio_api.h"
 #include "graphics_api.h"
 #include "growl/core/error.h"
+#include "growl/core/input/event.h"
 #include "system_api.h"
 
 namespace Growl {

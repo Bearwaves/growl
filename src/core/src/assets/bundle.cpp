@@ -1,13 +1,12 @@
 #include "growl/core/assets/bundle.h"
 
 #include "growl/core/api/system_api.h"
+#include "growl/core/assets/atlas.h"
 #include "growl/core/assets/error.h"
 #include "growl/core/assets/file.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/assets/image.h"
 #include "growl/core/error.h"
-#include <cstdint>
-#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>

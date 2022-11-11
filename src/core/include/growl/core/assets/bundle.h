@@ -1,11 +1,8 @@
 #pragma once
 
 #include "atlas.h"
-#include "font_face.h"
-#include "growl/core/api/system_api.h"
 #include "growl/core/assets/file.h"
 #include "growl/core/error.h"
-#include "image.h"
 #include "nlohmann/json.hpp"
 #include <cstdint>
 #include <fstream>
@@ -18,6 +15,10 @@
 using nlohmann::json;
 
 namespace Growl {
+
+class FontFace;
+class Image;
+class SystemAPI;
 
 typedef uint64_t AssetsBundleVersion;
 

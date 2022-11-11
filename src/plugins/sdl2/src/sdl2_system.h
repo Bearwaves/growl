@@ -1,14 +1,24 @@
 #pragma once
 
-#include "growl/core/api/api.h"
-#include "growl/core/assets/file.h"
-#ifdef GROWL_IMGUI
-#include "imgui.h"
-#endif
-#include <SDL.h>
+#include "SDL_events.h"
+#include "SDL_gamecontroller.h"
+#include "SDL_log.h"
+#include "growl/core/api/api_internal.h"
 #include <memory>
 
+struct ImGuiIO;
+
 namespace Growl {
+
+class API;
+class File;
+class Window;
+class WindowConfig;
+enum class ControllerButton;
+enum class ControllerEventType;
+enum class Key;
+enum class KeyEventType;
+enum class LogLevel;
 
 class SDL2Controller {
 public:

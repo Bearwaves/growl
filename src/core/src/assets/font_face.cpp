@@ -5,8 +5,6 @@
 #include "growl/core/assets/atlas.h"
 #include "growl/core/assets/image.h"
 #include "growl/core/error.h"
-#include <memory>
-#include <string>
 
 using Growl::AtlasRegion;
 using Growl::Error;

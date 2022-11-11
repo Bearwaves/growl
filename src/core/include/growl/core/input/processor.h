@@ -1,8 +1,13 @@
 #pragma once
 
-#include "event.h"
-
 namespace Growl {
+
+class InputEvent;
+struct InputKeyboardEvent;
+struct InputMouseEvent;
+struct InputTouchEvent;
+struct InputControllerEvent;
+struct InputCustomEvent;
 
 class InputProcessor {
 public:

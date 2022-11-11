@@ -2,7 +2,6 @@
 #include "assets_config.h"
 #include "error.h"
 #include "fpng.h"
-#include "growl/core/assets/audio.h"
 #include "growl/core/assets/bundle.h"
 #include "growl/core/assets/error.h"
 #include "growl/core/assets/file.h"

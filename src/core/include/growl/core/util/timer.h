@@ -1,8 +1,11 @@
 #pragma once
 
-#include "growl/core/api/system_api.h"
 #include <chrono>
+#include <string>
+
 namespace Growl {
+
+class SystemAPI;
 
 class Timer {
 public:

@@ -1,8 +1,5 @@
 #include "growl/core/assets/local_file.h"
-#include "growl/core/assets/error.h"
-#include "growl/core/assets/file.h"
 #include "growl/core/error.h"
-#include <memory>
 
 using Growl::File;
 using Growl::LocalFile;
