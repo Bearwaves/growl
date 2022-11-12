@@ -1,8 +1,6 @@
 #pragma once
 
-#include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
-#include "growl/core/assets/font_face.h"
 #include "opengl_shader.h"
 #include <chrono>
 
@@ -10,6 +8,16 @@ using std::chrono::high_resolution_clock;
 using std::chrono::time_point;
 
 namespace Growl {
+
+class API;
+class Atlas;
+class FontFace;
+class FontTextureAtlas;
+class Image;
+class Texture;
+class TextureAtlas;
+struct TextureOptions;
+
 class OpenGLGraphicsAPI : public GraphicsAPIInternal {
 public:
 	explicit OpenGLGraphicsAPI(API& api);

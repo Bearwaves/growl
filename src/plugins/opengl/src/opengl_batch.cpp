@@ -1,6 +1,9 @@
 #include "opengl_batch.h"
+#include "growl/core/assets/atlas.h"
 #include "growl/core/assets/font_face.h"
-#include "opengl.h"
+#include "growl/core/graphics/font_texture_atlas.h"
+#include "growl/core/graphics/texture_atlas.h"
+#include "opengl_shader.h"
 #include "opengl_texture.h"
 #include <cmath>
 #include <vector>

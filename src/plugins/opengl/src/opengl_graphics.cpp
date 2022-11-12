@@ -1,6 +1,7 @@
 #include "opengl_graphics.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
+#include "growl/core/api/api.h"
 #include "growl/core/assets/font_face.h"
 #ifdef GROWL_IMGUI
 #include "imgui_impl_opengl3.h"

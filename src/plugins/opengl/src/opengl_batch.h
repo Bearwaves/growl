@@ -1,11 +1,17 @@
 #pragma once
 
+#include "glm/ext/matrix_float4x4.hpp"
 #include "growl/core/graphics/batch.h"
 #include "growl/core/graphics/color.h"
-#include "opengl_graphics.h"
-#include "opengl_shader.h"
+#include "opengl.h"
 
 namespace Growl {
+
+class OpenGLShader;
+class FontTextureAtlas;
+class GlyphLayout;
+class Texture;
+struct TextureAtlasRegion;
 
 class OpenGLBatch : public Batch {
 public:

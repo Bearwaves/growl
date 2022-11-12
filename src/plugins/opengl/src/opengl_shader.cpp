@@ -1,4 +1,5 @@
 #include "opengl_shader.h"
+#include "glm/gtc/type_ptr.hpp"
 #include "growl/core/graphics/color.h"
 #include "opengl_graphics.h"
 
