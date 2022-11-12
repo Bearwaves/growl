@@ -1,4 +1,5 @@
 #include "growl/core/api/api.h"
+#include "growl/core/api/api_internal.h"
 
 using Growl::API;
 

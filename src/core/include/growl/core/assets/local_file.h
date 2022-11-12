@@ -1,7 +1,6 @@
 #pragma once
 
 #include "growl/core/assets/file.h"
-#include "growl/core/error.h"
 #include <cstddef>
 #include <fstream>
 

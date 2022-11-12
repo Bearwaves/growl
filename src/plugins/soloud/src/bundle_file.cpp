@@ -1,11 +1,13 @@
 #include "bundle_file.h"
-#include "growl/core/api/system_api.h"
 #include "growl/core/assets/bundle.h"
-#include "growl/core/assets/error.h"
 #include "growl/core/assets/file.h"
 #include "growl/core/error.h"
 #include <fstream>
-#include <string_view>
+
+namespace Growl {
+class AssetsError;
+class SystemAPI;
+} // namespace Growl
 
 using Growl::AssetsBundle;
 using Growl::AssetsError;

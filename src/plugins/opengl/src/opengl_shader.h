@@ -1,11 +1,11 @@
 #pragma once
-#include "glm/gtc/type_ptr.hpp"
-#include "growl/core/graphics/color.h"
+#include "glm/ext/matrix_float4x4.hpp"
 #include "opengl.h"
 #include <string>
 
 namespace Growl {
 
+struct Color;
 class OpenGLGraphicsAPI;
 
 class OpenGLShader {

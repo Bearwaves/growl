@@ -1,4 +1,6 @@
 #include "sdl2_window.h"
+#include "SDL_hints.h"
+#include "SDL_render.h"
 #include "SDL_video.h"
 #include "growl/core/error.h"
 #ifdef GROWL_IMGUI

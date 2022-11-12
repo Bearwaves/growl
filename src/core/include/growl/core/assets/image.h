@@ -1,10 +1,8 @@
 #pragma once
 
 #include "../error.h"
-#include <cstddef>
 #include <iostream>
-#include <memory>
-#include <string>
+#include <stdint.h>
 #include <vector>
 
 namespace Growl {

@@ -1,9 +1,12 @@
 #pragma once
 
-#include "growl/core/assets/font_face.h"
+#include <memory>
 #include <string>
+#include <vector>
 
 namespace Growl {
+
+class FontFace;
 
 struct HBData;
 

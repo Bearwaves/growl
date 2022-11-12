@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SDL.h"
+#include "SDL_rwops.h"
 #include "growl/core/assets/file.h"
 #include <cstddef>
 namespace Growl {

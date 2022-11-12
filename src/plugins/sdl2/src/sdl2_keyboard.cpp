@@ -1,6 +1,14 @@
+#include "SDL_events.h"
+#include "SDL_keyboard.h"
+#include "SDL_scancode.h"
+#include "growl/core/api/api.h"
 #include "growl/core/input/event.h"
 #include "growl/core/input/keyboard.h"
+#include "growl/core/input/processor.h"
 #include "sdl2_system.h"
+#ifdef GROWL_IMGUI
+#include "imgui.h"
+#endif
 
 using Growl::Key;
 using Growl::KeyEventType;

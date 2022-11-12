@@ -1,10 +1,15 @@
 #pragma once
 
 #include "freetype/freetype.h"
-#include "growl/core/text/glyph_layout.h"
+#include "growl/core/error.h"
 #include "hb.h"
 #include "stb_rect_pack.h"
 #include <vector>
+
+namespace Growl {
+class FTFontData;
+struct HBData;
+} // namespace Growl
 
 class Growl::FTFontData {
 public:
@@ -72,8 +77,6 @@ private:
 	FT_Error ft_err;
 };
 } // namespace
-
-struct stbrp_rect;
 
 namespace Growl::Internal {
 Growl::Error

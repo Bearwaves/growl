@@ -1,5 +1,7 @@
 #include "input.h"
 #include "growl/core/api/system_api.h"
+#include "growl/core/input/event.h"
+#include "growl/core/input/keyboard.h"
 #include "growl/core/log.h"
 
 using Growl::InputHandler;

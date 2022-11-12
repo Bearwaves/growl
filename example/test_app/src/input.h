@@ -1,10 +1,10 @@
 #pragma once
 
-#include "growl/core/api/system_api.h"
-#include "growl/core/input/event.h"
 #include "growl/core/input/processor.h"
 
 namespace Growl {
+
+class SystemAPI;
 
 class InputHandler : public InputProcessor {
 public:

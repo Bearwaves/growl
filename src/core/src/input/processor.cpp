@@ -1,7 +1,9 @@
 #include "growl/core/input/processor.h"
-#include <iostream>
+#include "growl/core/input/event.h"
+#include "growl/core/input/keyboard.h"
 
 using Growl::InputEvent;
+using Growl::InputEventType;
 using Growl::InputProcessor;
 
 // Define pure virtual destructor to make class abstract

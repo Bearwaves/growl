@@ -1,3 +1,4 @@
+#include "growl/core/game/game.h"
 #ifdef GROWL_DESKTOP
 #include "growl/core/graphics/window.h"
 #include "growl/platforms/desktop/game_adapter.h"

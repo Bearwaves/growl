@@ -1,14 +1,14 @@
 #include "growl/platforms/desktop/game_adapter.h"
+#include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
+#include "growl/core/game/game.h"
 #include "growl/core/graphics/window.h"
 #include "growl/core/log.h"
-#ifdef GROWL_IMGUI
-#include "imgui.h"
-#endif
 #include <chrono>
 #include <iostream>
 
 using Growl::API;
+using Growl::Game;
 using Growl::GameAdapter;
 
 void initSDL2Plugin(API& api);

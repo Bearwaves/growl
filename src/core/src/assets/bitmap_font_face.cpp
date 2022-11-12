@@ -6,9 +6,9 @@
 #include "growl/core/error.h"
 #include "hb-ft.h"
 #include "stb_rect_pack.h"
+#include "utf8/core.h"
 #include <memory>
 #include <set>
-#include <utf8.h>
 
 using Growl::AssetsError;
 using Growl::AtlasRegion;

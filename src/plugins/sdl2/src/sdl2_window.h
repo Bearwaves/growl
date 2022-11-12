@@ -1,7 +1,7 @@
 #pragma once
 
+#include "SDL_video.h"
 #include "growl/core/graphics/window.h"
-#include <SDL.h>
 
 namespace Growl {
 

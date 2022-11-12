@@ -1,11 +1,14 @@
 #pragma once
 
-#include "growl/core/api/system_api.h"
-#include "growl/core/assets/bundle.h"
 #include "growl/core/assets/file.h"
+#include "growl/core/error.h"
 #include "soloud_file.h"
 #include <memory>
+
 namespace Growl {
+
+class AssetsBundle;
+class SystemAPI;
 
 class SoLoudBundleFile : public SoLoud::File {
 public:

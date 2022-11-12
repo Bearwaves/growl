@@ -1,7 +1,8 @@
+#include "SDL_events.h"
+#include "SDL_gamecontroller.h"
 #include "growl/core/input/controller.h"
 #include "growl/core/input/event.h"
 #include "sdl2_system.h"
-#include <SDL.h>
 
 using Growl::ControllerButton;
 using Growl::ControllerEventType;
