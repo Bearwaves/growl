@@ -163,9 +163,36 @@ void SDL2SystemAPI::handleMouseEvent(SDL_Event& event) {
 		SDL_GL_GetDrawableSize(window, &display_w, &display_h);
 		int x = event.motion.x * (display_w / (float)window_w);
 		int y = event.motion.y * (display_h / (float)window_h);
+
+		PointerEventType event_type = PointerEventType::Unknown;
+		switch (event.type) {
+		case SDL_MOUSEBUTTONDOWN:
+			event_type = PointerEventType::Down;
+			break;
+		case SDL_MOUSEBUTTONUP:
+			event_type = PointerEventType::Up;
+			break;
+		case SDL_MOUSEMOTION:
+			event_type = PointerEventType::Move;
+			break;
+		}
+
+		MouseButton mouse_button = MouseButton::Unknown;
+		switch (event.button.button) {
+		case SDL_BUTTON_LEFT:
+			mouse_button = MouseButton::LeftClick;
+			break;
+		case SDL_BUTTON_RIGHT:
+			mouse_button = MouseButton::RightClick;
+			break;
+		case SDL_BUTTON_MIDDLE:
+			mouse_button = MouseButton::MiddleClick;
+			break;
+		}
+
 		InputEvent e(
 			InputEventType::Mouse,
-			InputMouseEvent{PointerEventType::Move, x, y});
+			InputMouseEvent{event_type, mouse_button, x, y});
 		inputProcessor->onEvent(e);
 	}
 }

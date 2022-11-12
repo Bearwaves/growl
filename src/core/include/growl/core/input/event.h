@@ -23,6 +23,7 @@ enum class MouseButton { Unknown, LeftClick, RightClick, MiddleClick };
 
 struct InputMouseEvent {
 	PointerEventType type;
+	MouseButton button;
 	int mouseX;
 	int mouseY;
 };
