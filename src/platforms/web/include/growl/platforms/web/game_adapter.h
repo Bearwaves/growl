@@ -1,6 +1,5 @@
 #pragma once
 
-#include "growl/core/game/game.h"
 #include "growl/core/graphics/window.h"
 #include <memory>
 

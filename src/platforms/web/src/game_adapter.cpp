@@ -1,4 +1,5 @@
 #include "growl/platforms/web/game_adapter.h"
+#include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
 #include "growl/core/game/game.h"
 #include "growl/core/graphics/window.h"

@@ -1,8 +1,8 @@
 #import "growl/platforms/ios/view_controller.h"
+#import "growl/core/api/api.h"
 #import "growl/core/game/game.h"
 #import "growl/core/graphics/window.h"
 #import "growl/platforms/ios/metal_view.h"
-#import "growl/core/api/api.h"
 #import <memory>
 
 // Forward declarations for the linker.
