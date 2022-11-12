@@ -4,7 +4,6 @@
 #include "error.h"
 #include "fpng.h"
 #include "growl/core/assets/bundle.h"
-#include "growl/core/assets/error.h"
 #include "growl/core/error.h"
 #include "stb_image.h"
 #include <algorithm>
@@ -23,6 +22,10 @@ using Growl::AtlasConfig;
 using Growl::AtlasImagePackInfo;
 using Growl::Error;
 using rang::style;
+
+namespace Growl {
+class AssetsError;
+}
 
 AssetsIncludeError includeAtlas(
 	const AtlasConfig& config, const std::filesystem::path& path,
