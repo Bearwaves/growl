@@ -34,6 +34,8 @@ public:
 	void end() override;
 
 	void setColor(float r, float g, float b, float a) override;
+	void setTransform(glm::mat4x4 transform) override;
+	glm::mat4x4 getTransform() override;
 
 	void draw(
 		const Texture& texture, float x, float y, float width,

@@ -43,6 +43,14 @@ public:
 		return right;
 	}
 
+	bool clockwisePressed() {
+		return clockwise;
+	}
+
+	bool anticlockwisePressed() {
+		return anticlockwise;
+	}
+
 private:
 	SystemAPI& system;
 	int mouseX;
@@ -51,6 +59,8 @@ private:
 	bool down = false;
 	bool left = false;
 	bool right = false;
+	bool clockwise = false;
+	bool anticlockwise = false;
 };
 
 } // namespace Growl

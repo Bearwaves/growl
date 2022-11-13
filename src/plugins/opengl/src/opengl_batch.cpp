@@ -44,6 +44,14 @@ void OpenGLBatch::setColor(float r, float g, float b, float a) {
 	color = {r, g, b, a};
 }
 
+void OpenGLBatch::setTransform(glm::mat4x4 transform) {
+	mvp = transform;
+}
+
+glm::mat4x4 OpenGLBatch::getTransform() {
+	return mvp;
+}
+
 void OpenGLBatch::draw(
 	const Texture& texture, float x, float y, float width, float height) {
 	auto& tex = static_cast<const OpenGLTexture&>(texture);

@@ -1,4 +1,5 @@
 #include "test_app_game.h"
+#include "cat.h"
 #include "growl/core/api/api.h"
 #include "growl/core/assets/audio.h"
 #include "growl/core/assets/bundle.h"
@@ -82,6 +83,20 @@ Error TestAppGame::init() {
 		music = std::move(music_result.get());
 	}
 
+	cats = std::make_unique<Node>();
+	cats->setWidth(500);
+	cats->setHeight(500);
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < 2; j++) {
+			auto cat = std::make_unique<Cat>(texture_atlas.get());
+			cat->setWidth(250);
+			cat->setHeight(250);
+			cat->setX(250 * i);
+			cat->setY(250 * j);
+			cats->addChild(std::move(cat));
+		}
+	}
+
 	return nullptr;
 }
 
@@ -121,6 +136,15 @@ void TestAppGame::render() {
 			(input->leftPressed() ? -1 : (input->rightPressed() ? 1 : 0));
 	catY += getAPI().graphics().getDeltaTime() * SPEED *
 			(input->upPressed() ? -1 : (input->downPressed() ? 1 : 0));
+
+	float rotation = cats->getRotation();
+	rotation +=
+		getAPI().graphics().getDeltaTime() * SPEED * 0.01f *
+		(input->anticlockwisePressed() ? -1
+									   : (input->clockwisePressed() ? 1 : 0));
+	cats->setX(catX);
+	cats->setY(catY);
+	cats->setRotation(rotation);
 	// If cat catches mouse, meow
 	if (catX < input->getMouseX() + 100 &&
 		catX + 500 > input->getMouseX() - 100 &&
@@ -146,8 +170,7 @@ void TestAppGame::render() {
 				grass_tiled->getHeight());
 		}
 	}
-	batch->draw(
-		texture_atlas->getRegion("cat.jpg").get(), catX, catY, 500, 500);
+	cats->draw(*batch, 1);
 	batch->draw(
 		texture_atlas->getRegion("mouse.jpg").get(), input->getMouseX() - 100,
 		input->getMouseY() - 100, 200, 200);
@@ -174,4 +197,10 @@ void TestAppGame::resize(const int width, const int height) {
 Error TestAppGame::dispose() {
 	getAPI().system().log("TestAppGame", "Game destroy");
 	return nullptr;
+}
+
+void Growl::Cat::draw(Batch& batch, float parent_alpha) {
+	batch.draw(
+		atlas->getRegion("cat.jpg").get(), getX(), getY(), getWidth(),
+		getHeight());
 }

@@ -40,6 +40,12 @@ void InputHandler::onKeyboardEvent(InputKeyboardEvent& event) {
 		case Key::LetterD:
 			right = event.type == KeyEventType::KeyDown;
 			break;
+		case Key::LetterQ:
+			anticlockwise = event.type == KeyEventType::KeyDown;
+			break;
+		case Key::LetterE:
+			clockwise = event.type == KeyEventType::KeyDown;
+			break;
 		default:
 			break;
 		}
@@ -67,6 +73,12 @@ void InputHandler::onControllerEvent(InputControllerEvent& event) {
 			break;
 		case ControllerButton::DpadRight:
 			right = event.type == ControllerEventType::ButtonDown;
+			break;
+		case ControllerButton::LB:
+			anticlockwise = event.type == ControllerEventType::ButtonDown;
+			break;
+		case ControllerButton::RB:
+			clockwise = event.type == ControllerEventType::ButtonDown;
 			break;
 		default:
 			break;
