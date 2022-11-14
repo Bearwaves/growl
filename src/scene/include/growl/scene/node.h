@@ -10,6 +10,7 @@ class Batch;
 
 class Node {
 public:
+	virtual ~Node() = default;
 	float getX();
 	float getY();
 	float getWidth();

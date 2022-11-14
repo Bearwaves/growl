@@ -230,17 +230,16 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch() {
 	auto projection = glm::ortho<float>(
 		0, surface.texture.width, surface.texture.height, 0, 1, -1);
 	auto buffer = constant_buffers_ring[current_buffer];
-	uint32_t pre_offset = constant_buffer_offset;
 	memcpy(
 		reinterpret_cast<unsigned char*>(buffer.contents) +
 			constant_buffer_offset,
 		&projection, sizeof(projection));
-	constant_buffer_offset += sizeof(projection);
 
 	return std::make_unique<MetalBatch>(
 		command_buffer, surface.texture, default_shader.get(),
-		rect_shader.get(), sdf_shader.get(), buffer, pre_offset,
-		vertex_buffers_ring[current_buffer], &vertex_buffer_offset);
+		rect_shader.get(), sdf_shader.get(), projection, buffer,
+		&constant_buffer_offset, vertex_buffers_ring[current_buffer],
+		&vertex_buffer_offset);
 }
 
 std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
@@ -249,17 +248,16 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
 	auto projection = glm::ortho<float>(
 		0, metal_texture.getWidth(), metal_texture.getHeight(), 0, 1, -1);
 	auto buffer = constant_buffers_ring[current_buffer];
-	uint32_t pre_offset = constant_buffer_offset;
 	memcpy(
 		reinterpret_cast<unsigned char*>(buffer.contents) +
 			constant_buffer_offset,
 		&projection, sizeof(projection));
-	constant_buffer_offset += sizeof(projection);
 
 	return std::make_unique<MetalBatch>(
 		command_buffer, metal_texture.getRaw(), default_shader.get(),
-		rect_shader.get(), sdf_shader.get(), buffer, pre_offset,
-		vertex_buffers_ring[current_buffer], &vertex_buffer_offset);
+		rect_shader.get(), sdf_shader.get(), projection, buffer,
+		&constant_buffer_offset, vertex_buffers_ring[current_buffer],
+		&vertex_buffer_offset);
 }
 
 const std::vector<unsigned char>

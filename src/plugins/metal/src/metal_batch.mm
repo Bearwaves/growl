@@ -1,4 +1,5 @@
 #include "metal_batch.h"
+#include "glm/ext/matrix_float4x4.hpp"
 #include "growl/core/assets/font_face.h"
 #include "metal_texture.h"
 #include <cmath>
@@ -15,7 +16,8 @@ void MetalBatch::clear(float r, float g, float b) {
 void MetalBatch::begin() {
 	encoder = [command_buffer
 		renderCommandEncoderWithDescriptor:renderPassDescriptor()];
-	[encoder setVertexBuffer:constant_buffer offset:constant_offset atIndex:0];
+	[encoder setVertexBuffer:constant_buffer offset:*constant_offset atIndex:0];
+	*constant_offset += sizeof(mvp);
 }
 
 void MetalBatch::end() {
@@ -24,6 +26,20 @@ void MetalBatch::end() {
 
 void MetalBatch::setColor(float r, float g, float b, float a) {
 	color = {r, g, b, a};
+}
+
+void MetalBatch::setTransform(glm::mat4x4 transform) {
+	mvp = transform;
+	memcpy(
+		reinterpret_cast<unsigned char*>(constant_buffer.contents) +
+			*constant_offset,
+		&mvp, sizeof(mvp));
+	[encoder setVertexBuffer:constant_buffer offset:*constant_offset atIndex:0];
+	*constant_offset += sizeof(mvp);
+}
+
+glm::mat4x4 MetalBatch::getTransform() {
+	return mvp;
 }
 
 void MetalBatch::draw(
