@@ -41,10 +41,6 @@ Error TestAppGame::init() {
 	getAPI().system().log("TestAppGame", "Generating layout");
 	layout = std::make_unique<GlyphLayout>(*font, "Hello Growl!", 0, 50);
 
-	input = std::make_unique<InputHandler>(getAPI().system());
-	getAPI().system().setInputProcessor(input.get());
-	getAPI().system().setLogLevel(LogLevel::Debug);
-
 	getAPI().system().log("TestAppGame", "Loading texture atlas");
 	{
 		Timer timer(getAPI().system(), "TestAppGame", "Loading texture atlas");
@@ -83,19 +79,34 @@ Error TestAppGame::init() {
 		music = std::move(music_result.get());
 	}
 
-	cats = std::make_unique<Node>();
+	scene = std::make_unique<Node>();
+	cats = scene->addChild(std::make_unique<Node>());
 	cats->setWidth(500);
 	cats->setHeight(500);
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 2; j++) {
-			auto cat = std::make_unique<Cat>(texture_atlas.get());
-			cat->setWidth(250);
-			cat->setHeight(250);
-			cat->setX(250 * i);
-			cat->setY(250 * j);
-			cats->addChild(std::move(cat));
+			auto inner_cats = std::make_unique<Node>();
+			inner_cats->setWidth(250);
+			inner_cats->setHeight(250);
+			inner_cats->setX(250 * i);
+			inner_cats->setY(250 * j);
+			for (int ii = 0; ii < 10; ii++) {
+				for (int jj = 0; jj < 10; jj++) {
+					auto cat = std::make_unique<Cat>(texture_atlas.get());
+					cat->setWidth(25);
+					cat->setHeight(25);
+					cat->setX(25 * ii);
+					cat->setY(25 * jj);
+					inner_cats->addChild(std::move(cat));
+				}
+			}
+			cats->addChild(std::move(inner_cats));
 		}
 	}
+
+	input = std::make_unique<InputHandler>(getAPI().system(), scene.get());
+	getAPI().system().setInputProcessor(input.get());
+	getAPI().system().setLogLevel(LogLevel::Debug);
 
 	return nullptr;
 }
@@ -170,10 +181,10 @@ void TestAppGame::render() {
 				grass_tiled->getHeight());
 		}
 	}
-	cats->draw(*batch, 1);
-	batch->draw(
+	scene->draw(*batch, 1);
+	/*batch->draw(
 		texture_atlas->getRegion("mouse.jpg").get(), input->getMouseX() - 100,
-		input->getMouseY() - 100, 200, 200);
+		input->getMouseY() - 100, 200, 200);*/
 
 	if (font_size != layout->getFontSize()) {
 		layout->setFontSize(font_size);
@@ -192,6 +203,8 @@ void TestAppGame::render() {
 void TestAppGame::resize(const int width, const int height) {
 	getAPI().system().log(
 		"TestAppGame", "Window resized: ({}, {})", width, height);
+	scene->setWidth(width);
+	scene->setHeight(height);
 }
 
 Error TestAppGame::dispose() {
@@ -200,7 +213,13 @@ Error TestAppGame::dispose() {
 }
 
 void Growl::Cat::draw(Batch& batch, float parent_alpha) {
+	batch.setColor(1, !is_hit, !is_hit, parent_alpha);
 	batch.draw(
 		atlas->getRegion("cat.jpg").get(), getX(), getY(), getWidth(),
 		getHeight());
+	batch.setColor(1, 1, 1, parent_alpha);
+}
+
+void Growl::Cat::onMouseEvent(InputMouseEvent& event) {
+	is_hit = hit(event.mouseX, event.mouseY);
 }

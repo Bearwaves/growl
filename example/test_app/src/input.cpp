@@ -3,12 +3,14 @@
 #include "growl/core/input/event.h"
 #include "growl/core/input/keyboard.h"
 #include "growl/core/log.h"
+#include "growl/scene/node.h"
 
 using Growl::InputHandler;
 
 void InputHandler::onMouseEvent(InputMouseEvent& event) {
 	mouseX = event.mouseX;
 	mouseY = event.mouseY;
+	root->onMouseEvent(event);
 }
 
 void InputHandler::onTouchEvent(InputTouchEvent& event) {

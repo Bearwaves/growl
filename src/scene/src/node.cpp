@@ -1,6 +1,7 @@
 #include "growl/scene/node.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "growl/core/graphics/batch.h"
+#include "growl/core/input/event.h"
 #include <cmath>
 
 using Growl::Batch;
@@ -46,9 +47,10 @@ void Node::setRotation(float rads) {
 	this->rotation = rads;
 }
 
-void Node::addChild(std::unique_ptr<Node> node) {
+Node* Node::addChild(std::unique_ptr<Node> node) {
 	node->parent = this;
 	children.emplace_back(std::move(node));
+	return children.back().get();
 }
 
 void Node::draw(Batch& batch, float parent_alpha) {
@@ -62,6 +64,21 @@ void Node::drawChildren(Batch& batch, float parent_alpha) {
 		child->draw(batch, parent_alpha);
 	}
 	resetTransform(batch);
+}
+
+void Node::onMouseEvent(InputMouseEvent& event) {
+	for (auto& child : children) {
+		child->onMouseEvent(event);
+	}
+}
+
+bool Node::hit(float x, float y) {
+	glm::vec4 internal_coordinates =
+		glm::inverse(parent->local_transform) * glm::vec4(x, y, 0, 1);
+	return !(
+		internal_coordinates.x < this->x || internal_coordinates.y < this->y ||
+		internal_coordinates.x >= this->x + this->w ||
+		internal_coordinates.y >= this->y + this->h);
 }
 
 void Node::computeLocalTransform() {

@@ -10,10 +10,12 @@ class Cat : public Node {
 public:
 	explicit Cat(TextureAtlas* atlas)
 		: atlas{atlas} {}
-	void draw(Batch& batch, float parent_alpha);
+	void draw(Batch& batch, float parent_alpha) override;
+	void onMouseEvent(InputMouseEvent& event) override;
 
 private:
 	TextureAtlas* atlas;
+	bool is_hit = false;
 };
 
 } // namespace Growl
