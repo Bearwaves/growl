@@ -26,7 +26,9 @@ public:
 	virtual void setInputProcessor(InputProcessor* processor) {
 		inputProcessor = processor;
 	}
-	virtual bool didResize(int* width, int* height) = 0;
+	virtual bool didResize(int* width, int* height) {
+		return false;
+	}
 
 	template <class... Args>
 	void
