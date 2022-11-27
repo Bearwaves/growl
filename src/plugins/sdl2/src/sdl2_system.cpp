@@ -93,6 +93,14 @@ void SDL2SystemAPI::tick() {
 		case SDL_CONTROLLERDEVICEADDED:
 			openGameController(event.cdevice.which);
 			break;
+		case SDL_WINDOWEVENT:
+			switch (event.window.event) {
+			case SDL_WINDOWEVENT_RESIZED:
+				resize_width = event.window.data1;
+				resize_height = event.window.data2;
+				break;
+			}
+			break;
 		}
 	}
 }
@@ -108,6 +116,14 @@ void SDL2SystemAPI::dispose() {
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 #endif
+}
+
+bool SDL2SystemAPI::didResize(int* width, int* height) {
+	*width = resize_width;
+	*height = resize_height;
+	resize_width = 0;
+	resize_height = 0;
+	return *width || *height;
 }
 
 void SDL2SystemAPI::setLogLevel(LogLevel log_level) {

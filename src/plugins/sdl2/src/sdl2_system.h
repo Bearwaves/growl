@@ -51,6 +51,7 @@ public:
 	virtual Result<std::unique_ptr<Window>>
 	createWindow(const WindowConfig& config) override;
 	void setLogLevel(LogLevel log_level) override;
+	bool didResize(int* width, int* height) override;
 
 	Result<std::unique_ptr<File>>
 	openFile(std::string path, size_t start, size_t end) override;
@@ -74,6 +75,8 @@ private:
 	API& api;
 	bool running;
 	std::unique_ptr<SDL2Controller> controller;
+	int resize_width = 0;
+	int resize_height = 0;
 
 #ifdef GROWL_IMGUI
 	ImGuiIO* imgui_io;
