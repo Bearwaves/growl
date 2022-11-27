@@ -98,6 +98,7 @@ std::unique_ptr<Growl::Game> createGame();
 	api->system().log(
 		Growl::LogLevel::Debug, "ViewController",
 		"Got new screen size ({}, {}).", w, h);
+	game->resize(w, h);
 	[coordinator
 		animateAlongsideTransition:^(
 			id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
