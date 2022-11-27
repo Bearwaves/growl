@@ -28,34 +28,31 @@ float Node::getRotation() {
 
 void Node::setX(float x) {
 	this->x = x;
-	computeLocalTransform();
 }
 
 void Node::setY(float y) {
 	this->y = y;
-	computeLocalTransform();
 }
 
 void Node::setWidth(float w) {
 	this->w = w;
-	computeLocalTransform();
 }
 
 void Node::setHeight(float h) {
 	this->h = h;
-	computeLocalTransform();
 }
 
 void Node::setRotation(float rads) {
 	this->rotation = rads;
-	computeLocalTransform();
 }
 
 void Node::addChild(std::unique_ptr<Node> node) {
+	node->parent = this;
 	children.emplace_back(std::move(node));
 }
 
 void Node::draw(Batch& batch, float parent_alpha) {
+	computeLocalTransform();
 	drawChildren(batch, parent_alpha);
 }
 
@@ -76,11 +73,14 @@ void Node::computeLocalTransform() {
 		glm::rotate(glm::identity<glm::mat4x4>(), rotation, {0, 0, 1});
 	local_transform =
 		translate * rotation_origin * rotate * glm::inverse(rotation_origin);
+	if (parent) {
+		local_transform = parent->local_transform * local_transform;
+	}
 }
 
 void Node::applyTransform(Batch& batch) {
 	old_transform = batch.getTransform();
-	batch.setTransform(old_transform * local_transform);
+	batch.setTransform(local_transform);
 }
 
 void Node::resetTransform(Batch& batch) {

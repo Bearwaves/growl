@@ -1,4 +1,5 @@
 #include "opengl_batch.h"
+#include "glm/gtc/type_ptr.hpp"
 #include "growl/core/assets/atlas.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/graphics/font_texture_atlas.h"
@@ -45,11 +46,11 @@ void OpenGLBatch::setColor(float r, float g, float b, float a) {
 }
 
 void OpenGLBatch::setTransform(glm::mat4x4 transform) {
-	mvp = transform;
+	this->transform = transform;
 }
 
 glm::mat4x4 OpenGLBatch::getTransform() {
-	return mvp;
+	return transform;
 }
 
 void OpenGLBatch::draw(
@@ -74,7 +75,8 @@ void OpenGLBatch::draw(
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	default_shader->bind(mvp, color);
+	default_shader->bind(
+		glm::value_ptr(projection), glm::value_ptr(transform), color);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
@@ -100,7 +102,8 @@ void OpenGLBatch::draw(
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	default_shader->bind(mvp, color);
+	default_shader->bind(
+		glm::value_ptr(projection), glm::value_ptr(transform), color);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
@@ -147,9 +150,11 @@ void OpenGLBatch::draw(
 		GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
 		indices.data(), GL_STATIC_DRAW);
 	if (font_texture_atlas.getType() == FontFaceType::MSDF) {
-		sdf_shader->bind(mvp, color);
+		sdf_shader->bind(
+			glm::value_ptr(projection), glm::value_ptr(transform), color);
 	} else {
-		default_shader->bind(mvp, color);
+		default_shader->bind(
+			glm::value_ptr(projection), glm::value_ptr(transform), color);
 	}
 	glDrawElements(
 		GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
@@ -175,7 +180,8 @@ void OpenGLBatch::drawRect(float x, float y, float width, float height) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	rect_shader->bind(mvp, color);
+	rect_shader->bind(
+		glm::value_ptr(projection), glm::value_ptr(transform), color);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 

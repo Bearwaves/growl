@@ -1,5 +1,4 @@
 #include "opengl_shader.h"
-#include "glm/gtc/type_ptr.hpp"
 #include "growl/core/graphics/color.h"
 #include "opengl_graphics.h"
 
@@ -35,7 +34,8 @@ OpenGLShader::~OpenGLShader() {
 	glDeleteProgram(program);
 }
 
-void OpenGLShader::bind(glm::mat4 mvp, Color color) {
+void OpenGLShader::bind(
+	const float* projection, const float* transform, Color color) {
 	glUseProgram(program);
 	GLint pos_attrib = glGetAttribLocation(program, "position");
 	glEnableVertexAttribArray(pos_attrib);
@@ -48,8 +48,10 @@ void OpenGLShader::bind(glm::mat4 mvp, Color color) {
 			tex_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
 			(void*)(2 * sizeof(GLfloat)));
 	}
-	GLuint mvp_id = glGetUniformLocation(program, "mvp");
-	glUniformMatrix4fv(mvp_id, 1, GL_FALSE, glm::value_ptr(mvp));
+	GLuint projection_id = glGetUniformLocation(program, "projection");
+	glUniformMatrix4fv(projection_id, 1, GL_FALSE, projection);
+	GLuint transform_id = glGetUniformLocation(program, "transform");
+	glUniformMatrix4fv(transform_id, 1, GL_FALSE, transform);
 	GLuint color_id = glGetUniformLocation(program, "color");
 	glUniform4f(color_id, color.r, color.g, color.b, color.a);
 }
@@ -67,11 +69,12 @@ in vec2 texCoord;
 
 out vec2 TexCoord;
 
-uniform mat4 mvp;
+uniform mat4 projection;
+uniform mat4 transform;
 
 void main() {
 	TexCoord = texCoord;
-	gl_Position = mvp * vec4(position, 0, 1);
+	gl_Position = projection * transform * vec4(position, 0, 1);
 }
 )";
 
@@ -93,7 +96,7 @@ uniform sampler2D texture0;
 uniform vec4 color;
 
 float median(float r, float g, float b) {
-    return max(min(r, g), min(max(r, g), b));
+	return max(min(r, g), min(max(r, g), b));
 }
 
 void main() {

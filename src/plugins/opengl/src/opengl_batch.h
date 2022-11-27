@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glm/ext/matrix_float4x4.hpp"
+#include "glm/ext/matrix_transform.hpp"
 #include "growl/core/graphics/batch.h"
 #include "growl/core/graphics/color.h"
 #include "opengl.h"
@@ -17,12 +18,13 @@ class OpenGLBatch : public Batch {
 public:
 	OpenGLBatch(
 		OpenGLShader* default_shader, OpenGLShader* sdf_shader,
-		OpenGLShader* rect_shader, glm::mat4 mvp, int width, int height,
+		OpenGLShader* rect_shader, glm::mat4 projection, int width, int height,
 		GLuint fbo)
 		: default_shader{default_shader}
 		, sdf_shader{sdf_shader}
 		, rect_shader{rect_shader}
-		, mvp{mvp}
+		, projection{projection}
+		, transform{glm::identity<glm::mat4x4>()}
 		, width{width}
 		, height{height}
 		, color{1, 1, 1, 1}
@@ -56,7 +58,8 @@ private:
 	OpenGLShader* default_shader;
 	OpenGLShader* sdf_shader;
 	OpenGLShader* rect_shader;
-	glm::mat4 mvp;
+	glm::mat4 projection;
+	glm::mat4 transform;
 	int width;
 	int height;
 	Color color;

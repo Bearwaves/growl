@@ -27,6 +27,7 @@ public:
 	virtual void draw(Batch& batch, float parent_alpha);
 
 private:
+	Node* parent;
 	float x;
 	float y;
 	float w;
