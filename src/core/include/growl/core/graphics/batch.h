@@ -10,6 +10,7 @@ namespace Growl {
 class Batch {
 public:
 	virtual ~Batch() = default;
+	virtual void clear(float r, float g, float b) = 0;
 	virtual void begin() = 0;
 	virtual void end() = 0;
 

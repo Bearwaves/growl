@@ -110,11 +110,6 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 	return nullptr;
 }
 
-void OpenGLGraphicsAPI::clear(float r, float g, float b) {
-	glClearColor(r, g, b, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-}
-
 std::unique_ptr<Texture> OpenGLGraphicsAPI::createTexture(
 	const Image& image, const TextureOptions options) {
 	unsigned int texture_id;

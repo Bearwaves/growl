@@ -18,7 +18,6 @@ public:
 	double getDeltaTime() {
 		return deltaTime;
 	}
-	virtual void clear(float r, float g, float b) = 0;
 
 	virtual std::unique_ptr<Texture> createTexture(
 		const Image& image,

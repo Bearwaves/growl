@@ -134,9 +134,8 @@ void TestAppGame::render() {
 		caught = false;
 	}
 
-	getAPI().graphics().clear(0, 0, 0);
-
 	auto batch = getAPI().graphics().createBatch();
+	batch->clear(0, 0, 0);
 	batch->begin();
 
 	for (int x = 0; x < batch->getTargetWidth(); x += grass_tiled->getWidth()) {

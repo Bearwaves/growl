@@ -26,7 +26,6 @@ public:
 	void begin() override;
 	void end() override;
 	Error setWindow(const WindowConfig& window_config) override;
-	void clear(float r, float g, float b) override;
 	void onWindowResize(int width, int height) override;
 
 	std::unique_ptr<Texture>

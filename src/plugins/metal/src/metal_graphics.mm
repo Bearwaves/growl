@@ -136,19 +136,6 @@ void MetalGraphicsAPI::onWindowResize(int width, int height) {
 									.height = static_cast<CGFloat>(height)}];
 }
 
-void MetalGraphicsAPI::clear(float r, float g, float b) {
-	MTLRenderPassDescriptor* pass =
-		[MTLRenderPassDescriptor renderPassDescriptor];
-	pass.colorAttachments[0].clearColor = MTLClearColorMake(r, g, b, 1);
-	pass.colorAttachments[0].loadAction = MTLLoadActionClear;
-	pass.colorAttachments[0].storeAction = MTLStoreActionStore;
-	pass.colorAttachments[0].texture = surface.texture;
-
-	id<MTLRenderCommandEncoder> encoder =
-		[command_buffer renderCommandEncoderWithDescriptor:pass];
-	[encoder endEncoding];
-}
-
 std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(
 	const Image& image, const TextureOptions options) {
 	auto texture_descriptor = [MTLTextureDescriptor

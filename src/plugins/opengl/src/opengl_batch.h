@@ -29,6 +29,7 @@ public:
 		, fbo{fbo} {}
 	~OpenGLBatch();
 
+	void clear(float r, float g, float b) override;
 	void begin() override;
 	void end() override;
 

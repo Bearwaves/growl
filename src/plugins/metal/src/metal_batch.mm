@@ -7,6 +7,11 @@
 
 using Growl::MetalBatch;
 
+void MetalBatch::clear(float r, float g, float b) {
+	clear_color = MTLClearColorMake(r, g, b, 1);
+	should_clear = true;
+}
+
 void MetalBatch::begin() {
 	encoder = [command_buffer
 		renderCommandEncoderWithDescriptor:renderPassDescriptor()];
@@ -147,6 +152,11 @@ MTLRenderPassDescriptor* MetalBatch::renderPassDescriptor() {
 	pass.colorAttachments[0].loadAction = MTLLoadActionLoad;
 	pass.colorAttachments[0].storeAction = MTLStoreActionStore;
 	pass.colorAttachments[0].texture = surface;
+	if (should_clear) {
+		pass.colorAttachments[0].loadAction = MTLLoadActionClear;
+		pass.colorAttachments[0].clearColor = clear_color;
+		should_clear = false;
+	}
 	return pass;
 }
 

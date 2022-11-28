@@ -26,6 +26,7 @@ public:
 		, vertex_buffer{vertex_buffer}
 		, vertex_offset{vertex_offset}
 		, color{1, 1, 1, 1} {}
+	void clear(float r, float g, float b) override;
 	void begin() override;
 	void end() override;
 	void setColor(float r, float g, float b, float a) override;
@@ -57,6 +58,8 @@ private:
 	id<MTLBuffer> vertex_buffer;
 	uint32_t* vertex_offset;
 	Color color;
+	bool should_clear = false;
+	MTLClearColor clear_color;
 
 	MTLRenderPassDescriptor* renderPassDescriptor();
 	void addVertex(
