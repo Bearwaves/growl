@@ -1,5 +1,6 @@
 #pragma once
 
+#include "glm/ext/matrix_transform.hpp"
 #include "growl/core/graphics/batch.h"
 #include "growl/core/graphics/color.h"
 #include <Metal/Metal.h>
@@ -13,9 +14,9 @@ public:
 	MetalBatch(
 		id<MTLCommandBuffer> command_buffer, id<MTLTexture> surface,
 		MetalShader* default_shader, MetalShader* rect_shader,
-		MetalShader* sdf_shader, glm::mat4x4 mvp, id<MTLBuffer> constant_buffer,
-		uint32_t* constant_offset, id<MTLBuffer> vertex_buffer,
-		uint32_t* vertex_offset)
+		MetalShader* sdf_shader, glm::mat4x4 projection,
+		id<MTLBuffer> constant_buffer, uint32_t* constant_offset,
+		id<MTLBuffer> vertex_buffer, uint32_t* vertex_offset)
 		: command_buffer{command_buffer}
 		, surface{surface}
 		, default_shader{default_shader}
@@ -26,7 +27,8 @@ public:
 		, vertex_buffer{vertex_buffer}
 		, vertex_offset{vertex_offset}
 		, color{1, 1, 1, 1}
-		, mvp{mvp} {}
+		, projection{projection}
+		, transform{glm::identity<glm::mat4x4>()} {}
 
 	void clear(float r, float g, float b) override;
 	void begin() override;
@@ -63,7 +65,8 @@ private:
 	id<MTLBuffer> vertex_buffer;
 	uint32_t* vertex_offset;
 	Color color;
-	glm::mat4x4 mvp;
+	glm::mat4x4 projection;
+	glm::mat4x4 transform;
 	bool should_clear = false;
 	MTLClearColor clear_color;
 

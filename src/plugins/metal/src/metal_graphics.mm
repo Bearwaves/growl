@@ -230,10 +230,6 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch() {
 	auto projection = glm::ortho<float>(
 		0, surface.texture.width, surface.texture.height, 0, 1, -1);
 	auto buffer = constant_buffers_ring[current_buffer];
-	memcpy(
-		reinterpret_cast<unsigned char*>(buffer.contents) +
-			constant_buffer_offset,
-		&projection, sizeof(projection));
 
 	return std::make_unique<MetalBatch>(
 		command_buffer, surface.texture, default_shader.get(),
@@ -248,10 +244,6 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
 	auto projection = glm::ortho<float>(
 		0, metal_texture.getWidth(), metal_texture.getHeight(), 0, 1, -1);
 	auto buffer = constant_buffers_ring[current_buffer];
-	memcpy(
-		reinterpret_cast<unsigned char*>(buffer.contents) +
-			constant_buffer_offset,
-		&projection, sizeof(projection));
 
 	return std::make_unique<MetalBatch>(
 		command_buffer, metal_texture.getRaw(), default_shader.get(),

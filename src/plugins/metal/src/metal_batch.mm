@@ -16,8 +16,18 @@ void MetalBatch::clear(float r, float g, float b) {
 void MetalBatch::begin() {
 	encoder = [command_buffer
 		renderCommandEncoderWithDescriptor:renderPassDescriptor()];
+	memcpy(
+		reinterpret_cast<unsigned char*>(constant_buffer.contents) +
+			*constant_offset,
+		&projection, sizeof(projection));
 	[encoder setVertexBuffer:constant_buffer offset:*constant_offset atIndex:0];
-	*constant_offset += sizeof(mvp);
+	*constant_offset += sizeof(projection);
+	memcpy(
+		reinterpret_cast<unsigned char*>(constant_buffer.contents) +
+			*constant_offset,
+		&transform, sizeof(transform));
+	[encoder setVertexBuffer:constant_buffer offset:*constant_offset atIndex:2];
+	*constant_offset += sizeof(transform);
 }
 
 void MetalBatch::end() {
@@ -29,17 +39,17 @@ void MetalBatch::setColor(float r, float g, float b, float a) {
 }
 
 void MetalBatch::setTransform(glm::mat4x4 transform) {
-	mvp = transform;
+	this->transform = transform;
 	memcpy(
 		reinterpret_cast<unsigned char*>(constant_buffer.contents) +
 			*constant_offset,
-		&mvp, sizeof(mvp));
-	[encoder setVertexBuffer:constant_buffer offset:*constant_offset atIndex:0];
-	*constant_offset += sizeof(mvp);
+		&this->transform, sizeof(this->transform));
+	[encoder setVertexBuffer:constant_buffer offset:*constant_offset atIndex:2];
+	*constant_offset += sizeof(transform);
 }
 
 glm::mat4x4 MetalBatch::getTransform() {
-	return mvp;
+	return transform;
 }
 
 void MetalBatch::draw(
