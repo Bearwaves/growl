@@ -122,9 +122,13 @@ void android_main(struct android_app* state) {
 		exit(5);
 	}
 
+	int resize_width, resize_height;
 	api->system().log("android_main", "Run!");
 	while (static_cast<SystemAPIInternal&>(api->system()).isRunning()) {
 		api->system().tick();
+		if (api->system().didResize(&resize_width, &resize_height)) {
+			game->resize(resize_width, resize_height);
+		}
 		static_cast<GraphicsAPIInternal&>(api->graphics()).begin();
 		game->render();
 		static_cast<GraphicsAPIInternal&>(api->graphics()).end();
