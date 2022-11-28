@@ -44,13 +44,33 @@ void AndroidSystemAPI::tick() {
 	}
 }
 
+bool AndroidSystemAPI::didResize(int* width, int* height) {
+	*width = resize_width;
+	*height = resize_height;
+	resize_width = 0;
+	resize_height = 0;
+	return *width || *height;
+}
+
 void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 	API* api = (API*)app->userData;
 	switch (cmd) {
 	case APP_CMD_INIT_WINDOW:
 		api->system().log("AndroidSystemAPI", "Window is ready for creation");
 		break;
+	case APP_CMD_WINDOW_RESIZED:
+	case APP_CMD_CONFIG_CHANGED:
+		static_cast<AndroidSystemAPI&>(api->system())
+			.onResizeEvent(
+				ANativeWindow_getWidth(app->window),
+				ANativeWindow_getHeight(app->window));
+		break;
 	}
+}
+
+void AndroidSystemAPI::onResizeEvent(int width, int height) {
+	resize_width = width;
+	resize_height = height;
 }
 
 int32_t AndroidSystemAPI::handleInput(android_app* app, AInputEvent* event) {

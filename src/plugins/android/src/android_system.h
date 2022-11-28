@@ -24,6 +24,7 @@ public:
 	virtual Result<std::unique_ptr<Window>>
 	createWindow(const WindowConfig& config) override;
 	void setLogLevel(LogLevel log_level) override;
+	bool didResize(int* width, int* height) override;
 
 	Result<std::unique_ptr<File>>
 	openFile(std::string path, size_t start, size_t end) override;
@@ -33,6 +34,7 @@ private:
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
 	int logPriorityForLevel(LogLevel log_level);
 	void onControllerEvent(InputControllerEvent event);
+	void onResizeEvent(int width, int height);
 	static void handleAppCmd(android_app* app, int32_t cmd);
 	static int32_t handleInput(android_app* app, AInputEvent* cmd);
 	static PointerEventType getPointerEventType(AInputEvent* event);
@@ -41,6 +43,8 @@ private:
 
 	API& api;
 	android_app* android_state;
+	int resize_width = 0;
+	int resize_height = 0;
 };
 
 } // namespace Growl

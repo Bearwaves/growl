@@ -166,7 +166,10 @@ void TestAppGame::render() {
 	}
 }
 
-void TestAppGame::resize(const int width, const int height) {}
+void TestAppGame::resize(const int width, const int height) {
+	getAPI().system().log(
+		"TestAppGame", "Window resized: ({}, {})", width, height);
+}
 
 Error TestAppGame::dispose() {
 	getAPI().system().log("TestAppGame", "Game destroy");
