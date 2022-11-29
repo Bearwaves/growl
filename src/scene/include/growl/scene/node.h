@@ -24,19 +24,20 @@ public:
 	void setRotation(float rads);
 
 	Node* addChild(std::unique_ptr<Node> node);
+	void draw(Batch& batch, float parent_alpha);
 	void drawChildren(Batch& batch, float parent_alpha);
-	virtual void draw(Batch& batch, float parent_alpha);
+	virtual void onDraw(Batch& batch, float parent_alpha);
 
 	virtual void onEvent(InputEvent& event) override;
 	bool hit(float x, float y);
 
 private:
 	Node* parent;
-	float x;
-	float y;
-	float w;
-	float h;
-	float rotation;
+	float x = 0;
+	float y = 0;
+	float w = 0;
+	float h = 0;
+	float rotation = 0;
 	std::vector<std::unique_ptr<Node>> children;
 	glm::mat4x4 local_transform;
 	glm::mat4x4 old_transform;

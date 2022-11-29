@@ -55,15 +55,19 @@ Node* Node::addChild(std::unique_ptr<Node> node) {
 
 void Node::draw(Batch& batch, float parent_alpha) {
 	computeLocalTransform();
+	applyTransform(batch);
+	onDraw(batch, parent_alpha);
+	resetTransform(batch);
+}
+
+void Node::onDraw(Batch& batch, float parent_alpha) {
 	drawChildren(batch, parent_alpha);
 }
 
 void Node::drawChildren(Batch& batch, float parent_alpha) {
-	applyTransform(batch);
 	for (auto& child : children) {
 		child->draw(batch, parent_alpha);
 	}
-	resetTransform(batch);
 }
 
 void Node::onEvent(InputEvent& event) {
@@ -74,20 +78,15 @@ void Node::onEvent(InputEvent& event) {
 }
 
 bool Node::hit(float x, float y) {
-	glm::vec4 internal_coordinates = glm::vec4(x, y, 0, 1);
-	if (parent) {
-		internal_coordinates =
-			glm::inverse(parent->local_transform) * internal_coordinates;
-	}
+	glm::vec4 internal_coordinates =
+		glm::inverse(local_transform) * glm::vec4(x, y, 0, 1);
 	return !(
-		internal_coordinates.x < this->x || internal_coordinates.y < this->y ||
-		internal_coordinates.x >= this->x + this->w ||
-		internal_coordinates.y >= this->y + this->h);
+		internal_coordinates.x < 0 || internal_coordinates.y < 0 ||
+		internal_coordinates.x >= this->w || internal_coordinates.y >= this->h);
 }
 
 void Node::computeLocalTransform() {
 	auto translate = glm::translate(glm::identity<glm::mat4x4>(), {x, y, 0});
-
 	auto rotation_origin =
 		glm::translate(glm::identity<glm::mat4x4>(), {w / 2, h / 2, 0});
 	auto rotate =
