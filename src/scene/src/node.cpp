@@ -66,9 +66,10 @@ void Node::drawChildren(Batch& batch, float parent_alpha) {
 	resetTransform(batch);
 }
 
-void Node::onMouseEvent(InputMouseEvent& event) {
+void Node::onEvent(InputEvent& event) {
+	InputProcessor::onEvent(event);
 	for (auto& child : children) {
-		child->onMouseEvent(event);
+		child->onEvent(event);
 	}
 }
 

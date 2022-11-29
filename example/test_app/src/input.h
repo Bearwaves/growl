@@ -13,6 +13,8 @@ public:
 		: system{system}
 		, root{root} {}
 
+	void onEvent(InputEvent& event) override;
+
 	void onMouseEvent(InputMouseEvent& event) override;
 
 	void onKeyboardEvent(InputKeyboardEvent& event) override;

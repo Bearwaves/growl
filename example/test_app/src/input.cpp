@@ -7,10 +7,14 @@
 
 using Growl::InputHandler;
 
+void InputHandler::onEvent(InputEvent& event) {
+	InputProcessor::onEvent(event);
+	root->onEvent(event);
+}
+
 void InputHandler::onMouseEvent(InputMouseEvent& event) {
 	mouseX = event.mouseX;
 	mouseY = event.mouseY;
-	root->onMouseEvent(event);
 }
 
 void InputHandler::onTouchEvent(InputTouchEvent& event) {

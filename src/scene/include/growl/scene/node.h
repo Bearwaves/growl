@@ -26,7 +26,8 @@ public:
 	Node* addChild(std::unique_ptr<Node> node);
 	void drawChildren(Batch& batch, float parent_alpha);
 	virtual void draw(Batch& batch, float parent_alpha);
-	virtual void onMouseEvent(InputMouseEvent& event) override;
+
+	virtual void onEvent(InputEvent& event) override;
 	bool hit(float x, float y);
 
 private:
