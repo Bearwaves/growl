@@ -12,6 +12,7 @@ public:
 		: atlas{atlas} {}
 	void draw(Batch& batch, float parent_alpha) override;
 	void onMouseEvent(InputMouseEvent& event) override;
+	void onTouchEvent(InputTouchEvent& event) override;
 
 private:
 	TextureAtlas* atlas;

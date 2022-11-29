@@ -220,3 +220,7 @@ void Growl::Cat::draw(Batch& batch, float parent_alpha) {
 void Growl::Cat::onMouseEvent(InputMouseEvent& event) {
 	is_hit = hit(event.mouseX, event.mouseY);
 }
+
+void Growl::Cat::onTouchEvent(InputTouchEvent& event) {
+	is_hit = hit(event.touchX, event.touchY);
+}
