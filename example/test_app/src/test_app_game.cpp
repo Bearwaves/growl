@@ -79,8 +79,7 @@ Error TestAppGame::init() {
 		music = std::move(music_result.get());
 	}
 
-	scene = std::make_unique<Node>();
-	cats = scene->addChild(std::make_unique<Node>());
+	cats = std::make_unique<Node>();
 	cats->setWidth(500);
 	cats->setHeight(500);
 	for (int i = 0; i < 2; i++) {
@@ -104,7 +103,7 @@ Error TestAppGame::init() {
 		}
 	}
 
-	input = std::make_unique<InputHandler>(getAPI().system(), scene.get());
+	input = std::make_unique<InputHandler>(getAPI().system(), cats.get());
 	getAPI().system().setInputProcessor(input.get());
 	getAPI().system().setLogLevel(LogLevel::Debug);
 
@@ -181,7 +180,7 @@ void TestAppGame::render() {
 				grass_tiled->getHeight());
 		}
 	}
-	scene->draw(*batch, 1);
+	cats->draw(*batch, 1);
 	/*batch->draw(
 		texture_atlas->getRegion("mouse.jpg").get(), input->getMouseX() - 100,
 		input->getMouseY() - 100, 200, 200);*/
@@ -203,8 +202,6 @@ void TestAppGame::render() {
 void TestAppGame::resize(const int width, const int height) {
 	getAPI().system().log(
 		"TestAppGame", "Window resized: ({}, {})", width, height);
-	scene->setWidth(width);
-	scene->setHeight(height);
 }
 
 Error TestAppGame::dispose() {

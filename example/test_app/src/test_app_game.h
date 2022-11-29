@@ -36,8 +36,7 @@ private:
 
 	std::unique_ptr<AudioClip> meow;
 	std::unique_ptr<AudioStream> music;
-	std::unique_ptr<Node> scene;
-	Node* cats;
+	std::unique_ptr<Node> cats;
 
 	double counter = 0;
 	constexpr const static float SPEED = 500; // px/s

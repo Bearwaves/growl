@@ -73,8 +73,11 @@ void Node::onMouseEvent(InputMouseEvent& event) {
 }
 
 bool Node::hit(float x, float y) {
-	glm::vec4 internal_coordinates =
-		glm::inverse(parent->local_transform) * glm::vec4(x, y, 0, 1);
+	glm::vec4 internal_coordinates = glm::vec4(x, y, 0, 1);
+	if (parent) {
+		internal_coordinates =
+			glm::inverse(parent->local_transform) * internal_coordinates;
+	}
 	return !(
 		internal_coordinates.x < this->x || internal_coordinates.y < this->y ||
 		internal_coordinates.x >= this->x + this->w ||
