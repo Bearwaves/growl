@@ -15,21 +15,9 @@ public:
 
 	void onEvent(InputEvent& event) override;
 
-	void onMouseEvent(InputMouseEvent& event) override;
-
 	void onKeyboardEvent(InputKeyboardEvent& event) override;
 
 	void onControllerEvent(InputControllerEvent& event) override;
-
-	void onTouchEvent(InputTouchEvent& event) override;
-
-	int getMouseX() {
-		return mouseX;
-	}
-
-	int getMouseY() {
-		return mouseY;
-	}
 
 	bool upPressed() {
 		return up;
@@ -58,8 +46,6 @@ public:
 private:
 	SystemAPI& system;
 	Node* root;
-	int mouseX;
-	int mouseY;
 	bool up = false;
 	bool down = false;
 	bool left = false;

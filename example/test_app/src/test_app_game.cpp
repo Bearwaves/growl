@@ -82,24 +82,14 @@ Error TestAppGame::init() {
 	cats = std::make_unique<Node>();
 	cats->setWidth(500);
 	cats->setHeight(500);
-	for (int i = 0; i < 2; i++) {
-		for (int j = 0; j < 2; j++) {
-			auto inner_cats = std::make_unique<Node>();
-			inner_cats->setWidth(250);
-			inner_cats->setHeight(250);
-			inner_cats->setX(250 * i);
-			inner_cats->setY(250 * j);
-			for (int ii = 0; ii < 10; ii++) {
-				for (int jj = 0; jj < 10; jj++) {
-					auto cat = std::make_unique<Cat>(texture_atlas.get());
-					cat->setWidth(25);
-					cat->setHeight(25);
-					cat->setX(25 * ii);
-					cat->setY(25 * jj);
-					inner_cats->addChild(std::move(cat));
-				}
-			}
-			cats->addChild(std::move(inner_cats));
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			auto cat =
+				cats->addChild(std::make_unique<Cat>(texture_atlas.get()));
+			cat->setWidth(125);
+			cat->setHeight(125);
+			cat->setX(125 * i);
+			cat->setY(125 * j);
 		}
 	}
 
@@ -155,18 +145,6 @@ void TestAppGame::render() {
 	cats->setX(catX);
 	cats->setY(catY);
 	cats->setRotation(rotation);
-	// If cat catches mouse, meow
-	if (catX < input->getMouseX() + 100 &&
-		catX + 500 > input->getMouseX() - 100 &&
-		catY < input->getMouseY() + 100 &&
-		catY + 500 > input->getMouseY() - 100) {
-		if (!caught) {
-			caught = true;
-			getAPI().audio().play(*meow);
-		}
-	} else {
-		caught = false;
-	}
 
 	auto batch = getAPI().graphics().createBatch();
 	batch->clear(0, 0, 0);
@@ -181,9 +159,6 @@ void TestAppGame::render() {
 		}
 	}
 	cats->draw(*batch, 1);
-	/*batch->draw(
-		texture_atlas->getRegion("mouse.jpg").get(), input->getMouseX() - 100,
-		input->getMouseY() - 100, 200, 200);*/
 
 	if (font_size != layout->getFontSize()) {
 		layout->setFontSize(font_size);
@@ -210,11 +185,9 @@ Error TestAppGame::dispose() {
 }
 
 void Growl::Cat::draw(Batch& batch, float parent_alpha) {
-	batch.setColor(1, !is_hit, !is_hit, parent_alpha);
-	batch.draw(
-		atlas->getRegion("cat.jpg").get(), getX(), getY(), getWidth(),
-		getHeight());
-	batch.setColor(1, 1, 1, parent_alpha);
+	auto region = is_hit ? atlas->getRegion("mouse.jpg").get()
+						 : atlas->getRegion("cat.jpg").get();
+	batch.draw(region, getX(), getY(), getWidth(), getHeight());
 }
 
 void Growl::Cat::onMouseEvent(InputMouseEvent& event) {

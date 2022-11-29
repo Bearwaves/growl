@@ -12,16 +12,6 @@ void InputHandler::onEvent(InputEvent& event) {
 	root->onEvent(event);
 }
 
-void InputHandler::onMouseEvent(InputMouseEvent& event) {
-	mouseX = event.mouseX;
-	mouseY = event.mouseY;
-}
-
-void InputHandler::onTouchEvent(InputTouchEvent& event) {
-	mouseX = event.touchX;
-	mouseY = event.touchY;
-}
-
 void InputHandler::onKeyboardEvent(InputKeyboardEvent& event) {
 	switch (event.type) {
 	case KeyEventType::Unknown:
