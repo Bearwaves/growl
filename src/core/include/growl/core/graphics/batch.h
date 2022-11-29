@@ -1,6 +1,7 @@
 #pragma once
 
 #include "font_texture_atlas.h"
+#include "glm/ext/matrix_float4x4.hpp"
 #include "growl/core/text/glyph_layout.h"
 #include "texture.h"
 #include "texture_atlas.h"
@@ -15,6 +16,8 @@ public:
 	virtual void end() = 0;
 
 	virtual void setColor(float r, float g, float b, float a) = 0;
+	virtual void setTransform(glm::mat4x4 transform) = 0;
+	virtual glm::mat4x4 getTransform() = 0;
 
 	virtual void draw(
 		const Texture& texture, float x, float y, float width,

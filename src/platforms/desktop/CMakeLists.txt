@@ -37,6 +37,7 @@ endif()
 target_link_libraries(growl-platform-desktop
 	PUBLIC
 	growl-core
+	growl-scene
 	PRIVATE
 	growl-plugin-sdl2
 	growl-plugin-soloud

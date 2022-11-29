@@ -14,7 +14,7 @@ public:
 		OpenGLGraphicsAPI& graphics, std::string vertex_src = default_vertex,
 		std::string fragment_src = default_fragment);
 	~OpenGLShader();
-	void bind(glm::mat4 mvp, Color color);
+	void bind(const float* projection, const float* transform, Color color);
 
 	static std::string const default_vertex;
 	static std::string const default_fragment;

@@ -68,7 +68,7 @@ NSString* const MetalShader::GROWL_SHADER_HEADER = @R"(
 using namespace metal;
 
 struct ConstantBlock {
-	float4x4 mvp;
+	float4x4 projection;
 };
 
 struct VertexIn {
@@ -88,13 +88,14 @@ NSString* const MetalShader::DEFAULT_SHADER = @R"(
 vertex VertexOut vertex_func (
 	constant ConstantBlock& constant_block [[ buffer(0) ]],
 	const device VertexIn* vertex_array [[ buffer(1) ]],
+	constant float4x4& transform [[ buffer(2) ]],
 	unsigned int vid [[ vertex_id ]]
 ) {
 	VertexIn v = vertex_array[vid];
 
 	VertexOut outVertex = VertexOut();
 	outVertex.texCoord0 = v.vertPos;
-	outVertex.position = constant_block.mvp * float4(v.position, 0, 1);
+	outVertex.position = constant_block.projection * transform * float4(v.position, 0, 1);
 	outVertex.color = v.color;
 
 	return outVertex;
@@ -113,13 +114,14 @@ NSString* const MetalShader::RECT_SHADER = @R"(
 vertex VertexOut vertex_func (
 	constant ConstantBlock& constant_block [[ buffer(0) ]],
 	const device VertexIn* vertex_array [[ buffer(1) ]],
+	constant float4x4& transform [[ buffer(2) ]],
 	unsigned int vid [[ vertex_id ]]
 ) {
 	VertexIn v = vertex_array[vid];
 
 	VertexOut outVertex = VertexOut();
 	outVertex.texCoord0 = v.vertPos;
-	outVertex.position = constant_block.mvp * float4(v.position, 0, 1);
+	outVertex.position = constant_block.projection * transform * float4(v.position, 0, 1);
 	outVertex.color = v.color;
 
 	return outVertex;
@@ -136,13 +138,14 @@ NSString* const MetalShader::SDF_SHADER = @R"(
 vertex VertexOut vertex_func (
 	constant ConstantBlock& constant_block [[ buffer(0) ]],
 	const device VertexIn* vertex_array [[ buffer(1) ]],
+	constant float4x4& transform [[ buffer(2) ]],
 	unsigned int vid [[ vertex_id ]]
 ) {
 	VertexIn v = vertex_array[vid];
 
 	VertexOut outVertex = VertexOut();
 	outVertex.texCoord0 = v.vertPos;
-	outVertex.position = constant_block.mvp * float4(v.position, 0, 1);
+	outVertex.position = constant_block.projection * transform * float4(v.position, 0, 1);
 	outVertex.color = v.color;
 
 	return outVertex;

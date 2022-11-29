@@ -5,27 +5,19 @@
 namespace Growl {
 
 class SystemAPI;
+class Node;
 
 class InputHandler : public InputProcessor {
 public:
-	explicit InputHandler(SystemAPI& system)
-		: system{system} {}
+	explicit InputHandler(SystemAPI& system, Node* root)
+		: system{system}
+		, root{root} {}
 
-	void onMouseEvent(InputMouseEvent& event) override;
+	void onEvent(InputEvent& event) override;
 
 	void onKeyboardEvent(InputKeyboardEvent& event) override;
 
 	void onControllerEvent(InputControllerEvent& event) override;
-
-	void onTouchEvent(InputTouchEvent& event) override;
-
-	int getMouseX() {
-		return mouseX;
-	}
-
-	int getMouseY() {
-		return mouseY;
-	}
 
 	bool upPressed() {
 		return up;
@@ -43,14 +35,23 @@ public:
 		return right;
 	}
 
+	bool clockwisePressed() {
+		return clockwise;
+	}
+
+	bool anticlockwisePressed() {
+		return anticlockwise;
+	}
+
 private:
 	SystemAPI& system;
-	int mouseX;
-	int mouseY;
+	Node* root;
 	bool up = false;
 	bool down = false;
 	bool left = false;
 	bool right = false;
+	bool clockwise = false;
+	bool anticlockwise = false;
 };
 
 } // namespace Growl

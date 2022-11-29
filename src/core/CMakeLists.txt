@@ -27,6 +27,7 @@ target_include_directories(growl-core PUBLIC "include")
 set(INTERFACE_LIBS
 	growl-thirdparty::json
 	growl-thirdparty::fmt
+	growl-thirdparty::glm
 	)
 
 if(GROWL_IMGUI)
