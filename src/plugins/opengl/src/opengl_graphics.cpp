@@ -4,6 +4,7 @@
 #include "growl/core/api/api.h"
 #include "growl/core/assets/font_face.h"
 #ifdef GROWL_IMGUI
+#include "growl/core/imgui.h"
 #include "imgui_impl_opengl3.h"
 #endif
 #include "opengl.h"
@@ -46,13 +47,13 @@ void OpenGLGraphicsAPI::begin() {
 #ifdef GROWL_IMGUI
 	ImGui_ImplOpenGL3_NewFrame();
 	window->newImguiFrame();
-	ImGui::NewFrame();
+	imGuiBegin();
 #endif
 }
 
 void OpenGLGraphicsAPI::end() {
 #ifdef GROWL_IMGUI
-	ImGui::Render();
+	imGuiEnd();
 	if (api.imguiVisible()) {
 		int w, h;
 		window->getSize(&w, &h);
