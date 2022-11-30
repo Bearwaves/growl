@@ -103,9 +103,6 @@ Error TestAppGame::init() {
 void TestAppGame::render() {
 #ifdef GROWL_IMGUI
 	ImGui::Begin("Growl Test App");
-	ImGui::Text(
-		"Application average %.2f ms/frame (%.1f FPS)",
-		1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::SliderInt("Font size", &font_size, 1, 150);
 	ImGui::End();
 #endif

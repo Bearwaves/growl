@@ -21,9 +21,6 @@ set(SOURCES
 	"src/util/timer.cpp"
 	)
 
-add_library(growl-core ${SOURCES})
-target_include_directories(growl-core PUBLIC "include")
-
 set(INTERFACE_LIBS
 	growl-thirdparty::json
 	growl-thirdparty::fmt
@@ -31,11 +28,19 @@ set(INTERFACE_LIBS
 	)
 
 if(GROWL_IMGUI)
+	set(SOURCES
+		${SOURCES}
+		"src/imgui.cpp"
+		)
+
 	set(INTERFACE_LIBS
 		${INTERFACE_LIBS}
 		growl-thirdparty::imgui
 		)
 endif()
+
+add_library(growl-core ${SOURCES})
+target_include_directories(growl-core PUBLIC "include")
 
 target_link_libraries(growl-core
 	INTERFACE
