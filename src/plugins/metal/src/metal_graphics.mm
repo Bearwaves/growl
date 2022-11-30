@@ -2,10 +2,9 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
 #include "growl/core/assets/font_face.h"
+#include "growl/core/imgui.h"
 #ifdef GROWL_IMGUI
-#include "imgui.h"
 #include "imgui_impl_metal.h"
-#include "imgui_impl_sdl.h"
 #endif
 #include "metal_batch.h"
 #include "metal_shader.h"
@@ -61,13 +60,13 @@ void MetalGraphicsAPI::begin() {
 	// Start the Dear ImGui frame
 	ImGui_ImplMetal_NewFrame(imgui_pass);
 	window->newImguiFrame();
-	ImGui::NewFrame();
+	imGuiBegin();
 #endif
 }
 
 void MetalGraphicsAPI::end() {
 #ifdef GROWL_IMGUI
-	ImGui::Render();
+	imGuiEnd();
 	if (api.imguiVisible()) {
 		imgui_encoder =
 			[command_buffer renderCommandEncoderWithDescriptor:imgui_pass];
