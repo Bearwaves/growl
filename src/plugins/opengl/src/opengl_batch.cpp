@@ -32,6 +32,18 @@ void OpenGLBatch::begin() {
 	glBindVertexArray(vao);
 	glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);
+
+	glGenBuffers(1, &ubo);
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+	glBufferData(
+		GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, 2 * sizeof(glm::mat4));
+	glBufferSubData(
+		GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+	glBufferSubData(
+		GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4),
+		glm::value_ptr(transform));
 }
 
 void OpenGLBatch::end() {
@@ -47,6 +59,11 @@ void OpenGLBatch::setColor(float r, float g, float b, float a) {
 
 void OpenGLBatch::setTransform(glm::mat4x4 transform) {
 	this->transform = transform;
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+	glBufferSubData(
+		GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4),
+		glm::value_ptr(transform));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 glm::mat4x4 OpenGLBatch::getTransform() {
@@ -75,8 +92,7 @@ void OpenGLBatch::draw(
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	default_shader->bind(
-		glm::value_ptr(projection), glm::value_ptr(transform), color);
+	default_shader->bind(color);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
@@ -102,8 +118,7 @@ void OpenGLBatch::draw(
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	default_shader->bind(
-		glm::value_ptr(projection), glm::value_ptr(transform), color);
+	default_shader->bind(color);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
@@ -150,11 +165,9 @@ void OpenGLBatch::draw(
 		GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
 		indices.data(), GL_STATIC_DRAW);
 	if (font_texture_atlas.getType() == FontFaceType::MSDF) {
-		sdf_shader->bind(
-			glm::value_ptr(projection), glm::value_ptr(transform), color);
+		sdf_shader->bind(color);
 	} else {
-		default_shader->bind(
-			glm::value_ptr(projection), glm::value_ptr(transform), color);
+		default_shader->bind(color);
 	}
 	glDrawElements(
 		GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
@@ -180,8 +193,7 @@ void OpenGLBatch::drawRect(float x, float y, float width, float height) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	rect_shader->bind(
-		glm::value_ptr(projection), glm::value_ptr(transform), color);
+	rect_shader->bind(color);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 

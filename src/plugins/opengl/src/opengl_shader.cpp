@@ -28,14 +28,17 @@ OpenGLShader::OpenGLShader(
 
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
+
+	GLuint uniform_block_index =
+		glGetUniformBlockIndex(program, "ConstantBlock");
+	glUniformBlockBinding(program, uniform_block_index, 0);
 }
 
 OpenGLShader::~OpenGLShader() {
 	glDeleteProgram(program);
 }
 
-void OpenGLShader::bind(
-	const float* projection, const float* transform, Color color) {
+void OpenGLShader::bind(Color color) {
 	glUseProgram(program);
 	GLint pos_attrib = glGetAttribLocation(program, "position");
 	glEnableVertexAttribArray(pos_attrib);
@@ -48,10 +51,6 @@ void OpenGLShader::bind(
 			tex_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
 			(void*)(2 * sizeof(GLfloat)));
 	}
-	GLuint projection_id = glGetUniformLocation(program, "projection");
-	glUniformMatrix4fv(projection_id, 1, GL_FALSE, projection);
-	GLuint transform_id = glGetUniformLocation(program, "transform");
-	glUniformMatrix4fv(transform_id, 1, GL_FALSE, transform);
 	GLuint color_id = glGetUniformLocation(program, "color");
 	glUniform4f(color_id, color.r, color.g, color.b, color.a);
 }
@@ -69,8 +68,10 @@ in vec2 texCoord;
 
 out vec2 TexCoord;
 
-uniform mat4 projection;
-uniform mat4 transform;
+layout (std140) uniform ConstantBlock {
+	mat4 projection;
+	mat4 transform;
+};
 
 void main() {
 	TexCoord = texCoord;
