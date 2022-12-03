@@ -43,7 +43,6 @@ private:
 	int frames = 0;
 	float catX = 0;
 	float catY = 0;
-	bool caught = false;
 	int font_size = 50;
 };
 
