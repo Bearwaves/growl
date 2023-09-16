@@ -24,4 +24,4 @@ private:
 	static NSString* const GROWL_SHADER_HEADER;
 };
 
-}
+} // namespace Growl

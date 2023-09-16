@@ -14,7 +14,7 @@ struct AtlasConfig {
 };
 
 struct FontConfig {
-	bool msdf;
+	bool msdf = false;
 	int msdfSize = 32;
 	std::string msdfCharacters = "";
 };

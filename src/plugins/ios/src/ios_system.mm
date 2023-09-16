@@ -6,17 +6,17 @@
 #include "ios_window.h"
 #include <os/log.h>
 
-using Growl::IOSSystemAPI;
-using Growl::Error;
-using Growl::File;
-using Growl::LocalFile;
-using Growl::Window;
-using Growl::Result;
-using Growl::InputTouchEvent;
-using Growl::InputEvent;
-using Growl::InputEventType;
 using Growl::ControllerButton;
 using Growl::ControllerEventType;
+using Growl::Error;
+using Growl::File;
+using Growl::InputEvent;
+using Growl::InputEventType;
+using Growl::InputTouchEvent;
+using Growl::IOSSystemAPI;
+using Growl::LocalFile;
+using Growl::Result;
+using Growl::Window;
 
 Error IOSSystemAPI::init() {
 	for (GCController* controller in [GCController controllers]) {

@@ -12,13 +12,13 @@
 #include <memory>
 #include <vector>
 
+using Growl::Batch;
 using Growl::Error;
+using Growl::FontTextureAtlas;
 using Growl::MetalGraphicsAPI;
 using Growl::Texture;
 using Growl::TextureAtlas;
-using Growl::FontTextureAtlas;
 using Growl::TextureOptions;
-using Growl::Batch;
 using std::chrono::duration;
 using std::chrono::seconds;
 
