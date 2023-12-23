@@ -7,6 +7,7 @@
 #include "growl/core/audio/device.h"
 #include "growl/core/error.h"
 #include "soloud.h"
+#include "soloud_error.h"
 #include "soloud_wav.h"
 #include "soloud_wavstream.h"
 #include <memory>
@@ -25,7 +26,11 @@ using Growl::SystemAPI;
 
 Error SoLoudAudioAPI::init() {
 	soloud = std::make_unique<SoLoud::Soloud>();
-	soloud->init();
+
+	if (auto res = soloud->init(); res != SoLoud::SO_NO_ERROR) {
+		return std::make_unique<SoloudError>(
+			"SoLoud error code " + std::to_string(res));
+	}
 	soloud->setGlobalVolume(1.0);
 
 	this->devices = std::vector<AudioDevice>{

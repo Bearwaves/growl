@@ -11,6 +11,7 @@ set(SOURCES
 set(HEADERS
 	"src/soloud_audio.h"
 	"src/bundle_file.h"
+	"src/soloud_error.h"
 	)
 
 add_library(growl-plugin-soloud ${SOURCES} ${HEADERS})
