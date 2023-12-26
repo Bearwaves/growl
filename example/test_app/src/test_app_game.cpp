@@ -79,13 +79,13 @@ Error TestAppGame::init() {
 		music = std::move(music_result.get());
 	}
 
-	cats = std::make_unique<Node>();
+	cats = std::make_unique<Node>("Cats");
 	cats->setWidth(500);
 	cats->setHeight(500);
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
-			auto cat =
-				cats->addChild(std::make_unique<Cat>(texture_atlas.get()));
+			auto cat = cats->addChild(std::make_unique<Cat>(
+				"Cat " + std::to_string(i * 4 + j), texture_atlas.get()));
 			cat->setWidth(125);
 			cat->setHeight(125);
 			cat->setX(125 * i);
@@ -104,7 +104,6 @@ void TestAppGame::render() {
 #ifdef GROWL_IMGUI
 	ImGui::Begin("Growl Test App");
 	ImGui::SliderInt("Font size", &font_size, 1, 150);
-	ImGui::End();
 #endif
 
 	if (!grass_tiled) {
@@ -169,6 +168,10 @@ void TestAppGame::render() {
 		counter -= FPS_SAMPLE_SECONDS;
 		frames = 0;
 	}
+
+#ifdef GROWL_IMGUI
+	ImGui::End();
+#endif
 }
 
 void TestAppGame::resize(const int width, const int height) {

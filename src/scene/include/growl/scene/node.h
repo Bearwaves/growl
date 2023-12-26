@@ -3,6 +3,7 @@
 #include "glm/ext/matrix_float4x4.hpp"
 #include "growl/core/input/processor.h"
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace Growl {
@@ -11,7 +12,12 @@ class Batch;
 
 class Node : public InputProcessor {
 public:
+	Node(std::string&& label) {
+		this->label = std::move(label);
+	}
+
 	virtual ~Node() = default;
+	std::string& getLabel();
 	float getX();
 	float getY();
 	float getWidth();
@@ -26,12 +32,16 @@ public:
 	Node* addChild(std::unique_ptr<Node> node);
 	void draw(Batch& batch, float parent_alpha);
 	void drawChildren(Batch& batch, float parent_alpha);
-	virtual void onDraw(Batch& batch, float parent_alpha);
 
 	virtual void onEvent(InputEvent& event) override;
 	bool hit(float x, float y);
 
+protected:
+	virtual void onPopulateDebugUI(Batch& batch) {}
+	virtual void onDraw(Batch& batch, float parent_alpha);
+
 private:
+	std::string label;
 	Node* parent;
 	float x = 0;
 	float y = 0;
@@ -45,6 +55,7 @@ private:
 	void computeLocalTransform();
 	void applyTransform(Batch& batch);
 	void resetTransform(Batch& batch);
+	void populateDebugUI(Batch& batch);
 };
 
 } // namespace Growl

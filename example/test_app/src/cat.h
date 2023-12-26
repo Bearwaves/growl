@@ -8,8 +8,9 @@ class TextureAtlas;
 
 class Cat : public Node {
 public:
-	explicit Cat(TextureAtlas* atlas)
-		: atlas{atlas} {}
+	explicit Cat(std::string&& label, TextureAtlas* atlas)
+		: Node{std::move(label)}
+		, atlas{atlas} {}
 	void onDraw(Batch& batch, float parent_alpha) override;
 	void onMouseEvent(InputMouseEvent& event) override;
 	void onTouchEvent(InputTouchEvent& event) override;

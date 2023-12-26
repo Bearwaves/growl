@@ -2,10 +2,17 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "growl/core/graphics/batch.h"
 #include "growl/core/input/event.h"
-#include <cmath>
+#include <string>
+#ifdef GROWL_IMGUI
+#include "imgui.h"
+#endif
 
 using Growl::Batch;
 using Growl::Node;
+
+std::string& Node::getLabel() {
+	return label;
+}
 
 float Node::getX() {
 	return x;
@@ -53,9 +60,42 @@ Node* Node::addChild(std::unique_ptr<Node> node) {
 	return children.back().get();
 }
 
+void Node::populateDebugUI(Batch& batch) {
+#ifdef GROWL_IMGUI
+	if (ImGui::TreeNodeEx(
+			getLabel().c_str(),
+			parent ? ImGuiTreeNodeFlags_None : ImGuiTreeNodeFlags_Framed)) {
+		ImGui::SliderFloat(
+			"X", &x, 0.0f, parent ? parent->getWidth() : batch.getTargetWidth(),
+			"%.2f");
+		ImGui::SliderFloat(
+			"Y", &y, 0.0f,
+			parent ? parent->getHeight() : batch.getTargetHeight(), "%.2f");
+		ImGui::SliderFloat(
+			"Width", &w, 0.0f,
+			parent ? parent->getWidth() : batch.getTargetWidth(), "%.2f");
+		ImGui::SliderFloat(
+			"Height", &h, 0.0f,
+			parent ? parent->getHeight() : batch.getTargetHeight(), "%.2f");
+		ImGui::SliderFloat("Rotation", &rotation, 0.0f, 2 * M_PI, "%.2f");
+
+		onPopulateDebugUI(batch);
+
+		for (auto& child : children) {
+			child->populateDebugUI(batch);
+		}
+
+		ImGui::TreePop();
+	}
+#endif
+}
+
 void Node::draw(Batch& batch, float parent_alpha) {
 	computeLocalTransform();
 	applyTransform(batch);
+	if (!parent) {
+		populateDebugUI(batch);
+	}
 	onDraw(batch, parent_alpha);
 	resetTransform(batch);
 }
