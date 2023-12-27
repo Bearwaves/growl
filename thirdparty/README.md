@@ -11,6 +11,7 @@
 | json          | `3.11.3`   | https://github.com/nlohmann/json        |
 | libpng        | `1.6.37`   | http://libpng.org/pub/png/libpng.html   |
 | libunibreak   | `5.0`      | https://github.com/adah1972/libunibreak |
+| lua           | `v5.4.6`   | https://github.com/lua/lua              |
 | msdfgen       | `1.9.2`    | https://github.com/Chlumsky/msdfgen/    |
 | SoLoud        | `1157475`  | https://github.com/jarikomppa/soloud    |
 | stb_image     | `v2.27`    | https://github.com/nothings/stb         |

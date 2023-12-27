@@ -46,3 +46,6 @@
 	path = thirdparty/imgui
 	url = git@github.com:ocornut/imgui.git
 	shallow = true
+[submodule "thirdparty/lua"]
+	path = thirdparty/lua
+	url = git@github.com:lua/lua.git

@@ -72,6 +72,7 @@ include(cmake/libpng.cmake)
 include(cmake/msdfgen.cmake)
 include(cmake/fpng.cmake)
 include(cmake/stb.cmake)
+include(cmake/lua.cmake)
 
 add_library(growl-thirdparty INTERFACE)
 target_link_libraries(growl-thirdparty
