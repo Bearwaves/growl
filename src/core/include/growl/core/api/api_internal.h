@@ -4,6 +4,7 @@
 #include "graphics_api.h"
 #include "growl/core/error.h"
 #include "growl/core/input/event.h"
+#include "scripting_api.h"
 #include "system_api.h"
 
 namespace Growl {
@@ -38,6 +39,11 @@ public:
 class AudioAPIInternal : public AudioAPI, public APIInternal {
 public:
 	virtual ~AudioAPIInternal() {}
+};
+
+class ScriptingAPIInternal : public ScriptingAPI, public APIInternal {
+public:
+	virtual ~ScriptingAPIInternal() {}
 };
 
 } // namespace Growl

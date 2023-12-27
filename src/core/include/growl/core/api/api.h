@@ -20,9 +20,14 @@ public:
 		return *audioInternal;
 	}
 
+	ScriptingAPI& scripting() {
+		return *scriptingInternal;
+	}
+
 	void addSystemAPI(std::unique_ptr<SystemAPIInternal> internal);
 	void addGraphicsAPI(std::unique_ptr<GraphicsAPIInternal> internal);
 	void addAudioAPI(std::unique_ptr<AudioAPIInternal> internal);
+	void addScriptingAPI(std::unique_ptr<ScriptingAPIInternal> internal);
 
 	bool imguiVisible() const {
 		return imgui_visible;
@@ -44,10 +49,15 @@ public:
 		audioInternal = std::move(audio);
 	}
 
+	void setScriptingAPI(std::unique_ptr<ScriptingAPIInternal> scripting) {
+		scriptingInternal = std::move(scripting);
+	}
+
 private:
 	std::unique_ptr<SystemAPIInternal> systemInternal;
 	std::unique_ptr<GraphicsAPIInternal> graphicsInternal;
 	std::unique_ptr<AudioAPIInternal> audioInternal;
+	std::unique_ptr<ScriptingAPIInternal> scriptingInternal;
 	bool imgui_visible = false;
 };
 

@@ -4,7 +4,6 @@
 #include "growl/core/game/game.h"
 #include "growl/core/graphics/window.h"
 #include "growl/core/log.h"
-#include <chrono>
 #include <iostream>
 
 using Growl::API;
@@ -15,6 +14,7 @@ void initSDL2Plugin(API& api);
 void initSoLoudPlugin(API& api);
 void initMetalPlugin(API& api);
 void initOpenGLPlugin(API& api);
+void initLuaPlugin(API& api);
 
 GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 	: m_api(std::make_unique<API>())
@@ -23,6 +23,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 
 	initSDL2Plugin(*m_api);
 	initSoLoudPlugin(*m_api);
+	initLuaPlugin(*m_api);
 #ifdef GROWL_METAL
 	initMetalPlugin(*m_api);
 #else

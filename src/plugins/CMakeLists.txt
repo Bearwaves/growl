@@ -21,3 +21,7 @@ endif ()
 if (GROWL_ANDROID)
 	add_subdirectory(android)
 endif ()
+
+if (GROWL_LUA)
+	add_subdirectory(lua)
+endif ()

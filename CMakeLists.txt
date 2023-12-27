@@ -49,6 +49,7 @@ option(GROWL_SDL2 "Whether to build the SDL2 plugin" OFF)
 option(GROWL_SOLOUD "Whether to build the SoLoud plugin" ON)
 option(GROWL_TOOLS "Whether to build the tools, e.g. growl-cmd" ${GROWL_DEFAULT_TOOLS})
 option(GROWL_IMGUI "Whether to include Dear ImGui for debug UIs" ${GROWL_DEFAULT_IMGUI})
+option(GROWL_LUA "Whether to include Lua for scripting" ON)
 
 # Deal with third-party stuff that's in submodules
 find_package(Git QUIET)

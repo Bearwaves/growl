@@ -15,4 +15,6 @@ set(HEADERS
 	)
 
 add_library(growl-plugin-soloud ${SOURCES} ${HEADERS})
-target_link_libraries(growl-plugin-soloud PRIVATE growl-core growl-thirdparty)
+target_link_libraries(growl-plugin-soloud
+	PRIVATE growl-core growl-thirdparty::soloud
+	)
