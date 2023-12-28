@@ -43,6 +43,8 @@ using rang::style;
 using std::cout;
 using std::endl;
 
+static constexpr const char* ASSETS_CONFIG_FILENAME = "assets.json";
+
 bool isValidAudio(std::string path) {
 	SoLoud::WavStream sound;
 	return sound.load(path.c_str()) == SoLoud::SO_NO_ERROR;
@@ -212,9 +214,9 @@ Error processDirectory(
 	std::filesystem::path dir_resolved_path =
 		std::filesystem::relative(path, assets_dir);
 	std::unordered_map<std::string, AssetConfig> config;
-	if (std::filesystem::exists(path / "assets.json")) {
+	if (std::filesystem::exists(path / ASSETS_CONFIG_FILENAME)) {
 		try {
-			std::ifstream config_file(path / "assets.json");
+			std::ifstream config_file(path / ASSETS_CONFIG_FILENAME);
 			config = json::parse(config_file);
 		} catch (std::exception& e) {
 			return std::make_unique<AssetsError>(
@@ -244,7 +246,10 @@ Error processDirectory(
 				config.find(file_entry.path().filename().generic_string());
 			it != config.end()) {
 			asset_config = it->second;
-		} else if (auto it = config.find("*"); it != config.end()) {
+		} else if (auto it = config.find("*");
+				   it != config.end() &&
+				   file_entry.path().filename().generic_string() !=
+					   ASSETS_CONFIG_FILENAME) {
 			asset_config = it->second;
 		}
 
