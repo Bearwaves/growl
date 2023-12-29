@@ -1,5 +1,6 @@
 #include "growl/scene/node.h"
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/ext/scalar_constants.hpp"
 #include "growl/core/graphics/batch.h"
 #include "growl/core/input/event.h"
 #include <string>
@@ -77,7 +78,8 @@ void Node::populateDebugUI(Batch& batch) {
 		ImGui::SliderFloat(
 			"Height", &h, 0.0f,
 			parent ? parent->getHeight() : batch.getTargetHeight(), "%.2f");
-		ImGui::SliderFloat("Rotation", &rotation, 0.0f, 2 * M_PI, "%.2f");
+		ImGui::SliderFloat(
+			"Rotation", &rotation, 0.0f, 2 * glm::pi<float>(), "%.2f");
 
 		onPopulateDebugUI(batch);
 
