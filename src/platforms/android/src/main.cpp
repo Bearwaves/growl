@@ -13,6 +13,7 @@ using Growl::API;
 using Growl::AudioAPIInternal;
 using Growl::GraphicsAPIInternal;
 using Growl::LogLevel;
+using Growl::ScriptingAPIInternal;
 using Growl::SystemAPIInternal;
 using Growl::WindowConfig;
 
