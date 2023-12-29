@@ -71,6 +71,7 @@ void android_main(struct android_app* state) {
 	initAndroidPlugin(*api, state);
 	initOpenGLPlugin(*api);
 	initSoLoudPlugin(*api);
+	initLuaPlugin(*api);
 
 	if (auto err = static_cast<SystemAPIInternal&>(api->system()).init(); err) {
 		__android_log_print(
@@ -91,6 +92,13 @@ void android_main(struct android_app* state) {
 			LogLevel::Fatal, "android_main", "Failed to init audio API: {}",
 			err.get()->message());
 		exit(3);
+	}
+	if (auto err = static_cast<ScriptingAPIInternal&>(api->scripting()).init();
+		err) {
+		api->system().log(
+			LogLevel::Fatal, "android_main", "Failed to init scripting API: {}",
+			err.get()->message());
+		exit(4);
 	}
 	api->system().log("android_main", "Android adapter created");
 
@@ -141,6 +149,7 @@ void android_main(struct android_app* state) {
 		exit(6);
 	}
 	api->system().log("android_main", "Android adapter destroying");
+	static_cast<ScriptingAPIInternal&>(api->scripting()).dispose();
 	static_cast<AudioAPIInternal&>(api->audio()).dispose();
 	static_cast<GraphicsAPIInternal&>(api->graphics()).dispose();
 	static_cast<SystemAPIInternal&>(api->system()).dispose();

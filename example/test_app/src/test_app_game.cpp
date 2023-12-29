@@ -78,6 +78,27 @@ Error TestAppGame::init() {
 		music = std::move(*music_result);
 	}
 
+	getAPI().system().log("TestAppGame", "Loading scripts");
+	{
+		Timer timer(getAPI().system(), "TestAppGame", "Loading scripts");
+		Result<std::string> script_source_result =
+			bundle_result.get().getTextFileAsString("scripts/log.lua");
+		if (script_source_result.hasError()) {
+			return std::move(script_source_result.error());
+		}
+		Result<std::unique_ptr<Script>> script_result =
+			getAPI().scripting().createScript(
+				std::move(script_source_result.get()));
+		if (script_result.hasError()) {
+			return std::move(script_result.error());
+		}
+		std::unique_ptr<Script> script = std::move(script_result.get());
+
+		if (auto err = getAPI().scripting().execute(*script); err) {
+			return err;
+		}
+	}
+
 	cats = std::make_unique<Node>("Cats");
 	cats->setWidth(500);
 	cats->setHeight(500);

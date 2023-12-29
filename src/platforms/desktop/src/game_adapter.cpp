@@ -50,6 +50,14 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 			err.get()->message());
 		exit(3);
 	}
+	if (auto err =
+			static_cast<ScriptingAPIInternal&>(m_api->scripting()).init();
+		err) {
+		m_api->system().log(
+			LogLevel::Fatal, "GameAdapter", "Failed to init scripting API: {}",
+			err.get()->message());
+		exit(4);
+	}
 	m_api->system().log("GameAdapter", "Desktop adapter created");
 }
 
@@ -61,6 +69,7 @@ GameAdapter::~GameAdapter() {
 		exit(4);
 	}
 	m_api->system().log("GameAdapter", "Desktop adapter destroying");
+	static_cast<ScriptingAPIInternal&>(m_api->scripting()).dispose();
 	static_cast<AudioAPIInternal&>(m_api->audio()).dispose();
 	static_cast<GraphicsAPIInternal&>(m_api->graphics()).dispose();
 	static_cast<SystemAPIInternal&>(m_api->system()).dispose();

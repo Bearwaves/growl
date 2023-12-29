@@ -22,6 +22,7 @@ target_link_libraries(growl-platform-ios
 	PRIVATE
 	growl-plugin-metal
 	growl-plugin-soloud
+	growl-plugin-lua
 	growl-plugin-ios
 	"-framework UIKit"
 	"-framework Foundation"

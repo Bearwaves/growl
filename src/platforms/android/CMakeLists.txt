@@ -31,6 +31,7 @@ target_link_libraries(growl-platform-android
 	growl-plugin-android
 	growl-plugin-opengl
 	growl-plugin-soloud
+	growl-plugin-lua
 	android-native-app-glue
 	android
 	log

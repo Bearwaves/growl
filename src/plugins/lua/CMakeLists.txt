@@ -6,11 +6,15 @@ message(STATUS "[Growl] Enabled Lua plugin.")
 
 set(SOURCES
 	"src/lua_plugin.cpp"
+
 	"src/lua_scripting.cpp"
 	)
 
 set(HEADERS
+	"src/lua.h"
+
 	"src/lua_scripting.h"
+	"src/lua_script.h"
 	)
 
 add_library(growl-plugin-lua ${SOURCES} ${HEADERS})

@@ -72,7 +72,6 @@ include(cmake/libpng.cmake)
 include(cmake/msdfgen.cmake)
 include(cmake/fpng.cmake)
 include(cmake/stb.cmake)
-include(cmake/lua.cmake)
 
 add_library(growl-thirdparty INTERFACE)
 target_link_libraries(growl-thirdparty
@@ -98,4 +97,9 @@ endif()
 if (GROWL_SOLOUD)
 	include(cmake/soloud.cmake)
 	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::soloud)
+endif()
+
+if (GROWL_LUA)
+	include(cmake/lua.cmake)
+	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::lua)
 endif()

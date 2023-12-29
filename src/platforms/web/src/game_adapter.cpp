@@ -25,6 +25,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 	initSDL2Plugin(*g_api);
 	initSoLoudPlugin(*g_api);
 	initOpenGLPlugin(*g_api);
+	initLuaPlugin(*g_api);
 	g_game->setAPI(g_api.get());
 
 	if (auto err = static_cast<SystemAPIInternal&>(g_api->system()).init();
@@ -46,6 +47,14 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 			err.get()->message());
 		exit(3);
 	}
+	if (auto err =
+			static_cast<ScriptingAPIInternal&>(g_api->scripting()).init();
+		err) {
+		g_api->system().log(
+			LogLevel::Fatal, "GameAdapter", "Failed to init scripting API: {}",
+			err.get()->message());
+		exit(4);
+	}
 	g_api->system().log("GameAdapter", "Web adapter created");
 }
 
@@ -57,6 +66,7 @@ GameAdapter::~GameAdapter() {
 		exit(4);
 	}
 	g_api->system().log("GameAdapter", "Web adapter destroying");
+	static_cast<ScriptingAPIInternal&>(g_api->scripting()).dispose();
 	static_cast<AudioAPIInternal&>(g_api->audio()).dispose();
 	static_cast<GraphicsAPIInternal&>(g_api->graphics()).dispose();
 	static_cast<SystemAPIInternal&>(g_api->system()).dispose();
