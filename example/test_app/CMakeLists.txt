@@ -23,7 +23,7 @@ set(HEADERS
 if (MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /permissive-")
 else ()
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wpedantic")
 	set(CMAKE_OBJCXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif ()
 

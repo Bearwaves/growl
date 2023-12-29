@@ -23,6 +23,7 @@ target_link_libraries(growl-platform-web
 	growl-plugin-sdl2
 	growl-plugin-opengl
 	growl-plugin-soloud
+	growl-plugin-lua
 	)
 target_include_directories(growl-platform-web PUBLIC "include")
 target_compile_definitions(growl-platform-web INTERFACE "GROWL_WEB")

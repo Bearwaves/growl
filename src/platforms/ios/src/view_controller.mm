@@ -9,6 +9,7 @@
 void initIOSPlugin(Growl::API& api);
 void initSoLoudPlugin(Growl::API& api);
 void initMetalPlugin(Growl::API& api);
+void initLuaPlugin(Growl::API& api);
 std::unique_ptr<Growl::Game> createGame();
 
 @implementation GrowlViewController {
@@ -26,6 +27,7 @@ std::unique_ptr<Growl::Game> createGame();
 	initIOSPlugin(*api);
 	initSoLoudPlugin(*api);
 	initMetalPlugin(*api);
+	initLuaPlugin(*api);
 	game->setAPI(api.get());
 
 	auto& systemInternal =
@@ -33,6 +35,8 @@ std::unique_ptr<Growl::Game> createGame();
 	auto& graphicsInternal =
 		static_cast<Growl::GraphicsAPIInternal&>(api->graphics());
 	auto& audioInternal = static_cast<Growl::AudioAPIInternal&>(api->audio());
+	auto& scriptingInternal =
+		static_cast<Growl::ScriptingAPIInternal&>(api->scripting());
 
 	if (auto err = systemInternal.init(); err) {
 		std::cout << "Failed to init system API: " << err.get()->message()
@@ -50,6 +54,12 @@ std::unique_ptr<Growl::Game> createGame();
 			Growl::LogLevel::Fatal, "ViewController",
 			"Failed to init audio API: {}", err.get()->message());
 		exit(3);
+	}
+	if (auto err = scriptingInternal.init(); err) {
+		api->system().log(
+			Growl::LogLevel::Fatal, "ViewController",
+			"Failed to init scripting API: {}", err.get()->message());
+		exit(4);
 	}
 	api->system().log("ViewController", "iOS view controller created");
 
