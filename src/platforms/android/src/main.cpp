@@ -19,6 +19,7 @@ using Growl::WindowConfig;
 void initAndroidPlugin(API& api, android_app* state);
 void initSoLoudPlugin(API& api);
 void initOpenGLPlugin(API& api);
+void initLuaPlugin(API& api);
 std::unique_ptr<Growl::Game> createGame();
 
 void enableImmersiveMode(struct android_app* state) {
