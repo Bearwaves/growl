@@ -15,6 +15,7 @@ using Growl::GameAdapter;
 void initSDL2Plugin(API& api);
 void initSoLoudPlugin(API& api);
 void initOpenGLPlugin(API& api);
+void initLuaPlugin(API& api);
 std::unique_ptr<API> g_api;
 std::unique_ptr<Game> g_game;
 
