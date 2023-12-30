@@ -3,6 +3,7 @@ cmake_minimum_required (VERSION 3.19)
 project(growl-scene)
 
 set(SOURCES
+	"src/scene.cpp"
 	"src/node.cpp"
 	)
 
