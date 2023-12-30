@@ -1,6 +1,6 @@
 #include "lua_scripting.h"
 #include "growl/core/error.h"
-#include "growl/core/script/script.h"
+#include "growl/core/scripting/script.h"
 #include "lauxlib.h"
 #include "lua.h"
 #include "lua_error.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "growl/core/script/script.h"
+#include "growl/core/scripting/script.h"
 
 namespace Growl {
 class LuaScript : public Script {
