@@ -61,6 +61,14 @@ std::unique_ptr<Growl::Game> createGame();
 			"Failed to init scripting API: {}", err.get()->message());
 		exit(4);
 	}
+
+	if (auto err = Growl::initSceneGraph(*api); err) {
+		api->system().log(
+			Growl::LogLevel::Fatal, "ViewController",
+			"Failed to init scene graph: {}", err.get()->message());
+		exit(5);
+	}
+
 	api->system().log("ViewController", "iOS view controller created");
 
 	if (auto err =

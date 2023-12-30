@@ -4,6 +4,7 @@
 #include "growl/core/game/game.h"
 #include "growl/core/graphics/window.h"
 #include "growl/core/log.h"
+#include "growl/scene/scene.h"
 #include <iostream>
 
 using Growl::API;
@@ -58,6 +59,14 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 			err.get()->message());
 		exit(4);
 	}
+
+	if (auto err = Growl::initSceneGraph(*m_api); err) {
+		m_api->system().log(
+			LogLevel::Fatal, "GameAdapter", "Failed to init scene graph: {}",
+			err.get()->message());
+		exit(5);
+	}
+
 	m_api->system().log("GameAdapter", "Desktop adapter created");
 }
 

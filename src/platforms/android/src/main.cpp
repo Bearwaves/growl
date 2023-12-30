@@ -3,6 +3,7 @@
 #include "growl/core/game/game.h"
 #include "growl/core/graphics/window.h"
 #include "growl/core/log.h"
+#include "growl/scene/scene.h"
 #include <android/asset_manager.h>
 #include <android/log.h>
 #include <android/native_window.h>
@@ -102,6 +103,14 @@ void android_main(struct android_app* state) {
 			err.get()->message());
 		exit(4);
 	}
+
+	if (auto err = Growl::initSceneGraph(*api); err) {
+		api->system().log(
+			LogLevel::Fatal, "android_main", "Failed to init scene graph: {}",
+			err.get()->message());
+		exit(5);
+	}
+
 	api->system().log("android_main", "Android adapter created");
 
 	auto game = createGame();
