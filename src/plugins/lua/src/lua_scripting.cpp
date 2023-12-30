@@ -25,7 +25,7 @@ Error LuaScriptingAPI::init() {
 			SystemAPI* sys =
 				(SystemAPI*)lua_topointer(state, lua_upvalueindex(1));
 			if (!sys) {
-				// TODO error handling
+				lua_pushstring(state, "Couldn't get Growl SystemAPI binding");
 				return 1;
 			}
 			const char* tag = lua_tostring(state, 1);
