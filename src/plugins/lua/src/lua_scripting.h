@@ -2,7 +2,7 @@
 
 #include "growl/core/api/api_internal.h"
 #include "growl/core/error.h"
-#include "growl/core/script/script.h"
+#include "growl/core/scripting/script.h"
 #include "lua.h"
 #include <memory>
 
