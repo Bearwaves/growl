@@ -33,16 +33,16 @@ Error LuaScriptingAPI::init() {
 			sys->log(std::string("lua::") + tag, msg);
 			return 0;
 		},
-		std::vector<void*>{&(this->system)});
+		std::vector<void*>{&(this->api.system())});
 	lua_setglobal(this->state, "Growl");
 
-	system.log("LuaScriptingAPI", "Created Lua state");
+	api.system().log("LuaScriptingAPI", "Created Lua state");
 
 	return nullptr;
 }
 
 void LuaScriptingAPI::dispose() {
-	system.log("LuaScriptingAPI", "Closing Lua state");
+	api.system().log("LuaScriptingAPI", "Closing Lua state");
 	lua_close(this->state);
 }
 
