@@ -10,6 +10,8 @@
 namespace Growl {
 
 class LuaScriptingAPI : public ScriptingAPIInternal {
+	friend class ScriptingAPI;
+
 public:
 	explicit LuaScriptingAPI(API& api)
 		: api{api} {}
@@ -21,13 +23,11 @@ public:
 
 	Error execute(Script& script) override;
 
+	Result<std::unique_ptr<Class>> createClass(std::string&& name) override;
+
 private:
 	API& api;
 	lua_State* state;
-
-	Error bindLambda(
-		const char* name, lua_CFunction fn,
-		std::vector<void*> captures = std::vector<void*>());
 };
 
 } // namespace Growl
