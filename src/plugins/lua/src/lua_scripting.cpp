@@ -10,6 +10,7 @@
 #include "lua_script.h"
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 using Growl::Class;
@@ -32,9 +33,11 @@ Error LuaScriptingAPI::init() {
 	}
 	growl_class_result.get()->addMethod(
 		"log",
-		static_cast<ScriptingFn<void, SystemAPI, std::string, std::string>>(
-			[](SystemAPI* system, std::string tag, std::string msg) -> void {
-				system->log("lua::" + tag, msg);
+		static_cast<
+			ScriptingFn<void, SystemAPI, std::string_view, std::string_view>>(
+			[](SystemAPI* system, std::string_view tag,
+			   std::string_view msg) -> void {
+				system->log(std::string("lua::").append(tag), msg);
 			}),
 		&(api.system()));
 
@@ -85,8 +88,8 @@ struct parse_arg<int> {
 };
 
 template <>
-struct parse_arg<std::string> {
-	static std::string value(lua_State* state, int index) {
+struct parse_arg<std::string_view> {
+	static std::string_view value(lua_State* state, int index) {
 		return lua_tostring(state, index);
 	}
 };
