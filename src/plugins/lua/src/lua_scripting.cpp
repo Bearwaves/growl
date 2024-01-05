@@ -77,27 +77,26 @@ LuaScriptingAPI::createClass(std::string&& name) {
 	return std::make_unique<Class>(std::move(name), this);
 }
 
-template <typename>
-struct parse_arg;
+template <typename T>
+struct Tag {};
 
-template <>
-struct parse_arg<int> {
-	static int value(lua_State* state, int index) {
-		return lua_tointeger(state, index);
-	}
-};
+auto getArg(Tag<int>, lua_State* state, int index) {
+	return lua_tointeger(state, index);
+}
 
-template <>
-struct parse_arg<std::string_view> {
-	static std::string_view value(lua_State* state, int index) {
-		return lua_tostring(state, index);
-	}
-};
+auto getArg(Tag<std::string_view>, lua_State* state, int index) {
+	return lua_tostring(state, index);
+}
+
+template <typename T>
+auto getArg(Tag<const T&>, lua_State* state, int index) {
+	return getArg(Tag<T>{}, state, index);
+}
 
 template <typename... Args, std::size_t... Indices>
 std::tuple<Args...> argsFromLuaStackHelper(
 	lua_State* state, std::index_sequence<Indices...> indices) {
-	return std::make_tuple(parse_arg<Args>::value(state, Indices + 1)...);
+	return std::make_tuple(getArg(Tag<Args>{}, state, Indices)...);
 }
 
 template <typename... Args>
