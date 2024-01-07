@@ -31,18 +31,25 @@ Error LuaScriptingAPI::init() {
 	if (growl_class_result.hasError()) {
 		return std::move(growl_class_result.error());
 	}
-	growl_class_result.get()
-		->addMethod<void, std::string_view, std::string_view>(
-			"log",
-			[](void* ctx,
-			   const std::vector<std::any>& args) -> Result<std::any> {
-				SystemAPI* system = static_cast<SystemAPI*>(ctx);
-				auto& tag = std::any_cast<const std::string&>(args.at(0));
-				auto& msg = std::any_cast<const std::string&>(args.at(1));
-				system->log(std::string("lua::").append(tag), msg);
-				return std::any();
-			},
-			&(api.system()));
+
+	if (auto err =
+			growl_class_result.get()
+				->addMethod<void, std::string_view, std::string_view>(
+					"log",
+					[](void* ctx,
+					   const std::vector<std::any>& args) -> Result<std::any> {
+						SystemAPI* system = static_cast<SystemAPI*>(ctx);
+						auto& tag =
+							std::any_cast<const std::string&>(args.at(0));
+						auto& msg =
+							std::any_cast<const std::string&>(args.at(1));
+						system->log(std::string("lua::").append(tag), msg);
+						return std::any();
+					},
+					&(api.system()));
+		err) {
+		return err;
+	}
 
 	api.system().log("LuaScriptingAPI", "Created Lua state");
 
