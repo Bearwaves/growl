@@ -2,9 +2,26 @@
 
 #include "growl/core/error.h"
 #include "growl/core/scripting/script.h"
+#include <any>
 #include <memory>
+#include <vector>
 
 namespace Growl {
+
+using ScriptingFn = Result<std::any> (*)(void*, const std::vector<std::any>&);
+
+enum class ScriptingType {
+	Void,
+	Ptr,
+	Int,
+	String,
+	Float,
+};
+
+struct ScriptingSignature {
+	ScriptingType return_type;
+	std::vector<ScriptingType> arg_types;
+};
 
 class Class;
 
@@ -21,14 +38,10 @@ public:
 
 	virtual Result<std::unique_ptr<Class>> createClass(std::string&& name) = 0;
 
-	template <typename T, typename Context, typename... Args>
-	using ScriptingFn = T (*)(Context*, Args...);
-
 private:
-	template <typename T, typename Context, typename... Args>
-	Error addMethodToClass(
+	virtual Error addMethodToClass(
 		const std::string& class_name, const std::string& method_name,
-		ScriptingFn<T, Context, Args...> fn, Context* context);
+		const ScriptingSignature& signature, ScriptingFn fn, void* context) = 0;
 };
 
 } // namespace Growl

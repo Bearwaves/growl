@@ -26,6 +26,11 @@ public:
 	Result<std::unique_ptr<Class>> createClass(std::string&& name) override;
 
 private:
+	Error addMethodToClass(
+		const std::string& class_name, const std::string& method_name,
+		const ScriptingSignature& signature, ScriptingFn fn,
+		void* context) override;
+
 	API& api;
 	lua_State* state;
 };

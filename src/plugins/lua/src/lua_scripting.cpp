@@ -8,10 +8,10 @@
 #include "lua.h"
 #include "lua_error.h"
 #include "lua_script.h"
+#include <any>
 #include <memory>
 #include <string>
 #include <string_view>
-#include <tuple>
 
 using Growl::Class;
 using Growl::Error;
@@ -31,15 +31,18 @@ Error LuaScriptingAPI::init() {
 	if (growl_class_result.hasError()) {
 		return std::move(growl_class_result.error());
 	}
-	growl_class_result.get()->addMethod(
-		"log",
-		static_cast<
-			ScriptingFn<void, SystemAPI, std::string_view, std::string_view>>(
-			[](SystemAPI* system, std::string_view tag,
-			   std::string_view msg) -> void {
+	growl_class_result.get()
+		->addMethod<void, std::string_view, std::string_view>(
+			"log",
+			[](void* ctx,
+			   const std::vector<std::any>& args) -> Result<std::any> {
+				SystemAPI* system = reinterpret_cast<SystemAPI*>(ctx);
+				auto& tag = std::any_cast<const std::string&>(args.at(0));
+				auto& msg = std::any_cast<const std::string&>(args.at(1));
 				system->log(std::string("lua::").append(tag), msg);
-			}),
-		&(api.system()));
+				return std::any();
+			},
+			&(api.system()));
 
 	api.system().log("LuaScriptingAPI", "Created Lua state");
 
@@ -77,56 +80,40 @@ LuaScriptingAPI::createClass(std::string&& name) {
 	return std::make_unique<Class>(std::move(name), this);
 }
 
-template <typename T>
-struct Tag {};
-
-auto getArg(Tag<int>, lua_State* state, int index) {
-	return lua_tointeger(state, index);
-}
-
-auto getArg(Tag<std::string_view>, lua_State* state, int index) {
-	return lua_tostring(state, index);
-}
-
-template <typename T>
-auto getArg(Tag<const T&>, lua_State* state, int index) {
-	return getArg(Tag<T>{}, state, index);
-}
-
-template <typename... Args, std::size_t... Indices>
-std::tuple<Args...> argsFromLuaStackHelper(
-	lua_State* state, std::index_sequence<Indices...> indices) {
-	return std::make_tuple(getArg(Tag<Args>{}, state, Indices)...);
-}
-
-template <typename... Args>
-std::tuple<Args...> argsFromLuaStack(lua_State* state) {
-	return argsFromLuaStackHelper<Args...>(
-		state, std::make_index_sequence<sizeof...(Args)>());
-}
-
-template <typename T, typename Context, typename... Args>
-Error ScriptingAPI::addMethodToClass(
+Error LuaScriptingAPI::addMethodToClass(
 	const std::string& class_name, const std::string& method_name,
-	ScriptingFn<T, Context, Args...> fn, Context* context) {
-	auto lua = reinterpret_cast<LuaScriptingAPI*>(this);
-	lua_getglobal(lua->state, class_name.c_str()); // TODO err
-	lua_pushstring(lua->state, method_name.c_str());
-	lua_pushlightuserdata(lua->state, reinterpret_cast<void*>(fn));
-	lua_pushlightuserdata(lua->state, context);
+	const ScriptingSignature& signature, ScriptingFn fn, void* context) {
+	lua_getglobal(this->state, class_name.c_str()); // TODO err
+	lua_pushstring(this->state, method_name.c_str());
+	lua_pushlightuserdata(this->state, reinterpret_cast<void*>(fn));
+	lua_pushlightuserdata(this->state, context);
+	ScriptingSignature* sig = reinterpret_cast<ScriptingSignature*>(
+		lua_newuserdata(this->state, sizeof(signature)));
+	*sig = signature;
 	lua_pushcclosure(
-		lua->state,
+		this->state,
 		[](lua_State* state) -> int {
-			auto fn = reinterpret_cast<ScriptingFn<T, Context, Args...>>(
+			auto fn = reinterpret_cast<ScriptingFn>(
 				const_cast<void*>(lua_topointer(state, lua_upvalueindex(1))));
-			Context* ctx = reinterpret_cast<Context*>(
-				const_cast<void*>(lua_topointer(state, lua_upvalueindex(2))));
-			std::tuple<Context*, Args...> t = std::tuple_cat(
-				std::make_tuple(ctx), argsFromLuaStack<Args...>(state));
-			std::apply(fn, t);
+			void* ctx =
+				const_cast<void*>(lua_topointer(state, lua_upvalueindex(2)));
+			ScriptingSignature* signature =
+				reinterpret_cast<ScriptingSignature*>(
+					lua_touserdata(state, lua_upvalueindex(3)));
+			std::vector<std::any> args(signature->arg_types.size());
+			for (size_t i = 0; i < signature->arg_types.size(); i++) {
+				switch (signature->arg_types[i]) {
+				case ScriptingType::String:
+					args[i] = std::string{lua_tostring(state, i + 1)};
+					break;
+				default:
+					continue;
+				}
+			}
+			fn(ctx, args);
 			return 0;
 		},
-		2);
-	lua_settable(lua->state, -3);
+		3);
+	lua_settable(this->state, -3);
 	return nullptr;
 }
