@@ -29,6 +29,10 @@ struct Result : protected std::variant<T, Error> {
 		return !hasError();
 	}
 
+	bool operator!() const noexcept {
+		return hasError();
+	}
+
 	Error& error() & noexcept {
 		return std::get<Error>(*this);
 	}
@@ -59,6 +63,22 @@ struct Result : protected std::variant<T, Error> {
 
 	const T&& get() const&& noexcept {
 		return std::move(std::get<T>(*this));
+	}
+
+	T& operator*() & noexcept {
+		return get();
+	}
+
+	const T& operator*() const& noexcept {
+		return get();
+	}
+
+	T&& operator*() && noexcept {
+		return get();
+	}
+
+	const T&& operator*() const&& noexcept {
+		return get();
 	}
 };
 

@@ -23,7 +23,7 @@ Error TestAppGame::init() {
 	getAPI().system().log("TestAppGame", "Loading asset bundle");
 	Result<AssetsBundle> bundle_result =
 		loadAssetsBundle(getAPI().system(), "assets.growl");
-	if (bundle_result.hasError()) {
+	if (!bundle_result) {
 		return std::move(bundle_result.error());
 	}
 
@@ -32,7 +32,7 @@ Error TestAppGame::init() {
 		Timer timer(getAPI().system(), "TestAppGame", "Generating font atlas");
 		Result<FontFace> font_result =
 			bundle_result.get().getDistanceFieldFont("fonts/andada.otf");
-		if (font_result.hasError()) {
+		if (!font_result) {
 			return std::move(font_result.error());
 		}
 		font = std::make_unique<FontFace>(std::move(font_result.get()));
@@ -45,13 +45,13 @@ Error TestAppGame::init() {
 	{
 		Timer timer(getAPI().system(), "TestAppGame", "Loading texture atlas");
 		Result<Atlas> atlas_result = bundle_result.get().getAtlas("gfx");
-		if (atlas_result.hasError()) {
+		if (!atlas_result) {
 			return std::move(atlas_result.error());
 		}
 		{
 			Timer t(getAPI().system(), "TestAppGame", "Creating texture");
 			texture_atlas =
-				getAPI().graphics().createTextureAtlas(atlas_result.get());
+				getAPI().graphics().createTextureAtlas(*atlas_result);
 		}
 	}
 
@@ -59,12 +59,11 @@ Error TestAppGame::init() {
 	{
 		Timer timer(getAPI().system(), "TestAppGame", "Loading SFX");
 		Result<std::unique_ptr<AudioClip>> meow_result =
-			getAPI().audio().loadClipFromBundle(
-				bundle_result.get(), "sfx/meow.wav");
+			getAPI().audio().loadClipFromBundle(*bundle_result, "sfx/meow.wav");
 		if (meow_result.hasError()) {
 			return std::move(meow_result.error());
 		}
-		meow = std::move(meow_result.get());
+		meow = std::move(*meow_result);
 	}
 
 	getAPI().system().log("TestAppGame", "Loading music");
@@ -72,11 +71,11 @@ Error TestAppGame::init() {
 		Timer timer(getAPI().system(), "TestAppGame", "Loading music");
 		Result<std::unique_ptr<AudioStream>> music_result =
 			getAPI().audio().createStreamFromBundle(
-				bundle_result.get(), "mfx/I pasta way - William Watson.ogg");
+				*bundle_result, "mfx/I pasta way - William Watson.ogg");
 		if (music_result.hasError()) {
 			return std::move(music_result.error());
 		}
-		music = std::move(music_result.get());
+		music = std::move(*music_result);
 	}
 
 	cats = std::make_unique<Node>("Cats");
