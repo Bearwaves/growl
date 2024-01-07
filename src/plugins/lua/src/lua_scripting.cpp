@@ -36,7 +36,7 @@ Error LuaScriptingAPI::init() {
 			"log",
 			[](void* ctx,
 			   const std::vector<std::any>& args) -> Result<std::any> {
-				SystemAPI* system = reinterpret_cast<SystemAPI*>(ctx);
+				SystemAPI* system = static_cast<SystemAPI*>(ctx);
 				auto& tag = std::any_cast<const std::string&>(args.at(0));
 				auto& msg = std::any_cast<const std::string&>(args.at(1));
 				system->log(std::string("lua::").append(tag), msg);
@@ -87,7 +87,7 @@ Error LuaScriptingAPI::addMethodToClass(
 	lua_pushstring(this->state, method_name.c_str());
 	lua_pushlightuserdata(this->state, reinterpret_cast<void*>(fn));
 	lua_pushlightuserdata(this->state, context);
-	ScriptingSignature* sig = reinterpret_cast<ScriptingSignature*>(
+	ScriptingSignature* sig = static_cast<ScriptingSignature*>(
 		lua_newuserdata(this->state, sizeof(signature)));
 	*sig = signature;
 	lua_pushcclosure(
@@ -97,9 +97,8 @@ Error LuaScriptingAPI::addMethodToClass(
 				const_cast<void*>(lua_topointer(state, lua_upvalueindex(1))));
 			void* ctx =
 				const_cast<void*>(lua_topointer(state, lua_upvalueindex(2)));
-			ScriptingSignature* signature =
-				reinterpret_cast<ScriptingSignature*>(
-					lua_touserdata(state, lua_upvalueindex(3)));
+			ScriptingSignature* signature = static_cast<ScriptingSignature*>(
+				lua_touserdata(state, lua_upvalueindex(3)));
 			std::vector<std::any> args(signature->arg_types.size());
 			for (size_t i = 0; i < signature->arg_types.size(); i++) {
 				switch (signature->arg_types[i]) {
