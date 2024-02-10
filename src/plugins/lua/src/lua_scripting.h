@@ -23,11 +23,17 @@ public:
 
 	Error execute(Script& script) override;
 
-	Result<std::unique_ptr<Class>> createClass(std::string&& name) override;
+	Result<std::unique_ptr<Class>>
+	createClass(std::string&& name, bool is_static) override;
 
 private:
+	Error addConstructorToClass(
+		Class* cls, const ScriptingSignature& signature, ScriptingFn fn,
+		void* context) override;
+	Error
+	addDestructorToClass(Class* cls, ScriptingFn fn, void* context) override;
 	Error addMethodToClass(
-		const std::string& class_name, const std::string& method_name,
+		Class* cls, const std::string& method_name,
 		const ScriptingSignature& signature, ScriptingFn fn,
 		void* context) override;
 

@@ -7,8 +7,11 @@
 #include <vector>
 
 namespace Growl {
+class Class;
+class ClassSelf;
 
-using ScriptingFn = Result<std::any> (*)(void*, const std::vector<std::any>&);
+using ScriptingFn =
+	Result<std::any> (*)(ClassSelf*, void*, const std::vector<std::any>&);
 
 enum class ScriptingType {
 	Void,
@@ -23,8 +26,6 @@ struct ScriptingSignature {
 	std::vector<ScriptingType> arg_types;
 };
 
-class Class;
-
 class ScriptingAPI {
 public:
 	friend class Class;
@@ -36,11 +37,17 @@ public:
 
 	virtual Error execute(Script& script) = 0;
 
-	virtual Result<std::unique_ptr<Class>> createClass(std::string&& name) = 0;
+	virtual Result<std::unique_ptr<Class>>
+	createClass(std::string&& name, bool is_static) = 0;
 
 private:
+	virtual Error addConstructorToClass(
+		Class* cls, const ScriptingSignature& signature, ScriptingFn fn,
+		void* context) = 0;
+	virtual Error
+	addDestructorToClass(Class* cls, ScriptingFn fn, void* context) = 0;
 	virtual Error addMethodToClass(
-		const std::string& class_name, const std::string& method_name,
+		Class* cls, const std::string& method_name,
 		const ScriptingSignature& signature, ScriptingFn fn, void* context) = 0;
 };
 
