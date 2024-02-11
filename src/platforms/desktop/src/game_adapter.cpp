@@ -77,6 +77,7 @@ GameAdapter::~GameAdapter() {
 			err.get()->message());
 		exit(4);
 	}
+	m_game.reset();
 	m_api->system().log("GameAdapter", "Desktop adapter destroying");
 	static_cast<ScriptingAPIInternal&>(m_api->scripting()).dispose();
 	static_cast<AudioAPIInternal&>(m_api->audio()).dispose();
