@@ -75,6 +75,7 @@ GameAdapter::~GameAdapter() {
 			err.get()->message());
 		exit(4);
 	}
+	g_game.reset();
 	g_api->system().log("GameAdapter", "Web adapter destroying");
 	static_cast<ScriptingAPIInternal&>(g_api->scripting()).dispose();
 	static_cast<AudioAPIInternal&>(g_api->audio()).dispose();

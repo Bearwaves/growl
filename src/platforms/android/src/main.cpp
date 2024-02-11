@@ -159,6 +159,7 @@ void android_main(struct android_app* state) {
 			err.get()->message());
 		exit(6);
 	}
+	game.reset();
 	api->system().log("android_main", "Android adapter destroying");
 	static_cast<ScriptingAPIInternal&>(api->scripting()).dispose();
 	static_cast<AudioAPIInternal&>(api->audio()).dispose();
