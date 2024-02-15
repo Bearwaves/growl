@@ -11,4 +11,5 @@ AllowShortFunctionsOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: Yes
 PointerAlignment: Left
+AlignEscapedNewlines: DontAlign
 ---
