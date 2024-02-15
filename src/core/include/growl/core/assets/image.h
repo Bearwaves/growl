@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../error.h"
-#include <iostream>
 #include <stdint.h>
 #include <vector>
 
