@@ -14,6 +14,7 @@ set(SOURCES
 	${SOURCE_PREFIX}/imgui_widgets.cpp
 	${SOURCE_PREFIX}/imgui_draw.cpp
 	${SOURCE_PREFIX}/imgui_demo.cpp
+	${SOURCE_PREFIX}/misc/cpp/imgui_stdlib.cpp
 	)
 
 set(SOURCES
@@ -42,7 +43,7 @@ endif ()
 growl_thirdparty_lib(imgui
 	SOURCES ${SOURCES}
 	INCLUDES
-		PUBLIC ${SOURCE_PREFIX} "${SOURCE_PREFIX}/backends"
+		PUBLIC ${SOURCE_PREFIX} "${SOURCE_PREFIX}/backends" "${SOURCE_PREFIX}/misc/cpp"
 		PRIVATE ${SDL2_INCLUDE_DIR}
 	LINK ${SDL2_LIBRARY}
 	)

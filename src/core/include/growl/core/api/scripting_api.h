@@ -10,7 +10,7 @@
 	type get##name(bool from_script = false) { \
 		if (bound_script_obj && !from_script) { \
 			std::vector<ScriptingParam> v; \
-			auto res = scripting_api->executeMethod<type>( \
+			auto res = api->scripting().executeMethod<type>( \
 				*bound_script_obj, "get" #name, v); \
 			if (!res) { \
 				return var; \
@@ -24,7 +24,7 @@
 		if (bound_script_obj && !from_script) { \
 			std::vector<ScriptingParam> v; \
 			v.push_back(var); \
-			scripting_api->executeMethod<void, type>( \
+			api->scripting().executeMethod<void, type>( \
 				*bound_script_obj, "set" #name, v); \
 		} else { \
 			this->var = var; \
