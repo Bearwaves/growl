@@ -4,6 +4,7 @@
 #import "growl/core/graphics/window.h"
 #import "growl/platforms/ios/metal_view.h"
 #import "growl/scene/scene.h"
+#import <iostream>
 #import <memory>
 
 // Forward declarations for the linker.
