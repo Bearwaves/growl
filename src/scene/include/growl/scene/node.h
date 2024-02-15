@@ -52,7 +52,7 @@ private:
 	std::vector<std::unique_ptr<Node>> children;
 	glm::mat4x4 local_transform;
 	glm::mat4x4 old_transform;
-	std::shared_ptr<Object> bound_script_obj;
+	std::unique_ptr<Object> bound_script_obj;
 
 	void computeLocalTransform();
 	void applyTransform(Batch& batch);

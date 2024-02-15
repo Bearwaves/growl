@@ -97,10 +97,8 @@ Error Node::bindScript(ScriptingAPI& api, Script& script) {
 	if (!res) {
 		return std::move(res.error());
 	}
-	auto obj = std::any_cast<std::shared_ptr<Object>>(*res);
-	if (auto err = api.setField(
-			*obj, "__ptr", static_cast<void*>(this), ScriptingType::Ptr);
-		err) {
+	auto obj = std::move(std::get<std::unique_ptr<Object>>(*res));
+	if (auto err = api.setField(*obj, "__ptr", static_cast<void*>(this)); err) {
 		return err;
 	}
 	if (auto err = api.setClass(*obj, "Node"); err) {

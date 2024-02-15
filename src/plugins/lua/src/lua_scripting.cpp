@@ -10,7 +10,6 @@
 #include "lua_error.h"
 #include "lua_object.h"
 #include "lua_script.h"
-#include <any>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -25,6 +24,7 @@ using Growl::LuaSelf;
 using Growl::Result;
 using Growl::Script;
 using Growl::ScriptingAPI;
+using Growl::ScriptingParam;
 using Growl::SystemAPI;
 
 // return not actually used
@@ -58,14 +58,13 @@ Error LuaScriptingAPI::init() {
 				->addMethod<void, std::string_view, std::string_view>(
 					"log",
 					[](ClassSelf* self, void* ctx,
-					   const std::vector<std::any>& args) -> Result<std::any> {
+					   const std::vector<ScriptingParam>& args)
+						-> Result<ScriptingParam> {
 						SystemAPI* system = static_cast<SystemAPI*>(ctx);
-						auto& tag =
-							std::any_cast<const std::string&>(args.at(0));
-						auto& msg =
-							std::any_cast<const std::string&>(args.at(1));
+						auto& tag = std::get<std::string_view>(args.at(0));
+						auto& msg = std::get<std::string_view>(args.at(1));
 						system->log(std::string("lua::").append(tag), msg);
-						return std::any();
+						return ScriptingParam();
 					},
 					&(api.system()));
 		err) {
@@ -88,7 +87,7 @@ Result<std::unique_ptr<Script>> LuaScriptingAPI::createScript(
 		std::make_unique<LuaScript>(std::move(source), signature));
 }
 
-Result<std::any> LuaScriptingAPI::execute(Script& script) {
+Result<ScriptingParam> LuaScriptingAPI::execute(Script& script) {
 	int n_returns =
 		script.getSignature().return_type == ScriptingType::Void ? 0 : 1;
 	if (luaL_loadstring(this->state, script.getSource().c_str()) ||
@@ -102,16 +101,12 @@ Result<std::any> LuaScriptingAPI::execute(Script& script) {
 	}
 	switch (script.getSignature().return_type) {
 	case ScriptingType::Void:
-		return std::any();
-	case ScriptingType::Ptr:
-	case ScriptingType::Int:
-	case ScriptingType::String:
-	case ScriptingType::Float:
+		return ScriptingParam();
 	case ScriptingType::Object:
-		return std::any(std::shared_ptr<Object>(std::make_shared<LuaObject>(
-			this->state, luaL_ref(this->state, LUA_REGISTRYINDEX))));
+		return ScriptingParam(std::make_unique<LuaObject>(
+			this->state, luaL_ref(this->state, LUA_REGISTRYINDEX)));
 	}
-	return std::any();
+	return ScriptingParam();
 }
 
 Result<std::unique_ptr<Class>>
@@ -128,7 +123,7 @@ LuaScriptingAPI::createClass(std::string&& name, bool is_static) {
 }
 
 Error LuaScriptingAPI::setField(
-	Object& obj, const std::string& name, std::any value, ScriptingType type) {
+	Object& obj, const std::string& name, ScriptingParam value) {
 	auto ref = static_cast<LuaObject&>(obj).getRef();
 	lua_rawgeti(this->state, LUA_REGISTRYINDEX, ref);
 	if (!lua_istable(this->state, -1)) {
@@ -136,9 +131,10 @@ Error LuaScriptingAPI::setField(
 			"Object must be a table to set fields");
 	}
 	lua_pushstring(this->state, name.c_str());
-	switch (type) {
+	switch (static_cast<ScriptingType>(value.index())) {
 	case ScriptingType::Ptr:
-		lua_pushlightuserdata(this->state, std::any_cast<void*>(value));
+		lua_pushlightuserdata(
+			this->state, const_cast<void*>(std::get<const void*>(value)));
 		break;
 	default:
 		return std::make_unique<LuaError>("Unsupported field type");
@@ -188,7 +184,7 @@ Error LuaScriptingAPI::addConstructorToClass(
 				lua_touserdata(state, lua_upvalueindex(3)));
 			const char* metatable_name =
 				lua_tostring(state, lua_upvalueindex(4));
-			std::vector<std::any> args(signature->arg_types.size());
+			std::vector<ScriptingParam> args(signature->arg_types.size());
 			for (size_t i = 0; i < signature->arg_types.size(); i++) {
 				switch (signature->arg_types[i]) {
 				case ScriptingType::String:
@@ -229,7 +225,7 @@ Error LuaScriptingAPI::addDestructorToClass(
 				lua_tostring(state, lua_upvalueindex(3));
 			lua_newtable(state);
 			fn(std::make_unique<LuaSelf>(state).get(), ctx,
-			   std::vector<std::any>());
+			   std::vector<ScriptingParam>());
 			luaL_setmetatable(state, metatable_name);
 			return 1;
 		},
@@ -238,29 +234,29 @@ Error LuaScriptingAPI::addDestructorToClass(
 	return nullptr;
 }
 
-void luaPushArgs(
-	Growl::ScriptingSignature& signature, std::vector<std::any>& args,
-	lua_State* state) {
+void luaPushArgs(std::vector<ScriptingParam>& args, lua_State* state) {
 	for (size_t i = 0; i < args.size(); i++) {
-		switch (signature.arg_types[i]) {
+		switch (static_cast<Growl::ScriptingType>(args[i].index())) {
 		case Growl::ScriptingType::Void:
 			continue;
 		case Growl::ScriptingType::Ptr:
 			// TODO checks!
-			lua_pushlightuserdata(state, std::any_cast<void*>(args[i]));
+			lua_pushlightuserdata(
+				state, const_cast<void*>(std::get<const void*>(args[i])));
 			break;
 		case Growl::ScriptingType::Int:
-			lua_pushinteger(state, std::any_cast<int>(args[i]));
+			lua_pushinteger(state, std::get<int>(args[i]));
 			break;
 		case Growl::ScriptingType::String:
-			lua_pushstring(state, std::any_cast<std::string>(args[i]).c_str());
+			lua_pushstring(
+				state,
+				std::string(std::get<std::string_view>(args[i])).c_str());
 			break;
 		case Growl::ScriptingType::Float:
-			lua_pushnumber(state, std::any_cast<float>(args[i]));
+			lua_pushnumber(state, std::get<float>(args[i]));
 			break;
 		case Growl::ScriptingType::Object:
-			auto ptr =
-				std::any_cast<std::shared_ptr<Growl::Object>>(args[i]).get();
+			auto ptr = std::get<std::unique_ptr<Growl::Object>>(args[i]).get();
 			lua_rawgeti(
 				state, LUA_REGISTRYINDEX,
 				static_cast<Growl::LuaObject*>(ptr)->getRef());
@@ -297,13 +293,13 @@ Error LuaScriptingAPI::addMethodToClass(
 			ScriptingSignature* signature = static_cast<ScriptingSignature*>(
 				lua_touserdata(state, lua_upvalueindex(3)));
 			int stack_offset = lua_tointeger(state, lua_upvalueindex(4));
-			std::vector<std::any> args(signature->arg_types.size());
+			std::vector<ScriptingParam> args(signature->arg_types.size());
 			for (size_t i = 0; i < signature->arg_types.size(); i++) {
 				switch (signature->arg_types[i]) {
 				case ScriptingType::String:
 					luaL_checktype(state, i + stack_offset, LUA_TSTRING);
 					args[i] =
-						std::string{lua_tostring(state, i + stack_offset)};
+						std::string_view{lua_tostring(state, i + stack_offset)};
 					break;
 				case ScriptingType::Float: {
 					luaL_checktype(state, i + stack_offset, LUA_TNUMBER);
@@ -321,16 +317,19 @@ Error LuaScriptingAPI::addMethodToClass(
 			case ScriptingType::Void:
 				return 0;
 			case ScriptingType::Ptr:
-				lua_pushlightuserdata(state, std::any_cast<void*>(*res));
+				lua_pushlightuserdata(
+					state, const_cast<void*>(std::get<const void*>(*res)));
 				return 1;
 			case ScriptingType::Int:
-				lua_pushnumber(state, std::any_cast<int>(*res));
+				lua_pushnumber(state, std::get<int>(*res));
 				return 1;
 			case ScriptingType::String:
-				lua_pushstring(state, std::any_cast<std::string>(*res).c_str());
+				lua_pushstring(
+					state,
+					std::string(std::get<std::string_view>(*res)).c_str());
 				return 1;
 			case ScriptingType::Float:
-				lua_pushnumber(state, std::any_cast<float>(*res));
+				lua_pushnumber(state, std::get<float>(*res));
 				return 1;
 			}
 			return 0;
@@ -340,14 +339,14 @@ Error LuaScriptingAPI::addMethodToClass(
 	return nullptr;
 }
 
-Result<std::any> LuaScriptingAPI::executeMethod(
-	Object& obj, const std::string& method_name, std::vector<std::any> args,
-	ScriptingSignature signature) {
+Result<ScriptingParam> LuaScriptingAPI::executeMethod(
+	Object& obj, const std::string& method_name,
+	std::vector<ScriptingParam>& args, ScriptingSignature signature) {
 	lua_rawgeti(
 		this->state, LUA_REGISTRYINDEX, static_cast<LuaObject&>(obj).getRef());
 	lua_getfield(this->state, -1, method_name.c_str());
 	lua_pushvalue(this->state, -2);
-	luaPushArgs(signature, args, this->state);
+	luaPushArgs(args, this->state);
 	if (lua_pcall(
 			this->state, args.size() + 1,
 			signature.return_type == ScriptingType::Void ? 0 : 1, 0)) {
@@ -359,26 +358,26 @@ Result<std::any> LuaScriptingAPI::executeMethod(
 		lua_pop(this->state, 1);
 		return Error(std::move(err));
 	}
-	std::any ret;
+	ScriptingParam ret;
 	switch (signature.return_type) {
 	case ScriptingType::Ptr:
-		ret = std::any(const_cast<void*>(lua_topointer(this->state, -1)));
+		ret = lua_topointer(this->state, -1);
 		break;
 	case ScriptingType::Int:
-		ret = std::any(lua_tointeger(this->state, -1));
+		ret = static_cast<int>(lua_tointeger(this->state, -1));
 		break;
 	case ScriptingType::String:
-		ret = std::any(std::string(lua_tostring(this->state, -1)));
+		ret = std::string_view(lua_tostring(this->state, -1));
 		break;
 	case ScriptingType::Float:
-		ret = std::any(static_cast<float>(lua_tonumber(this->state, -1)));
+		ret = static_cast<float>(lua_tonumber(this->state, -1));
 		break;
 	case ScriptingType::Object:
-		ret = std::any(std::shared_ptr<Object>(std::make_shared<LuaObject>(
-			this->state, luaL_ref(this->state, LUA_REGISTRYINDEX))));
+		ret = std::make_unique<LuaObject>(
+			this->state, luaL_ref(this->state, LUA_REGISTRYINDEX));
 		break;
 	default:
-		ret = std::any();
+		ret = ScriptingParam();
 		break;
 	}
 	lua_pop(this->state, 1);

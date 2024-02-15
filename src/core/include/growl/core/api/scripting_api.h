@@ -2,27 +2,30 @@
 
 #include "growl/core/error.h"
 #include "growl/core/scripting/object.h"
-#include <any>
 #include <memory>
+#include <variant>
 #include <vector>
 
 #define SCRIPTED_GETSET(type, name, var) \
 	type get##name(bool from_script = false) { \
 		if (bound_script_obj && !from_script) { \
+			std::vector<ScriptingParam> v; \
 			auto res = scripting_api->executeMethod<type>( \
-				*bound_script_obj, "get" #name, std::vector<std::any>()); \
+				*bound_script_obj, "get" #name, v); \
 			if (!res) { \
 				return var; \
 			} \
-			return std::any_cast<type>(*res); \
+			return std::get<type>(*res); \
 		} \
 		return var; \
 	} \
 \
 	void set##name(type var, bool from_script = false) { \
 		if (bound_script_obj && !from_script) { \
+			std::vector<ScriptingParam> v; \
+			v.push_back(var); \
 			scripting_api->executeMethod<void, type>( \
-				*bound_script_obj, "set" #name, {var}); \
+				*bound_script_obj, "set" #name, v); \
 		} else { \
 			this->var = var; \
 		} \
@@ -33,15 +36,19 @@ class Class;
 class ClassSelf;
 class Script;
 
-using ScriptingFn =
-	Result<std::any> (*)(ClassSelf*, void*, const std::vector<std::any>&);
+using ScriptingParam = std::variant<
+	std::monostate, float, int, std::string_view, const void*,
+	std::unique_ptr<Object>>;
+
+using ScriptingFn = Result<ScriptingParam> (*)(
+	ClassSelf*, void*, const std::vector<ScriptingParam>&);
 
 enum class ScriptingType {
 	Void,
-	Ptr,
+	Float,
 	Int,
 	String,
-	Float,
+	Ptr,
 	Object,
 };
 
@@ -128,21 +135,20 @@ public:
 		return createScript(std::move(source), signature);
 	}
 
-	virtual Result<std::any> execute(Script& script) = 0;
+	virtual Result<ScriptingParam> execute(Script& script) = 0;
 
 	virtual Result<std::unique_ptr<Class>>
 	createClass(std::string&& name, bool is_static) = 0;
 
-	virtual Error setField(
-		Object& obj, const std::string& name, std::any value,
-		ScriptingType type) = 0;
+	virtual Error
+	setField(Object& obj, const std::string& name, ScriptingParam value) = 0;
 
 	virtual Error setClass(Object& obj, const std::string& class_name) = 0;
 
 	template <typename T, typename... Args>
-	Result<std::any> executeMethod(
+	Result<ScriptingParam> executeMethod(
 		Object& obj, const std::string& method_name,
-		std::vector<std::any> args) {
+		std::vector<ScriptingParam>& args) {
 		auto signature = GetFunctionSignature<T(Args...)>::value();
 		return executeMethod(obj, method_name, args, signature);
 	}
@@ -158,9 +164,9 @@ private:
 	virtual Error addMethodToClass(
 		Class* cls, const std::string& method_name,
 		const ScriptingSignature& signature, ScriptingFn fn, void* context) = 0;
-	virtual Result<std::any> executeMethod(
-		Object& obj, const std::string& method_name, std::vector<std::any> args,
-		ScriptingSignature signature) = 0;
+	virtual Result<ScriptingParam> executeMethod(
+		Object& obj, const std::string& method_name,
+		std::vector<ScriptingParam>& args, ScriptingSignature signature) = 0;
 };
 
 } // namespace Growl
