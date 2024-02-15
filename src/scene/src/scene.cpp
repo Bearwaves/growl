@@ -19,12 +19,13 @@ Error Growl::initSceneGraph(API& api) {
 
 	if (auto err = node_cls->addConstructor<std::string_view>(
 			[](ClassSelf* self, void* ctx,
-			   const std::vector<std::any>& args) -> Result<std::any> {
-				auto& node_name = std::any_cast<const std::string&>(args.at(0));
-				Node* n = new Node(node_name.c_str());
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
+				auto& node_name = std::get<std::string_view>(args.at(0));
+				Node* n = new Node(std::string(node_name));
 				self->setField("__ptr", n);
 				self->setField("__ptr_owned", n);
-				return std::any();
+				return ScriptingParam();
 			},
 			nullptr);
 		err) {
@@ -33,13 +34,14 @@ Error Growl::initSceneGraph(API& api) {
 
 	if (auto err = node_cls->addDestructor(
 			[](ClassSelf* self, void* ctx,
-			   const std::vector<std::any>& args) -> Result<std::any> {
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr_owned")));
 				if (n) {
 					delete n;
 				}
-				return std::any();
+				return ScriptingParam();
 			},
 			nullptr);
 		err) {
@@ -49,11 +51,12 @@ Error Growl::initSceneGraph(API& api) {
 	if (auto err = node_cls->addMethod<void, float>(
 			"setX",
 			[](ClassSelf* self, void* ctx,
-			   const std::vector<std::any>& args) -> Result<std::any> {
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				n->setX(std::any_cast<float>(args.at(0)), true);
-				return std::any();
+				n->setX(std::get<float>(args.at(0)), true);
+				return ScriptingParam();
 			},
 			nullptr);
 		err) {
@@ -63,11 +66,12 @@ Error Growl::initSceneGraph(API& api) {
 	if (auto err = node_cls->addMethod<void, float>(
 			"setY",
 			[](ClassSelf* self, void* ctx,
-			   const std::vector<std::any>& args) -> Result<std::any> {
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				n->setY(std::any_cast<float>(args.at(0)), true);
-				return std::any();
+				n->setY(std::get<float>(args.at(0)), true);
+				return ScriptingParam();
 			},
 			nullptr);
 		err) {
@@ -77,10 +81,11 @@ Error Growl::initSceneGraph(API& api) {
 	if (auto err = node_cls->addMethod<float>(
 			"getX",
 			[](ClassSelf* self, void* ctx,
-			   const std::vector<std::any>& args) -> Result<std::any> {
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				return std::any(n->getX(true));
+				return ScriptingParam(n->getX(true));
 			},
 			nullptr);
 		err) {
@@ -90,10 +95,11 @@ Error Growl::initSceneGraph(API& api) {
 	if (auto err = node_cls->addMethod<float>(
 			"getY",
 			[](ClassSelf* self, void* ctx,
-			   const std::vector<std::any>& args) -> Result<std::any> {
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				return std::any(n->getY(true));
+				return ScriptingParam(n->getY(true));
 			},
 			nullptr);
 		err) {
@@ -103,10 +109,11 @@ Error Growl::initSceneGraph(API& api) {
 	if (auto err = node_cls->addMethod<float>(
 			"getRotation",
 			[](ClassSelf* self, void* ctx,
-			   const std::vector<std::any>& args) -> Result<std::any> {
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				return std::any(n->getRotation(true));
+				return ScriptingParam(n->getRotation(true));
 			},
 			nullptr);
 		err) {
@@ -116,11 +123,12 @@ Error Growl::initSceneGraph(API& api) {
 	if (auto err = node_cls->addMethod<void, float>(
 			"setRotation",
 			[](ClassSelf* self, void* ctx,
-			   const std::vector<std::any>& args) -> Result<std::any> {
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				n->setRotation(std::any_cast<float>(args.at(0)), true);
-				return std::any();
+				n->setRotation(std::get<float>(args.at(0)), true);
+				return ScriptingParam();
 			},
 			nullptr);
 		err) {
