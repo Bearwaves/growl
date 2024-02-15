@@ -12,7 +12,6 @@
 #endif
 #include "sdl2_error.h"
 #include "sdl2_window.h"
-#include <assert.h>
 #include <memory>
 
 using Growl::Error;
