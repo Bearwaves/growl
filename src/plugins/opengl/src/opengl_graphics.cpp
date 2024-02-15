@@ -72,16 +72,16 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 	window = std::move(window_result.get());
 
 #ifdef GROWL_OPENGL_4_1
-	if (auto err = window->createGLContext(4, 1); err) {
+	if (auto err = window->createGLContext(4, 1)) {
 		return err;
 	}
 #elif GROWL_OPENGL_4_5
-	if (auto err = window->createGLContext(4, 5); err) {
+	if (auto err = window->createGLContext(4, 5)) {
 		return err;
 	}
 	gladLoadGLLoader(window->glLibraryLoaderFunc());
 #elif GROWL_OPENGL_ES
-	if (auto err = window->createGLContext(3, 0, true); err) {
+	if (auto err = window->createGLContext(3, 0, true)) {
 		return err;
 	}
 #endif

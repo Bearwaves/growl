@@ -17,12 +17,12 @@ Result<FTFontData> loadFont(std::string path) noexcept {
 	FT_Library lib;
 	FT_Face face;
 
-	if (auto err = FT_Init_FreeType(&lib); err) {
+	if (auto err = FT_Init_FreeType(&lib)) {
 		return Error(
 			std::make_unique<FontError>("Failed to init FreeType", err));
 	}
 
-	if (auto err = FT_New_Face(lib, path.c_str(), 0, &face); err) {
+	if (auto err = FT_New_Face(lib, path.c_str(), 0, &face)) {
 		FT_Done_Library(lib);
 		return Error(
 			std::make_unique<FontError>("Failed to load font file", err));
@@ -35,7 +35,7 @@ Result<FTFontData> loadFont(std::vector<unsigned char>&& data) noexcept {
 	FT_Library lib;
 	FT_Face face;
 
-	if (auto err = FT_Init_FreeType(&lib); err) {
+	if (auto err = FT_Init_FreeType(&lib)) {
 		return Error(
 			std::make_unique<FontError>("Failed to init FreeType", err));
 	}
