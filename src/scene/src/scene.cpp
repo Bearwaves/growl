@@ -16,67 +16,116 @@ Error Growl::initSceneGraph(API& api) {
 		return std::move(node_cls_result.error());
 	}
 	auto& node_cls = *node_cls_result;
-	node_cls->addConstructor<std::string_view>(
-		[](ClassSelf* self, void* ctx,
-		   const std::vector<std::any>& args) -> Result<std::any> {
-			auto& node_name = std::any_cast<const std::string&>(args.at(0));
-			Node* n = new Node(node_name.c_str());
-			self->setField("__ptr", n);
-			return std::any();
-		},
-		nullptr);
 
-	node_cls->addDestructor(
-		[](ClassSelf* self, void* ctx,
-		   const std::vector<std::any>& args) -> Result<std::any> {
-			Node* n =
-				static_cast<Node*>(const_cast<void*>(self->getField("__ptr")));
-			delete n;
-			return std::any();
-		},
-		nullptr);
+	if (auto err = node_cls->addConstructor<std::string_view>(
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<std::any>& args) -> Result<std::any> {
+				auto& node_name = std::any_cast<const std::string&>(args.at(0));
+				Node* n = new Node(node_name.c_str());
+				self->setField("__ptr", n);
+				self->setField("__ptr_owned", n);
+				return std::any();
+			},
+			nullptr);
+		err) {
+		return err;
+	}
 
-	node_cls->addMethod<void, float>(
-		"setX",
-		[](ClassSelf* self, void* ctx,
-		   const std::vector<std::any>& args) -> Result<std::any> {
-			Node* n =
-				static_cast<Node*>(const_cast<void*>(self->getField("__ptr")));
-			n->setX(std::any_cast<float>(args.at(0)));
-			return std::any();
-		},
-		nullptr);
+	if (auto err = node_cls->addDestructor(
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<std::any>& args) -> Result<std::any> {
+				Node* n = static_cast<Node*>(
+					const_cast<void*>(self->getField("__ptr_owned")));
+				if (n) {
+					delete n;
+				}
+				return std::any();
+			},
+			nullptr);
+		err) {
+		return err;
+	}
 
-	node_cls->addMethod<void, float>(
-		"setY",
-		[](ClassSelf* self, void* ctx,
-		   const std::vector<std::any>& args) -> Result<std::any> {
-			Node* n =
-				static_cast<Node*>(const_cast<void*>(self->getField("__ptr")));
-			n->setY(std::any_cast<float>(args.at(0)));
-			return std::any();
-		},
-		nullptr);
+	if (auto err = node_cls->addMethod<void, float>(
+			"setX",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<std::any>& args) -> Result<std::any> {
+				Node* n = static_cast<Node*>(
+					const_cast<void*>(self->getField("__ptr")));
+				n->setX(std::any_cast<float>(args.at(0)), true);
+				return std::any();
+			},
+			nullptr);
+		err) {
+		return err;
+	}
 
-	node_cls->addMethod<float>(
-		"getX",
-		[](ClassSelf* self, void* ctx,
-		   const std::vector<std::any>& args) -> Result<std::any> {
-			Node* n =
-				static_cast<Node*>(const_cast<void*>(self->getField("__ptr")));
-			return std::any(n->getX());
-		},
-		nullptr);
+	if (auto err = node_cls->addMethod<void, float>(
+			"setY",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<std::any>& args) -> Result<std::any> {
+				Node* n = static_cast<Node*>(
+					const_cast<void*>(self->getField("__ptr")));
+				n->setY(std::any_cast<float>(args.at(0)), true);
+				return std::any();
+			},
+			nullptr);
+		err) {
+		return err;
+	}
 
-	node_cls->addMethod<float>(
-		"getY",
-		[](ClassSelf* self, void* ctx,
-		   const std::vector<std::any>& args) -> Result<std::any> {
-			Node* n =
-				static_cast<Node*>(const_cast<void*>(self->getField("__ptr")));
-			return std::any(n->getY());
-		},
-		nullptr);
+	if (auto err = node_cls->addMethod<float>(
+			"getX",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<std::any>& args) -> Result<std::any> {
+				Node* n = static_cast<Node*>(
+					const_cast<void*>(self->getField("__ptr")));
+				return std::any(n->getX(true));
+			},
+			nullptr);
+		err) {
+		return err;
+	}
+
+	if (auto err = node_cls->addMethod<float>(
+			"getY",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<std::any>& args) -> Result<std::any> {
+				Node* n = static_cast<Node*>(
+					const_cast<void*>(self->getField("__ptr")));
+				return std::any(n->getY(true));
+			},
+			nullptr);
+		err) {
+		return err;
+	}
+
+	if (auto err = node_cls->addMethod<float>(
+			"getRotation",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<std::any>& args) -> Result<std::any> {
+				Node* n = static_cast<Node*>(
+					const_cast<void*>(self->getField("__ptr")));
+				return std::any(n->getRotation(true));
+			},
+			nullptr);
+		err) {
+		return err;
+	}
+
+	if (auto err = node_cls->addMethod<void, float>(
+			"setRotation",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<std::any>& args) -> Result<std::any> {
+				Node* n = static_cast<Node*>(
+					const_cast<void*>(self->getField("__ptr")));
+				n->setRotation(std::any_cast<float>(args.at(0)), true);
+				return std::any();
+			},
+			nullptr);
+		err) {
+		return err;
+	}
 
 	return nullptr;
 }

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "glm/ext/matrix_float4x4.hpp"
+#include "growl/core/error.h"
 #include "growl/core/input/processor.h"
+#include "growl/core/scripting/script.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -18,16 +20,12 @@ public:
 
 	virtual ~Node() = default;
 	std::string& getLabel();
-	float getX();
-	float getY();
-	float getWidth();
-	float getHeight();
-	float getRotation();
-	void setX(float x);
-	void setY(float y);
-	void setWidth(float w);
-	void setHeight(float h);
-	void setRotation(float rads);
+
+	SCRIPTED_GETSET(float, X, x);
+	SCRIPTED_GETSET(float, Y, y);
+	SCRIPTED_GETSET(float, Width, w);
+	SCRIPTED_GETSET(float, Height, h);
+	SCRIPTED_GETSET(float, Rotation, rotation);
 
 	Node* addChild(std::unique_ptr<Node> node);
 	void draw(Batch& batch, float parent_alpha);
@@ -36,11 +34,14 @@ public:
 	virtual void onEvent(InputEvent& event) override;
 	bool hit(float x, float y);
 
+	Error bindScript(ScriptingAPI& api, Script& script);
+
 protected:
 	virtual void onPopulateDebugUI(Batch& batch) {}
 	virtual void onDraw(Batch& batch, float parent_alpha);
 
 private:
+	ScriptingAPI* scripting_api;
 	std::string label;
 	Node* parent;
 	float x = 0;
@@ -51,6 +52,7 @@ private:
 	std::vector<std::unique_ptr<Node>> children;
 	glm::mat4x4 local_transform;
 	glm::mat4x4 old_transform;
+	std::shared_ptr<Object> bound_script_obj;
 
 	void computeLocalTransform();
 	void applyTransform(Batch& batch);

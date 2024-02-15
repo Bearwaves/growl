@@ -1,58 +1,22 @@
 #include "growl/scene/node.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/scalar_constants.hpp"
+#include "growl/core/error.h"
 #include "growl/core/graphics/batch.h"
 #include "growl/core/input/event.h"
+#include "growl/core/scripting/script.h"
 #include <string>
 #ifdef GROWL_IMGUI
 #include "imgui.h"
 #endif
 
 using Growl::Batch;
+using Growl::Error;
 using Growl::Node;
+using Growl::Script;
 
 std::string& Node::getLabel() {
 	return label;
-}
-
-float Node::getX() {
-	return x;
-}
-
-float Node::getY() {
-	return y;
-}
-
-float Node::getWidth() {
-	return w;
-}
-
-float Node::getHeight() {
-	return h;
-}
-
-float Node::getRotation() {
-	return rotation;
-}
-
-void Node::setX(float x) {
-	this->x = x;
-}
-
-void Node::setY(float y) {
-	this->y = y;
-}
-
-void Node::setWidth(float w) {
-	this->w = w;
-}
-
-void Node::setHeight(float h) {
-	this->h = h;
-}
-
-void Node::setRotation(float rads) {
-	this->rotation = rads;
 }
 
 Node* Node::addChild(std::unique_ptr<Node> node) {
@@ -125,6 +89,26 @@ bool Node::hit(float x, float y) {
 	return !(
 		internal_coordinates.x < 0 || internal_coordinates.y < 0 ||
 		internal_coordinates.x >= this->w || internal_coordinates.y >= this->h);
+}
+
+Error Node::bindScript(ScriptingAPI& api, Script& script) {
+	scripting_api = &api;
+	auto res = api.execute(script);
+	if (!res) {
+		return std::move(res.error());
+	}
+	auto obj = std::any_cast<std::shared_ptr<Object>>(*res);
+	if (auto err = api.setField(
+			*obj, "__ptr", static_cast<void*>(this), ScriptingType::Ptr);
+		err) {
+		return err;
+	}
+	if (auto err = api.setClass(*obj, "Node"); err) {
+		return err;
+	}
+	bound_script_obj = std::move(obj);
+
+	return nullptr;
 }
 
 void Node::computeLocalTransform() {

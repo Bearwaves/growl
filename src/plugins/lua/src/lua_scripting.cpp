@@ -8,6 +8,7 @@
 #include "lua.h"
 #include "lua_class.h"
 #include "lua_error.h"
+#include "lua_object.h"
 #include "lua_script.h"
 #include <any>
 #include <memory>
@@ -81,23 +82,36 @@ void LuaScriptingAPI::dispose() {
 	lua_close(this->state);
 }
 
-Result<std::unique_ptr<Script>>
-LuaScriptingAPI::createScript(std::string&& source) {
+Result<std::unique_ptr<Script>> LuaScriptingAPI::createScript(
+	std::string&& source, ScriptingSignature signature) {
 	return std::unique_ptr<Script>(
-		std::make_unique<LuaScript>(std::move(source)));
+		std::make_unique<LuaScript>(std::move(source), signature));
 }
 
-Error LuaScriptingAPI::execute(Script& script) {
+Result<std::any> LuaScriptingAPI::execute(Script& script) {
+	int n_returns =
+		script.getSignature().return_type == ScriptingType::Void ? 0 : 1;
 	if (luaL_loadstring(this->state, script.getSource().c_str()) ||
-		lua_pcall(this->state, 0, 0, 0)) {
+		lua_pcall(this->state, 0, n_returns, 0)) {
 		lua_tostring(this->state, -1);
 		auto err = std::make_unique<LuaError>(
 			std::string("Failed to execute script: ") +
 			std::string(lua_tostring(this->state, -1)));
 		lua_pop(this->state, 1);
-		return std::move(err);
+		return Error(std::move(err));
 	}
-	return nullptr;
+	switch (script.getSignature().return_type) {
+	case ScriptingType::Void:
+		return std::any();
+	case ScriptingType::Ptr:
+	case ScriptingType::Int:
+	case ScriptingType::String:
+	case ScriptingType::Float:
+	case ScriptingType::Object:
+		return std::any(std::shared_ptr<Object>(std::make_shared<LuaObject>(
+			this->state, luaL_ref(this->state, LUA_REGISTRYINDEX))));
+	}
+	return std::any();
 }
 
 Result<std::unique_ptr<Class>>
@@ -111,6 +125,43 @@ LuaScriptingAPI::createClass(std::string&& name, bool is_static) {
 	}
 	lua_setglobal(this->state, name.c_str());
 	return std::make_unique<Class>(std::move(name), this, is_static);
+}
+
+Error LuaScriptingAPI::setField(
+	Object& obj, const std::string& name, std::any value, ScriptingType type) {
+	auto ref = static_cast<LuaObject&>(obj).getRef();
+	lua_rawgeti(this->state, LUA_REGISTRYINDEX, ref);
+	if (!lua_istable(this->state, -1)) {
+		return std::make_unique<LuaError>(
+			"Object must be a table to set fields");
+	}
+	lua_pushstring(this->state, name.c_str());
+	switch (type) {
+	case ScriptingType::Ptr:
+		lua_pushlightuserdata(this->state, std::any_cast<void*>(value));
+		break;
+	default:
+		return std::make_unique<LuaError>("Unsupported field type");
+	}
+	lua_settable(this->state, -3);
+	lua_rawseti(this->state, LUA_REGISTRYINDEX, ref);
+	return nullptr;
+}
+
+Error LuaScriptingAPI::setClass(Object& obj, const std::string& class_name) {
+	auto ref = static_cast<LuaObject&>(obj).getRef();
+	lua_rawgeti(this->state, LUA_REGISTRYINDEX, ref);
+	if (!lua_istable(this->state, -1)) {
+		return std::make_unique<LuaError>(
+			"Object must be a table to set fields");
+	}
+	luaL_getmetatable(
+		this->state, (std::string("Growl::meta::") + class_name).c_str());
+	lua_pushvalue(this->state, -1);
+	lua_setfield(this->state, -3, "__index");
+	lua_setmetatable(this->state, -2);
+	lua_rawseti(this->state, LUA_REGISTRYINDEX, ref);
+	return nullptr;
 }
 
 Error LuaScriptingAPI::addConstructorToClass(
@@ -187,6 +238,37 @@ Error LuaScriptingAPI::addDestructorToClass(
 	return nullptr;
 }
 
+void luaPushArgs(
+	Growl::ScriptingSignature& signature, std::vector<std::any>& args,
+	lua_State* state) {
+	for (size_t i = 0; i < args.size(); i++) {
+		switch (signature.arg_types[i]) {
+		case Growl::ScriptingType::Void:
+			continue;
+		case Growl::ScriptingType::Ptr:
+			// TODO checks!
+			lua_pushlightuserdata(state, std::any_cast<void*>(args[i]));
+			break;
+		case Growl::ScriptingType::Int:
+			lua_pushinteger(state, std::any_cast<int>(args[i]));
+			break;
+		case Growl::ScriptingType::String:
+			lua_pushstring(state, std::any_cast<std::string>(args[i]).c_str());
+			break;
+		case Growl::ScriptingType::Float:
+			lua_pushnumber(state, std::any_cast<float>(args[i]));
+			break;
+		case Growl::ScriptingType::Object:
+			auto ptr =
+				std::any_cast<std::shared_ptr<Growl::Object>>(args[i]).get();
+			lua_rawgeti(
+				state, LUA_REGISTRYINDEX,
+				static_cast<Growl::LuaObject*>(ptr)->getRef());
+			break;
+		}
+	}
+}
+
 Error LuaScriptingAPI::addMethodToClass(
 	Class* cls, const std::string& method_name,
 	const ScriptingSignature& signature, ScriptingFn fn, void* context) {
@@ -256,6 +338,51 @@ Error LuaScriptingAPI::addMethodToClass(
 		4);
 	lua_settable(this->state, -3);
 	return nullptr;
+}
+
+Result<std::any> LuaScriptingAPI::executeMethod(
+	Object& obj, const std::string& method_name, std::vector<std::any> args,
+	ScriptingSignature signature) {
+	lua_rawgeti(
+		this->state, LUA_REGISTRYINDEX, static_cast<LuaObject&>(obj).getRef());
+	lua_getfield(this->state, -1, method_name.c_str());
+	lua_pushvalue(this->state, -2);
+	luaPushArgs(signature, args, this->state);
+	if (lua_pcall(
+			this->state, args.size() + 1,
+			signature.return_type == ScriptingType::Void ? 0 : 1, 0)) {
+		lua_tostring(this->state, -1);
+		auto err = std::make_unique<LuaError>(
+			std::string("Failed to execute method: ") +
+			std::string(lua_tostring(this->state, -1)));
+		std::cout << err->message() << std::endl;
+		lua_pop(this->state, 1);
+		return Error(std::move(err));
+	}
+	std::any ret;
+	switch (signature.return_type) {
+	case ScriptingType::Ptr:
+		ret = std::any(const_cast<void*>(lua_topointer(this->state, -1)));
+		break;
+	case ScriptingType::Int:
+		ret = std::any(lua_tointeger(this->state, -1));
+		break;
+	case ScriptingType::String:
+		ret = std::any(std::string(lua_tostring(this->state, -1)));
+		break;
+	case ScriptingType::Float:
+		ret = std::any(static_cast<float>(lua_tonumber(this->state, -1)));
+		break;
+	case ScriptingType::Object:
+		ret = std::any(std::shared_ptr<Object>(std::make_shared<LuaObject>(
+			this->state, luaL_ref(this->state, LUA_REGISTRYINDEX))));
+		break;
+	default:
+		ret = std::any();
+		break;
+	}
+	lua_pop(this->state, 1);
+	return ret;
 }
 
 void LuaSelf::setField(const std::string& name, void* val) {

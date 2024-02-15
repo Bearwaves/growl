@@ -5,7 +5,7 @@
 namespace Growl {
 class LuaScript : public Script {
 public:
-	LuaScript(std::string&& source)
-		: Script{std::move(source)} {}
+	LuaScript(std::string&& source, ScriptingSignature signature)
+		: Script{std::move(source), signature} {}
 };
 } // namespace Growl
