@@ -76,7 +76,7 @@ void android_main(struct android_app* state) {
 	initSoLoudPlugin(*api);
 	initLuaPlugin(*api);
 
-	if (auto err = static_cast<SystemAPIInternal&>(api->system()).init(); err) {
+	if (auto err = static_cast<SystemAPIInternal&>(api->system()).init()) {
 		__android_log_print(
 			ANDROID_LOG_FATAL, "android_main", "Failed to init system API: %s",
 			err.get()->message().c_str());
@@ -90,7 +90,7 @@ void android_main(struct android_app* state) {
 			err.get()->message());
 		exit(2);
 	}
-	if (auto err = static_cast<AudioAPIInternal&>(api->audio()).init(); err) {
+	if (auto err = static_cast<AudioAPIInternal&>(api->audio()).init()) {
 		api->system().log(
 			LogLevel::Fatal, "android_main", "Failed to init audio API: {}",
 			err.get()->message());
@@ -104,7 +104,7 @@ void android_main(struct android_app* state) {
 		exit(4);
 	}
 
-	if (auto err = Growl::initSceneGraph(*api); err) {
+	if (auto err = Growl::initSceneGraph(*api)) {
 		api->system().log(
 			LogLevel::Fatal, "android_main", "Failed to init scene graph: {}",
 			err.get()->message());
@@ -134,7 +134,7 @@ void android_main(struct android_app* state) {
 
 	api->system().log("android_main", "Window created");
 
-	if (auto err = game->init(); err) {
+	if (auto err = game->init()) {
 		api->system().log(
 			LogLevel::Fatal, "android_main", "Failed to init game: {}",
 			err.get()->message());
@@ -153,7 +153,7 @@ void android_main(struct android_app* state) {
 		static_cast<GraphicsAPIInternal&>(api->graphics()).end();
 	}
 
-	if (auto err = game->dispose(); err) {
+	if (auto err = game->dispose()) {
 		api->system().log(
 			LogLevel::Fatal, "android_main", "Failed to dispose game: {}",
 			err.get()->message());

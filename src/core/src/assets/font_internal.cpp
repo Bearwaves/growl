@@ -21,14 +21,14 @@ Error Growl::Internal::setFontFacePixelSize(
 				best = i;
 			}
 		}
-		if (auto err = FT_Select_Size(font_data.face, best); err) {
+		if (auto err = FT_Select_Size(font_data.face, best)) {
 			return Error(std::make_unique<FontError>(
 				"Failed to select font face size", err));
 		}
 		return nullptr;
 	}
 
-	if (auto err = FT_Set_Pixel_Sizes(font_data.face, 0, size); err) {
+	if (auto err = FT_Set_Pixel_Sizes(font_data.face, 0, size)) {
 		return Error(
 			std::make_unique<FontError>("Failed to set font face size", err));
 	}

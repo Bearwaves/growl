@@ -43,7 +43,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 			err.get()->message());
 		exit(2);
 	}
-	if (auto err = static_cast<AudioAPIInternal&>(g_api->audio()).init(); err) {
+	if (auto err = static_cast<AudioAPIInternal&>(g_api->audio()).init()) {
 		g_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to init audio API: {}",
 			err.get()->message());
@@ -58,7 +58,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 		exit(4);
 	}
 
-	if (auto err = Growl::initSceneGraph(*g_api); err) {
+	if (auto err = Growl::initSceneGraph(*g_api)) {
 		g_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to init scene graph: {}",
 			err.get()->message());
@@ -69,7 +69,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 }
 
 GameAdapter::~GameAdapter() {
-	if (auto err = g_game->dispose(); err) {
+	if (auto err = g_game->dispose()) {
 		g_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to dispose game: {}",
 			err.get()->message());
@@ -99,7 +99,7 @@ void GameAdapter::run() {
 			err.get()->message());
 		return;
 	}
-	if (auto err = g_game->init(); err) {
+	if (auto err = g_game->init()) {
 		g_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to init game: {}",
 			err.get()->message());

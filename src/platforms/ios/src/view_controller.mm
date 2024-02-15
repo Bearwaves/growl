@@ -39,31 +39,31 @@ std::unique_ptr<Growl::Game> createGame();
 	auto& scriptingInternal =
 		static_cast<Growl::ScriptingAPIInternal&>(api->scripting());
 
-	if (auto err = systemInternal.init(); err) {
+	if (auto err = systemInternal.init()) {
 		std::cout << "Failed to init system API: " << err.get()->message()
 				  << std::endl;
 		exit(1);
 	}
-	if (auto err = graphicsInternal.init(); err) {
+	if (auto err = graphicsInternal.init()) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "ViewController",
 			"Failed to init graphics API: {}", err.get()->message());
 		exit(2);
 	}
-	if (auto err = audioInternal.init(); err) {
+	if (auto err = audioInternal.init()) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "ViewController",
 			"Failed to init audio API: {}", err.get()->message());
 		exit(3);
 	}
-	if (auto err = scriptingInternal.init(); err) {
+	if (auto err = scriptingInternal.init()) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "ViewController",
 			"Failed to init scripting API: {}", err.get()->message());
 		exit(4);
 	}
 
-	if (auto err = Growl::initSceneGraph(*api); err) {
+	if (auto err = Growl::initSceneGraph(*api)) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "ViewController",
 			"Failed to init scene graph: {}", err.get()->message());
@@ -83,7 +83,7 @@ std::unique_ptr<Growl::Game> createGame();
 
 	[(GrowlMetalView*)self.view setSystemAPI:&systemInternal];
 
-	if (auto err = game->init(); err) {
+	if (auto err = game->init()) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "GameAdapter", "Failed to init game: {}",
 			err.get()->message());

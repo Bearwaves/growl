@@ -334,7 +334,6 @@ Result<ScriptingParam> LuaScriptingAPI::executeMethod(
 		auto err = std::make_unique<LuaError>(
 			std::string("Failed to execute method: ") +
 			std::string(lua_tostring(this->state, -1)));
-		std::cout << err->message() << std::endl;
 		lua_pop(this->state, 1);
 		return Error(std::move(err));
 	}
