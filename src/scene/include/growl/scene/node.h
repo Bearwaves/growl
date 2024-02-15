@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glm/ext/matrix_float4x4.hpp"
+#include "growl/core/api/api.h"
 #include "growl/core/error.h"
 #include "growl/core/input/processor.h"
 #include "growl/core/scripting/script.h"
@@ -34,14 +35,15 @@ public:
 	virtual void onEvent(InputEvent& event) override;
 	bool hit(float x, float y);
 
-	Error bindScript(ScriptingAPI& api, Script& script);
+	Error bindScript(API& api, Script& script);
 
 protected:
 	virtual void onPopulateDebugUI(Batch& batch) {}
 	virtual void onDraw(Batch& batch, float parent_alpha);
 
 private:
-	ScriptingAPI* scripting_api;
+	API* api;
+	std::unique_ptr<Script> script;
 	std::string label;
 	Node* parent;
 	float x = 0;

@@ -12,9 +12,9 @@ public:
 		, signature{signature} {}
 	virtual ~Script() = default;
 
-	// Script is move-only
-	Script(const Script&) = delete;
-	Script& operator=(const Script&) = delete;
+	// Script is copyable.
+	Script(const Script&) = default;
+	Script& operator=(const Script&) = default;
 	Script(Script&&) = default;
 	Script& operator=(Script&&) = default;
 

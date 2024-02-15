@@ -124,8 +124,7 @@ Error TestAppGame::init() {
 	if (!node_script_res) {
 		return std::move(node_script_res.error());
 	}
-	if (auto err = cats->bindScript(getAPI().scripting(), **node_script_res);
-		err) {
+	if (auto err = cats->bindScript(getAPI(), **node_script_res)) {
 		return err;
 	}
 

@@ -1,6 +1,7 @@
 #include "growl/scene/node.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/scalar_constants.hpp"
+#include "growl/core/api/api.h"
 #include "growl/core/error.h"
 #include "growl/core/graphics/batch.h"
 #include "growl/core/input/event.h"
@@ -8,8 +9,10 @@
 #include <string>
 #ifdef GROWL_IMGUI
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #endif
 
+using Growl::API;
 using Growl::Batch;
 using Growl::Error;
 using Growl::Node;
@@ -44,6 +47,17 @@ void Node::populateDebugUI(Batch& batch) {
 			parent ? parent->getHeight() : batch.getTargetHeight(), "%.2f");
 		ImGui::SliderFloat(
 			"Rotation", &rotation, 0.0f, 2 * glm::pi<float>(), "%.2f");
+		if (script && ImGui::TreeNode("Script")) {
+			ImGui::InputTextMultiline("##source", &(script->getSource()));
+			if (ImGui::Button("Save")) {
+				if (auto err = bindScript(*api, *script)) {
+					api->system().log(
+						"Node::ImGui", "Failed to rebind script: {}",
+						err->message());
+				}
+			}
+			ImGui::TreePop();
+		}
 
 		onPopulateDebugUI(batch);
 
@@ -91,17 +105,19 @@ bool Node::hit(float x, float y) {
 		internal_coordinates.x >= this->w || internal_coordinates.y >= this->h);
 }
 
-Error Node::bindScript(ScriptingAPI& api, Script& script) {
-	scripting_api = &api;
-	auto res = api.execute(script);
+Error Node::bindScript(API& api, Script& script) {
+	this->api = &api;
+	this->script = std::make_unique<Script>(script);
+	auto res = api.scripting().execute(*this->script);
 	if (!res) {
 		return std::move(res.error());
 	}
 	auto obj = std::move(std::get<std::unique_ptr<Object>>(*res));
-	if (auto err = api.setField(*obj, "__ptr", static_cast<void*>(this)); err) {
+	if (auto err =
+			api.scripting().setField(*obj, "__ptr", static_cast<void*>(this))) {
 		return err;
 	}
-	if (auto err = api.setClass(*obj, "Node"); err) {
+	if (auto err = api.scripting().setClass(*obj, "Node")) {
 		return err;
 	}
 	bound_script_obj = std::move(obj);
