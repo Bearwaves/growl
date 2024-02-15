@@ -32,6 +32,7 @@
 	}
 
 namespace Growl {
+class API;
 class Class;
 class ClassSelf;
 class Script;
@@ -128,6 +129,8 @@ public:
 	friend class Class;
 
 	virtual ~ScriptingAPI() {}
+
+	Error mountGrowlScripts(API& api);
 
 	template <typename T, typename... Args>
 	Result<std::unique_ptr<Script>> createScript(std::string&& source) {
