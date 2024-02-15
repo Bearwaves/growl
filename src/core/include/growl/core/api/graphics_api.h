@@ -4,7 +4,6 @@
 #include "../graphics/font_texture_atlas.h"
 #include "../graphics/texture.h"
 #include "../graphics/texture_atlas.h"
-#include "../graphics/window.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/assets/image.h"
 #include <memory>

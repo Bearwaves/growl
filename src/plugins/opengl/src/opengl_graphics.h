@@ -1,6 +1,7 @@
 #pragma once
 
 #include "growl/core/api/api_internal.h"
+#include "growl/core/graphics/window.h"
 #include "opengl_shader.h"
 #include <chrono>
 
