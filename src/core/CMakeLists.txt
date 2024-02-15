@@ -18,6 +18,7 @@ set(SOURCES
 	"src/assets/local_file.cpp"
 
 	"src/text/glyph_layout.cpp"
+	"src/scripting/scripting_api.cpp"
 	"src/util/timer.cpp"
 	)
 
