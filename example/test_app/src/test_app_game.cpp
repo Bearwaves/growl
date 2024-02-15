@@ -14,6 +14,7 @@
 #include <string>
 
 using Growl::Error;
+using Growl::Object;
 using Growl::TestAppGame;
 using Growl::Timer;
 
@@ -87,15 +88,15 @@ Error TestAppGame::init() {
 			return std::move(script_source_result.error());
 		}
 		Result<std::unique_ptr<Script>> script_result =
-			getAPI().scripting().createScript(
+			getAPI().scripting().createScript<void>(
 				std::move(script_source_result.get()));
 		if (script_result.hasError()) {
 			return std::move(script_result.error());
 		}
 		std::unique_ptr<Script> script = std::move(script_result.get());
 
-		if (auto err = getAPI().scripting().execute(*script); err) {
-			return err;
+		if (auto res = getAPI().scripting().execute(*script); !res) {
+			return std::move(res.error());
 		}
 	}
 
@@ -111,6 +112,21 @@ Error TestAppGame::init() {
 			cat->setX(125 * i);
 			cat->setY(125 * j);
 		}
+	}
+
+	auto node_script_src_res =
+		bundle_result.get().getTextFileAsString("scripts/node.lua");
+	if (!node_script_src_res) {
+		return std::move(node_script_src_res.error());
+	}
+	auto node_script_res = getAPI().scripting().createScript<Object>(
+		std::move(*node_script_src_res));
+	if (!node_script_res) {
+		return std::move(node_script_res.error());
+	}
+	if (auto err = cats->bindScript(getAPI().scripting(), **node_script_res);
+		err) {
+		return err;
 	}
 
 	input = std::make_unique<InputHandler>(getAPI().system(), cats.get());

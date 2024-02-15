@@ -6,65 +6,6 @@
 
 namespace Growl {
 
-namespace {
-template <typename>
-struct ScriptingTypeOfType;
-
-template <typename T>
-struct ScriptingTypeOfType<const T&> {
-	static ScriptingType value() {
-		return ScriptingTypeOfType<T>::value();
-	}
-};
-
-template <>
-struct ScriptingTypeOfType<std::string_view> {
-	static ScriptingType value() {
-		return ScriptingType::String;
-	}
-};
-
-template <>
-struct ScriptingTypeOfType<int> {
-	static ScriptingType value() {
-		return ScriptingType::Int;
-	}
-};
-
-template <>
-struct ScriptingTypeOfType<float> {
-	static ScriptingType value() {
-		return ScriptingType::Float;
-	}
-};
-
-template <typename T>
-struct ScriptingTypeOfType<T*> {
-	static ScriptingType value() {
-		return ScriptingType::Ptr;
-	}
-};
-
-template <>
-struct ScriptingTypeOfType<void> {
-	static ScriptingType value() {
-		return ScriptingType::Void;
-	}
-};
-
-template <typename>
-struct GetFunctionSignature;
-template <typename T, typename... Args>
-struct GetFunctionSignature<T(Args...)> {
-	static const ScriptingSignature& value() {
-		static const ScriptingSignature v{
-			ScriptingTypeOfType<T>::value(),
-			std::vector<ScriptingType>{ScriptingTypeOfType<Args>::value()...}};
-		return v;
-	}
-};
-} // namespace
-
 class ScriptingError : public BaseError {
 public:
 	explicit ScriptingError(std::string message)
