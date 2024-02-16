@@ -13,6 +13,9 @@
 			auto res = api->scripting().executeMethod<type>( \
 				*bound_script_obj, "get" #name, v); \
 			if (!res) { \
+				api->system().log( \
+					LogLevel::Warn, "Script::get" #name, "{}", \
+					res.error()->message()); \
 				return var; \
 			} \
 			return std::get<type>(*res); \
@@ -24,8 +27,13 @@
 		if (bound_script_obj && !from_script) { \
 			std::vector<ScriptingParam> v; \
 			v.push_back(var); \
-			api->scripting().executeMethod<void, type>( \
-				*bound_script_obj, "set" #name, v); \
+			if (auto res = api->scripting().executeMethod<void, type>( \
+					*bound_script_obj, "set" #name, v); \
+				!res) { \
+				api->system().log( \
+					LogLevel::Warn, "Script::set" #name, "{}", \
+					res.error()->message()); \
+			} \
 		} else { \
 			this->var = var; \
 		} \
