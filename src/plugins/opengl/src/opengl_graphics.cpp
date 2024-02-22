@@ -234,9 +234,7 @@ Result<std::unique_ptr<Shader>> OpenGLGraphicsAPI::createShader(
 		return err;
 	}
 
-	// TODO wtf
-	return std::unique_ptr<Shader>(
-		std::unique_ptr<OpenGLShader>(std::move(shader)));
+	return std::unique_ptr<Shader>(std::move(shader));
 }
 
 void OpenGLGraphicsAPI::onWindowResize(int width, int height) {}

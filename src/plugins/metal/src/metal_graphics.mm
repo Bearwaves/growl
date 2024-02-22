@@ -275,8 +275,7 @@ Result<std::unique_ptr<Shader>> MetalGraphicsAPI::createShader(
 		return Error(std::make_unique<MetalError>(
 			"Failed to compile Metal shader: " + err->message()));
 	}
-	return std::unique_ptr<Shader>(
-		std::unique_ptr<MetalShader>(std::move(shader)));
+	return std::unique_ptr<Shader>(std::move(shader));
 }
 
 const std::vector<unsigned char>
