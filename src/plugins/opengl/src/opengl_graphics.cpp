@@ -237,6 +237,11 @@ Result<std::unique_ptr<Shader>> OpenGLGraphicsAPI::createShader(
 	return std::unique_ptr<Shader>(std::move(shader));
 }
 
+Result<std::unique_ptr<Shader>>
+OpenGLGraphicsAPI::createShader(const std::string& fragment_src) {
+	return createShader(OpenGLShader::default_vertex, fragment_src);
+}
+
 void OpenGLGraphicsAPI::onWindowResize(int width, int height) {}
 
 void OpenGLGraphicsAPI::checkGLError(const char* file, long line) {

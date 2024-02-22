@@ -278,6 +278,11 @@ Result<std::unique_ptr<Shader>> MetalGraphicsAPI::createShader(
 	return std::unique_ptr<Shader>(std::move(shader));
 }
 
+Result<std::unique_ptr<Shader>>
+MetalGraphicsAPI::createShader(const std::string& fragment_src) {
+	return createShader(MetalShader::default_vertex, fragment_src);
+}
+
 const std::vector<unsigned char>
 MetalGraphicsAPI::convertRGBAToBGRA(const Image& rgba) {
 	const unsigned char* src = rgba.getRaw();

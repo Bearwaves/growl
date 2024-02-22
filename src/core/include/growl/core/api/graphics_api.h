@@ -38,6 +38,8 @@ public:
 
 	virtual Result<std::unique_ptr<Shader>> createShader(
 		const std::string& vertex_src, const std::string& fragment_src) = 0;
+	virtual Result<std::unique_ptr<Shader>>
+	createShader(const std::string& fragment_src) = 0;
 
 protected:
 	double deltaTime = 0;
