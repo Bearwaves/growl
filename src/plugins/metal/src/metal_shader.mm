@@ -30,7 +30,7 @@ Error MetalShader::compile() {
 		if (compile_error) {
 			return std::make_unique<MetalError>(compile_error);
 		}
-		fragment_func = [lib newFunctionWithName:@"pixel_func"];
+		fragment_func = [lib newFunctionWithName:@"fragment_func"];
 		vertex_func = [lib newFunctionWithName:@"vertex_func"];
 	}
 	return nullptr;
@@ -112,7 +112,7 @@ vertex VertexOut vertex_func (
 )";
 
 const std::string MetalShader::default_fragment = R"(
-fragment float4 pixel_func (
+fragment float4 fragment_func (
 	VertexOut v [[ stage_in ]],
 	texture2d<float> tex0 [[ texture(0) ]],
 	sampler sampler0 [[ sampler(0) ]]
@@ -122,7 +122,7 @@ fragment float4 pixel_func (
 )";
 
 const std::string MetalShader::rect_fragment = R"(
-fragment float4 pixel_func (
+fragment float4 fragment_func (
 	VertexOut v [[ stage_in ]]
 ) {
 	return v.color;
@@ -134,7 +134,7 @@ float median(float r, float g, float b) {
     return max(min(r, g), min(max(r, g), b));
 }
 
-fragment float4 pixel_func (
+fragment float4 fragment_func (
 	VertexOut v [[ stage_in ]],
 	texture2d<float> tex0 [[ texture(0) ]],
 	sampler sampler0 [[ sampler(0) ]]
