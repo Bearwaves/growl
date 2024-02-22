@@ -1,27 +1,36 @@
 #pragma once
 
+#include "growl/core/graphics/shader.h"
 #include <Metal/Metal.h>
 #include <string>
 
 namespace Growl {
 
-class MetalShader {
+class MetalShader : public Shader {
 public:
-	explicit MetalShader(id<MTLDevice> device, NSString* const shader_src);
+	explicit MetalShader(
+		id<MTLDevice> device, const std::string& vertex_src,
+		const std::string& fragment_src)
+		: Shader(vertex_src, fragment_src)
+		, device{device} {}
 	~MetalShader();
 	void bind(id<MTLTexture> dst_texture, id<MTLRenderCommandEncoder> encoder);
 
-	static NSString* const DEFAULT_SHADER;
-	static NSString* const RECT_SHADER;
-	static NSString* const SDF_SHADER;
+	Error compile() override;
+
+	static const std::string default_vertex;
+	static const std::string default_fragment;
+	static const std::string sdf_fragment;
+	static const std::string rect_fragment;
 
 private:
+	id<MTLDevice> device;
 	id<MTLFunction> vertex_func;
 	id<MTLFunction> fragment_func;
 	MTLRenderPipelineDescriptor* descriptor = nullptr;
 	MTLVertexDescriptor* vertex_descriptor;
 
-	static NSString* const GROWL_SHADER_HEADER;
+	static const std::string growl_shader_header;
 };
 
 } // namespace Growl

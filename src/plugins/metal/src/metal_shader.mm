@@ -1,23 +1,11 @@
 #include "metal_shader.h"
+#include "growl/core/error.h"
+#include "metal_error.h"
 #include <cassert>
 
+using Growl::Error;
+using Growl::MetalError;
 using Growl::MetalShader;
-
-MetalShader::MetalShader(id<MTLDevice> device, NSString* const shader_src) {
-	auto compile_options = [MTLCompileOptions new];
-	NSError* compile_error;
-	id<MTLLibrary> lib =
-		[device newLibraryWithSource:[GROWL_SHADER_HEADER
-										 stringByAppendingString:shader_src]
-							 options:compile_options
-							   error:&compile_error];
-	assert(!compile_error);
-	fragment_func = [lib newFunctionWithName:@"pixel_func"];
-	vertex_func = [lib newFunctionWithName:@"vertex_func"];
-	[lib release];
-	[compile_error release];
-	[compile_options release];
-}
 
 MetalShader::~MetalShader() {
 	[vertex_func release];
@@ -25,6 +13,27 @@ MetalShader::~MetalShader() {
 	if (descriptor) {
 		[descriptor release];
 	}
+}
+
+Error MetalShader::compile() {
+	@autoreleasepool {
+		auto compile_options = [[MTLCompileOptions new] autorelease];
+		NSError* compile_error = nil;
+		[compile_error autorelease];
+		std::string src = growl_shader_header + vertex_src + fragment_src;
+		id<MTLLibrary> lib = [[device
+			newLibraryWithSource:
+				[NSString stringWithCString:src.c_str()
+								   encoding:[NSString defaultCStringEncoding]]
+						 options:compile_options
+						   error:&compile_error] autorelease];
+		if (compile_error) {
+			return std::make_unique<MetalError>(compile_error);
+		}
+		fragment_func = [lib newFunctionWithName:@"pixel_func"];
+		vertex_func = [lib newFunctionWithName:@"vertex_func"];
+	}
+	return nullptr;
 }
 
 void MetalShader::bind(
@@ -63,7 +72,7 @@ void MetalShader::bind(
 	[encoder setRenderPipelineState:pipeline_state];
 }
 
-NSString* const MetalShader::GROWL_SHADER_HEADER = @R"(
+const std::string MetalShader::growl_shader_header = R"(
 #include <metal_stdlib>
 using namespace metal;
 
@@ -84,7 +93,7 @@ struct VertexOut {
 };
 )";
 
-NSString* const MetalShader::DEFAULT_SHADER = @R"(
+const std::string MetalShader::default_vertex = R"(
 vertex VertexOut vertex_func (
 	constant ConstantBlock& constant_block [[ buffer(0) ]],
 	const device VertexIn* vertex_array [[ buffer(1) ]],
@@ -100,7 +109,9 @@ vertex VertexOut vertex_func (
 
 	return outVertex;
 }
+)";
 
+const std::string MetalShader::default_fragment = R"(
 fragment float4 pixel_func (
 	VertexOut v [[ stage_in ]],
 	texture2d<float> tex0 [[ texture(0) ]],
@@ -110,23 +121,7 @@ fragment float4 pixel_func (
 }
 )";
 
-NSString* const MetalShader::RECT_SHADER = @R"(
-vertex VertexOut vertex_func (
-	constant ConstantBlock& constant_block [[ buffer(0) ]],
-	const device VertexIn* vertex_array [[ buffer(1) ]],
-	constant float4x4& transform [[ buffer(2) ]],
-	unsigned int vid [[ vertex_id ]]
-) {
-	VertexIn v = vertex_array[vid];
-
-	VertexOut outVertex = VertexOut();
-	outVertex.texCoord0 = v.vertPos;
-	outVertex.position = constant_block.projection * transform * float4(v.position, 0, 1);
-	outVertex.color = v.color;
-
-	return outVertex;
-}
-
+const std::string MetalShader::rect_fragment = R"(
 fragment float4 pixel_func (
 	VertexOut v [[ stage_in ]]
 ) {
@@ -134,23 +129,7 @@ fragment float4 pixel_func (
 }
 )";
 
-NSString* const MetalShader::SDF_SHADER = @R"(
-vertex VertexOut vertex_func (
-	constant ConstantBlock& constant_block [[ buffer(0) ]],
-	const device VertexIn* vertex_array [[ buffer(1) ]],
-	constant float4x4& transform [[ buffer(2) ]],
-	unsigned int vid [[ vertex_id ]]
-) {
-	VertexIn v = vertex_array[vid];
-
-	VertexOut outVertex = VertexOut();
-	outVertex.texCoord0 = v.vertPos;
-	outVertex.position = constant_block.projection * transform * float4(v.position, 0, 1);
-	outVertex.color = v.color;
-
-	return outVertex;
-}
-
+const std::string MetalShader::sdf_fragment = R"(
 float median(float r, float g, float b) {
     return max(min(r, g), min(max(r, g), b));
 }

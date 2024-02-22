@@ -2,6 +2,7 @@
 
 #include "../graphics/batch.h"
 #include "../graphics/font_texture_atlas.h"
+#include "../graphics/shader.h"
 #include "../graphics/texture.h"
 #include "../graphics/texture_atlas.h"
 #include "growl/core/assets/font_face.h"
@@ -34,6 +35,9 @@ public:
 
 	virtual std::unique_ptr<Batch> createBatch() = 0;
 	virtual std::unique_ptr<Batch> createBatch(const Texture& texture) = 0;
+
+	virtual Result<std::unique_ptr<Shader>> createShader(
+		const std::string& vertex_src, const std::string& fragment_src) = 0;
 
 protected:
 	double deltaTime = 0;

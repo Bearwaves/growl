@@ -44,8 +44,10 @@ public:
 	std::unique_ptr<Batch> createBatch() override;
 	std::unique_ptr<Batch> createBatch(const Texture& texture) override;
 
+	Result<std::unique_ptr<Shader>> createShader(
+		const std::string& vert_src, const std::string& fragment_src) override;
+
 	void checkGLError(const char* file, long line);
-	void checkShaderCompileError(unsigned int shader);
 
 private:
 	API& api;

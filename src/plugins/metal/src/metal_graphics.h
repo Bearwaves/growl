@@ -40,6 +40,10 @@ public:
 	std::unique_ptr<Batch> createBatch() override;
 	std::unique_ptr<Batch> createBatch(const Texture& texture) override;
 
+	Result<std::unique_ptr<Shader>> createShader(
+		const std::string& vertex_src,
+		const std::string& fragment_src) override;
+
 private:
 	API& api;
 	std::unique_ptr<Window> window;

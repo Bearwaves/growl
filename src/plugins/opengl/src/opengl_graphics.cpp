@@ -1,8 +1,9 @@
 #include "opengl_graphics.h"
 #include "glm/ext/matrix_clip_space.hpp"
-#include "glm/mat4x4.hpp"
 #include "growl/core/api/api.h"
 #include "growl/core/assets/font_face.h"
+#include "growl/core/error.h"
+#include "growl/core/graphics/shader.h"
 #ifdef GROWL_IMGUI
 #include "growl/core/imgui.h"
 #include "imgui_impl_opengl3.h"
@@ -19,6 +20,8 @@ using Growl::Batch;
 using Growl::Error;
 using Growl::FontTextureAtlas;
 using Growl::OpenGLGraphicsAPI;
+using Growl::Result;
+using Growl::Shader;
 using Growl::Texture;
 using Growl::TextureAtlas;
 using Growl::TextureOptions;
@@ -101,11 +104,21 @@ Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
 #endif
 #endif
 
-	default_shader = std::make_unique<OpenGLShader>(*this);
+	default_shader = std::make_unique<OpenGLShader>(
+		OpenGLShader::default_vertex, OpenGLShader::default_fragment);
+	if (auto err = default_shader->compile()) {
+		return err;
+	}
 	sdf_shader = std::make_unique<OpenGLShader>(
-		*this, OpenGLShader::default_vertex, OpenGLShader::sdf_fragment);
+		OpenGLShader::default_vertex, OpenGLShader::sdf_fragment);
+	if (auto err = sdf_shader->compile()) {
+		return err;
+	}
 	rect_shader = std::make_unique<OpenGLShader>(
-		*this, OpenGLShader::default_vertex, OpenGLShader::rect_fragment);
+		OpenGLShader::default_vertex, OpenGLShader::rect_fragment);
+	if (auto err = rect_shader->compile()) {
+		return err;
+	}
 	setupDebugCallback();
 
 	return nullptr;
@@ -214,6 +227,18 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
 		texture.getWidth(), texture.getHeight(), fbo);
 }
 
+Result<std::unique_ptr<Shader>> OpenGLGraphicsAPI::createShader(
+	const std::string& vert_src, const std::string& fragment_src) {
+	auto shader = std::make_unique<OpenGLShader>(vert_src, fragment_src);
+	if (auto err = shader->compile()) {
+		return err;
+	}
+
+	// TODO wtf
+	return std::unique_ptr<Shader>(
+		std::unique_ptr<OpenGLShader>(std::move(shader)));
+}
+
 void OpenGLGraphicsAPI::onWindowResize(int width, int height) {}
 
 void OpenGLGraphicsAPI::checkGLError(const char* file, long line) {
@@ -223,20 +248,6 @@ void OpenGLGraphicsAPI::checkGLError(const char* file, long line) {
 			LogLevel::Error, "OpenGL", "Error {:#04x} at {}:{}", err, file,
 			line);
 	};
-}
-
-void OpenGLGraphicsAPI::checkShaderCompileError(unsigned int shader) {
-	int result;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-	if (result == GL_FALSE) {
-		int info_len;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_len);
-		char* log = new char[info_len];
-		glGetShaderInfoLog(shader, info_len, &info_len, log);
-		api.system().log(
-			LogLevel::Error, "OpenGL", "Error compiling shader: {}", log);
-		delete[] log;
-	}
 }
 
 void OpenGLGraphicsAPI::setupDebugCallback() {

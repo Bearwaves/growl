@@ -2,7 +2,10 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/mat4x4.hpp"
 #include "growl/core/assets/font_face.h"
+#include "growl/core/error.h"
+#include "growl/core/graphics/shader.h"
 #include "growl/core/imgui.h"
+#include "metal_error.h"
 #ifdef GROWL_IMGUI
 #include "imgui_impl_metal.h"
 #endif
@@ -15,7 +18,10 @@
 using Growl::Batch;
 using Growl::Error;
 using Growl::FontTextureAtlas;
+using Growl::MetalError;
 using Growl::MetalGraphicsAPI;
+using Growl::Result;
+using Growl::Shader;
 using Growl::Texture;
 using Growl::TextureAtlas;
 using Growl::TextureOptions;
@@ -121,11 +127,21 @@ Error MetalGraphicsAPI::setWindow(const WindowConfig& config) {
 	}
 	vertex_buffers_ring = vertex_buffers;
 	command_queue = [device newCommandQueue];
-	default_shader =
-		std::make_unique<MetalShader>(device, MetalShader::DEFAULT_SHADER);
-	rect_shader =
-		std::make_unique<MetalShader>(device, MetalShader::RECT_SHADER);
-	sdf_shader = std::make_unique<MetalShader>(device, MetalShader::SDF_SHADER);
+	default_shader = std::make_unique<MetalShader>(
+		device, MetalShader::default_vertex, MetalShader::default_fragment);
+	if (auto err = default_shader->compile()) {
+		return err;
+	}
+	rect_shader = std::make_unique<MetalShader>(
+		device, MetalShader::default_vertex, MetalShader::rect_fragment);
+	if (auto err = rect_shader->compile()) {
+		return err;
+	}
+	sdf_shader = std::make_unique<MetalShader>(
+		device, MetalShader::default_vertex, MetalShader::sdf_fragment);
+	if (auto err = sdf_shader->compile()) {
+		return err;
+	}
 	return nullptr;
 }
 
@@ -249,6 +265,18 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
 		rect_shader.get(), sdf_shader.get(), projection, buffer,
 		&constant_buffer_offset, vertex_buffers_ring[current_buffer],
 		&vertex_buffer_offset);
+}
+
+Result<std::unique_ptr<Shader>> MetalGraphicsAPI::createShader(
+	const std::string& vertex_src, const std::string& fragment_src) {
+	auto shader =
+		std::make_unique<MetalShader>(device, vertex_src, fragment_src);
+	if (auto err = shader->compile()) {
+		return Error(std::make_unique<MetalError>(
+			"Failed to compile Metal shader: " + err->message()));
+	}
+	return std::unique_ptr<Shader>(
+		std::unique_ptr<MetalShader>(std::move(shader)));
 }
 
 const std::vector<unsigned char>

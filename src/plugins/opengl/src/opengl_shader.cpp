@@ -1,41 +1,16 @@
 #include "opengl_shader.h"
+#include "growl/core/error.h"
 #include "growl/core/graphics/color.h"
-#include "opengl_graphics.h"
+#include "opengl_error.h"
 
+using Growl::Error;
+using Growl::OpenGLError;
 using Growl::OpenGLShader;
 
-OpenGLShader::OpenGLShader(
-	OpenGLGraphicsAPI& graphics, std::string vertex_src,
-	std::string fragment_src) {
-	GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-	auto vertex_source = header + vertex_src;
-	const char* vertex_source_c = vertex_source.c_str();
-	glShaderSource(vertex, 1, &vertex_source_c, nullptr);
-	glCompileShader(vertex);
-	graphics.checkShaderCompileError(vertex);
-
-	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	auto fragment_source = header + fragment_src;
-	const char* fragment_source_c = fragment_source.c_str();
-	glShaderSource(fragment, 1, &fragment_source_c, nullptr);
-	glCompileShader(fragment);
-	graphics.checkShaderCompileError(fragment);
-
-	program = glCreateProgram();
-	glAttachShader(program, vertex);
-	glAttachShader(program, fragment);
-	glLinkProgram(program);
-
-	glDeleteShader(vertex);
-	glDeleteShader(fragment);
-
-	GLuint uniform_block_index =
-		glGetUniformBlockIndex(program, "ConstantBlock");
-	glUniformBlockBinding(program, uniform_block_index, 0);
-}
-
 OpenGLShader::~OpenGLShader() {
-	glDeleteProgram(program);
+	if (program) {
+		glDeleteProgram(program);
+	}
 }
 
 void OpenGLShader::bind(Color color) {
@@ -53,6 +28,55 @@ void OpenGLShader::bind(Color color) {
 	}
 	GLuint color_id = glGetUniformLocation(program, "color");
 	glUniform4f(color_id, color.r, color.g, color.b, color.a);
+}
+
+Error OpenGLShader::compile() {
+	GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
+	auto vertex_source = header + vertex_src;
+	const char* vertex_source_c = vertex_source.c_str();
+	glShaderSource(vertex, 1, &vertex_source_c, nullptr);
+	glCompileShader(vertex);
+	if (auto err = checkShaderCompileError(vertex)) {
+		return err;
+	}
+
+	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
+	auto fragment_source = header + fragment_src;
+	const char* fragment_source_c = fragment_source.c_str();
+	glShaderSource(fragment, 1, &fragment_source_c, nullptr);
+	glCompileShader(fragment);
+	if (auto err = checkShaderCompileError(fragment)) {
+		return err;
+	}
+
+	program = glCreateProgram();
+	glAttachShader(program, vertex);
+	glAttachShader(program, fragment);
+	glLinkProgram(program);
+
+	glDeleteShader(vertex);
+	glDeleteShader(fragment);
+
+	GLuint uniform_block_index =
+		glGetUniformBlockIndex(program, "ConstantBlock");
+	glUniformBlockBinding(program, uniform_block_index, 0);
+
+	return nullptr;
+}
+
+Error OpenGLShader::checkShaderCompileError(unsigned int shader) {
+	int result;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+	if (result == GL_FALSE) {
+		int info_len;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_len);
+		std::vector<char> log(info_len);
+		glGetShaderInfoLog(shader, info_len, &info_len, log.data());
+		return std::make_unique<OpenGLError>(
+			std::string("Failed to compile shader: ") +
+			std::string(log.data(), log.size()));
+	}
+	return nullptr;
 }
 
 std::string const OpenGLShader::header =
@@ -79,7 +103,7 @@ void main() {
 }
 )";
 
-std::string const OpenGLShader::default_fragment = R"(
+const std::string OpenGLShader::default_fragment = R"(
 in vec2 TexCoord;
 out vec4 outCol;
 uniform sampler2D texture0;
@@ -90,7 +114,7 @@ void main() {
 }
 )";
 
-std::string const OpenGLShader::sdf_fragment = R"(
+const std::string OpenGLShader::sdf_fragment = R"(
 in vec2 TexCoord;
 out vec4 outCol;
 uniform sampler2D texture0;
@@ -110,7 +134,7 @@ void main() {
 }
 )";
 
-std::string const OpenGLShader::rect_fragment = R"(
+const std::string OpenGLShader::rect_fragment = R"(
 out vec4 outCol;
 uniform vec4 color;
 
