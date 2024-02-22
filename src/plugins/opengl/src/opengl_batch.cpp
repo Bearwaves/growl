@@ -3,6 +3,7 @@
 #include "growl/core/assets/atlas.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/graphics/font_texture_atlas.h"
+#include "growl/core/graphics/shader.h"
 #include "growl/core/graphics/texture_atlas.h"
 #include "opengl_shader.h"
 #include "opengl_texture.h"
@@ -10,6 +11,7 @@
 #include <vector>
 
 using Growl::OpenGLBatch;
+using Growl::Shader;
 
 OpenGLBatch::~OpenGLBatch() {
 	glDeleteBuffers(1, &vbo);
@@ -174,6 +176,11 @@ void OpenGLBatch::draw(
 }
 
 void OpenGLBatch::drawRect(float x, float y, float width, float height) {
+	drawRect(x, y, width, height, *rect_shader);
+}
+
+void OpenGLBatch::drawRect(
+	float x, float y, float width, float height, Shader& shader) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
@@ -193,7 +200,7 @@ void OpenGLBatch::drawRect(float x, float y, float width, float height) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	rect_shader->bind(color);
+	static_cast<OpenGLShader&>(shader).bind(color);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 

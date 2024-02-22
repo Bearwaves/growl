@@ -50,6 +50,8 @@ public:
 		const FontTextureAtlas& font_texture_atlas, float x, float y) override;
 
 	void drawRect(float x, float y, float width, float height) override;
+	void drawRect(
+		float x, float y, float width, float height, Shader& shader) override;
 
 	int getTargetWidth() override;
 	int getTargetHeight() override;

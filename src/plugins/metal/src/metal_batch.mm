@@ -1,12 +1,14 @@
 #include "metal_batch.h"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "growl/core/assets/font_face.h"
+#include "growl/core/graphics/shader.h"
 #include "metal_texture.h"
 #include <cmath>
 #include <memory>
 #include <vector>
 
 using Growl::MetalBatch;
+using Growl::Shader;
 
 void MetalBatch::clear(float r, float g, float b) {
 	clear_color = MTLClearColorMake(r, g, b, 1);
@@ -146,7 +148,12 @@ void MetalBatch::draw(
 }
 
 void MetalBatch::drawRect(float x, float y, float width, float height) {
-	rect_shader->bind(surface, encoder);
+	drawRect(x, y, width, height, *rect_shader);
+}
+
+void MetalBatch::drawRect(
+	float x, float y, float width, float height, Shader& shader) {
+	static_cast<MetalShader&>(shader).bind(surface, encoder);
 	float right = x + width;
 	float bottom = y + height;
 	std::vector<float> vertices;

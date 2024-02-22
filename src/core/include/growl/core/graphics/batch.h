@@ -2,6 +2,7 @@
 
 #include "font_texture_atlas.h"
 #include "glm/ext/matrix_float4x4.hpp"
+#include "growl/core/graphics/shader.h"
 #include "growl/core/text/glyph_layout.h"
 #include "texture.h"
 #include "texture_atlas.h"
@@ -30,6 +31,8 @@ public:
 		const FontTextureAtlas& font_texture_atlas, float x, float y) = 0;
 
 	virtual void drawRect(float x, float y, float width, float height) = 0;
+	virtual void
+	drawRect(float x, float y, float width, float height, Shader& shader) = 0;
 
 	virtual int getTargetWidth() = 0;
 	virtual int getTargetHeight() = 0;
