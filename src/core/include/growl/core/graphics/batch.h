@@ -11,7 +11,15 @@ namespace Growl {
 
 class Batch {
 public:
+	Batch() = default;
 	virtual ~Batch() = default;
+
+	// Batch is move-only
+	Batch(const Batch&) = delete;
+	Batch& operator=(const Batch&) = delete;
+	Batch(Batch&&) = default;
+	Batch& operator=(Batch&&) = default;
+
 	virtual void clear(float r, float g, float b) = 0;
 	virtual void begin() = 0;
 	virtual void end() = 0;
