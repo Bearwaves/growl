@@ -83,7 +83,7 @@ std::string const OpenGLShader::header =
 #ifdef GROWL_OPENGL_ES
 	"#version 300 es\nprecision highp float;";
 #else
-	"#version 150 core";
+	"#version 150 core\n";
 #endif
 
 std::string const OpenGLShader::default_vertex = R"(
