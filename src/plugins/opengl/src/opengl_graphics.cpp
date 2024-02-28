@@ -1,5 +1,4 @@
 #include "opengl_graphics.h"
-#include "glm/ext/matrix_clip_space.hpp"
 #include "growl/core/api/api.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/error.h"
@@ -199,20 +198,12 @@ OpenGLGraphicsAPI::createFontTextureAtlas(const FontFace& face) {
 std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {
 	int w, h;
 	window->getSize(&w, &h);
-	glViewport(0, 0, w, h);
-	auto projection = glm::ortho<float>(
-		0, static_cast<float>(w), static_cast<float>(h), 0, 1, -1);
 	return std::make_unique<OpenGLBatch>(
-		default_shader.get(), sdf_shader.get(), rect_shader.get(), projection,
-		w, h, 0);
+		default_shader.get(), sdf_shader.get(), rect_shader.get(), w, h, 0);
 }
 
 std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
 	auto& opengl_texture = static_cast<const OpenGLTexture&>(texture);
-	glViewport(0, 0, texture.getWidth(), texture.getHeight());
-	auto projection = glm::ortho<float>(
-		0, static_cast<float>(texture.getWidth()), 0,
-		static_cast<float>(texture.getHeight()), 1, -1);
 
 	GLuint fbo;
 	glGenFramebuffers(1, &fbo);
@@ -223,7 +214,7 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return std::make_unique<OpenGLBatch>(
-		default_shader.get(), sdf_shader.get(), rect_shader.get(), projection,
+		default_shader.get(), sdf_shader.get(), rect_shader.get(),
 		texture.getWidth(), texture.getHeight(), fbo);
 }
 

@@ -26,6 +26,7 @@ public:
 	void resize(const int width, const int height) override;
 
 private:
+	std::unique_ptr<Batch> batch;
 	std::unique_ptr<TextureAtlas> texture_atlas;
 	std::unique_ptr<Texture> grass_tiled;
 	std::unique_ptr<InputHandler> input;

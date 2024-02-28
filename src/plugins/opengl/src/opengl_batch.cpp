@@ -13,8 +13,35 @@
 using Growl::OpenGLBatch;
 using Growl::Shader;
 
+OpenGLBatch::OpenGLBatch(
+	OpenGLShader* default_shader, OpenGLShader* sdf_shader,
+	OpenGLShader* rect_shader, int width, int height, GLuint fbo)
+	: default_shader{default_shader}
+	, sdf_shader{sdf_shader}
+	, rect_shader{rect_shader}
+	, transform{glm::identity<glm::mat4x4>()}
+	, width{width}
+	, height{height}
+	, color{1, 1, 1, 1}
+	, fbo{fbo} {
+	if (fbo) {
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	}
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ebo);
+
+	glGenBuffers(1, &ubo);
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+	glBufferData(
+		GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 OpenGLBatch::~OpenGLBatch() {
 	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(1, &ebo);
+	glDeleteBuffers(1, &ubo);
 	glDeleteVertexArrays(1, &vao);
 	if (fbo) {
 		glDeleteFramebuffers(1, &fbo);
@@ -27,19 +54,12 @@ void OpenGLBatch::clear(float r, float g, float b) {
 }
 
 void OpenGLBatch::begin() {
-	if (fbo) {
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	}
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ebo);
+	glViewport(0, 0, width, height);
+	auto projection = glm::ortho<float>(
+		0, static_cast<float>(width), fbo ? 0 : static_cast<float>(height),
+		fbo ? static_cast<float>(height) : 0, 1, -1);
 
-	glGenBuffers(1, &ubo);
-	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-	glBufferData(
-		GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindVertexArray(vao);
 	glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, 2 * sizeof(glm::mat4));
 	glBufferSubData(
 		GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));

@@ -1,7 +1,10 @@
 #include "metal_batch.h"
+#include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/graphics/shader.h"
+#include "metal_buffer.h"
+#include "metal_graphics.h"
 #include "metal_texture.h"
 #include <cmath>
 #include <memory>
@@ -16,24 +19,28 @@ void MetalBatch::clear(float r, float g, float b) {
 }
 
 void MetalBatch::begin() {
-	encoder = [command_buffer
+	surface =
+		target_texture ? target_texture : metal_graphics.getSurface().texture;
+
+	encoder = [metal_graphics.getCommandBuffer()
 		renderCommandEncoderWithDescriptor:renderPassDescriptor()];
-	memcpy(
-		reinterpret_cast<unsigned char*>(constant_buffer.contents) +
-			*constant_offset,
-		&projection, sizeof(projection));
-	[encoder setVertexBuffer:constant_buffer offset:*constant_offset atIndex:0];
-	*constant_offset += sizeof(projection);
-	memcpy(
-		reinterpret_cast<unsigned char*>(constant_buffer.contents) +
-			*constant_offset,
-		&transform, sizeof(transform));
-	[encoder setVertexBuffer:constant_buffer offset:*constant_offset atIndex:2];
-	*constant_offset += sizeof(transform);
+
+	auto projection =
+		glm::ortho<float>(0, surface.width, surface.height, 0, 1, -1);
+
+	constant_buffer = std::make_unique<MetalBuffer>(
+		metal_graphics.getCurrentConstantBuffer());
+	vertex_buffer =
+		std::make_unique<MetalBuffer>(metal_graphics.getCurrentVertexBuffer());
+
+	constant_buffer->writeAndBind(encoder, 0, &projection, sizeof(projection));
+	constant_buffer->writeAndBind(encoder, 2, &transform, sizeof(transform));
 }
 
 void MetalBatch::end() {
 	[encoder endEncoding];
+	encoder = nil;
+	surface = nil;
 }
 
 void MetalBatch::setColor(float r, float g, float b, float a) {
@@ -42,12 +49,8 @@ void MetalBatch::setColor(float r, float g, float b, float a) {
 
 void MetalBatch::setTransform(glm::mat4x4 transform) {
 	this->transform = transform;
-	memcpy(
-		reinterpret_cast<unsigned char*>(constant_buffer.contents) +
-			*constant_offset,
-		&this->transform, sizeof(this->transform));
-	[encoder setVertexBuffer:constant_buffer offset:*constant_offset atIndex:2];
-	*constant_offset += sizeof(transform);
+	constant_buffer->writeAndBind(
+		encoder, 2, &this->transform, sizeof(this->transform));
 }
 
 glm::mat4x4 MetalBatch::getTransform() {
@@ -137,11 +140,8 @@ void MetalBatch::draw(
 		addVertex(vertices, gx, gy, reg.u0, reg.v0);
 		addVertex(vertices, right, gy, reg.u1, reg.v0);
 	}
-	memcpy(
-		static_cast<char*>(vertex_buffer.contents) + *vertex_offset,
-		vertices.data(), vertices.size() * sizeof(float));
-	[encoder setVertexBuffer:vertex_buffer offset:*vertex_offset atIndex:1];
-	*vertex_offset += vertices.size() * sizeof(float);
+	vertex_buffer->writeAndBind(
+		encoder, 1, vertices.data(), vertices.size() * sizeof(float));
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
 				vertexStart:0
 				vertexCount:glyph_layout.getLayout().size() * 6];

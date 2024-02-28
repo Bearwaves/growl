@@ -4,6 +4,7 @@
 #include "growl/core/api/system_api.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/graphics/window.h"
+#include "metal_buffer.h"
 #include "metal_shader.h"
 #include <Metal/Metal.h>
 #include <QuartzCore/CAMetalLayer.h>
@@ -46,6 +47,23 @@ public:
 	Result<std::unique_ptr<Shader>>
 	createShader(const std::string& fragment_src) override;
 
+	id<MTLCommandBuffer> getCommandBuffer() {
+		return command_buffer;
+	}
+
+	id<CAMetalDrawable> getSurface() {
+		return surface;
+	}
+
+	MetalBuffer getCurrentConstantBuffer() {
+		return MetalBuffer(
+			constant_buffers_ring[current_buffer], &constant_buffer_offset);
+	}
+	MetalBuffer getCurrentVertexBuffer() {
+		return MetalBuffer(
+			vertex_buffers_ring[current_buffer], &vertex_buffer_offset);
+	}
+
 private:
 	API& api;
 	std::unique_ptr<Window> window;
@@ -64,11 +82,11 @@ private:
 	std::unique_ptr<MetalShader> sdf_shader;
 	time_point<high_resolution_clock> last_render;
 	dispatch_semaphore_t frame_boundary_semaphore;
-	uint32_t current_buffer;
+	size_t current_buffer;
 	NSArray<id<MTLBuffer>>* vertex_buffers_ring;
-	uint32_t vertex_buffer_offset;
+	size_t vertex_buffer_offset;
 	NSArray<id<MTLBuffer>>* constant_buffers_ring;
-	uint32_t constant_buffer_offset;
+	size_t constant_buffer_offset;
 
 	std::unique_ptr<Texture>
 	setupTexture(id<MTLTexture> texture, const TextureOptions options);

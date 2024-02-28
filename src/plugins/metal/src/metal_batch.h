@@ -5,29 +5,27 @@
 #include "growl/core/graphics/color.h"
 #include <Metal/Metal.h>
 
+#include "metal_buffer.h"
 #include "metal_shader.h"
 
 namespace Growl {
 
+class MetalGraphicsAPI;
+
 class MetalBatch : public Batch {
 public:
 	MetalBatch(
-		id<MTLCommandBuffer> command_buffer, id<MTLTexture> surface,
-		MetalShader* default_shader, MetalShader* rect_shader,
-		MetalShader* sdf_shader, glm::mat4x4 projection,
-		id<MTLBuffer> constant_buffer, uint32_t* constant_offset,
-		id<MTLBuffer> vertex_buffer, uint32_t* vertex_offset)
-		: command_buffer{command_buffer}
-		, surface{surface}
+		MetalGraphicsAPI& metal_graphics, MetalShader* default_shader,
+		MetalShader* rect_shader, MetalShader* sdf_shader,
+		id<MTLTexture> target_texture = nil)
+		: metal_graphics{metal_graphics}
 		, default_shader{default_shader}
 		, rect_shader{rect_shader}
 		, sdf_shader{sdf_shader}
-		, constant_buffer{constant_buffer}
-		, constant_offset{constant_offset}
-		, vertex_buffer{vertex_buffer}
-		, vertex_offset{vertex_offset}
+		, target_texture{target_texture}
+		, constant_buffer{nil}
+		, vertex_buffer{nil}
 		, color{1, 1, 1, 1}
-		, projection{projection}
 		, transform{glm::identity<glm::mat4x4>()} {}
 
 	void clear(float r, float g, float b) override;
@@ -56,21 +54,19 @@ public:
 	int getTargetHeight() override;
 
 private:
-	id<MTLCommandBuffer> command_buffer;
-	id<MTLTexture> surface;
+	MetalGraphicsAPI& metal_graphics;
 	id<MTLRenderCommandEncoder> encoder;
 	MetalShader* default_shader;
 	MetalShader* rect_shader;
 	MetalShader* sdf_shader;
-	id<MTLBuffer> constant_buffer;
-	uint32_t* constant_offset;
-	id<MTLBuffer> vertex_buffer;
-	uint32_t* vertex_offset;
+	id<MTLTexture> target_texture;
+	std::unique_ptr<MetalBuffer> constant_buffer;
+	std::unique_ptr<MetalBuffer> vertex_buffer;
 	Color color;
-	glm::mat4x4 projection;
 	glm::mat4x4 transform;
 	bool should_clear = false;
 	MTLClearColor clear_color;
+	id<MTLTexture> surface;
 
 	MTLRenderPassDescriptor* renderPassDescriptor();
 	void addVertex(
