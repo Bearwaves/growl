@@ -2,6 +2,7 @@
 #include "growl/core/error.h"
 #include "growl/core/graphics/color.h"
 #include "opengl_error.h"
+#include <vector>
 
 using Growl::Error;
 using Growl::OpenGLError;
