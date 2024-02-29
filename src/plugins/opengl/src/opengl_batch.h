@@ -7,6 +7,7 @@
 
 namespace Growl {
 
+class Window;
 class OpenGLShader;
 class FontTextureAtlas;
 class GlyphLayout;
@@ -17,7 +18,8 @@ class OpenGLBatch : public Batch {
 public:
 	OpenGLBatch(
 		OpenGLShader* default_shader, OpenGLShader* sdf_shader,
-		OpenGLShader* rect_shader, int width, int height, GLuint fbo);
+		OpenGLShader* rect_shader, int width, int height, Window* window,
+		GLuint fbo);
 	~OpenGLBatch();
 
 	void clear(float r, float g, float b) override;
@@ -53,6 +55,7 @@ private:
 	int width;
 	int height;
 	Color color;
+	Window* window;
 	GLuint vao = 0;
 	GLuint vbo = 0;
 	GLuint ebo = 0;

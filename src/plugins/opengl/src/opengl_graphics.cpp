@@ -199,7 +199,8 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {
 	int w, h;
 	window->getSize(&w, &h);
 	return std::make_unique<OpenGLBatch>(
-		default_shader.get(), sdf_shader.get(), rect_shader.get(), w, h, 0);
+		default_shader.get(), sdf_shader.get(), rect_shader.get(), w, h,
+		window.get(), 0);
 }
 
 std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
@@ -215,7 +216,7 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
 
 	return std::make_unique<OpenGLBatch>(
 		default_shader.get(), sdf_shader.get(), rect_shader.get(),
-		texture.getWidth(), texture.getHeight(), fbo);
+		texture.getWidth(), texture.getHeight(), nullptr, fbo);
 }
 
 Result<std::unique_ptr<Shader>> OpenGLGraphicsAPI::createShader(

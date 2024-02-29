@@ -5,6 +5,7 @@
 #include "growl/core/graphics/font_texture_atlas.h"
 #include "growl/core/graphics/shader.h"
 #include "growl/core/graphics/texture_atlas.h"
+#include "growl/core/graphics/window.h"
 #include "opengl_shader.h"
 #include "opengl_texture.h"
 #include <cmath>
@@ -15,7 +16,8 @@ using Growl::Shader;
 
 OpenGLBatch::OpenGLBatch(
 	OpenGLShader* default_shader, OpenGLShader* sdf_shader,
-	OpenGLShader* rect_shader, int width, int height, GLuint fbo)
+	OpenGLShader* rect_shader, int width, int height, Window* window,
+	GLuint fbo)
 	: default_shader{default_shader}
 	, sdf_shader{sdf_shader}
 	, rect_shader{rect_shader}
@@ -23,6 +25,7 @@ OpenGLBatch::OpenGLBatch(
 	, width{width}
 	, height{height}
 	, color{1, 1, 1, 1}
+	, window{window}
 	, fbo{fbo} {
 	if (fbo) {
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -54,6 +57,9 @@ void OpenGLBatch::clear(float r, float g, float b) {
 }
 
 void OpenGLBatch::begin() {
+	if (!fbo && window) {
+		window->getSize(&width, &height);
+	}
 	glViewport(0, 0, width, height);
 	auto projection = glm::ortho<float>(
 		0, static_cast<float>(width), fbo ? 0 : static_cast<float>(height),
