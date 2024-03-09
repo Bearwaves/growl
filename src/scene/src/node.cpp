@@ -72,15 +72,13 @@ void Node::populateDebugUI(Batch& batch) {
 
 void Node::draw(Batch& batch, float parent_alpha) {
 	computeLocalTransform();
-	applyTransform(batch);
 	if (!parent) {
 		populateDebugUI(batch);
 	}
-	onDraw(batch, parent_alpha);
-	resetTransform(batch);
+	onDraw(batch, parent_alpha, local_transform);
 }
 
-void Node::onDraw(Batch& batch, float parent_alpha) {
+void Node::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
 	drawChildren(batch, parent_alpha);
 }
 
@@ -136,13 +134,4 @@ void Node::computeLocalTransform() {
 	if (parent) {
 		local_transform = parent->local_transform * local_transform;
 	}
-}
-
-void Node::applyTransform(Batch& batch) {
-	old_transform = batch.getTransform();
-	batch.setTransform(local_transform);
-}
-
-void Node::resetTransform(Batch& batch) {
-	batch.setTransform(old_transform);
 }

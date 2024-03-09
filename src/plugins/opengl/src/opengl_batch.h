@@ -27,22 +27,24 @@ public:
 	void end() override;
 
 	void setColor(float r, float g, float b, float a) override;
-	void setTransform(glm::mat4x4 transform) override;
-	glm::mat4x4 getTransform() override;
 
 	void draw(
-		const Texture& texture, float x, float y, float width,
-		float height) override;
+		const Texture& texture, float x, float y, float width, float height,
+		glm::mat4x4 transform) override;
 	void draw(
 		const TextureAtlasRegion& texture, float x, float y, float width,
-		float height) override;
+		float height, glm::mat4x4 transform) override;
 	void draw(
 		const GlyphLayout& glyph_layout,
-		const FontTextureAtlas& font_texture_atlas, float x, float y) override;
+		const FontTextureAtlas& font_texture_atlas, float x, float y,
+		glm::mat4x4 transform) override;
 
-	void drawRect(float x, float y, float width, float height) override;
 	void drawRect(
-		float x, float y, float width, float height, Shader& shader) override;
+		float x, float y, float width, float height,
+		glm::mat4x4 transform) override;
+	void drawRect(
+		float x, float y, float width, float height, Shader& shader,
+		glm::mat4x4 transform) override;
 
 	int getTargetWidth() override;
 	int getTargetHeight() override;
@@ -51,7 +53,6 @@ private:
 	OpenGLShader* default_shader;
 	OpenGLShader* sdf_shader;
 	OpenGLShader* rect_shader;
-	glm::mat4 transform;
 	int width;
 	int height;
 	Color color;
@@ -61,6 +62,8 @@ private:
 	GLuint ebo = 0;
 	GLuint fbo = 0;
 	GLuint ubo = 0;
+
+	void setTransform(glm::mat4x4 transform);
 };
 
 } // namespace Growl

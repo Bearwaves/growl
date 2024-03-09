@@ -34,7 +34,6 @@ void MetalBatch::begin() {
 		std::make_unique<MetalBuffer>(metal_graphics.getCurrentVertexBuffer());
 
 	constant_buffer->writeAndBind(encoder, 0, &projection, sizeof(projection));
-	constant_buffer->writeAndBind(encoder, 2, &transform, sizeof(transform));
 }
 
 void MetalBatch::end() {
@@ -47,21 +46,13 @@ void MetalBatch::setColor(float r, float g, float b, float a) {
 	color = {r, g, b, a};
 }
 
-void MetalBatch::setTransform(glm::mat4x4 transform) {
-	this->transform = transform;
-	constant_buffer->writeAndBind(
-		encoder, 2, &this->transform, sizeof(this->transform));
-}
-
-glm::mat4x4 MetalBatch::getTransform() {
-	return transform;
-}
-
 void MetalBatch::draw(
-	const Texture& texture, float x, float y, float width, float height) {
+	const Texture& texture, float x, float y, float width, float height,
+	glm::mat4x4 transform) {
 	auto& tex = static_cast<const MetalTexture&>(texture);
 	tex.bind(encoder);
 	default_shader->bind(surface, encoder);
+	constant_buffer->writeAndBind(encoder, 2, &transform, sizeof(transform));
 
 	float right = std::round(x + width);
 	float bottom = std::round(y + height);
@@ -82,10 +73,11 @@ void MetalBatch::draw(
 
 void MetalBatch::draw(
 	const TextureAtlasRegion& region, float x, float y, float width,
-	float height) {
+	float height, glm::mat4x4 transform) {
 	auto& tex = static_cast<const MetalTexture&>(region.atlas->getTexture());
 	tex.bind(encoder);
 	default_shader->bind(surface, encoder);
+	constant_buffer->writeAndBind(encoder, 2, &transform, sizeof(transform));
 
 	float right = std::round(x + width);
 	float bottom = std::round(y + height);
@@ -108,7 +100,7 @@ void MetalBatch::draw(
 
 void MetalBatch::draw(
 	const GlyphLayout& glyph_layout, const FontTextureAtlas& font_texture_atlas,
-	float x, float y) {
+	float x, float y, glm::mat4x4 transform) {
 	auto& tex =
 		static_cast<const MetalTexture&>(font_texture_atlas.getTexture());
 	tex.bind(encoder);
@@ -117,6 +109,7 @@ void MetalBatch::draw(
 	} else {
 		default_shader->bind(surface, encoder);
 	}
+	constant_buffer->writeAndBind(encoder, 2, &transform, sizeof(transform));
 
 	std::vector<float> vertices;
 	for (auto& glyph : glyph_layout.getLayout()) {
@@ -147,13 +140,16 @@ void MetalBatch::draw(
 				vertexCount:glyph_layout.getLayout().size() * 6];
 }
 
-void MetalBatch::drawRect(float x, float y, float width, float height) {
-	drawRect(x, y, width, height, *rect_shader);
+void MetalBatch::drawRect(
+	float x, float y, float width, float height, glm::mat4x4 transform) {
+	drawRect(x, y, width, height, *rect_shader, transform);
 }
 
 void MetalBatch::drawRect(
-	float x, float y, float width, float height, Shader& shader) {
+	float x, float y, float width, float height, Shader& shader,
+	glm::mat4x4 transform) {
 	static_cast<MetalShader&>(shader).bind(surface, encoder);
+	constant_buffer->writeAndBind(encoder, 2, &transform, sizeof(transform));
 	float right = x + width;
 	float bottom = y + height;
 	std::vector<float> vertices;

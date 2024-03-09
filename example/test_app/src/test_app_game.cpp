@@ -220,10 +220,11 @@ Error TestAppGame::dispose() {
 	return nullptr;
 }
 
-void Growl::Cat::onDraw(Batch& batch, float parent_alpha) {
+void Growl::Cat::onDraw(
+	Batch& batch, float parent_alpha, glm::mat4x4 transform) {
 	auto region = is_hit ? atlas->getRegion("mouse.jpg").get()
 						 : atlas->getRegion("cat.jpg").get();
-	batch.draw(region, 0, 0, getWidth(), getHeight());
+	batch.draw(region, 0, 0, getWidth(), getHeight(), transform);
 }
 
 void Growl::Cat::onMouseEvent(InputMouseEvent& event) {

@@ -21,7 +21,6 @@ OpenGLBatch::OpenGLBatch(
 	: default_shader{default_shader}
 	, sdf_shader{sdf_shader}
 	, rect_shader{rect_shader}
-	, transform{glm::identity<glm::mat4x4>()}
 	, width{width}
 	, height{height}
 	, color{1, 1, 1, 1}
@@ -66,12 +65,9 @@ void OpenGLBatch::begin() {
 		fbo ? static_cast<float>(height) : 0, 1, -1);
 
 	glBindVertexArray(vao);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, 2 * sizeof(glm::mat4));
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, sizeof(glm::mat4));
 	glBufferSubData(
 		GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
-	glBufferSubData(
-		GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4),
-		glm::value_ptr(transform));
 }
 
 void OpenGLBatch::end() {
@@ -86,7 +82,6 @@ void OpenGLBatch::setColor(float r, float g, float b, float a) {
 }
 
 void OpenGLBatch::setTransform(glm::mat4x4 transform) {
-	this->transform = transform;
 	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
 	glBufferSubData(
 		GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4),
@@ -94,14 +89,12 @@ void OpenGLBatch::setTransform(glm::mat4x4 transform) {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-glm::mat4x4 OpenGLBatch::getTransform() {
-	return transform;
-}
-
 void OpenGLBatch::draw(
-	const Texture& texture, float x, float y, float width, float height) {
+	const Texture& texture, float x, float y, float width, float height,
+	glm::mat4x4 transform) {
 	auto& tex = static_cast<const OpenGLTexture&>(texture);
 	tex.bind();
+	setTransform(transform);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 	float right = x + width;
@@ -126,9 +119,10 @@ void OpenGLBatch::draw(
 
 void OpenGLBatch::draw(
 	const TextureAtlasRegion& region, float x, float y, float width,
-	float height) {
+	float height, glm::mat4x4 transform) {
 	auto& tex = static_cast<const OpenGLTexture&>(region.atlas->getTexture());
 	tex.bind();
+	setTransform(transform);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 	float right = x + width;
@@ -152,10 +146,11 @@ void OpenGLBatch::draw(
 
 void OpenGLBatch::draw(
 	const GlyphLayout& glyph_layout, const FontTextureAtlas& font_texture_atlas,
-	float x, float y) {
+	float x, float y, glm::mat4x4 transform) {
 	auto& tex =
 		static_cast<const OpenGLTexture&>(font_texture_atlas.getTexture());
 	tex.bind();
+	setTransform(transform);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
@@ -201,14 +196,17 @@ void OpenGLBatch::draw(
 		GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
 }
 
-void OpenGLBatch::drawRect(float x, float y, float width, float height) {
-	drawRect(x, y, width, height, *rect_shader);
+void OpenGLBatch::drawRect(
+	float x, float y, float width, float height, glm::mat4x4 transform) {
+	drawRect(x, y, width, height, *rect_shader, transform);
 }
 
 void OpenGLBatch::drawRect(
-	float x, float y, float width, float height, Shader& shader) {
+	float x, float y, float width, float height, Shader& shader,
+	glm::mat4x4 transform) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
+	setTransform(transform);
 
 	float right = x + width;
 	float bottom = y + height;

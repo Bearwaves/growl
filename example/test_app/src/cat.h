@@ -11,7 +11,8 @@ public:
 	explicit Cat(std::string&& label, TextureAtlas* atlas)
 		: Node{std::move(label)}
 		, atlas{atlas} {}
-	void onDraw(Batch& batch, float parent_alpha) override;
+	void
+	onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) override;
 	void onMouseEvent(InputMouseEvent& event) override;
 	void onTouchEvent(InputTouchEvent& event) override;
 

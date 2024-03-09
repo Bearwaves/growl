@@ -39,7 +39,8 @@ public:
 
 protected:
 	virtual void onPopulateDebugUI(Batch& batch) {}
-	virtual void onDraw(Batch& batch, float parent_alpha);
+	virtual void
+	onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform);
 
 private:
 	API* api;
@@ -53,12 +54,9 @@ private:
 	float rotation = 0;
 	std::vector<std::unique_ptr<Node>> children;
 	glm::mat4x4 local_transform;
-	glm::mat4x4 old_transform;
 	std::unique_ptr<Object> bound_script_obj;
 
 	void computeLocalTransform();
-	void applyTransform(Batch& batch);
-	void resetTransform(Batch& batch);
 	void populateDebugUI(Batch& batch);
 };
 
