@@ -8,7 +8,6 @@
 #include "growl/core/graphics/window.h"
 #include "opengl_shader.h"
 #include "opengl_texture.h"
-#include <OpenGL/OpenGL.h>
 #include <cmath>
 #include <vector>
 
