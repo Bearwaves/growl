@@ -9,10 +9,15 @@ namespace Growl {
 
 class Window;
 class OpenGLShader;
+class OpenGLTexture;
 class FontTextureAtlas;
 class GlyphLayout;
 class Texture;
 struct TextureAtlasRegion;
+
+struct SpriteBlock {
+	glm::mat4x4 transform;
+};
 
 class OpenGLBatch : public Batch {
 public:
@@ -63,7 +68,15 @@ private:
 	GLuint fbo = 0;
 	GLuint ubo = 0;
 
-	void setTransform(glm::mat4x4 transform);
+	unsigned int idx = 0;
+	unsigned int verts = 0;
+	const OpenGLTexture* bound_tex = nullptr;
+	OpenGLShader* bound_shader = nullptr;
+	std::vector<GLfloat> vertices;
+	std::vector<GLuint> elements;
+	std::vector<SpriteBlock> uniforms;
+
+	void flush();
 };
 
 } // namespace Growl

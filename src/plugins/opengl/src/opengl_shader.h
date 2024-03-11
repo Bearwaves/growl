@@ -5,6 +5,9 @@
 
 namespace Growl {
 
+// TODO this should not be hardcoded
+constexpr GLsizei MAX_BATCH_SIZE = 100;
+
 struct Color;
 class OpenGLGraphicsAPI;
 

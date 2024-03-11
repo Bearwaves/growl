@@ -14,18 +14,27 @@ OpenGLShader::~OpenGLShader() {
 	}
 }
 
+constexpr GLsizei VERTEX_ATTRIB_STRIDE = 4 * sizeof(GLfloat) + sizeof(GLuint);
+
 void OpenGLShader::bind(Color color) {
 	glUseProgram(program);
 	GLint pos_attrib = glGetAttribLocation(program, "position");
 	glEnableVertexAttribArray(pos_attrib);
 	glVertexAttribPointer(
-		pos_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+		pos_attrib, 2, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE, 0);
 	GLint tex_attrib = glGetAttribLocation(program, "texCoord");
 	if (tex_attrib >= 0) {
 		glEnableVertexAttribArray(tex_attrib);
 		glVertexAttribPointer(
-			tex_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
+			tex_attrib, 2, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE,
 			(void*)(2 * sizeof(GLfloat)));
+	}
+	GLuint index_attrib = glGetAttribLocation(program, "idx");
+	if (index_attrib >= 0) {
+		glEnableVertexAttribArray(index_attrib);
+		glVertexAttribPointer(
+			index_attrib, 1, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE,
+			(void*)(4 * sizeof(GLfloat)));
 	}
 	GLuint color_id = glGetUniformLocation(program, "color");
 	glUniform4f(color_id, color.r, color.g, color.b, color.a);
@@ -90,17 +99,18 @@ std::string const OpenGLShader::header =
 std::string const OpenGLShader::default_vertex = R"(
 in vec2 position;
 in vec2 texCoord;
+in float idx;
 
 out vec2 TexCoord;
 
 layout (std140) uniform ConstantBlock {
 	mat4 projection;
-	mat4 transform;
+	mat4 transforms[100];
 };
 
 void main() {
 	TexCoord = texCoord;
-	gl_Position = projection * transform * vec4(position, 0, 1);
+	gl_Position = projection * transforms[int(idx)] * vec4(position, 0, 1);
 }
 )";
 

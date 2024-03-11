@@ -8,6 +8,7 @@
 #include "growl/core/graphics/window.h"
 #include "opengl_shader.h"
 #include "opengl_texture.h"
+#include <OpenGL/OpenGL.h>
 #include <cmath>
 #include <vector>
 
@@ -36,7 +37,8 @@ OpenGLBatch::OpenGLBatch(
 	glGenBuffers(1, &ubo);
 	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
 	glBufferData(
-		GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+		GL_UNIFORM_BUFFER, (MAX_BATCH_SIZE + 1) * sizeof(glm::mat4), NULL,
+		GL_STATIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -68,9 +70,11 @@ void OpenGLBatch::begin() {
 	glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, sizeof(glm::mat4));
 	glBufferSubData(
 		GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void OpenGLBatch::end() {
+	flush();
 	glBindVertexArray(0);
 	if (fbo) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -81,67 +85,88 @@ void OpenGLBatch::setColor(float r, float g, float b, float a) {
 	color = {r, g, b, a};
 }
 
-void OpenGLBatch::setTransform(glm::mat4x4 transform) {
-	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-	glBufferSubData(
-		GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4),
-		glm::value_ptr(transform));
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
-
 void OpenGLBatch::draw(
 	const Texture& texture, float x, float y, float width, float height,
 	glm::mat4x4 transform) {
 	auto& tex = static_cast<const OpenGLTexture&>(texture);
-	tex.bind();
-	setTransform(transform);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
+	if (&tex != bound_tex || default_shader != bound_shader) {
+		flush();
+	}
+	uniforms.insert(uniforms.end(), SpriteBlock{transform});
+	bound_tex = &tex;
+	bound_shader = default_shader;
 	float right = x + width;
 	float bottom = y + height;
-	float quad_vertex_data[] = {
-		x,	   y,	   0.0f, 0.0f, // Top-left
-		right, y,	   1.0f, 0.0f, // Top-right
-		right, bottom, 1.0f, 1.0f, // Bottom-right
-		x,	   bottom, 0.0f, 1.0f  // Bottom-left
-	};
-	GLuint elements[] = {0, 1, 2, 2, 3, 0};
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(
-		GL_ARRAY_BUFFER, sizeof(quad_vertex_data), quad_vertex_data,
-		GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(
-		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	default_shader->bind(color);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	vertices.insert(
+		vertices.end(), {
+							x,
+							y,
+							0.0f,
+							0.0f,
+							static_cast<GLfloat>(idx), // Top-left
+							right,
+							y,
+							1.0f,
+							0.0f,
+							static_cast<GLfloat>(idx), // Top-right
+							right,
+							bottom,
+							1.0f,
+							1.0f,
+							static_cast<GLfloat>(idx), // Bottom-right
+							x,
+							bottom,
+							0.0f,
+							1.0f,
+							static_cast<GLfloat>(idx) // Bottom-left
+						});
+	elements.insert(
+		elements.end(),
+		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
+	idx++;
+	verts += 4;
 }
 
 void OpenGLBatch::draw(
 	const TextureAtlasRegion& region, float x, float y, float width,
 	float height, glm::mat4x4 transform) {
 	auto& tex = static_cast<const OpenGLTexture&>(region.atlas->getTexture());
-	tex.bind();
-	setTransform(transform);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
+	if (&tex != bound_tex || default_shader != bound_shader) {
+		flush();
+	}
+	uniforms.insert(uniforms.end(), SpriteBlock{transform});
+	bound_tex = &tex;
+	bound_shader = default_shader;
 	float right = x + width;
 	float bottom = y + height;
-	float quad_vertex_data[] = {
-		x,	   y,	   region.region.u0, region.region.v0,
-		right, y,	   region.region.u1, region.region.v0,
-		right, bottom, region.region.u1, region.region.v1,
-		x,	   bottom, region.region.u0, region.region.v1};
-	GLuint elements[] = {0, 1, 2, 2, 3, 0};
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(
-		GL_ARRAY_BUFFER, sizeof(quad_vertex_data), quad_vertex_data,
-		GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(
-		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	default_shader->bind(color);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	vertices.insert(
+		vertices.end(), {
+							x,
+							y,
+							region.region.u0,
+							region.region.v0,
+							static_cast<GLfloat>(idx),
+							right,
+							y,
+							region.region.u1,
+							region.region.v0,
+							static_cast<GLfloat>(idx),
+							right,
+							bottom,
+							region.region.u1,
+							region.region.v1,
+							static_cast<GLfloat>(idx),
+							x,
+							bottom,
+							region.region.u0,
+							region.region.v1,
+							static_cast<GLfloat>(idx),
+						});
+	elements.insert(
+		elements.end(),
+		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
+	idx++;
+	verts += 4;
 }
 
 void OpenGLBatch::draw(
@@ -149,14 +174,17 @@ void OpenGLBatch::draw(
 	float x, float y, glm::mat4x4 transform) {
 	auto& tex =
 		static_cast<const OpenGLTexture&>(font_texture_atlas.getTexture());
-	tex.bind();
-	setTransform(transform);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
+	auto shader = font_texture_atlas.getType() == FontFaceType::MSDF
+					  ? sdf_shader
+					  : default_shader;
+	if (&tex != bound_tex || shader != bound_shader) {
+		flush();
+	}
+	uniforms.insert(uniforms.end(), SpriteBlock{transform});
+	bound_tex = &tex;
+	bound_shader = shader;
 
-	std::vector<float> vertices;
-	std::vector<GLuint> indices;
-	GLuint i = 0;
+	GLuint i = verts;
 	for (auto& glyph : glyph_layout.getLayout()) {
 		float gx = std::round(x + glyph.x);
 		float gy = std::round(y + glyph.y);
@@ -172,28 +200,16 @@ void OpenGLBatch::draw(
 		auto& region = region_result.get();
 
 		vertices.insert(
-			vertices.end(), {gx, gy, region.u0, region.v0, right, gy, region.u1,
-							 region.v0, right, bottom, region.u1, region.v1, gx,
-							 bottom, region.u0, region.v1});
-		indices.insert(indices.end(), {i, i + 1, i + 2, i + 2, i + 3, i});
+			vertices.end(),
+			{gx,	gy,		region.u0, region.v0, static_cast<GLfloat>(idx),
+			 right, gy,		region.u1, region.v0, static_cast<GLfloat>(idx),
+			 right, bottom, region.u1, region.v1, static_cast<GLfloat>(idx),
+			 gx,	bottom, region.u0, region.v1, static_cast<GLfloat>(idx)});
+		elements.insert(elements.end(), {i, i + 1, i + 2, i + 2, i + 3, i});
 		i += 4;
+		verts = i;
 	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(
-		GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(),
-		GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(
-		GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
-		indices.data(), GL_STATIC_DRAW);
-	if (font_texture_atlas.getType() == FontFaceType::MSDF) {
-		sdf_shader->bind(color);
-	} else {
-		default_shader->bind(color);
-	}
-	glDrawElements(
-		GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
+	idx++;
 }
 
 void OpenGLBatch::drawRect(
@@ -204,28 +220,45 @@ void OpenGLBatch::drawRect(
 void OpenGLBatch::drawRect(
 	float x, float y, float width, float height, Shader& shader,
 	glm::mat4x4 transform) {
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
-	setTransform(transform);
+
+	auto& gl_shader = static_cast<OpenGLShader&>(shader);
+	uniforms.insert(uniforms.end(), SpriteBlock{transform});
+
+	if (bound_tex || bound_shader != &gl_shader) {
+		flush();
+	}
+	bound_shader = &gl_shader;
 
 	float right = x + width;
 	float bottom = y + height;
-	float quad_vertex_data[] = {
-		x,	   y,	   0.0f, 0.0f, // Top-left
-		right, y,	   1.0f, 0.0f, // Top-right
-		right, bottom, 1.0f, 1.0f, // Bottom-right
-		x,	   bottom, 0.0f, 1.0f  // Bottom-left
-	};
-	GLuint elements[] = {0, 1, 2, 2, 3, 0};
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(
-		GL_ARRAY_BUFFER, sizeof(quad_vertex_data), quad_vertex_data,
-		GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(
-		GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-	static_cast<OpenGLShader&>(shader).bind(color);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	vertices.insert(
+		vertices.end(), {
+							x,
+							y,
+							0.0f,
+							0.0f,
+							static_cast<GLfloat>(idx), // Top-left
+							right,
+							y,
+							1.0f,
+							0.0f,
+							static_cast<GLfloat>(idx), // Top-right
+							right,
+							bottom,
+							1.0f,
+							1.0f,
+							static_cast<GLfloat>(idx), // Bottom-right
+							x,
+							bottom,
+							0.0f,
+							1.0f,
+							static_cast<GLfloat>(idx) // Bottom-left
+						});
+	elements.insert(
+		elements.end(),
+		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
+	verts += 4;
+	idx++;
 }
 
 int OpenGLBatch::getTargetWidth() {
@@ -234,4 +267,47 @@ int OpenGLBatch::getTargetWidth() {
 
 int OpenGLBatch::getTargetHeight() {
 	return height;
+}
+
+void OpenGLBatch::flush() {
+	if (!idx) {
+		return;
+	}
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(
+		GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(),
+		GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(
+		GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof(GLuint),
+		elements.data(), GL_STATIC_DRAW);
+
+	if (uniforms.size()) {
+		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+		glBufferSubData(
+			GL_UNIFORM_BUFFER, sizeof(glm::mat4),
+			sizeof(SpriteBlock) * uniforms.size(), uniforms.data());
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
+
+	if (bound_tex) {
+		bound_tex->bind();
+	}
+	if (bound_shader) {
+		bound_shader->bind(color);
+	}
+
+	glDrawElements(GL_TRIANGLES, elements.size(), GL_UNSIGNED_INT, 0);
+
+	idx = 0;
+	verts = 0;
+	vertices.clear();
+	elements.clear();
+	uniforms.clear();
+	bound_tex = nullptr;
+	bound_shader = nullptr;
 }
