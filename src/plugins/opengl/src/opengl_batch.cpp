@@ -37,7 +37,7 @@ OpenGLBatch::OpenGLBatch(
 	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
 	glBufferData(
 		GL_UNIFORM_BUFFER, (MAX_BATCH_SIZE + 1) * sizeof(glm::mat4), NULL,
-		GL_STATIC_DRAW);
+		GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -279,11 +279,11 @@ void OpenGLBatch::flush() {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(
 		GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(),
-		GL_STATIC_DRAW);
+		GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof(GLuint),
-		elements.data(), GL_STATIC_DRAW);
+		elements.data(), GL_DYNAMIC_DRAW);
 
 	if (uniforms.size()) {
 		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
