@@ -10,6 +10,7 @@
 #include "lua_error.h"
 #include "lua_object.h"
 #include "lua_script.h"
+#include <cstring>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -25,7 +26,14 @@ using Growl::Result;
 using Growl::Script;
 using Growl::ScriptingAPI;
 using Growl::ScriptingParam;
+using Growl::ScriptingType;
 using Growl::SystemAPI;
+
+struct ScriptingSigLua {
+	ScriptingType return_type;
+	ScriptingType* args;
+	int n_args;
+};
 
 // return not actually used
 int checkArgMetatable(lua_State* state, int arg, const char* metatable) {
@@ -201,9 +209,17 @@ Error LuaScriptingAPI::addConstructorToClass(
 
 	lua_pushlightuserdata(this->state, reinterpret_cast<void*>(fn));
 	lua_pushlightuserdata(this->state, context);
-	ScriptingSignature* sig = static_cast<ScriptingSignature*>(
-		lua_newuserdata(this->state, sizeof(signature)));
-	*sig = signature;
+	void* buf = lua_newuserdata(
+		this->state, sizeof(ScriptingSigLua) +
+						 sizeof(ScriptingParam) * signature.arg_types.size());
+	ScriptingSigLua* sig = new (buf) ScriptingSigLua();
+	sig->return_type = signature.return_type;
+	sig->n_args = signature.arg_types.size();
+	sig->args = reinterpret_cast<ScriptingType*>(
+		static_cast<ScriptingSigLua*>(buf) + 1);
+	std::memcpy(
+		sig->args, signature.arg_types.data(),
+		signature.arg_types.size() * sizeof(ScriptingType));
 	lua_pushstring(this->state, metatable_name.c_str());
 	lua_pushcclosure(
 		this->state,
@@ -212,13 +228,13 @@ Error LuaScriptingAPI::addConstructorToClass(
 				const_cast<void*>(lua_topointer(state, lua_upvalueindex(1))));
 			void* ctx =
 				const_cast<void*>(lua_topointer(state, lua_upvalueindex(2)));
-			ScriptingSignature* signature = static_cast<ScriptingSignature*>(
+			ScriptingSigLua* signature = static_cast<ScriptingSigLua*>(
 				lua_touserdata(state, lua_upvalueindex(3)));
 			const char* metatable_name =
 				lua_tostring(state, lua_upvalueindex(4));
-			std::vector<ScriptingParam> args(signature->arg_types.size());
-			for (size_t i = 0; i < signature->arg_types.size(); i++) {
-				switch (signature->arg_types[i]) {
+			std::vector<ScriptingParam> args(signature->n_args);
+			for (int i = 0; i < signature->n_args; i++) {
+				switch (signature->args[i]) {
 				case ScriptingType::String:
 					luaL_checktype(state, i + 1, LUA_TSTRING);
 					args[i] = std::string{lua_tostring(state, i + 1)};
@@ -280,9 +296,17 @@ Error LuaScriptingAPI::addMethodToClass(
 	lua_pushstring(this->state, method_name.c_str());
 	lua_pushlightuserdata(this->state, reinterpret_cast<void*>(fn));
 	lua_pushlightuserdata(this->state, context);
-	ScriptingSignature* sig = static_cast<ScriptingSignature*>(
-		lua_newuserdata(this->state, sizeof(signature)));
-	*sig = signature;
+	void* buf = lua_newuserdata(
+		this->state, sizeof(ScriptingSigLua) +
+						 sizeof(ScriptingParam) * signature.arg_types.size());
+	ScriptingSigLua* sig = new (buf) ScriptingSigLua();
+	sig->return_type = signature.return_type;
+	sig->n_args = signature.arg_types.size();
+	sig->args = reinterpret_cast<ScriptingType*>(
+		static_cast<ScriptingSigLua*>(buf) + 1);
+	std::memcpy(
+		sig->args, signature.arg_types.data(),
+		signature.arg_types.size() * sizeof(ScriptingType));
 	lua_pushinteger(this->state, stack_offset);
 	lua_pushcclosure(
 		this->state,
@@ -291,12 +315,12 @@ Error LuaScriptingAPI::addMethodToClass(
 				const_cast<void*>(lua_topointer(state, lua_upvalueindex(1))));
 			void* ctx =
 				const_cast<void*>(lua_topointer(state, lua_upvalueindex(2)));
-			ScriptingSignature* signature = static_cast<ScriptingSignature*>(
+			ScriptingSigLua* signature = static_cast<ScriptingSigLua*>(
 				lua_touserdata(state, lua_upvalueindex(3)));
 			int stack_offset = lua_tointeger(state, lua_upvalueindex(4));
-			std::vector<ScriptingParam> args(signature->arg_types.size());
-			for (size_t i = 0; i < signature->arg_types.size(); i++) {
-				switch (signature->arg_types[i]) {
+			std::vector<ScriptingParam> args(signature->n_args);
+			for (int i = 0; i < signature->n_args; i++) {
+				switch (signature->args[i]) {
 				case ScriptingType::String:
 					luaL_checktype(state, i + stack_offset, LUA_TSTRING);
 					args[i] =

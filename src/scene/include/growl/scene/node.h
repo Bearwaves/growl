@@ -46,7 +46,7 @@ private:
 	API* api;
 	std::unique_ptr<Script> script;
 	std::string label;
-	Node* parent;
+	Node* parent = nullptr;
 	float x = 0;
 	float y = 0;
 	float w = 0;
