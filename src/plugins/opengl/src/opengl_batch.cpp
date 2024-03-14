@@ -96,29 +96,10 @@ void OpenGLBatch::draw(
 	bound_shader = default_shader;
 	float right = x + width;
 	float bottom = y + height;
-	vertices.insert(
-		vertices.end(), {
-							x,
-							y,
-							0.0f,
-							0.0f,
-							static_cast<GLfloat>(idx), // Top-left
-							right,
-							y,
-							1.0f,
-							0.0f,
-							static_cast<GLfloat>(idx), // Top-right
-							right,
-							bottom,
-							1.0f,
-							1.0f,
-							static_cast<GLfloat>(idx), // Bottom-right
-							x,
-							bottom,
-							0.0f,
-							1.0f,
-							static_cast<GLfloat>(idx) // Bottom-left
-						});
+	addVertex(x, y, 0.0f, 0.0f);
+	addVertex(right, y, 1.0f, 0.0f);
+	addVertex(right, bottom, 1.0f, 1.0f);
+	addVertex(x, bottom, 0.0f, 1.0f);
 	elements.insert(
 		elements.end(),
 		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
@@ -138,29 +119,10 @@ void OpenGLBatch::draw(
 	bound_shader = default_shader;
 	float right = x + width;
 	float bottom = y + height;
-	vertices.insert(
-		vertices.end(), {
-							x,
-							y,
-							region.region.u0,
-							region.region.v0,
-							static_cast<GLfloat>(idx),
-							right,
-							y,
-							region.region.u1,
-							region.region.v0,
-							static_cast<GLfloat>(idx),
-							right,
-							bottom,
-							region.region.u1,
-							region.region.v1,
-							static_cast<GLfloat>(idx),
-							x,
-							bottom,
-							region.region.u0,
-							region.region.v1,
-							static_cast<GLfloat>(idx),
-						});
+	addVertex(x, y, region.region.u0, region.region.v0);
+	addVertex(right, y, region.region.u1, region.region.v0);
+	addVertex(right, bottom, region.region.u1, region.region.v1);
+	addVertex(x, bottom, region.region.u0, region.region.v1);
 	elements.insert(
 		elements.end(),
 		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
@@ -198,12 +160,10 @@ void OpenGLBatch::draw(
 		}
 		auto& region = region_result.get();
 
-		vertices.insert(
-			vertices.end(),
-			{gx,	gy,		region.u0, region.v0, static_cast<GLfloat>(idx),
-			 right, gy,		region.u1, region.v0, static_cast<GLfloat>(idx),
-			 right, bottom, region.u1, region.v1, static_cast<GLfloat>(idx),
-			 gx,	bottom, region.u0, region.v1, static_cast<GLfloat>(idx)});
+		addVertex(gx, gy, region.u0, region.v0);
+		addVertex(right, gy, region.u1, region.v0);
+		addVertex(right, bottom, region.u1, region.v1);
+		addVertex(gx, bottom, region.u0, region.v1);
 		elements.insert(elements.end(), {i, i + 1, i + 2, i + 2, i + 3, i});
 		i += 4;
 		verts = i;
@@ -230,29 +190,10 @@ void OpenGLBatch::drawRect(
 
 	float right = x + width;
 	float bottom = y + height;
-	vertices.insert(
-		vertices.end(), {
-							x,
-							y,
-							0.0f,
-							0.0f,
-							static_cast<GLfloat>(idx), // Top-left
-							right,
-							y,
-							1.0f,
-							0.0f,
-							static_cast<GLfloat>(idx), // Top-right
-							right,
-							bottom,
-							1.0f,
-							1.0f,
-							static_cast<GLfloat>(idx), // Bottom-right
-							x,
-							bottom,
-							0.0f,
-							1.0f,
-							static_cast<GLfloat>(idx) // Bottom-left
-						});
+	addVertex(x, y, 0.0f, 0.0f);
+	addVertex(right, y, 1.0f, 0.0f);
+	addVertex(right, bottom, 1.0f, 0.0f);
+	addVertex(x, bottom, 0.0f, 1.0f);
 	elements.insert(
 		elements.end(),
 		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
@@ -297,7 +238,7 @@ void OpenGLBatch::flush() {
 		bound_tex->bind();
 	}
 	if (bound_shader) {
-		bound_shader->bind(color);
+		bound_shader->bind();
 	}
 
 	glDrawElements(GL_TRIANGLES, elements.size(), GL_UNSIGNED_INT, 0);
@@ -309,4 +250,10 @@ void OpenGLBatch::flush() {
 	uniforms.clear();
 	bound_tex = nullptr;
 	bound_shader = nullptr;
+}
+
+void OpenGLBatch::addVertex(float x, float y, float tex_x, float tex_y) {
+	vertices.insert(
+		vertices.end(), {x, y, tex_x, tex_y, color.r, color.g, color.b, color.a,
+						 static_cast<GLfloat>(idx)});
 }

@@ -1,6 +1,5 @@
 #include "opengl_shader.h"
 #include "growl/core/error.h"
-#include "growl/core/graphics/color.h"
 #include "opengl_error.h"
 #include <vector>
 
@@ -14,9 +13,9 @@ OpenGLShader::~OpenGLShader() {
 	}
 }
 
-constexpr GLsizei VERTEX_ATTRIB_STRIDE = 4 * sizeof(GLfloat) + sizeof(GLuint);
+constexpr GLsizei VERTEX_ATTRIB_STRIDE = 9 * sizeof(GLfloat);
 
-void OpenGLShader::bind(Color color) {
+void OpenGLShader::bind() {
 	glUseProgram(program);
 	GLint pos_attrib = glGetAttribLocation(program, "position");
 	glEnableVertexAttribArray(pos_attrib);
@@ -29,15 +28,20 @@ void OpenGLShader::bind(Color color) {
 			tex_attrib, 2, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE,
 			(void*)(2 * sizeof(GLfloat)));
 	}
+	GLuint color_attrib = glGetAttribLocation(program, "color");
+	if (color_attrib >= 0) {
+		glEnableVertexAttribArray(color_attrib);
+		glVertexAttribPointer(
+			color_attrib, 4, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE,
+			(void*)(4 * sizeof(GLfloat)));
+	}
 	GLuint index_attrib = glGetAttribLocation(program, "idx");
 	if (index_attrib >= 0) {
 		glEnableVertexAttribArray(index_attrib);
 		glVertexAttribPointer(
 			index_attrib, 1, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE,
-			(void*)(4 * sizeof(GLfloat)));
+			(void*)(8 * sizeof(GLfloat)));
 	}
-	GLuint color_id = glGetUniformLocation(program, "color");
-	glUniform4f(color_id, color.r, color.g, color.b, color.a);
 }
 
 Error OpenGLShader::compile() {
@@ -99,9 +103,11 @@ std::string const OpenGLShader::header =
 std::string const OpenGLShader::default_vertex = R"(
 in vec2 position;
 in vec2 texCoord;
+in vec4 color;
 in float idx;
 
 out vec2 TexCoord;
+out vec4 Color;
 
 layout (std140) uniform ConstantBlock {
 	mat4 projection;
@@ -110,26 +116,28 @@ layout (std140) uniform ConstantBlock {
 
 void main() {
 	TexCoord = texCoord;
+	Color = color;
 	gl_Position = projection * transforms[int(idx)] * vec4(position, 0, 1);
 }
 )";
 
 const std::string OpenGLShader::default_fragment = R"(
 in vec2 TexCoord;
+in vec4 Color;
 out vec4 outCol;
+
 uniform sampler2D texture0;
-uniform vec4 color;
 
 void main() {
-	outCol = texture(texture0, TexCoord) * color;
+	outCol = texture(texture0, TexCoord) * Color;
 }
 )";
 
 const std::string OpenGLShader::sdf_fragment = R"(
 in vec2 TexCoord;
+in vec4 Color;
 out vec4 outCol;
 uniform sampler2D texture0;
-uniform vec4 color;
 
 float median(float r, float g, float b) {
 	return max(min(r, g), min(max(r, g), b));
@@ -141,15 +149,15 @@ void main() {
 	float signed_dist = sd - 0.5;
 	float d = fwidth(signed_dist);
 	float opacity = smoothstep(-d, d, signed_dist);
-	outCol = vec4(color.rgb, color.a * opacity);
+	outCol = vec4(Color.rgb, Color.a * opacity);
 }
 )";
 
 const std::string OpenGLShader::rect_fragment = R"(
+in vec4 Color;
 out vec4 outCol;
-uniform vec4 color;
 
 void main() {
-	outCol = color;
+	outCol = Color;
 }
 )";

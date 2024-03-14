@@ -19,7 +19,7 @@ public:
 
 	Error compile() override;
 
-	void bind(Color color);
+	void bind();
 
 	static const std::string default_vertex;
 	static const std::string default_fragment;

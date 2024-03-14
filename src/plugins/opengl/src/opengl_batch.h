@@ -77,6 +77,7 @@ private:
 	std::vector<SpriteBlock> uniforms;
 
 	void flush();
+	void addVertex(float x, float y, float tex_x, float tex_y);
 };
 
 } // namespace Growl
