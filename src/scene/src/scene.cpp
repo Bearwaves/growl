@@ -106,6 +106,64 @@ Error Growl::initSceneGraph(API& api) {
 		return err;
 	}
 
+	if (auto err = node_cls->addMethod<void, float>(
+			"setWidth",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
+				Node* n = static_cast<Node*>(
+					const_cast<void*>(self->getField("__ptr")));
+				n->setWidth(std::get<float>(args.at(0)), true);
+				return ScriptingParam();
+			},
+			nullptr);
+		err) {
+		return err;
+	}
+
+	if (auto err = node_cls->addMethod<void, float>(
+			"setHeight",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
+				Node* n = static_cast<Node*>(
+					const_cast<void*>(self->getField("__ptr")));
+				n->setHeight(std::get<float>(args.at(0)), true);
+				return ScriptingParam();
+			},
+			nullptr);
+		err) {
+		return err;
+	}
+
+	if (auto err = node_cls->addMethod<float>(
+			"getWidth",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
+				Node* n = static_cast<Node*>(
+					const_cast<void*>(self->getField("__ptr")));
+				return ScriptingParam(n->getWidth(true));
+			},
+			nullptr);
+		err) {
+		return err;
+	}
+
+	if (auto err = node_cls->addMethod<float>(
+			"getHeight",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
+				Node* n = static_cast<Node*>(
+					const_cast<void*>(self->getField("__ptr")));
+				return ScriptingParam(n->getHeight(true));
+			},
+			nullptr);
+		err) {
+		return err;
+	}
+
 	if (auto err = node_cls->addMethod<float>(
 			"getRotation",
 			[](ClassSelf* self, void* ctx,

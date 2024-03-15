@@ -54,7 +54,7 @@ private:
 	float rotation = 0;
 	std::vector<std::unique_ptr<Node>> children;
 	glm::mat4x4 local_transform;
-	std::unique_ptr<Object> bound_script_obj;
+	std::unique_ptr<Object> bound_script_obj = nullptr;
 
 	void computeLocalTransform();
 	void populateDebugUI(Batch& batch);
