@@ -47,6 +47,10 @@ public:
 	Result<std::unique_ptr<Shader>>
 	createShader(const std::string& fragment_src) override;
 
+	Window* getWindow() override {
+		return window.get();
+	}
+
 	id<MTLCommandBuffer> getCommandBuffer() {
 		return command_buffer;
 	}

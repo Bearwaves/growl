@@ -34,6 +34,7 @@ public:
 	virtual void onWindowResize(int width, int height) = 0;
 	virtual void begin() = 0;
 	virtual void end() = 0;
+	virtual Window* getWindow() = 0;
 };
 
 class AudioAPIInternal : public AudioAPI, public APIInternal {

@@ -101,7 +101,11 @@ void GameAdapter::run() {
 		return;
 	}
 	m_api->system().log("GameAdapter", "Run!");
-	m_game->resize(m_window_config.getWidth(), m_window_config.getHeight());
+	int w, h;
+	auto window =
+		static_cast<GraphicsAPIInternal&>(m_api->graphics()).getWindow();
+	window->getSize(&w, &h);
+	m_game->resize(w, h);
 	int resize_width, resize_height;
 	while (static_cast<SystemAPIInternal&>(m_api->system()).isRunning()) {
 		m_api->system().tick();

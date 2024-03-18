@@ -1,5 +1,6 @@
 #include "sdl2_system.h"
 #include "SDL.h"
+#include "SDL_video.h"
 #include "growl/core/api/api.h"
 #include "growl/core/assets/file.h"
 #include "growl/core/input/event.h"
@@ -94,10 +95,18 @@ void SDL2SystemAPI::tick() {
 			break;
 		case SDL_WINDOWEVENT:
 			switch (event.window.event) {
-			case SDL_WINDOWEVENT_RESIZED:
-				resize_width = event.window.data1;
-				resize_height = event.window.data2;
+			case SDL_WINDOWEVENT_RESIZED: {
+				auto window = SDL_GetWindowFromID(event.window.windowID);
+				if (window) {
+					// SDL event doesn't account for HiDPI
+					SDL_GL_GetDrawableSize(
+						window, &resize_width, &resize_height);
+				} else {
+					resize_width = event.window.data1;
+					resize_height = event.window.data2;
+				}
 				break;
+			}
 			}
 			break;
 		}
