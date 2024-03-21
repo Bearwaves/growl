@@ -181,12 +181,12 @@ void OpenGLBatch::drawRect(
 	glm::mat4x4 transform) {
 
 	auto& gl_shader = static_cast<OpenGLShader&>(shader);
-	uniforms.insert(uniforms.end(), SpriteBlock{transform});
-
 	if (bound_tex || bound_shader != &gl_shader) {
 		flush();
 	}
 	bound_shader = &gl_shader;
+
+	uniforms.insert(uniforms.end(), SpriteBlock{transform});
 
 	float right = x + width;
 	float bottom = y + height;
