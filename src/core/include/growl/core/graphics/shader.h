@@ -18,11 +18,11 @@ public:
 
 	virtual Error compile() = 0;
 
-	virtual const std::string& getVertexSource() {
+	virtual std::string& getVertexSource() {
 		return vertex_src;
 	}
 
-	virtual const std::string& getFragmentSource() {
+	virtual std::string& getFragmentSource() {
 		return fragment_src;
 	}
 
