@@ -46,6 +46,8 @@ public:
 		const std::string& fragment_src) override;
 	Result<std::unique_ptr<Shader>>
 	createShader(const std::string& fragment_src) override;
+	Result<std::unique_ptr<Shader>>
+	createShader(const ShaderPack& shader_pack) override;
 
 	Window* getWindow() override {
 		return window.get();

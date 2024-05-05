@@ -1,5 +1,6 @@
 #include "metal_graphics.h"
 #include "growl/core/assets/font_face.h"
+#include "growl/core/assets/shader_pack.h"
 #include "growl/core/error.h"
 #include "growl/core/graphics/shader.h"
 #include "growl/core/imgui.h"
@@ -20,6 +21,7 @@ using Growl::MetalError;
 using Growl::MetalGraphicsAPI;
 using Growl::Result;
 using Growl::Shader;
+using Growl::ShaderPack;
 using Growl::Texture;
 using Growl::TextureAtlas;
 using Growl::TextureOptions;
@@ -266,6 +268,24 @@ Result<std::unique_ptr<Shader>> MetalGraphicsAPI::createShader(
 Result<std::unique_ptr<Shader>>
 MetalGraphicsAPI::createShader(const std::string& fragment_src) {
 	return createShader(MetalShader::default_vertex, fragment_src);
+}
+
+Result<std::unique_ptr<Shader>>
+MetalGraphicsAPI::createShader(const ShaderPack& shader_pack) {
+	auto source = shader_pack.getSources().find(ShaderType::Metal);
+	if (source == shader_pack.getSources().end()) {
+		return Error(std::make_unique<MetalError>(
+			"No Metal sources found in shader pack"));
+	}
+	if (!source->second.fragment_src.has_value()) {
+		return Error(std::make_unique<MetalError>(
+			"No fragment source found in shader pack"));
+	}
+	return createShader(
+		source->second.vertex_src.has_value()
+			? source->second.vertex_src.value()
+			: MetalShader::default_vertex,
+		source->second.fragment_src.value());
 }
 
 const std::vector<unsigned char>
