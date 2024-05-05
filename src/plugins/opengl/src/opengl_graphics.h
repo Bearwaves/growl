@@ -15,6 +15,7 @@ class Atlas;
 class FontFace;
 class FontTextureAtlas;
 class Image;
+class ShaderPack;
 class Texture;
 class TextureAtlas;
 struct TextureOptions;
@@ -48,6 +49,8 @@ public:
 		const std::string& vert_src, const std::string& fragment_src) override;
 	Result<std::unique_ptr<Shader>>
 	createShader(const std::string& fragment_src) override;
+	Result<std::unique_ptr<Shader>>
+	createShader(const ShaderPack& shader_pack) override;
 
 	Window* getWindow() override {
 		return window.get();

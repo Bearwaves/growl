@@ -21,6 +21,10 @@ public:
 		, sources{std::move(sources)} {}
 	virtual ~ShaderPack() = default;
 
+	const std::unordered_map<ShaderType, ShaderSource>& getSources() const {
+		return sources;
+	}
+
 private:
 	std::string name;
 	std::unordered_map<ShaderType, ShaderSource> sources;

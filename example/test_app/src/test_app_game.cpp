@@ -5,6 +5,7 @@
 #include "growl/core/assets/bundle.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/error.h"
+#include "growl/core/graphics/batch.h"
 #include "growl/core/text/glyph_layout.h"
 #include "growl/core/util/timer.h"
 #ifdef GROWL_IMGUI
@@ -132,8 +133,6 @@ Error TestAppGame::init() {
 	getAPI().system().setInputProcessor(input.get());
 	getAPI().system().setLogLevel(LogLevel::Debug);
 
-	batch = getAPI().graphics().createBatch();
-
 	return nullptr;
 }
 
@@ -179,6 +178,7 @@ void TestAppGame::render() {
 	cats->setY(catY);
 	cats->setRotation(rotation);
 
+	auto batch = getAPI().graphics().createBatch();
 	batch->clear(0, 0, 0);
 	batch->begin();
 

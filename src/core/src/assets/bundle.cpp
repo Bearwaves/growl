@@ -6,8 +6,8 @@
 #include "growl/core/assets/file.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/assets/image.h"
+#include "growl/core/assets/shader_pack.h"
 #include "growl/core/error.h"
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -23,6 +23,7 @@ using Growl::File;
 using Growl::FontFace;
 using Growl::Image;
 using Growl::Result;
+using Growl::ShaderPack;
 using Growl::SystemAPI;
 
 Result<AssetsBundle>
@@ -271,6 +272,47 @@ Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 		std::move(font_data),
 		std::make_unique<Image>(std::move(image_result.get())),
 		std::move(info.font.value().glyphs));
+}
+
+Result<ShaderPack> AssetsBundle::getShaderPack(std::string name) noexcept {
+	auto info_find = assetsMap.find(name);
+	if (info_find == assetsMap.end()) {
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load shader pack " + name +
+			"; not found in asset map."));
+	}
+	auto& info = info_find->second;
+
+	if (info.type != AssetType::ShaderPack) {
+		auto type_name = getAssetTypeName(info.type);
+		return Error(std::make_unique<AssetsError>(
+			"Failed to load shader pack " + name +
+			"; expected Shader Pack type but was " + type_name + "."));
+	}
+
+	std::unordered_map<ShaderType, ShaderSource> sources;
+	for (auto& [type, mappings] : info.shader_pack->sources) {
+		ShaderSource source;
+		if (mappings.vertex_size) {
+			std::string vertex_src(mappings.vertex_size, 0);
+			file->seek(static_cast<int>(mappings.vertex_pos));
+			file->read(
+				reinterpret_cast<unsigned char*>(vertex_src.data()),
+				mappings.vertex_size);
+			source.vertex_src = vertex_src;
+		}
+		if (mappings.fragment_size) {
+			std::string fragment_src(mappings.fragment_size, 0);
+			file->seek(static_cast<int>(mappings.fragment_pos));
+			file->read(
+				reinterpret_cast<unsigned char*>(fragment_src.data()),
+				mappings.fragment_size);
+			source.fragment_src = fragment_src;
+		}
+		sources[type] = source;
+	}
+
+	return ShaderPack{info.shader_pack->name, std::move(sources)};
 }
 
 Result<std::string>

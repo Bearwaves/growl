@@ -1,15 +1,20 @@
 #pragma once
 
-#include "../graphics/batch.h"
-#include "../graphics/font_texture_atlas.h"
-#include "../graphics/shader.h"
-#include "../graphics/texture.h"
-#include "../graphics/texture_atlas.h"
-#include "growl/core/assets/font_face.h"
-#include "growl/core/assets/image.h"
+#include "growl/core/error.h"
+#include "growl/core/graphics/texture.h"
 #include <memory>
 
 namespace Growl {
+
+class Atlas;
+class Batch;
+class FontFace;
+class FontTextureAtlas;
+class Image;
+class Shader;
+class ShaderPack;
+class Texture;
+class TextureAtlas;
 
 class GraphicsAPI {
 
@@ -40,6 +45,8 @@ public:
 		const std::string& vertex_src, const std::string& fragment_src) = 0;
 	virtual Result<std::unique_ptr<Shader>>
 	createShader(const std::string& fragment_src) = 0;
+	virtual Result<std::unique_ptr<Shader>>
+	createShader(const ShaderPack& shader_pack) = 0;
 
 protected:
 	double deltaTime = 0;

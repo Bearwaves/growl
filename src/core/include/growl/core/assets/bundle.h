@@ -5,7 +5,6 @@
 #include "growl/core/error.h"
 #include "nlohmann/json.hpp"
 #include <cstdint>
-#include <fstream>
 #include <map>
 #include <optional>
 #include <string>
@@ -19,6 +18,7 @@ namespace Growl {
 class FontFace;
 class Image;
 class SystemAPI;
+class ShaderPack;
 enum class ShaderType;
 
 typedef uint64_t AssetsBundleVersion;
@@ -107,6 +107,7 @@ public:
 	Result<FontFace> getBitmapFont(
 		std::string name, int size, std::string characters = "") noexcept;
 	Result<FontFace> getDistanceFieldFont(std::string name) noexcept;
+	Result<ShaderPack> getShaderPack(std::string name) noexcept;
 	Result<std::string> getTextFileAsString(std::string name) noexcept;
 	Result<std::vector<unsigned char>> getRawData(std::string name) noexcept;
 

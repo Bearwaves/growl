@@ -5,6 +5,7 @@
 #include "growl/core/assets/bundle.h"
 #include "growl/core/error.h"
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <unordered_map>
 

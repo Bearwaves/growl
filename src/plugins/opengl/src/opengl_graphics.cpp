@@ -1,8 +1,10 @@
 #include "opengl_graphics.h"
 #include "growl/core/api/api.h"
 #include "growl/core/assets/font_face.h"
+#include "growl/core/assets/shader_pack.h"
 #include "growl/core/error.h"
 #include "growl/core/graphics/shader.h"
+#include "opengl_error.h"
 #ifdef GROWL_IMGUI
 #include "growl/core/imgui.h"
 #include "imgui_impl_opengl3.h"
@@ -232,6 +234,24 @@ Result<std::unique_ptr<Shader>> OpenGLGraphicsAPI::createShader(
 Result<std::unique_ptr<Shader>>
 OpenGLGraphicsAPI::createShader(const std::string& fragment_src) {
 	return createShader(OpenGLShader::default_vertex, fragment_src);
+}
+
+Result<std::unique_ptr<Shader>>
+OpenGLGraphicsAPI::createShader(const ShaderPack& shader_pack) {
+	auto source = shader_pack.getSources().find(ShaderType::GLSL);
+	if (source == shader_pack.getSources().end()) {
+		return Error(std::make_unique<OpenGLError>(
+			"No GLSL sources found in shader pack"));
+	}
+	if (!source->second.fragment_src.has_value()) {
+		return Error(std::make_unique<OpenGLError>(
+			"No fragment source found in shader pack"));
+	}
+	return createShader(
+		source->second.vertex_src.has_value()
+			? source->second.vertex_src.value()
+			: OpenGLShader::default_vertex,
+		source->second.fragment_src.value());
 }
 
 void OpenGLGraphicsAPI::onWindowResize(int width, int height) {}

@@ -8,6 +8,7 @@
 #include "stb_image.h"
 #include <cstdint>
 #include <filesystem>
+#include <fstream>
 #include <memory>
 #include <ostream>
 
