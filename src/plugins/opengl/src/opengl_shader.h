@@ -28,7 +28,9 @@ public:
 
 private:
 	GLuint program;
-	static std::string const header;
+	static const std::string header;
+	static const std::string vertex_block;
+	static const std::string fragment_block;
 
 	Error checkShaderCompileError(unsigned int shader);
 };
