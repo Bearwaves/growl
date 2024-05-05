@@ -7,6 +7,7 @@ set(SOURCES
 	"src/main.cpp"
 	"src/assets.cpp"
 	"src/atlas.cpp"
+	"src/shader_pack.cpp"
 	"src/assets_config.cpp"
 	)
 

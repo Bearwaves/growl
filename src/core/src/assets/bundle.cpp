@@ -65,6 +65,9 @@ void Growl::to_json(json& j, const AssetInfo& r) {
 	if (r.font.has_value()) {
 		j["font"] = r.font.value();
 	}
+	if (r.shader_pack.has_value()) {
+		j["shaderPack"] = r.shader_pack.value();
+	}
 }
 
 void Growl::from_json(const json& j, AssetInfo& r) {
@@ -77,6 +80,9 @@ void Growl::from_json(const json& j, AssetInfo& r) {
 	}
 	if (j.contains("font")) {
 		r.font = j.at("font").get<AssetsBundleMSDFFontInfo>();
+	}
+	if (j.contains("shaderPack")) {
+		r.shader_pack = j.at("shaderPack").get<AssetsBundleShaderPackInfo>();
 	}
 }
 
@@ -93,6 +99,31 @@ void Growl::from_json(const json& j, AssetsBundleMSDFFontInfo& r) {
 	j.at("glyphs").get_to(r.glyphs);
 }
 
+void Growl::to_json(json& j, const AssetsBundleShaderPackInfo& r) {
+	j = json{{"name", r.name}, {"sources", r.sources}};
+}
+
+void Growl::from_json(const json& j, AssetsBundleShaderPackInfo& r) {
+	j.at("name").get_to(r.name);
+	j.at("sources").get_to(r.sources);
+}
+
+void Growl::to_json(json& j, const AssetsBundleShaderSourceInfo& r) {
+	j = json{
+		{"vertexPos", r.vertex_pos},
+		{"vertexSize", r.vertex_size},
+		{"fragmentPos", r.fragment_pos},
+		{"fragmentSize", r.fragment_size},
+	};
+}
+
+void Growl::from_json(const json& j, AssetsBundleShaderSourceInfo& r) {
+	j.at("vertexPos").get_to(r.vertex_pos);
+	j.at("vertexSize").get_to(r.vertex_size);
+	j.at("fragmentPos").get_to(r.fragment_pos);
+	j.at("fragmentSize").get_to(r.fragment_size);
+}
+
 std::string Growl::getAssetTypeName(AssetType type) {
 	switch (type) {
 	case AssetType::Image:
@@ -105,6 +136,8 @@ std::string Growl::getAssetTypeName(AssetType type) {
 		return "Sound";
 	case AssetType::Text:
 		return "Text";
+	case AssetType::ShaderPack:
+		return "Shader Pack";
 	default:
 		return "Unknown";
 	}

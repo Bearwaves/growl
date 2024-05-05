@@ -7,6 +7,7 @@
 #include "growl/core/assets/file.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/assets/local_file.h"
+#include "growl/core/assets/shader_pack.h"
 #include "nlohmann/json.hpp"
 #include "soloud_wavstream.h"
 #include "stb_image.h"
@@ -37,6 +38,8 @@ using Growl::FontConfig;
 using Growl::Image;
 using Growl::LocalFile;
 using Growl::Result;
+using Growl::ShaderPackConfig;
+using Growl::ShaderType;
 using nlohmann::json;
 using rang::fg;
 using rang::style;
@@ -54,6 +57,13 @@ AssetsIncludeError includeAtlas(
 	const AtlasConfig& config, const std::filesystem::path& path,
 	const std::filesystem::path& resolved_path, AssetsMap& assets_map,
 	std::ofstream& outfile) noexcept;
+
+AssetsIncludeError includeShaderPack(
+	const ShaderPackConfig& config, const std::filesystem::path& path,
+	std::filesystem::path& resolved_path, AssetsMap& assets_map,
+	std::ofstream& outfile) noexcept;
+
+std::string shaderFormat(ShaderType type);
 
 AssetsIncludeError includeImage(
 	const std::filesystem::directory_entry& entry,
@@ -223,17 +233,30 @@ Error processDirectory(
 				"Failed to parse assets.json: " + std::string(e.what()));
 		}
 	}
-	if (auto it = config.find(".");
-		it != config.end() && it->second.atlas.has_value()) {
-		cout << "Building atlas for " << style::bold
-			 << dir_resolved_path.generic_string() << style::reset << "."
-			 << endl;
-		if (auto err = includeAtlas(
-				it->second.atlas.value(), path, dir_resolved_path, assets_map,
-				outfile);
-			err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-			return std::make_unique<AssetsError>(
-				"Failed to build atlas: " + err.message());
+	if (auto it = config.find("."); it != config.end()) {
+		if (it->second.atlas.has_value()) {
+			cout << "Building atlas for " << style::bold
+				 << dir_resolved_path.generic_string() << style::reset << "."
+				 << endl;
+			if (auto err = includeAtlas(
+					it->second.atlas.value(), path, dir_resolved_path,
+					assets_map, outfile);
+				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
+				return std::make_unique<AssetsError>(
+					"Failed to build atlas: " + err.message());
+			}
+		}
+		if (it->second.shader_pack.has_value()) {
+			cout << "Building shader pack for " << style::bold
+				 << dir_resolved_path.generic_string() << style::reset << "."
+				 << endl;
+			if (auto err = includeShaderPack(
+					it->second.shader_pack.value(), path, dir_resolved_path,
+					assets_map, outfile);
+				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
+				return std::make_unique<AssetsError>(
+					"Failed to build shader pack: " + err.message());
+			}
 		}
 		return nullptr;
 	}
@@ -398,6 +421,24 @@ void listAssets(std::string assets_bundle) {
 		if (info.type == AssetType::Font && info.font.has_value()) {
 			cout << "   Includes MSDF atlas with "
 				 << info.font.value().glyphs.size() << " glyphs." << endl;
+		}
+		if (info.type == AssetType::ShaderPack &&
+			info.shader_pack.has_value()) {
+			cout << "   Shader Pack contains " << style::bold
+				 << info.shader_pack.value().sources.size() << style::reset
+				 << " source formats." << endl;
+			for (auto& [type, sources] : info.shader_pack.value().sources) {
+				cout << "    • " << shaderFormat(type) << style::reset << ": ";
+				if (sources.vertex_size && sources.fragment_size) {
+					cout << "[vertex, fragment]" << endl;
+				} else if (sources.fragment_size) {
+					cout << "[fragment]" << endl;
+				} else if (sources.vertex_size) {
+					cout << "[vertex]" << endl;
+				} else {
+					cout << "[]" << endl;
+				}
+			}
 		}
 	}
 }

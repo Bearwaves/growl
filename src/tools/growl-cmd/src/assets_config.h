@@ -19,9 +19,14 @@ struct FontConfig {
 	std::string msdfCharacters = "";
 };
 
+struct ShaderPackConfig {
+	std::string name = "";
+};
+
 struct AssetConfig {
 	std::optional<AtlasConfig> atlas;
 	std::optional<FontConfig> font;
+	std::optional<ShaderPackConfig> shader_pack;
 	bool text = false;
 };
 
@@ -32,4 +37,6 @@ void from_json(const json& j, AssetConfig& s);
 void from_json(const json& j, AtlasConfig& s);
 // NOLINTNEXTLINE(readability-identifier-naming)
 void from_json(const json& j, FontConfig& s);
+// NOLINTNEXTLINE(readability-identifier-naming)
+void from_json(const json& j, ShaderPackConfig& s);
 } // namespace Growl

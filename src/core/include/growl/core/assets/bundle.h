@@ -19,12 +19,21 @@ namespace Growl {
 class FontFace;
 class Image;
 class SystemAPI;
+enum class ShaderType;
 
 typedef uint64_t AssetsBundleVersion;
 
 constexpr AssetsBundleVersion ASSETS_BUNDLE_LATEST_VERSION = 1;
 
-enum class AssetType : uint64_t { Unknown, Image, Atlas, Font, Audio, Text };
+enum class AssetType : uint64_t {
+	Unknown,
+	Image,
+	Atlas,
+	Font,
+	Audio,
+	Text,
+	ShaderPack
+};
 
 std::string getAssetTypeName(AssetType type);
 
@@ -39,12 +48,25 @@ struct AssetsBundleMSDFFontInfo {
 	std::unordered_map<int, AtlasRegion> glyphs;
 };
 
+struct AssetsBundleShaderSourceInfo {
+	uint64_t vertex_pos;
+	uint64_t vertex_size;
+	uint64_t fragment_pos;
+	uint64_t fragment_size;
+};
+
+struct AssetsBundleShaderPackInfo {
+	std::string name;
+	std::unordered_map<ShaderType, AssetsBundleShaderSourceInfo> sources;
+};
+
 struct AssetInfo {
 	uint64_t position;
 	uint64_t size;
 	AssetType type;
 	std::optional<std::unordered_map<std::string, AtlasRegion>> atlas_regions;
 	std::optional<AssetsBundleMSDFFontInfo> font;
+	std::optional<AssetsBundleShaderPackInfo> shader_pack;
 };
 
 // Turn off name linting as json library needs these.
@@ -56,6 +78,14 @@ void from_json(const json& j, AssetInfo& r);
 void to_json(json& j, const AssetsBundleMSDFFontInfo& r);
 // NOLINTNEXTLINE(readability-identifier-naming)
 void from_json(const json& j, AssetsBundleMSDFFontInfo& r);
+// NOLINTNEXTLINE(readability-identifier-naming)
+void to_json(json& j, const AssetsBundleShaderPackInfo& r);
+// NOLINTNEXTLINE(readability-identifier-naming)
+void from_json(const json& j, AssetsBundleShaderPackInfo& r);
+// NOLINTNEXTLINE(readability-identifier-naming)
+void to_json(json& j, const AssetsBundleShaderSourceInfo& r);
+// NOLINTNEXTLINE(readability-identifier-naming)
+void from_json(const json& j, AssetsBundleShaderSourceInfo& r);
 
 using AssetsMap = std::map<std::string, AssetInfo>;
 
