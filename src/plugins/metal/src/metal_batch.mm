@@ -13,6 +13,13 @@
 using Growl::MetalBatch;
 using Growl::Shader;
 
+struct ConstantBlock {
+	glm::mat4x4 transform;
+	glm::vec2 resolution;
+	float time;
+	float deltaTime;
+};
+
 void MetalBatch::clear(float r, float g, float b) {
 	clear_color = MTLClearColorMake(r, g, b, 1);
 	should_clear = true;
@@ -33,7 +40,13 @@ void MetalBatch::begin() {
 	vertex_buffer =
 		std::make_unique<MetalBuffer>(metal_graphics.getCurrentVertexBuffer());
 
-	constant_buffer->writeAndBind(encoder, 0, &projection, sizeof(projection));
+	ConstantBlock block{
+		projection, glm::vec2{surface.width, surface.height},
+		static_cast<float>(metal_graphics.getTotalTime()),
+		static_cast<float>(metal_graphics.getDeltaTime())};
+
+	constant_buffer->writeAndBind(
+		encoder, 0, &block, sizeof(block), BufferBinding::Both);
 }
 
 void MetalBatch::end() {

@@ -30,8 +30,14 @@ Error MetalShader::compile() {
 		if (compile_error) {
 			return std::make_unique<MetalError>(compile_error);
 		}
+		[vertex_func release];
+		[fragment_func release];
 		fragment_func = [lib newFunctionWithName:@"fragment_func"];
 		vertex_func = [lib newFunctionWithName:@"vertex_func"];
+		if (descriptor) {
+			[descriptor release];
+			descriptor = nil;
+		}
 	}
 	return nullptr;
 }
@@ -78,6 +84,9 @@ using namespace metal;
 
 struct ConstantBlock {
 	float4x4 projection;
+	float2 resolution;
+	float time;
+	float deltaTime;
 };
 
 struct VertexIn {

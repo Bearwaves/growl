@@ -51,6 +51,7 @@ void MetalGraphicsAPI::begin() {
 	command_buffer = [command_queue commandBuffer];
 	auto tp = high_resolution_clock::now();
 	deltaTime = duration<double, seconds::period>(tp - last_render).count();
+	totalTime += deltaTime;
 	last_render = tp;
 	current_buffer = (current_buffer + 1) % swap_chain.maximumDrawableCount;
 	constant_buffer_offset = 0;

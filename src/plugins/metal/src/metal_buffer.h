@@ -4,6 +4,9 @@
 #include <cstring>
 
 namespace Growl {
+
+enum class BufferBinding { Vertex, Fragment, Both };
+
 class MetalBuffer {
 public:
 	MetalBuffer(id<MTLBuffer> buffer, size_t* offset)
@@ -17,11 +20,18 @@ public:
 
 	void writeAndBind(
 		id<MTLRenderCommandEncoder> encoder, size_t index, void* from,
-		size_t length) {
+		size_t length, BufferBinding binding = BufferBinding::Vertex) {
 		std::memcpy(
 			static_cast<unsigned char*>(buffer.contents) + *offset, from,
 			length);
-		[encoder setVertexBuffer:buffer offset:*offset atIndex:index];
+		if (binding == BufferBinding::Vertex ||
+			binding == BufferBinding::Both) {
+			[encoder setVertexBuffer:buffer offset:*offset atIndex:index];
+		}
+		if (binding == BufferBinding::Fragment ||
+			binding == BufferBinding::Both) {
+			[encoder setFragmentBuffer:buffer offset:*offset atIndex:index];
+		}
 		*offset += length;
 	}
 
