@@ -6,19 +6,22 @@
 #include "growl/core/graphics/shader.h"
 #include "growl/core/graphics/texture_atlas.h"
 #include "growl/core/graphics/window.h"
+#include "opengl_graphics.h"
 #include "opengl_shader.h"
 #include "opengl_texture.h"
 #include <cmath>
 #include <vector>
 
 using Growl::OpenGLBatch;
+using Growl::OpenGLGraphicsAPI;
 using Growl::Shader;
 
 OpenGLBatch::OpenGLBatch(
-	OpenGLShader* default_shader, OpenGLShader* sdf_shader,
-	OpenGLShader* rect_shader, int width, int height, Window* window,
-	GLuint fbo)
-	: default_shader{default_shader}
+	OpenGLGraphicsAPI* graphics_api, OpenGLShader* default_shader,
+	OpenGLShader* sdf_shader, OpenGLShader* rect_shader, int width, int height,
+	Window* window, GLuint fbo)
+	: graphics_api{graphics_api}
+	, default_shader{default_shader}
 	, sdf_shader{sdf_shader}
 	, rect_shader{rect_shader}
 	, width{width}
@@ -33,18 +36,25 @@ OpenGLBatch::OpenGLBatch(
 	glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);
 
-	glGenBuffers(1, &ubo);
-	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+	glGenBuffers(1, &ubo_v);
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo_v);
 	glBufferData(
-		GL_UNIFORM_BUFFER, (MAX_BATCH_SIZE + 1) * sizeof(glm::mat4), NULL,
+		GL_UNIFORM_BUFFER, (MAX_BATCH_SIZE + 1) * sizeof(glm::mat4), nullptr,
 		GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	glGenBuffers(1, &ubo_f);
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo_f);
+	glBufferData(
+		GL_UNIFORM_BUFFER, sizeof(FragmentBlock), nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 OpenGLBatch::~OpenGLBatch() {
 	glDeleteBuffers(1, &vbo);
 	glDeleteBuffers(1, &ebo);
-	glDeleteBuffers(1, &ubo);
+	glDeleteBuffers(1, &ubo_v);
+	glDeleteBuffers(1, &ubo_f);
 	glDeleteVertexArrays(1, &vao);
 	if (fbo) {
 		glDeleteFramebuffers(1, &fbo);
@@ -66,9 +76,16 @@ void OpenGLBatch::begin() {
 		fbo ? static_cast<float>(height) : 0, 1, -1);
 
 	glBindVertexArray(vao);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, sizeof(glm::mat4));
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo_v, 0, sizeof(glm::mat4));
 	glBufferSubData(
 		GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+
+	FragmentBlock fragment{
+		glm::vec2{width, height},
+		static_cast<float>(graphics_api->getTotalTime()),
+		static_cast<float>(graphics_api->getDeltaTime())};
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, ubo_f);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(fragment), &fragment);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -91,7 +108,7 @@ void OpenGLBatch::draw(
 	if (&tex != bound_tex || default_shader != bound_shader) {
 		flush();
 	}
-	uniforms.insert(uniforms.end(), SpriteBlock{transform});
+	uniforms.insert(uniforms.end(), VertexBlock{transform});
 	bound_tex = &tex;
 	bound_shader = default_shader;
 	float right = x + width;
@@ -114,7 +131,7 @@ void OpenGLBatch::draw(
 	if (&tex != bound_tex || default_shader != bound_shader) {
 		flush();
 	}
-	uniforms.insert(uniforms.end(), SpriteBlock{transform});
+	uniforms.insert(uniforms.end(), VertexBlock{transform});
 	bound_tex = &tex;
 	bound_shader = default_shader;
 	float right = x + width;
@@ -141,7 +158,7 @@ void OpenGLBatch::draw(
 	if (&tex != bound_tex || shader != bound_shader) {
 		flush();
 	}
-	uniforms.insert(uniforms.end(), SpriteBlock{transform});
+	uniforms.insert(uniforms.end(), VertexBlock{transform});
 	bound_tex = &tex;
 	bound_shader = shader;
 
@@ -186,7 +203,7 @@ void OpenGLBatch::drawRect(
 	}
 	bound_shader = &gl_shader;
 
-	uniforms.insert(uniforms.end(), SpriteBlock{transform});
+	uniforms.insert(uniforms.end(), VertexBlock{transform});
 
 	float right = x + width;
 	float bottom = y + height;
@@ -227,10 +244,10 @@ void OpenGLBatch::flush() {
 		elements.data(), GL_DYNAMIC_DRAW);
 
 	if (uniforms.size()) {
-		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+		glBindBuffer(GL_UNIFORM_BUFFER, ubo_v);
 		glBufferSubData(
 			GL_UNIFORM_BUFFER, sizeof(glm::mat4),
-			sizeof(SpriteBlock) * uniforms.size(), uniforms.data());
+			sizeof(VertexBlock) * uniforms.size(), uniforms.data());
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 

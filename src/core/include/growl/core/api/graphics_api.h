@@ -23,6 +23,9 @@ public:
 	double getDeltaTime() {
 		return deltaTime;
 	}
+	double getTotalTime() {
+		return totalTime;
+	}
 
 	virtual std::unique_ptr<Texture> createTexture(
 		const Image& image,
@@ -50,6 +53,7 @@ public:
 
 protected:
 	double deltaTime = 0;
+	double totalTime = 0;
 };
 
 } // namespace Growl

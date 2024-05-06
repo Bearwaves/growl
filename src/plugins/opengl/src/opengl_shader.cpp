@@ -46,7 +46,7 @@ void OpenGLShader::bind() {
 
 Error OpenGLShader::compile() {
 	GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-	auto vertex_source = header + vertex_src;
+	auto vertex_source = header + vertex_block + vertex_src;
 	const char* vertex_source_c = vertex_source.c_str();
 	glShaderSource(vertex, 1, &vertex_source_c, nullptr);
 	glCompileShader(vertex);
@@ -55,7 +55,7 @@ Error OpenGLShader::compile() {
 	}
 
 	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	auto fragment_source = header + fragment_src;
+	auto fragment_source = header + fragment_block + fragment_src;
 	const char* fragment_source_c = fragment_source.c_str();
 	glShaderSource(fragment, 1, &fragment_source_c, nullptr);
 	glCompileShader(fragment);
@@ -71,9 +71,11 @@ Error OpenGLShader::compile() {
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
 
-	GLuint uniform_block_index =
-		glGetUniformBlockIndex(program, "ConstantBlock");
-	glUniformBlockBinding(program, uniform_block_index, 0);
+	GLuint vertex_block_index = glGetUniformBlockIndex(program, "VertexBlock");
+	glUniformBlockBinding(program, vertex_block_index, 0);
+	GLuint fragment_block_index =
+		glGetUniformBlockIndex(program, "FragmentBlock");
+	glUniformBlockBinding(program, fragment_block_index, 1);
 
 	return nullptr;
 }
@@ -100,7 +102,7 @@ std::string const OpenGLShader::header =
 	"#version 150 core\n";
 #endif
 
-std::string const OpenGLShader::default_vertex = R"(
+const std::string OpenGLShader::vertex_block = R"(
 in vec2 position;
 in vec2 texCoord;
 in vec4 color;
@@ -109,11 +111,21 @@ in float idx;
 out vec2 TexCoord;
 out vec4 Color;
 
-layout (std140) uniform ConstantBlock {
+layout (std140) uniform VertexBlock {
 	mat4 projection;
 	mat4 transforms[100];
 };
+)";
 
+const std::string OpenGLShader::fragment_block = R"(
+layout (std140) uniform FragmentBlock {
+	vec2 resolution;
+	float time;
+	float deltaTime;
+};
+)";
+
+const std::string OpenGLShader::default_vertex = R"(
 void main() {
 	TexCoord = texCoord;
 	Color = color;

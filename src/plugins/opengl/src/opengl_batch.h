@@ -10,21 +10,28 @@ namespace Growl {
 class Window;
 class OpenGLShader;
 class OpenGLTexture;
+class OpenGLGraphicsAPI;
 class FontTextureAtlas;
 class GlyphLayout;
 class Texture;
 struct TextureAtlasRegion;
 
-struct SpriteBlock {
+struct VertexBlock {
 	glm::mat4x4 transform;
+};
+
+struct FragmentBlock {
+	glm::vec2 resolution;
+	float time;
+	float deltaTime;
 };
 
 class OpenGLBatch : public Batch {
 public:
 	OpenGLBatch(
-		OpenGLShader* default_shader, OpenGLShader* sdf_shader,
-		OpenGLShader* rect_shader, int width, int height, Window* window,
-		GLuint fbo);
+		OpenGLGraphicsAPI* graphics_api, OpenGLShader* default_shader,
+		OpenGLShader* sdf_shader, OpenGLShader* rect_shader, int width,
+		int height, Window* window, GLuint fbo);
 	~OpenGLBatch();
 
 	void clear(float r, float g, float b) override;
@@ -55,6 +62,7 @@ public:
 	int getTargetHeight() override;
 
 private:
+	OpenGLGraphicsAPI* graphics_api;
 	OpenGLShader* default_shader;
 	OpenGLShader* sdf_shader;
 	OpenGLShader* rect_shader;
@@ -66,7 +74,8 @@ private:
 	GLuint vbo = 0;
 	GLuint ebo = 0;
 	GLuint fbo = 0;
-	GLuint ubo = 0;
+	GLuint ubo_v = 0;
+	GLuint ubo_f = 0;
 
 	unsigned int idx = 0;
 	unsigned int verts = 0;
@@ -74,7 +83,7 @@ private:
 	OpenGLShader* bound_shader = nullptr;
 	std::vector<GLfloat> vertices;
 	std::vector<GLuint> elements;
-	std::vector<SpriteBlock> uniforms;
+	std::vector<VertexBlock> uniforms;
 
 	void flush();
 	void addVertex(float x, float y, float tex_x, float tex_y);
