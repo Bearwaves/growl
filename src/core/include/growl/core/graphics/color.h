@@ -6,5 +6,9 @@ struct Color {
 	float g;
 	float b;
 	float a;
+
+	float* data() {
+		return &r;
+	}
 };
 } // namespace Growl

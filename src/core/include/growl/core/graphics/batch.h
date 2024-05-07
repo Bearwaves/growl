@@ -3,6 +3,7 @@
 #include "font_texture_atlas.h"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include "growl/core/graphics/color.h"
 #include "growl/core/graphics/shader.h"
 #include "growl/core/text/glyph_layout.h"
 #include "texture.h"
@@ -25,7 +26,11 @@ public:
 	virtual void begin() = 0;
 	virtual void end() = 0;
 
+	virtual Color getColor() = 0;
 	virtual void setColor(float r, float g, float b, float a) = 0;
+	virtual void setColor(Color color) {
+		setColor(color.r, color.g, color.b, color.a);
+	}
 
 	virtual void draw(
 		const Texture& texture, float x, float y, float width, float height,

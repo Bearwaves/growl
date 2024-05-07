@@ -38,6 +38,9 @@ public:
 	void begin() override;
 	void end() override;
 
+	Color getColor() override {
+		return color;
+	}
 	void setColor(float r, float g, float b, float a) override;
 
 	void draw(
