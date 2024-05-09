@@ -4,6 +4,7 @@
 #include "growl/core/assets/font_face.h"
 #include "growl/core/error.h"
 #include "growl/core/game/game.h"
+#include "growl/core/graphics/batch.h"
 #include "growl/core/graphics/font_texture_atlas.h"
 #include "growl/core/graphics/texture.h"
 #include "growl/core/graphics/texture_atlas.h"
@@ -26,6 +27,7 @@ public:
 	void resize(const int width, const int height) override;
 
 private:
+	std::unique_ptr<Batch> batch;
 	std::unique_ptr<TextureAtlas> texture_atlas;
 	std::unique_ptr<Texture> grass_tiled;
 	std::unique_ptr<InputHandler> input;

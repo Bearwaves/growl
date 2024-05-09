@@ -133,6 +133,8 @@ Error TestAppGame::init() {
 	getAPI().system().setInputProcessor(input.get());
 	getAPI().system().setLogLevel(LogLevel::Debug);
 
+	batch = getAPI().graphics().createBatch();
+
 	return nullptr;
 }
 
@@ -178,7 +180,6 @@ void TestAppGame::render() {
 	cats->setY(catY);
 	cats->setRotation(rotation);
 
-	auto batch = getAPI().graphics().createBatch();
 	batch->clear(0, 0, 0);
 	batch->begin();
 
