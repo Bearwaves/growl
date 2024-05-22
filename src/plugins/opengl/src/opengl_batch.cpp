@@ -105,7 +105,8 @@ void OpenGLBatch::draw(
 	const Texture& texture, float x, float y, float width, float height,
 	glm::mat4x4 transform) {
 	auto& tex = static_cast<const OpenGLTexture&>(texture);
-	if (&tex != bound_tex || default_shader != bound_shader) {
+	if (&tex != bound_tex || default_shader != bound_shader ||
+		idx >= MAX_BATCH_SIZE) {
 		flush();
 	}
 	uniforms.insert(uniforms.end(), VertexBlock{transform});
@@ -128,7 +129,8 @@ void OpenGLBatch::draw(
 	const TextureAtlasRegion& region, float x, float y, float width,
 	float height, glm::mat4x4 transform) {
 	auto& tex = static_cast<const OpenGLTexture&>(region.atlas->getTexture());
-	if (&tex != bound_tex || default_shader != bound_shader) {
+	if (&tex != bound_tex || default_shader != bound_shader ||
+		idx >= MAX_BATCH_SIZE) {
 		flush();
 	}
 	uniforms.insert(uniforms.end(), VertexBlock{transform});
@@ -155,7 +157,7 @@ void OpenGLBatch::draw(
 	auto shader = font_texture_atlas.getType() == FontFaceType::MSDF
 					  ? sdf_shader
 					  : default_shader;
-	if (&tex != bound_tex || shader != bound_shader) {
+	if (&tex != bound_tex || shader != bound_shader || idx >= MAX_BATCH_SIZE) {
 		flush();
 	}
 	uniforms.insert(uniforms.end(), VertexBlock{transform});
@@ -198,7 +200,7 @@ void OpenGLBatch::drawRect(
 	glm::mat4x4 transform) {
 
 	auto& gl_shader = static_cast<OpenGLShader&>(shader);
-	if (bound_tex || bound_shader != &gl_shader) {
+	if (bound_tex || bound_shader != &gl_shader || idx >= MAX_BATCH_SIZE) {
 		flush();
 	}
 	bound_shader = &gl_shader;
