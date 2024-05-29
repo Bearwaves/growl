@@ -6,7 +6,7 @@
 #include <variant>
 #include <vector>
 
-#define SCRIPTED_GETSET(type, name, var) \
+#define GROWL_SCRIPT_VAR(type, name, var) \
 	type get##name(bool from_script = false) { \
 		if (bound_script_obj && !from_script) { \
 			std::vector<ScriptingParam> v; \

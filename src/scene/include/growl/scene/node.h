@@ -25,11 +25,11 @@ public:
 	virtual ~Node() = default;
 	std::string& getLabel();
 
-	SCRIPTED_GETSET(float, X, x);
-	SCRIPTED_GETSET(float, Y, y);
-	SCRIPTED_GETSET(float, Width, w);
-	SCRIPTED_GETSET(float, Height, h);
-	SCRIPTED_GETSET(float, Rotation, rotation);
+	GROWL_SCRIPT_VAR(float, X, x);
+	GROWL_SCRIPT_VAR(float, Y, y);
+	GROWL_SCRIPT_VAR(float, Width, w);
+	GROWL_SCRIPT_VAR(float, Height, h);
+	GROWL_SCRIPT_VAR(float, Rotation, rotation);
 
 	Node* addChild(std::unique_ptr<Node> node);
 	void draw(Batch& batch, float parent_alpha);
