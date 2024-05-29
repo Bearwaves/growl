@@ -29,6 +29,19 @@ using Growl::ScriptingParam;
 using Growl::ScriptingType;
 using Growl::SystemAPI;
 
+struct LuaStack {
+	int stack_count;
+	lua_State* state;
+
+	LuaStack(lua_State* state)
+		: stack_count{0}
+		, state{state} {}
+
+	~LuaStack() {
+		lua_pop(state, stack_count);
+	}
+};
+
 struct ScriptingSigLua {
 	ScriptingType return_type;
 	ScriptingType* args;
@@ -51,7 +64,9 @@ int checkArgMetatable(lua_State* state, int arg, const char* metatable) {
 	return 0;
 }
 
-void luaPushArgs(std::vector<ScriptingParam>& args, lua_State* state) {
+int luaPushArgs(
+	std::vector<ScriptingParam>& args, lua_State* state, LuaStack& stack) {
+	int args_count = 0;
 	for (size_t i = 0; i < args.size(); i++) {
 		switch (static_cast<Growl::ScriptingType>(args[i].index())) {
 		case Growl::ScriptingType::Void:
@@ -72,6 +87,13 @@ void luaPushArgs(std::vector<ScriptingParam>& args, lua_State* state) {
 		case Growl::ScriptingType::Float:
 			lua_pushnumber(state, std::get<float>(args[i]));
 			break;
+		case Growl::ScriptingType::Ref:
+			lua_rawgeti(
+				state, LUA_REGISTRYINDEX,
+				static_cast<Growl::LuaObject*>(
+					std::get<Growl::Object*>(args[i]))
+					->getRef());
+			break;
 		case Growl::ScriptingType::Object:
 			auto ptr = std::get<std::unique_ptr<Growl::Object>>(args[i]).get();
 			lua_rawgeti(
@@ -79,7 +101,9 @@ void luaPushArgs(std::vector<ScriptingParam>& args, lua_State* state) {
 				static_cast<Growl::LuaObject*>(ptr)->getRef());
 			break;
 		}
+		args_count++;
 	}
+	return args_count;
 }
 
 ScriptingParam
@@ -99,14 +123,11 @@ luaPullReturn(Growl::ScriptingType return_type, lua_State* state) {
 		ret = static_cast<float>(lua_tonumber(state, -1));
 		break;
 	case Growl::ScriptingType::Object:
-		ret = std::make_unique<Growl::LuaObject>(
+		return std::make_unique<Growl::LuaObject>(
 			state, luaL_ref(state, LUA_REGISTRYINDEX));
-		break;
 	default:
-		ret = ScriptingParam();
-		break;
+		return ScriptingParam();
 	}
-	lua_pop(state, 1);
 	return ret;
 }
 
@@ -139,7 +160,6 @@ Result<ScriptingParam> LuaScriptingAPI::execute(Script& script) {
 		script.getSignature().return_type == ScriptingType::Void ? 0 : 1;
 	if (luaL_loadstring(this->state, script.getSource().c_str()) ||
 		lua_pcall(this->state, 0, n_returns, 0)) {
-		lua_tostring(this->state, -1);
 		auto err = std::make_unique<LuaError>(
 			std::string("Failed to execute script: ") +
 			std::string(lua_tostring(this->state, -1)));
@@ -250,6 +270,7 @@ Error LuaScriptingAPI::addConstructorToClass(
 		},
 		4);
 	lua_settable(this->state, -3);
+	lua_pop(this->state, 1);
 	return nullptr;
 }
 
@@ -279,12 +300,15 @@ Error LuaScriptingAPI::addDestructorToClass(
 		},
 		3);
 	lua_settable(this->state, -3);
+	lua_pop(this->state, 1);
 	return nullptr;
 }
 
 Error LuaScriptingAPI::addMethodToClass(
 	Class* cls, const std::string& method_name,
 	const ScriptingSignature& signature, ScriptingFn fn, void* context) {
+	LuaStack stack{state};
+	stack.stack_count++;
 	int stack_offset = 1;
 	if (cls->isStatic()) {
 		lua_getglobal(this->state, cls->getName().c_str()); // TODO err
@@ -340,8 +364,21 @@ Error LuaScriptingAPI::addMethodToClass(
 			// TODO check error
 			switch (signature->return_type) {
 			case ScriptingType::Void:
-			case ScriptingType::Object:
 				return 0;
+			case ScriptingType::Object:
+				lua_rawgeti(
+					state, LUA_REGISTRYINDEX,
+					static_cast<LuaObject*>(
+						std::get<std::unique_ptr<Object>>(*res).get())
+						->getRef());
+				return 1;
+			case ScriptingType::Ref:
+				lua_rawgeti(
+					state, LUA_REGISTRYINDEX,
+					static_cast<Growl::LuaObject*>(
+						std::get<Growl::Object*>(*res))
+						->getRef());
+				return 1;
 			case ScriptingType::Ptr:
 				lua_pushlightuserdata(
 					state, const_cast<void*>(std::get<const void*>(*res)));
@@ -368,19 +405,19 @@ Error LuaScriptingAPI::addMethodToClass(
 Result<ScriptingParam> LuaScriptingAPI::executeMethod(
 	Object& obj, const std::string& method_name,
 	std::vector<ScriptingParam>& args, ScriptingSignature signature) {
+	LuaStack stack{this->state};
 	lua_rawgeti(
 		this->state, LUA_REGISTRYINDEX, static_cast<LuaObject&>(obj).getRef());
 	lua_getfield(this->state, -1, method_name.c_str());
 	lua_pushvalue(this->state, -2);
-	luaPushArgs(args, this->state);
-	if (lua_pcall(
-			this->state, args.size() + 1,
-			signature.return_type == ScriptingType::Void ? 0 : 1, 0)) {
-		lua_tostring(this->state, -1);
+	int n_args = luaPushArgs(args, this->state, stack);
+	int n_returns = signature.return_type == ScriptingType::Void ? 0 : 1;
+	stack.stack_count += n_returns + 1;
+	if (lua_pcall(this->state, n_args + 1, n_returns, 0)) {
 		auto err = std::make_unique<LuaError>(
 			std::string("Failed to execute method: ") +
 			std::string(lua_tostring(this->state, -1)));
-		lua_pop(this->state, 1);
+		lua_pop(this->state, n_returns + 1);
 		return Error(std::move(err));
 	}
 	return luaPullReturn(signature.return_type, this->state);
@@ -394,5 +431,7 @@ void LuaSelf::setField(const std::string& name, void* val) {
 
 const void* LuaSelf::getField(const std::string& name) {
 	lua_getfield(this->state, 1, name.c_str());
-	return lua_topointer(this->state, -1);
+	auto ptr = lua_topointer(this->state, -1);
+	lua_pop(this->state, 1);
+	return ptr;
 }

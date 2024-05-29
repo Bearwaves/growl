@@ -47,7 +47,7 @@ class Script;
 
 using ScriptingParam = std::variant<
 	std::monostate, float, int, std::string_view, const void*,
-	std::unique_ptr<Object>>;
+	std::unique_ptr<Object>, Object*>;
 
 using ScriptingFn = Result<ScriptingParam> (*)(
 	ClassSelf*, void*, const std::vector<ScriptingParam>&);
@@ -59,6 +59,7 @@ enum class ScriptingType {
 	String,
 	Ptr,
 	Object,
+	Ref,
 };
 
 struct ScriptingSignature {
@@ -102,6 +103,13 @@ template <>
 struct ScriptingTypeOfType<Object> {
 	static ScriptingType value() {
 		return ScriptingType::Object;
+	}
+};
+
+template <>
+struct ScriptingTypeOfType<Object*> {
+	static ScriptingType value() {
+		return ScriptingType::Ref;
 	}
 };
 
