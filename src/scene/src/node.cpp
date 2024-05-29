@@ -124,11 +124,12 @@ Error Node::bindScript(API& api, Script& script) {
 }
 
 void Node::computeLocalTransform() {
-	auto translate = glm::translate(glm::identity<glm::mat4x4>(), {x, y, 0});
-	auto rotation_origin =
-		glm::translate(glm::identity<glm::mat4x4>(), {w / 2, h / 2, 0});
+	auto translate =
+		glm::translate(glm::identity<glm::mat4x4>(), {getX(), getY(), 0});
+	auto rotation_origin = glm::translate(
+		glm::identity<glm::mat4x4>(), {getWidth() / 2, getHeight() / 2, 0});
 	auto rotate =
-		glm::rotate(glm::identity<glm::mat4x4>(), rotation, {0, 0, 1});
+		glm::rotate(glm::identity<glm::mat4x4>(), getRotation(), {0, 0, 1});
 	local_transform =
 		translate * rotation_origin * rotate * glm::inverse(rotation_origin);
 	if (parent) {

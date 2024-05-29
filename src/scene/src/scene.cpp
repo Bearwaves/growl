@@ -193,5 +193,22 @@ Error Growl::initSceneGraph(API& api) {
 		return err;
 	}
 
+	if (auto err = node_cls->addMethod<Object*>(
+			"getParent",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
+				Node* n = static_cast<Node*>(
+					const_cast<void*>(self->getField("__ptr")));
+				if (!n->getParent() || !n->getParent()->bound_script_obj) {
+					return ScriptingParam();
+				}
+				return ScriptingParam(n->getParent()->bound_script_obj.get());
+			},
+			nullptr);
+		err) {
+		return err;
+	}
+
 	return nullptr;
 }

@@ -14,6 +14,9 @@ namespace Growl {
 class Batch;
 
 class Node : public InputProcessor {
+
+	friend Error initSceneGraph(API& api);
+
 public:
 	Node(std::string&& label) {
 		this->label = std::move(label);
@@ -38,6 +41,10 @@ public:
 	Error bindScript(API& api, Script& script);
 
 protected:
+	Node* getParent() {
+		return parent;
+	}
+
 	virtual void onPopulateDebugUI(Batch& batch) {}
 	virtual void
 	onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform);
