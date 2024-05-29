@@ -5,6 +5,7 @@ project(growl-scene)
 set(SOURCES
 	"src/scene.cpp"
 	"src/node.cpp"
+	"src/sprite.cpp"
 	)
 
 add_library(growl-scene ${SOURCES})
