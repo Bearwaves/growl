@@ -55,7 +55,7 @@ Error Growl::initSceneGraph(API& api) {
 				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				n->setX(std::get<float>(args.at(0)), true);
+				n->setXRaw(std::get<float>(args.at(0)));
 				return ScriptingParam();
 			},
 			nullptr);
@@ -70,7 +70,7 @@ Error Growl::initSceneGraph(API& api) {
 				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				n->setY(std::get<float>(args.at(0)), true);
+				n->setYRaw(std::get<float>(args.at(0)));
 				return ScriptingParam();
 			},
 			nullptr);
@@ -85,7 +85,7 @@ Error Growl::initSceneGraph(API& api) {
 				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				return ScriptingParam(n->getX(true));
+				return ScriptingParam(n->getXRaw());
 			},
 			nullptr);
 		err) {
@@ -99,7 +99,7 @@ Error Growl::initSceneGraph(API& api) {
 				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				return ScriptingParam(n->getY(true));
+				return ScriptingParam(n->getYRaw());
 			},
 			nullptr);
 		err) {
@@ -113,7 +113,7 @@ Error Growl::initSceneGraph(API& api) {
 				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				n->setWidth(std::get<float>(args.at(0)), true);
+				n->setWidthRaw(std::get<float>(args.at(0)));
 				return ScriptingParam();
 			},
 			nullptr);
@@ -128,7 +128,7 @@ Error Growl::initSceneGraph(API& api) {
 				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				n->setHeight(std::get<float>(args.at(0)), true);
+				n->setHeightRaw(std::get<float>(args.at(0)));
 				return ScriptingParam();
 			},
 			nullptr);
@@ -143,7 +143,7 @@ Error Growl::initSceneGraph(API& api) {
 				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				return ScriptingParam(n->getWidth(true));
+				return ScriptingParam(n->getWidthRaw());
 			},
 			nullptr);
 		err) {
@@ -157,7 +157,7 @@ Error Growl::initSceneGraph(API& api) {
 				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				return ScriptingParam(n->getHeight(true));
+				return ScriptingParam(n->getHeightRaw());
 			},
 			nullptr);
 		err) {
@@ -171,7 +171,7 @@ Error Growl::initSceneGraph(API& api) {
 				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				return ScriptingParam(n->getRotation(true));
+				return ScriptingParam(n->getRotationRaw());
 			},
 			nullptr);
 		err) {
@@ -185,7 +185,7 @@ Error Growl::initSceneGraph(API& api) {
 				-> Result<ScriptingParam> {
 				Node* n = static_cast<Node*>(
 					const_cast<void*>(self->getField("__ptr")));
-				n->setRotation(std::get<float>(args.at(0)), true);
+				n->setRotationRaw(std::get<float>(args.at(0)));
 				return ScriptingParam();
 			},
 			nullptr);

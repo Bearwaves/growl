@@ -7,8 +7,12 @@
 #include <vector>
 
 #define GROWL_SCRIPT_VAR(type, name, var) \
-	type get##name(bool from_script = false) { \
-		if (bound_script_obj && !from_script) { \
+	type get##name##Raw() { \
+		return var; \
+	} \
+\
+	type get##name() { \
+		if (bound_script_obj) { \
 			std::vector<ScriptingParam> v; \
 			auto res = api->scripting().executeMethod<type>( \
 				*bound_script_obj, "get" #name, v); \
@@ -16,15 +20,19 @@
 				api->system().log( \
 					LogLevel::Warn, "Script::get" #name, "{}", \
 					res.error()->message()); \
-				return var; \
+				return get##name##Raw(); \
 			} \
 			return std::get<type>(*res); \
 		} \
-		return var; \
+		return get##name##Raw(); \
 	} \
 \
-	void set##name(type var, bool from_script = false) { \
-		if (bound_script_obj && !from_script) { \
+	void set##name##Raw(type var) { \
+		this->var = var; \
+	} \
+\
+	void set##name(type var) { \
+		if (bound_script_obj) { \
 			std::vector<ScriptingParam> v; \
 			v.push_back(var); \
 			if (auto res = api->scripting().executeMethod<void, type>( \
@@ -35,7 +43,7 @@
 					res.error()->message()); \
 			} \
 		} else { \
-			this->var = var; \
+			set##name##Raw(var); \
 		} \
 	}
 
