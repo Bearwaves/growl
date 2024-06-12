@@ -10,37 +10,37 @@ using Growl::InputProcessor;
 // without any pure virtual functions.
 InputProcessor::~InputProcessor() {}
 
-void InputProcessor::onEvent(InputEvent& event) {
+bool InputProcessor::onEvent(const InputEvent& event) {
 	switch (event.getType()) {
 	case InputEventType::Keyboard: {
 		auto keyboard_event_result = event.getEvent<InputKeyboardEvent>();
 		if (keyboard_event_result.hasResult()) {
-			onKeyboardEvent(keyboard_event_result.get());
+			return onKeyboardEvent(keyboard_event_result.get());
 		}
-		return;
+		return false;
 	}
 	case InputEventType::Mouse: {
 		auto mouse_event_result = event.getEvent<InputMouseEvent>();
 		if (mouse_event_result.hasResult()) {
-			onMouseEvent(mouse_event_result.get());
+			return onMouseEvent(mouse_event_result.get());
 		}
-		return;
+		return false;
 	}
 	case InputEventType::Controller: {
 		auto controller_event_result = event.getEvent<InputControllerEvent>();
 		if (controller_event_result.hasResult()) {
-			onControllerEvent(controller_event_result.get());
+			return onControllerEvent(controller_event_result.get());
 		}
-		return;
+		return false;
 	}
 	case InputEventType::Touch: {
 		auto touch_event_result = event.getEvent<InputTouchEvent>();
 		if (touch_event_result.hasResult()) {
-			onTouchEvent(touch_event_result.get());
+			return onTouchEvent(touch_event_result.get());
 		}
-		return;
+		return false;
 	}
 	default:
-		return;
+		return false;
 	}
 }

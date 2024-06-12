@@ -54,7 +54,7 @@ class ClassSelf;
 class Script;
 
 using ScriptingParam = std::variant<
-	std::monostate, float, int, std::string_view, const void*,
+	std::monostate, bool, float, int, std::string_view, const void*,
 	std::unique_ptr<Object>, Object*>;
 
 using ScriptingFn = Result<ScriptingParam> (*)(
@@ -62,6 +62,7 @@ using ScriptingFn = Result<ScriptingParam> (*)(
 
 enum class ScriptingType {
 	Void,
+	Bool,
 	Float,
 	Int,
 	String,
@@ -90,6 +91,13 @@ template <>
 struct ScriptingTypeOfType<std::string_view> {
 	static ScriptingType value() {
 		return ScriptingType::String;
+	}
+};
+
+template <>
+struct ScriptingTypeOfType<bool> {
+	static ScriptingType value() {
+		return ScriptingType::Bool;
 	}
 };
 

@@ -228,10 +228,12 @@ void Growl::Cat::onDraw(
 	batch.draw(region, 0, 0, getWidth(), getHeight(), transform);
 }
 
-void Growl::Cat::onMouseEvent(InputMouseEvent& event) {
+bool Growl::Cat::onMouseEvent(const InputMouseEvent& event) {
 	is_hit = hit(event.mouseX, event.mouseY);
+	return is_hit;
 }
 
-void Growl::Cat::onTouchEvent(InputTouchEvent& event) {
+bool Growl::Cat::onTouchEvent(const InputTouchEvent& event) {
 	is_hit = hit(event.touchX, event.touchY);
+	return is_hit;
 }

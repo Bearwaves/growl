@@ -13,8 +13,8 @@ public:
 		, atlas{atlas} {}
 	void
 	onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) override;
-	void onMouseEvent(InputMouseEvent& event) override;
-	void onTouchEvent(InputTouchEvent& event) override;
+	bool onMouseEvent(const InputMouseEvent& event) override;
+	bool onTouchEvent(const InputTouchEvent& event) override;
 
 private:
 	TextureAtlas* atlas;

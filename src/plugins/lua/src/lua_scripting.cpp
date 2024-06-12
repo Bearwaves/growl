@@ -64,8 +64,7 @@ int checkArgMetatable(lua_State* state, int arg, const char* metatable) {
 	return 0;
 }
 
-int luaPushArgs(
-	std::vector<ScriptingParam>& args, lua_State* state, LuaStack& stack) {
+int luaPushArgs(std::vector<ScriptingParam>& args, lua_State* state) {
 	int args_count = 0;
 	for (size_t i = 0; i < args.size(); i++) {
 		switch (static_cast<Growl::ScriptingType>(args[i].index())) {
@@ -86,6 +85,9 @@ int luaPushArgs(
 			break;
 		case Growl::ScriptingType::Float:
 			lua_pushnumber(state, std::get<float>(args[i]));
+			break;
+		case Growl::ScriptingType::Bool:
+			lua_pushboolean(state, std::get<bool>(args[i]));
 			break;
 		case Growl::ScriptingType::Ref:
 			lua_rawgeti(
@@ -121,6 +123,9 @@ luaPullReturn(Growl::ScriptingType return_type, lua_State* state) {
 		break;
 	case Growl::ScriptingType::Float:
 		ret = static_cast<float>(lua_tonumber(state, -1));
+		break;
+	case Growl::ScriptingType::Bool:
+		ret = static_cast<bool>(lua_toboolean(state, -1));
 		break;
 	case Growl::ScriptingType::Object:
 		return std::make_unique<Growl::LuaObject>(
@@ -356,6 +361,12 @@ Error LuaScriptingAPI::addMethodToClass(
 						lua_tonumber(state, i + stack_offset));
 					break;
 				}
+				case ScriptingType::Ptr: {
+					luaL_checktype(state, i + stack_offset, LUA_TLIGHTUSERDATA);
+					args[i] = static_cast<const void*>(
+						lua_topointer(state, i + stack_offset));
+					break;
+				}
 				default:
 					continue;
 				}
@@ -394,6 +405,9 @@ Error LuaScriptingAPI::addMethodToClass(
 			case ScriptingType::Float:
 				lua_pushnumber(state, std::get<float>(*res));
 				return 1;
+			case ScriptingType::Bool:
+				lua_pushboolean(state, std::get<bool>(*res));
+				return 1;
 			}
 			return 0;
 		},
@@ -410,7 +424,7 @@ Result<ScriptingParam> LuaScriptingAPI::executeMethod(
 		this->state, LUA_REGISTRYINDEX, static_cast<LuaObject&>(obj).getRef());
 	lua_getfield(this->state, -1, method_name.c_str());
 	lua_pushvalue(this->state, -2);
-	int n_args = luaPushArgs(args, this->state, stack);
+	int n_args = luaPushArgs(args, this->state);
 	int n_returns = signature.return_type == ScriptingType::Void ? 0 : 1;
 	stack.stack_count += n_returns + 1;
 	if (lua_pcall(this->state, n_args + 1, n_returns, 0)) {

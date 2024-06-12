@@ -35,7 +35,7 @@ public:
 	void draw(Batch& batch, float parent_alpha);
 	void drawChildren(Batch& batch, float parent_alpha);
 
-	virtual void onEvent(InputEvent& event) override;
+	virtual bool onEvent(const InputEvent& event) override;
 	bool hit(float x, float y);
 
 	Error bindScript(API& api, Script& script);

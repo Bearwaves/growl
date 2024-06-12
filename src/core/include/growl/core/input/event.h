@@ -52,11 +52,11 @@ public:
 	InputEvent(InputEventType type, InputEventVariant event)
 		: type{type}
 		, event{event} {}
-	InputEventType getType() {
+	InputEventType getType() const {
 		return type;
 	}
 	template <class T>
-	Result<T> getEvent() noexcept {
+	Result<T> getEvent() const noexcept {
 		if (std::holds_alternative<T>(event)) {
 			return std::get<T>(event);
 		}

@@ -13,11 +13,11 @@ public:
 		: system{system}
 		, root{root} {}
 
-	void onEvent(InputEvent& event) override;
+	bool onEvent(const InputEvent& event) override;
 
-	void onKeyboardEvent(InputKeyboardEvent& event) override;
+	bool onKeyboardEvent(const InputKeyboardEvent& event) override;
 
-	void onControllerEvent(InputControllerEvent& event) override;
+	bool onControllerEvent(const InputControllerEvent& event) override;
 
 	bool upPressed() {
 		return up;

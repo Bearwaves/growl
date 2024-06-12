@@ -7,80 +7,83 @@
 
 using Growl::InputHandler;
 
-void InputHandler::onEvent(InputEvent& event) {
-	InputProcessor::onEvent(event);
-	root->onEvent(event);
+bool InputHandler::onEvent(const InputEvent& event) {
+	if (InputProcessor::onEvent(event)) {
+		return true;
+	}
+	return root->onEvent(event);
 }
 
-void InputHandler::onKeyboardEvent(InputKeyboardEvent& event) {
+bool InputHandler::onKeyboardEvent(const InputKeyboardEvent& event) {
 	switch (event.type) {
 	case KeyEventType::Unknown:
 		system.log(LogLevel::Warn, "InputHandler", "Got unknown key event!");
-		break;
+		return false;
 	case KeyEventType::KeyDown:
 	case KeyEventType::KeyUp:
 		switch (event.key) {
 		case Key::ArrowUp:
 		case Key::LetterW:
 			up = event.type == KeyEventType::KeyDown;
-			break;
+			return true;
 		case Key::ArrowDown:
 		case Key::LetterS:
 			down = event.type == KeyEventType::KeyDown;
-			break;
+			return true;
 		case Key::ArrowLeft:
 		case Key::LetterA:
 			left = event.type == KeyEventType::KeyDown;
-			break;
+			return true;
 		case Key::ArrowRight:
 		case Key::LetterD:
 			right = event.type == KeyEventType::KeyDown;
-			break;
+			return true;
 		case Key::LetterQ:
 			anticlockwise = event.type == KeyEventType::KeyDown;
-			break;
+			return true;
 		case Key::LetterE:
 			clockwise = event.type == KeyEventType::KeyDown;
-			break;
+			return true;
 		default:
-			break;
+			return false;
 		}
-		break;
+		return false;
 	}
 }
 
-void InputHandler::onControllerEvent(InputControllerEvent& event) {
+bool InputHandler::onControllerEvent(const InputControllerEvent& event) {
 	switch (event.type) {
 	case ControllerEventType::Unknown:
 		system.log(
 			LogLevel::Warn, "InputHandler", "Got unknown controller event!");
-		break;
+		return false;
 	case ControllerEventType::ButtonDown:
 	case ControllerEventType::ButtonUp:
 		switch (event.button) {
 		case ControllerButton::DpadUp:
 			up = event.type == ControllerEventType::ButtonDown;
-			break;
+			return true;
 		case ControllerButton::DpadDown:
 			down = event.type == ControllerEventType::ButtonDown;
-			break;
+			return true;
 		case ControllerButton::DpadLeft:
 			left = event.type == ControllerEventType::ButtonDown;
-			break;
+			return true;
 		case ControllerButton::DpadRight:
 			right = event.type == ControllerEventType::ButtonDown;
-			break;
+			return true;
 		case ControllerButton::LB:
 			anticlockwise = event.type == ControllerEventType::ButtonDown;
-			break;
+			return true;
 		case ControllerButton::RB:
 			clockwise = event.type == ControllerEventType::ButtonDown;
-			break;
+			return true;
 		default:
-			break;
+			return false;
 		}
-		break;
+		return false;
 	default:
-		break;
+		return false;
 	}
+	return false;
 }

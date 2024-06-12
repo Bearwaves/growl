@@ -12,13 +12,24 @@ struct InputCustomEvent;
 class InputProcessor {
 public:
 	virtual ~InputProcessor() = 0;
-	virtual void onEvent(InputEvent& event);
+	virtual bool onEvent(const InputEvent& event);
 
-	virtual void onKeyboardEvent(InputKeyboardEvent& event) {}
-	virtual void onMouseEvent(InputMouseEvent& event) {}
-	virtual void onTouchEvent(InputTouchEvent& event) {}
-	virtual void onControllerEvent(InputControllerEvent& event) {}
-	virtual void onCustomEvent(InputCustomEvent& event) {}
+protected:
+	virtual bool onKeyboardEvent(const InputKeyboardEvent& event) {
+		return false;
+	}
+	virtual bool onMouseEvent(const InputMouseEvent& event) {
+		return false;
+	}
+	virtual bool onTouchEvent(const InputTouchEvent& event) {
+		return false;
+	}
+	virtual bool onControllerEvent(const InputControllerEvent& event) {
+		return false;
+	}
+	virtual bool onCustomEvent(const InputCustomEvent& event) {
+		return false;
+	}
 };
 
 } // namespace Growl

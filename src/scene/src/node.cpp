@@ -88,11 +88,15 @@ void Node::drawChildren(Batch& batch, float parent_alpha) {
 	}
 }
 
-void Node::onEvent(InputEvent& event) {
-	InputProcessor::onEvent(event);
-	for (auto& child : children) {
-		child->onEvent(event);
+bool Node::onEvent(const InputEvent& event) {
+	if (InputProcessor::onEvent(event)) {
+		return true;
 	}
+	bool handled = false;
+	for (auto& child : children) {
+		handled |= child->onEvent(event);
+	}
+	return handled;
 }
 
 bool Node::hit(float x, float y) {
