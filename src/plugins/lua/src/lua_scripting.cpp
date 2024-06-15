@@ -64,46 +64,52 @@ int checkArgMetatable(lua_State* state, int arg, const char* metatable) {
 	return 0;
 }
 
+bool luaPushArg(lua_State* state, ScriptingParam& param) {
+	// TODO checks!
+	switch (static_cast<Growl::ScriptingType>(param.index())) {
+	case Growl::ScriptingType::Void:
+		return false;
+	case Growl::ScriptingType::Bool:
+		lua_pushboolean(state, std::get<bool>(param));
+		break;
+	case Growl::ScriptingType::Float:
+		lua_pushnumber(state, std::get<float>(param));
+		break;
+	case Growl::ScriptingType::Int:
+		lua_pushinteger(state, std::get<int>(param));
+		break;
+	case Growl::ScriptingType::String:
+		lua_pushstring(
+			state, std::string(std::get<std::string_view>(param)).c_str());
+		break;
+	case Growl::ScriptingType::Ptr:
+		lua_pushlightuserdata(
+			state, const_cast<void*>(std::get<const void*>(param)));
+		break;
+	case Growl::ScriptingType::Object: {
+		auto ptr = std::get<std::unique_ptr<Growl::Object>>(param).get();
+		lua_rawgeti(
+			state, LUA_REGISTRYINDEX,
+			static_cast<Growl::LuaObject*>(ptr)->getRef());
+		break;
+	}
+	case Growl::ScriptingType::Ref: {
+		lua_rawgeti(
+			state, LUA_REGISTRYINDEX,
+			static_cast<Growl::LuaObject*>(std::get<Growl::Object*>(param))
+				->getRef());
+		break;
+	}
+	}
+	return true;
+}
+
 int luaPushArgs(std::vector<ScriptingParam>& args, lua_State* state) {
 	int args_count = 0;
 	for (size_t i = 0; i < args.size(); i++) {
-		switch (static_cast<Growl::ScriptingType>(args[i].index())) {
-		case Growl::ScriptingType::Void:
-			continue;
-		case Growl::ScriptingType::Ptr:
-			// TODO checks!
-			lua_pushlightuserdata(
-				state, const_cast<void*>(std::get<const void*>(args[i])));
-			break;
-		case Growl::ScriptingType::Int:
-			lua_pushinteger(state, std::get<int>(args[i]));
-			break;
-		case Growl::ScriptingType::String:
-			lua_pushstring(
-				state,
-				std::string(std::get<std::string_view>(args[i])).c_str());
-			break;
-		case Growl::ScriptingType::Float:
-			lua_pushnumber(state, std::get<float>(args[i]));
-			break;
-		case Growl::ScriptingType::Bool:
-			lua_pushboolean(state, std::get<bool>(args[i]));
-			break;
-		case Growl::ScriptingType::Ref:
-			lua_rawgeti(
-				state, LUA_REGISTRYINDEX,
-				static_cast<Growl::LuaObject*>(
-					std::get<Growl::Object*>(args[i]))
-					->getRef());
-			break;
-		case Growl::ScriptingType::Object:
-			auto ptr = std::get<std::unique_ptr<Growl::Object>>(args[i]).get();
-			lua_rawgeti(
-				state, LUA_REGISTRYINDEX,
-				static_cast<Growl::LuaObject*>(ptr)->getRef());
-			break;
+		if (luaPushArg(state, args[i])) {
+			args_count++;
 		}
-		args_count++;
 	}
 	return args_count;
 }
@@ -437,15 +443,16 @@ Result<ScriptingParam> LuaScriptingAPI::executeMethod(
 	return luaPullReturn(signature.return_type, this->state);
 }
 
-void LuaSelf::setField(const std::string& name, void* val) {
+void LuaSelf::setField(const std::string& name, ScriptingParam val) {
 	lua_pushstring(this->state, name.c_str());
-	lua_pushlightuserdata(this->state, val);
+	luaPushArg(this->state, val);
 	lua_settable(this->state, -3);
 }
 
-const void* LuaSelf::getField(const std::string& name) {
+const ScriptingParam
+LuaSelf::getField(const std::string& name, ScriptingType type) {
+	LuaStack stack{this->state};
 	lua_getfield(this->state, 1, name.c_str());
-	auto ptr = lua_topointer(this->state, -1);
-	lua_pop(this->state, 1);
-	return ptr;
+	stack.stack_count += 2;
+	return luaPullReturn(type, state);
 }

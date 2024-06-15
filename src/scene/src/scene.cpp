@@ -36,8 +36,9 @@ Error Growl::initSceneGraph(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				Node* n = static_cast<Node*>(
-					const_cast<void*>(self->getField("__ptr_owned")));
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr_owned", ScriptingType::Ptr))));
 				if (n) {
 					delete n;
 				}
@@ -53,8 +54,9 @@ Error Growl::initSceneGraph(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				Node* n = static_cast<Node*>(
-					const_cast<void*>(self->getField("__ptr")));
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
 				n->setXRaw(std::get<float>(args.at(0)));
 				return ScriptingParam();
 			},
@@ -68,8 +70,9 @@ Error Growl::initSceneGraph(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				Node* n = static_cast<Node*>(
-					const_cast<void*>(self->getField("__ptr")));
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
 				n->setYRaw(std::get<float>(args.at(0)));
 				return ScriptingParam();
 			},
@@ -83,8 +86,9 @@ Error Growl::initSceneGraph(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				Node* n = static_cast<Node*>(
-					const_cast<void*>(self->getField("__ptr")));
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
 				return ScriptingParam(n->getXRaw());
 			},
 			nullptr);
@@ -97,8 +101,9 @@ Error Growl::initSceneGraph(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				Node* n = static_cast<Node*>(
-					const_cast<void*>(self->getField("__ptr")));
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
 				return ScriptingParam(n->getYRaw());
 			},
 			nullptr);
@@ -111,8 +116,9 @@ Error Growl::initSceneGraph(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				Node* n = static_cast<Node*>(
-					const_cast<void*>(self->getField("__ptr")));
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
 				n->setWidthRaw(std::get<float>(args.at(0)));
 				return ScriptingParam();
 			},
@@ -126,8 +132,9 @@ Error Growl::initSceneGraph(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				Node* n = static_cast<Node*>(
-					const_cast<void*>(self->getField("__ptr")));
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
 				n->setHeightRaw(std::get<float>(args.at(0)));
 				return ScriptingParam();
 			},
@@ -141,8 +148,9 @@ Error Growl::initSceneGraph(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				Node* n = static_cast<Node*>(
-					const_cast<void*>(self->getField("__ptr")));
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
 				return ScriptingParam(n->getWidthRaw());
 			},
 			nullptr);
@@ -155,8 +163,9 @@ Error Growl::initSceneGraph(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				Node* n = static_cast<Node*>(
-					const_cast<void*>(self->getField("__ptr")));
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
 				return ScriptingParam(n->getHeightRaw());
 			},
 			nullptr);
@@ -169,8 +178,9 @@ Error Growl::initSceneGraph(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				Node* n = static_cast<Node*>(
-					const_cast<void*>(self->getField("__ptr")));
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
 				return ScriptingParam(n->getRotationRaw());
 			},
 			nullptr);
@@ -183,8 +193,9 @@ Error Growl::initSceneGraph(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				Node* n = static_cast<Node*>(
-					const_cast<void*>(self->getField("__ptr")));
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
 				n->setRotationRaw(std::get<float>(args.at(0)));
 				return ScriptingParam();
 			},
@@ -198,8 +209,9 @@ Error Growl::initSceneGraph(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				Node* n = static_cast<Node*>(
-					const_cast<void*>(self->getField("__ptr")));
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
 				if (!n->getParent() || !n->getParent()->bound_script_obj) {
 					return ScriptingParam();
 				}

@@ -34,8 +34,8 @@ private:
 class Window {
 public:
 	virtual ~Window() = default;
-	virtual void flip(){};
-	virtual void getSize(int* w, int* h){};
+	virtual void flip() {};
+	virtual void getSize(int* w, int* h) {};
 
 	virtual void* getMetalLayer() {
 		return nullptr;

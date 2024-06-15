@@ -75,8 +75,9 @@ protected:
 
 class ClassSelf {
 public:
-	virtual void setField(const std::string& name, void* val) = 0;
-	virtual const void* getField(const std::string& name) = 0;
+	virtual void setField(const std::string& name, ScriptingParam val) = 0;
+	virtual const ScriptingParam
+	getField(const std::string& name, ScriptingType type) = 0;
 };
 
 } // namespace Growl
