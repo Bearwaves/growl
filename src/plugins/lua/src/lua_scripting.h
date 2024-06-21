@@ -42,6 +42,9 @@ private:
 		Class* cls, const std::string& method_name,
 		const ScriptingSignature& signature, ScriptingFn fn,
 		void* context) override;
+	Result<std::unique_ptr<Object>> executeConstructor(
+		const std::string& class_name, std::vector<ScriptingParam>& args,
+		ScriptingSignature signature) override;
 	Result<ScriptingParam> executeMethod(
 		Object& obj, const std::string& method_name,
 		std::vector<ScriptingParam>& args,

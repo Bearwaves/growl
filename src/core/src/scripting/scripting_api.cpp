@@ -10,8 +10,9 @@ using Growl::ScriptingAPI;
 using Growl::SystemAPI;
 
 Error ScriptingAPI::mountGrowlScripts(API& api) {
+	// Growl static class
 	auto growl_class_result = createClass("Growl", true);
-	if (growl_class_result.hasError()) {
+	if (!growl_class_result) {
 		return std::move(growl_class_result.error());
 	}
 
@@ -42,6 +43,31 @@ Error ScriptingAPI::mountGrowlScripts(API& api) {
 					static_cast<float>(graphics->getDeltaTime()));
 			},
 			&(api.graphics()))) {
+		return err;
+	}
+
+	// Input events
+	auto input_mouse_event_res = createClass("InputMouseEvent", false);
+	if (!input_mouse_event_res) {
+		return std::move(input_mouse_event_res.error());
+	}
+	auto& input_mouse_event_cls = *input_mouse_event_res;
+
+	if (auto err =
+			input_mouse_event_cls->addConstructor<const InputMouseEvent*>(
+				[](ClassSelf* self, void* ctx,
+				   const std::vector<ScriptingParam>& args)
+					-> Result<ScriptingParam> {
+					auto event = static_cast<const InputTouchEvent*>(
+						std::get<const void*>(args.at(0)));
+					self->setField("id", event->id);
+					self->setField("touchX", event->touchX);
+					self->setField("touchY", event->touchY);
+					self->setField("type", (int)event->type);
+					return ScriptingParam();
+				},
+				nullptr);
+		err) {
 		return err;
 	}
 

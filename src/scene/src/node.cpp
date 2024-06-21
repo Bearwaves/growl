@@ -15,6 +15,7 @@
 using Growl::API;
 using Growl::Batch;
 using Growl::Error;
+using Growl::InputMouseEvent;
 using Growl::Node;
 using Growl::Script;
 
@@ -139,4 +140,38 @@ void Node::computeLocalTransform() {
 	if (parent) {
 		local_transform = parent->local_transform * local_transform;
 	}
+}
+
+bool Node::onMouseEvent(const InputMouseEvent& event) {
+	if (!bound_script_obj) {
+		return onMouseEventRaw(event);
+	}
+
+	std::vector<ScriptingParam> ctor_args;
+	ctor_args.push_back(&event);
+	auto ctor_result =
+		api->scripting().executeConstructor<const InputMouseEvent*>(
+			"InputMouseEvent", ctor_args);
+	if (!ctor_result) {
+		api->system().log(
+			LogLevel::Warn, "Node::onMouseEvent",
+			"Failed to execute constructor: " + ctor_result.error()->message());
+		return false;
+	}
+
+	std::vector<ScriptingParam> v;
+	v.push_back(ctor_result.get().get());
+	auto exec_res = api->scripting().executeMethod<bool, Object*>(
+		*bound_script_obj, "onMouseEvent", v);
+	if (!exec_res) {
+		api->system().log(
+			LogLevel::Warn, "Node::onMouseEvent",
+			"Failed to execute method: " + exec_res.error()->message());
+		return false;
+	}
+	return std::get<bool>(*exec_res);
+}
+
+bool Node::onMouseEventRaw(const InputMouseEvent& event) {
+	return InputProcessor::onMouseEvent(event);
 }

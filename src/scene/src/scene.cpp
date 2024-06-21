@@ -222,5 +222,14 @@ Error Growl::initSceneGraph(API& api) {
 		return err;
 	}
 
+	if (auto err = node_cls->addMethod<void, Object*>(
+			"onMouseEvent",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> { return ScriptingParam(); },
+			nullptr)) {
+		return err;
+	}
+
 	return nullptr;
 }

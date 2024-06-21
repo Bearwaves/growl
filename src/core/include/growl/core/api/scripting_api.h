@@ -54,8 +54,15 @@ class ClassSelf;
 class Script;
 
 using ScriptingParam = std::variant<
-	std::monostate, bool, float, int, std::string_view, const void*,
-	std::unique_ptr<Object>, Object*>;
+	std::monostate,			 // Void
+	bool,					 // Bool
+	float,					 // Float
+	int,					 // Int
+	std::string_view,		 // String
+	const void*,			 // Ptr
+	std::unique_ptr<Object>, // Object
+	Object*					 // Ref
+	>;
 
 using ScriptingFn = Result<ScriptingParam> (*)(
 	ClassSelf*, void*, const std::vector<ScriptingParam>&);
@@ -180,6 +187,13 @@ public:
 
 	virtual Error setClass(Object& obj, const std::string& class_name) = 0;
 
+	template <typename... Args>
+	Result<std::unique_ptr<Object>> executeConstructor(
+		const std::string& class_name, std::vector<ScriptingParam>& args) {
+		auto signature = GetFunctionSignature<Object(Args...)>::value();
+		return executeConstructor(class_name, args, signature);
+	}
+
 	template <typename T, typename... Args>
 	Result<ScriptingParam> executeMethod(
 		Object& obj, const std::string& method_name,
@@ -199,6 +213,9 @@ private:
 	virtual Error addMethodToClass(
 		Class* cls, const std::string& method_name,
 		const ScriptingSignature& signature, ScriptingFn fn, void* context) = 0;
+	virtual Result<std::unique_ptr<Object>> executeConstructor(
+		const std::string& class_name, std::vector<ScriptingParam>& args,
+		ScriptingSignature signature) = 0;
 	virtual Result<ScriptingParam> executeMethod(
 		Object& obj, const std::string& method_name,
 		std::vector<ScriptingParam>& args, ScriptingSignature signature) = 0;
