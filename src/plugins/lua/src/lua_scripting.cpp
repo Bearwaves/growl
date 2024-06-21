@@ -11,6 +11,7 @@
 #include "lua_object.h"
 #include "lua_script.h"
 #include <cstring>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -301,12 +302,8 @@ Error LuaScriptingAPI::addDestructorToClass(
 				const_cast<void*>(lua_topointer(state, lua_upvalueindex(1))));
 			void* ctx =
 				const_cast<void*>(lua_topointer(state, lua_upvalueindex(2)));
-			const char* metatable_name =
-				lua_tostring(state, lua_upvalueindex(3));
-			lua_newtable(state);
 			fn(std::make_unique<LuaSelf>(state).get(), ctx,
 			   std::vector<ScriptingParam>());
-			luaL_setmetatable(state, metatable_name);
 			return 1;
 		},
 		3);
