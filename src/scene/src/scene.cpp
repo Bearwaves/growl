@@ -204,7 +204,7 @@ Error Growl::initSceneGraph(API& api) {
 		return err;
 	}
 
-	if (auto err = node_cls->addMethod<Object*>(
+	if (auto err = node_cls->addMethod<ScriptingObject*>(
 			"getParent",
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
@@ -222,7 +222,7 @@ Error Growl::initSceneGraph(API& api) {
 		return err;
 	}
 
-	if (auto err = node_cls->addMethod<void, Object*>(
+	if (auto err = node_cls->addMethod<void, ScriptingObject*>(
 			"onMouseEvent",
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)

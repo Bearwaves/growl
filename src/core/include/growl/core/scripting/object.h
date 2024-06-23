@@ -2,18 +2,18 @@
 
 namespace Growl {
 
-// An Object is a reference to something that exists in the scripting
+// A ScriptingObject is a reference to something that exists in the scripting
 // language's execution state or VM, which we can't normally access from C.
-class Object {
+class ScriptingObject {
 public:
-	Object() = default;
-	virtual ~Object() = default;
+	ScriptingObject() = default;
+	virtual ~ScriptingObject() = default;
 
 	// Reference is move-only
-	Object(const Object&) = delete;
-	Object& operator=(const Object&) = delete;
-	Object(Object&&) = default;
-	Object& operator=(Object&&) = default;
+	ScriptingObject(const ScriptingObject&) = delete;
+	ScriptingObject& operator=(const ScriptingObject&) = delete;
+	ScriptingObject(ScriptingObject&&) = default;
+	ScriptingObject& operator=(ScriptingObject&&) = default;
 };
 
 } // namespace Growl

@@ -15,7 +15,6 @@
 #include <string>
 
 using Growl::Error;
-using Growl::Object;
 using Growl::TestAppGame;
 using Growl::Timer;
 
@@ -120,7 +119,7 @@ Error TestAppGame::init() {
 	if (!node_script_src_res) {
 		return std::move(node_script_src_res.error());
 	}
-	auto node_script_res = getAPI().scripting().createScript<Object>(
+	auto node_script_res = getAPI().scripting().createScript<ScriptingObject>(
 		std::move(*node_script_src_res));
 	if (!node_script_res) {
 		return std::move(node_script_res.error());

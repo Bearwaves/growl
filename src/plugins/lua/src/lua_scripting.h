@@ -28,9 +28,11 @@ public:
 	createClass(std::string&& name, bool is_static) override;
 
 	Error setField(
-		Object& obj, const std::string& name, ScriptingParam value) override;
+		ScriptingObject& obj, const std::string& name,
+		ScriptingParam value) override;
 
-	Error setClass(Object& obj, const std::string& class_name) override;
+	Error
+	setClass(ScriptingObject& obj, const std::string& class_name) override;
 
 private:
 	Error addConstructorToClass(
@@ -42,11 +44,11 @@ private:
 		Class* cls, const std::string& method_name,
 		const ScriptingSignature& signature, ScriptingFn fn,
 		void* context) override;
-	Result<std::unique_ptr<Object>> executeConstructor(
+	Result<std::unique_ptr<ScriptingObject>> executeConstructor(
 		const std::string& class_name, std::vector<ScriptingParam>& args,
 		ScriptingSignature signature) override;
 	Result<ScriptingParam> executeMethod(
-		Object& obj, const std::string& method_name,
+		ScriptingObject& obj, const std::string& method_name,
 		std::vector<ScriptingParam>& args,
 		ScriptingSignature signature) override;
 

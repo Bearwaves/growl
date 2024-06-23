@@ -6,7 +6,7 @@
 
 namespace Growl {
 
-class LuaObject : public Object {
+class LuaObject : public ScriptingObject {
 public:
 	explicit LuaObject(lua_State* state, int ref)
 		: state{state}

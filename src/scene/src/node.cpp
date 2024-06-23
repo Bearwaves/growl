@@ -115,7 +115,7 @@ Error Node::bindScript(API& api, Script& script) {
 	if (!res) {
 		return std::move(res.error());
 	}
-	auto obj = std::move(std::get<std::unique_ptr<Object>>(*res));
+	auto obj = std::move(std::get<std::unique_ptr<ScriptingObject>>(*res));
 	if (auto err =
 			api.scripting().setField(*obj, "__ptr", static_cast<void*>(this))) {
 		return err;
@@ -161,7 +161,7 @@ bool Node::onMouseEvent(const InputMouseEvent& event) {
 
 	std::vector<ScriptingParam> v;
 	v.push_back(ctor_result.get().get());
-	auto exec_res = api->scripting().executeMethod<bool, Object*>(
+	auto exec_res = api->scripting().executeMethod<bool, ScriptingObject*>(
 		*bound_script_obj, "onMouseEvent", v);
 	if (!exec_res) {
 		api->system().log(

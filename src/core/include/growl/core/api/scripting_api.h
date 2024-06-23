@@ -54,14 +54,14 @@ class ClassSelf;
 class Script;
 
 using ScriptingParam = std::variant<
-	std::monostate,			 // Void
-	bool,					 // Bool
-	float,					 // Float
-	int,					 // Int
-	std::string_view,		 // String
-	const void*,			 // Ptr
-	std::unique_ptr<Object>, // Object
-	Object*					 // Ref
+	std::monostate,					  // Void
+	bool,							  // Bool
+	float,							  // Float
+	int,							  // Int
+	std::string_view,				  // String
+	const void*,					  // Ptr
+	std::unique_ptr<ScriptingObject>, // Object
+	ScriptingObject*				  // Ref
 	>;
 
 using ScriptingFn = Result<ScriptingParam> (*)(
@@ -73,8 +73,13 @@ enum class ScriptingType {
 	Float,
 	Int,
 	String,
+	// A Ptr is a pointer to something outside the scripting language's state.
 	Ptr,
+	// An Object is something in the scripting language's state, whose lifetime
+	// is owned by the ScriptingObject.
 	Object,
+	// A Ref is something in the scripting language's state, whose lifetime is
+	// owned by something else.
 	Ref,
 };
 
@@ -123,14 +128,14 @@ struct ScriptingTypeOfType<float> {
 };
 
 template <>
-struct ScriptingTypeOfType<Object> {
+struct ScriptingTypeOfType<ScriptingObject> {
 	static ScriptingType value() {
 		return ScriptingType::Object;
 	}
 };
 
 template <>
-struct ScriptingTypeOfType<Object*> {
+struct ScriptingTypeOfType<ScriptingObject*> {
 	static ScriptingType value() {
 		return ScriptingType::Ref;
 	}
@@ -182,21 +187,24 @@ public:
 	virtual Result<std::unique_ptr<Class>>
 	createClass(std::string&& name, bool is_static) = 0;
 
-	virtual Error
-	setField(Object& obj, const std::string& name, ScriptingParam value) = 0;
+	virtual Error setField(
+		ScriptingObject& obj, const std::string& name,
+		ScriptingParam value) = 0;
 
-	virtual Error setClass(Object& obj, const std::string& class_name) = 0;
+	virtual Error
+	setClass(ScriptingObject& obj, const std::string& class_name) = 0;
 
 	template <typename... Args>
-	Result<std::unique_ptr<Object>> executeConstructor(
+	Result<std::unique_ptr<ScriptingObject>> executeConstructor(
 		const std::string& class_name, std::vector<ScriptingParam>& args) {
-		auto signature = GetFunctionSignature<Object(Args...)>::value();
+		auto signature =
+			GetFunctionSignature<ScriptingObject(Args...)>::value();
 		return executeConstructor(class_name, args, signature);
 	}
 
 	template <typename T, typename... Args>
 	Result<ScriptingParam> executeMethod(
-		Object& obj, const std::string& method_name,
+		ScriptingObject& obj, const std::string& method_name,
 		std::vector<ScriptingParam>& args) {
 		auto signature = GetFunctionSignature<T(Args...)>::value();
 		return executeMethod(obj, method_name, args, signature);
@@ -213,11 +221,11 @@ private:
 	virtual Error addMethodToClass(
 		Class* cls, const std::string& method_name,
 		const ScriptingSignature& signature, ScriptingFn fn, void* context) = 0;
-	virtual Result<std::unique_ptr<Object>> executeConstructor(
+	virtual Result<std::unique_ptr<ScriptingObject>> executeConstructor(
 		const std::string& class_name, std::vector<ScriptingParam>& args,
 		ScriptingSignature signature) = 0;
 	virtual Result<ScriptingParam> executeMethod(
-		Object& obj, const std::string& method_name,
+		ScriptingObject& obj, const std::string& method_name,
 		std::vector<ScriptingParam>& args, ScriptingSignature signature) = 0;
 };
 

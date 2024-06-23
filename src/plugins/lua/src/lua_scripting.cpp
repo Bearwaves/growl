@@ -12,7 +12,6 @@
 #include "lua_object.h"
 #include "lua_script.h"
 #include <cstring>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -90,7 +89,8 @@ bool luaPushArg(lua_State* state, ScriptingParam& param) {
 			state, const_cast<void*>(std::get<const void*>(param)));
 		break;
 	case Growl::ScriptingType::Object: {
-		auto ptr = std::get<std::unique_ptr<Growl::Object>>(param).get();
+		auto ptr =
+			std::get<std::unique_ptr<Growl::ScriptingObject>>(param).get();
 		lua_rawgeti(
 			state, LUA_REGISTRYINDEX,
 			static_cast<Growl::LuaObject*>(ptr)->getRef());
@@ -99,7 +99,8 @@ bool luaPushArg(lua_State* state, ScriptingParam& param) {
 	case Growl::ScriptingType::Ref: {
 		lua_rawgeti(
 			state, LUA_REGISTRYINDEX,
-			static_cast<Growl::LuaObject*>(std::get<Growl::Object*>(param))
+			static_cast<Growl::LuaObject*>(
+				std::get<Growl::ScriptingObject*>(param))
 				->getRef());
 		break;
 	}
@@ -198,7 +199,7 @@ LuaScriptingAPI::createClass(std::string&& name, bool is_static) {
 }
 
 Error LuaScriptingAPI::setField(
-	Object& obj, const std::string& name, ScriptingParam value) {
+	ScriptingObject& obj, const std::string& name, ScriptingParam value) {
 	auto ref = static_cast<LuaObject&>(obj).getRef();
 	lua_rawgeti(this->state, LUA_REGISTRYINDEX, ref);
 	if (!lua_istable(this->state, -1)) {
@@ -219,7 +220,8 @@ Error LuaScriptingAPI::setField(
 	return nullptr;
 }
 
-Error LuaScriptingAPI::setClass(Object& obj, const std::string& class_name) {
+Error LuaScriptingAPI::setClass(
+	ScriptingObject& obj, const std::string& class_name) {
 	auto ref = static_cast<LuaObject&>(obj).getRef();
 	lua_rawgeti(this->state, LUA_REGISTRYINDEX, ref);
 	if (!lua_istable(this->state, -1)) {
@@ -376,14 +378,14 @@ Error LuaScriptingAPI::addMethodToClass(
 				lua_rawgeti(
 					state, LUA_REGISTRYINDEX,
 					static_cast<LuaObject*>(
-						std::get<std::unique_ptr<Object>>(*res).get())
+						std::get<std::unique_ptr<ScriptingObject>>(*res).get())
 						->getRef());
 				return 1;
 			case ScriptingType::Ref:
 				lua_rawgeti(
 					state, LUA_REGISTRYINDEX,
 					static_cast<Growl::LuaObject*>(
-						std::get<Growl::Object*>(*res))
+						std::get<Growl::ScriptingObject*>(*res))
 						->getRef());
 				return 1;
 			case ScriptingType::Ptr:
@@ -412,7 +414,8 @@ Error LuaScriptingAPI::addMethodToClass(
 	return nullptr;
 }
 
-Result<std::unique_ptr<Growl::Object>> LuaScriptingAPI::executeConstructor(
+Result<std::unique_ptr<Growl::ScriptingObject>>
+LuaScriptingAPI::executeConstructor(
 	const std::string& class_name, std::vector<ScriptingParam>& args,
 	ScriptingSignature signature) {
 	LuaStack stack{this->state};
@@ -428,12 +431,13 @@ Result<std::unique_ptr<Growl::Object>> LuaScriptingAPI::executeConstructor(
 			std::string(lua_tostring(this->state, -1)));
 		return Error(std::move(err));
 	}
-	return std::unique_ptr<Growl::Object>(std::make_unique<Growl::LuaObject>(
-		state, luaL_ref(state, LUA_REGISTRYINDEX)));
+	return std::unique_ptr<Growl::ScriptingObject>(
+		std::make_unique<Growl::LuaObject>(
+			state, luaL_ref(state, LUA_REGISTRYINDEX)));
 }
 
 Result<ScriptingParam> LuaScriptingAPI::executeMethod(
-	Object& obj, const std::string& method_name,
+	ScriptingObject& obj, const std::string& method_name,
 	std::vector<ScriptingParam>& args, ScriptingSignature signature) {
 	LuaStack stack{this->state};
 	lua_rawgeti(
