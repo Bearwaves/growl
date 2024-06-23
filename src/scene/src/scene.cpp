@@ -3,6 +3,7 @@
 #include "growl/core/error.h"
 #include "growl/core/scripting/class.h"
 #include "growl/scene/node.h"
+#include <iostream>
 
 using Growl::API;
 using Growl::Class;
@@ -226,8 +227,38 @@ Error Growl::initSceneGraph(API& api) {
 			"onMouseEvent",
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
-				-> Result<ScriptingParam> { return ScriptingParam(); },
+				-> Result<ScriptingParam> {
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
+				InputMouseEvent event {
+				};
+				return ScriptingParam(n->onMouseEventRaw(event));
+			},
 			nullptr)) {
+		return err;
+	}
+
+	if (auto err = node_cls->addMethod<bool, ScriptingObject*>(
+			"onKeyboardEvent",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
+					std::cout << args.at(0).index() << std::endl;
+				ScriptingObject* obj = std::get<ScriptingObject*>(args.at(0));
+				auto key_res = static_cast<API*>(ctx)->scripting().getField(*obj, "key", ScriptingType::Int);
+				if (!key_res) {
+				  std::cout << "ERRRRRR " << key_res.error()->message() << std::endl;
+				}
+				std::cout << "KEY " << std::get<int>(*key_res) << std::endl;
+				InputKeyboardEvent event {
+				};
+				return ScriptingParam(n->onKeyboardEventRaw(event));
+			},
+			&api)) {
 		return err;
 	}
 

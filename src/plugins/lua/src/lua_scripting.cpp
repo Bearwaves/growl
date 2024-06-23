@@ -12,6 +12,7 @@
 #include "lua_object.h"
 #include "lua_script.h"
 #include <cstring>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -131,8 +132,10 @@ ScriptingParam luaPull(lua_State* state, ScriptingType type) {
 	case ScriptingType::Bool:
 		return static_cast<bool>(lua_toboolean(state, -1));
 	case ScriptingType::Object:
+	case ScriptingType::Ref:
 		return std::make_unique<Growl::LuaObject>(
-			state, luaL_ref(state, LUA_REGISTRYINDEX));
+			state, luaL_ref(state, LUA_REGISTRYINDEX),
+			type == ScriptingType::Ref);
 	default:
 		return ScriptingParam();
 	}
@@ -196,6 +199,22 @@ LuaScriptingAPI::createClass(std::string&& name, bool is_static) {
 	}
 	lua_setglobal(this->state, name.c_str());
 	return std::make_unique<Class>(std::move(name), this, is_static);
+}
+
+Result<ScriptingParam> LuaScriptingAPI::getField(
+	ScriptingObject& obj, const std::string& name, ScriptingType type) {
+	LuaStack stack{state};
+	auto ref = static_cast<LuaObject&>(obj).getRef();
+	std::cout << "REF " << ref << std::endl;
+	lua_rawgeti(this->state, LUA_REGISTRYINDEX, ref);
+	stack.stack_count++;
+	if (!lua_istable(this->state, -1)) {
+		return Error(
+			std::make_unique<LuaError>("Object must be a table to set fields"));
+	}
+	lua_getfield(this->state, -1, name.c_str());
+	stack.stack_count++;
+	return luaPull(this->state, type);
 }
 
 Error LuaScriptingAPI::setField(
@@ -345,6 +364,7 @@ Error LuaScriptingAPI::addMethodToClass(
 			ScriptingSigLua* signature = static_cast<ScriptingSigLua*>(
 				lua_touserdata(state, lua_upvalueindex(3)));
 			int stack_offset = lua_tointeger(state, lua_upvalueindex(4));
+			// TODO pull args
 			std::vector<ScriptingParam> args(signature->n_args);
 			for (int i = 0; i < signature->n_args; i++) {
 				switch (signature->args[i]) {
@@ -365,6 +385,12 @@ Error LuaScriptingAPI::addMethodToClass(
 						lua_topointer(state, i + stack_offset));
 					break;
 				}
+				case ScriptingType::Ref:
+					luaL_checktype(state, i + stack_offset, LUA_TTABLE);
+
+					args[i] = static_cast<Growl::LuaObject*>(const_cast<void*>(
+						lua_topointer(state, i + stack_offset)));
+					break;
 				default:
 					continue;
 				}

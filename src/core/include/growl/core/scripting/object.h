@@ -6,14 +6,18 @@ namespace Growl {
 // language's execution state or VM, which we can't normally access from C.
 class ScriptingObject {
 public:
-	ScriptingObject() = default;
+	ScriptingObject(bool is_ref)
+		: is_ref{is_ref} {}
 	virtual ~ScriptingObject() = default;
 
-	// Reference is move-only
+	// ScriptingObject is move-only
 	ScriptingObject(const ScriptingObject&) = delete;
 	ScriptingObject& operator=(const ScriptingObject&) = delete;
 	ScriptingObject(ScriptingObject&&) = default;
 	ScriptingObject& operator=(ScriptingObject&&) = default;
+
+protected:
+	bool is_ref;
 };
 
 } // namespace Growl

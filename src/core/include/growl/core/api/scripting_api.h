@@ -187,12 +187,15 @@ public:
 	virtual Result<std::unique_ptr<Class>>
 	createClass(std::string&& name, bool is_static) = 0;
 
+	virtual Error
+	setClass(ScriptingObject& obj, const std::string& class_name) = 0;
+
+	virtual Result<ScriptingParam>
+	getField(ScriptingObject& obj, const std::string& name, ScriptingType type) = 0;
+
 	virtual Error setField(
 		ScriptingObject& obj, const std::string& name,
 		ScriptingParam value) = 0;
-
-	virtual Error
-	setClass(ScriptingObject& obj, const std::string& class_name) = 0;
 
 	template <typename... Args>
 	Result<std::unique_ptr<ScriptingObject>> executeConstructor(

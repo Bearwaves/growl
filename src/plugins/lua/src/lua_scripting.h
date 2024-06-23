@@ -27,12 +27,14 @@ public:
 	Result<std::unique_ptr<Class>>
 	createClass(std::string&& name, bool is_static) override;
 
+	Error setClass(ScriptingObject& obj, const std::string& class_name) override;
+
+	Result<ScriptingParam>
+	getField(ScriptingObject& obj, const std::string& name, ScriptingType type) override;
+
 	Error setField(
 		ScriptingObject& obj, const std::string& name,
 		ScriptingParam value) override;
-
-	Error
-	setClass(ScriptingObject& obj, const std::string& class_name) override;
 
 private:
 	Error addConstructorToClass(

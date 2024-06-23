@@ -2,6 +2,7 @@
 #include "growl/core/api/api.h"
 #include "growl/core/error.h"
 #include "growl/core/scripting/class.h"
+#include <iostream>
 
 using Growl::API;
 using Growl::Class;
@@ -64,6 +65,28 @@ Error ScriptingAPI::mountGrowlScripts(API& api) {
 					self->setField("mouseX", event->mouseX);
 					self->setField("mouseY", event->mouseY);
 					self->setField("type", (int)event->type);
+					return ScriptingParam();
+				},
+				nullptr);
+		err) {
+		return err;
+	}
+
+	auto input_keyboard_event_res = createClass("InputKeyboardEvent", false);
+	if (!input_keyboard_event_res) {
+		return std::move(input_keyboard_event_res.error());
+	}
+	auto& input_keyboard_event_cls = *input_keyboard_event_res;
+
+	if (auto err =
+			input_keyboard_event_cls->addConstructor<const InputKeyboardEvent*>(
+				[](ClassSelf* self, void* ctx,
+				   const std::vector<ScriptingParam>& args)
+					-> Result<ScriptingParam> {
+					auto event = static_cast<const InputKeyboardEvent*>(
+						std::get<const void*>(args.at(0)));
+					self->setField("type", (int)event->type);
+					self->setField("key", (int)event->key);
 					return ScriptingParam();
 				},
 				nullptr);

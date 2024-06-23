@@ -52,6 +52,8 @@ protected:
 	// Input
 	bool onMouseEvent(const InputMouseEvent& event) override;
 	bool onMouseEventRaw(const InputMouseEvent& event);
+	bool onKeyboardEvent(const InputKeyboardEvent& event) override;
+	bool onKeyboardEventRaw(const InputKeyboardEvent& event);
 
 private:
 	API* api;
