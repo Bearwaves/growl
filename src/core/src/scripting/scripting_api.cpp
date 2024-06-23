@@ -58,11 +58,11 @@ Error ScriptingAPI::mountGrowlScripts(API& api) {
 				[](ClassSelf* self, void* ctx,
 				   const std::vector<ScriptingParam>& args)
 					-> Result<ScriptingParam> {
-					auto event = static_cast<const InputTouchEvent*>(
+					auto event = static_cast<const InputMouseEvent*>(
 						std::get<const void*>(args.at(0)));
-					self->setField("id", event->id);
-					self->setField("touchX", event->touchX);
-					self->setField("touchY", event->touchY);
+					self->setField("button", (int)event->button);
+					self->setField("mouseX", event->mouseX);
+					self->setField("mouseY", event->mouseY);
 					self->setField("type", (int)event->type);
 					return ScriptingParam();
 				},
