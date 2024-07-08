@@ -371,43 +371,7 @@ Error LuaScriptingAPI::addMethodToClass(
 			}
 			auto res = fn(std::make_unique<LuaSelf>(state).get(), ctx, args);
 			// TODO check error
-			switch (signature->return_type) {
-			case ScriptingType::Void:
-				return 0;
-			case ScriptingType::Object:
-				lua_rawgeti(
-					state, LUA_REGISTRYINDEX,
-					static_cast<LuaObject*>(
-						std::get<std::unique_ptr<ScriptingObject>>(*res).get())
-						->getRef());
-				return 1;
-			case ScriptingType::Ref:
-				lua_rawgeti(
-					state, LUA_REGISTRYINDEX,
-					static_cast<Growl::LuaObject*>(
-						std::get<Growl::ScriptingObject*>(*res))
-						->getRef());
-				return 1;
-			case ScriptingType::Ptr:
-				lua_pushlightuserdata(
-					state, const_cast<void*>(std::get<const void*>(*res)));
-				return 1;
-			case ScriptingType::Int:
-				lua_pushnumber(state, std::get<int>(*res));
-				return 1;
-			case ScriptingType::String:
-				lua_pushstring(
-					state,
-					std::string(std::get<std::string_view>(*res)).c_str());
-				return 1;
-			case ScriptingType::Float:
-				lua_pushnumber(state, std::get<float>(*res));
-				return 1;
-			case ScriptingType::Bool:
-				lua_pushboolean(state, std::get<bool>(*res));
-				return 1;
-			}
-			return 0;
+			return luaPushArg(state, *res) ? 1 : 0;
 		},
 		4);
 	lua_settable(this->state, -3);
