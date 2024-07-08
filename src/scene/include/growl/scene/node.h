@@ -50,7 +50,7 @@ protected:
 	onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform);
 
 	// Input
-	bool onMouseEvent(const InputMouseEvent& event) override;
+	virtual bool onMouseEvent(const InputMouseEvent& event) override;
 	bool onMouseEventRaw(const InputMouseEvent& event);
 
 private:
