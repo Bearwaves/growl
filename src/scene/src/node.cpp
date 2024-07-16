@@ -160,8 +160,8 @@ bool Node::onMouseEvent(const InputMouseEvent& event) {
 	}
 
 	std::vector<ScriptingParam> v;
-	v.push_back(ctor_result.get().get());
-	auto exec_res = api->scripting().executeMethod<bool, ScriptingObject*>(
+	v.push_back(ctor_result.get()->makeRef());
+	auto exec_res = api->scripting().executeMethod<bool, ScriptingRef>(
 		*bound_script_obj, "onMouseEvent", v);
 	if (!exec_res) {
 		api->system().log(

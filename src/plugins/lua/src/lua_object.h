@@ -3,6 +3,7 @@
 #include "growl/core/scripting/object.h"
 #include "lauxlib.h"
 #include "lua.h"
+#include "lua_ref.h"
 
 namespace Growl {
 
@@ -13,6 +14,10 @@ public:
 		, ref{ref} {}
 	~LuaObject() {
 		luaL_unref(state, LUA_REGISTRYINDEX, ref);
+	}
+
+	std::unique_ptr<ScriptingRef> makeRef() override {
+		return std::make_unique<LuaRef>(ref);
 	}
 
 	int getRef() {

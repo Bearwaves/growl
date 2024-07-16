@@ -3,6 +3,7 @@
 #include "growl/core/error.h"
 #include "growl/core/scripting/class.h"
 #include "growl/scene/node.h"
+#include <iostream>
 
 using Growl::API;
 using Growl::Class;
@@ -204,7 +205,7 @@ Error Growl::initSceneGraph(API& api) {
 		return err;
 	}
 
-	if (auto err = node_cls->addMethod<ScriptingObject*>(
+	if (auto err = node_cls->addMethod<ScriptingRef>(
 			"getParent",
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
@@ -222,11 +223,13 @@ Error Growl::initSceneGraph(API& api) {
 		return err;
 	}
 
-	if (auto err = node_cls->addMethod<void, ScriptingObject*>(
+	if (auto err = node_cls->addMethod<void, ScriptingRef>(
 			"onMouseEvent",
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
-				-> Result<ScriptingParam> { return ScriptingParam(); },
+				-> Result<ScriptingParam> {
+				return ScriptingParam();
+			},
 			nullptr)) {
 		return err;
 	}

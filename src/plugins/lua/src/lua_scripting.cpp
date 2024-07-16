@@ -10,8 +10,10 @@
 #include "lua_class.h"
 #include "lua_error.h"
 #include "lua_object.h"
+#include "lua_ref.h"
 #include "lua_script.h"
 #include <cstring>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -97,11 +99,10 @@ bool luaPushArg(lua_State* state, ScriptingParam& param) {
 		break;
 	}
 	case Growl::ScriptingType::Ref: {
+		auto ptr = std::get<std::unique_ptr<Growl::ScriptingRef>>(param).get();
 		lua_rawgeti(
 			state, LUA_REGISTRYINDEX,
-			static_cast<Growl::LuaObject*>(
-				std::get<Growl::ScriptingObject*>(param))
-				->getRef());
+			static_cast<Growl::LuaRef*>(ptr)->getRef());
 		break;
 	}
 	}
@@ -118,6 +119,15 @@ int luaPushArgs(std::vector<ScriptingParam>& args, lua_State* state) {
 	return args_count;
 }
 
+int luaTableRef(lua_State* state) {
+	int ref = luaL_ref(state, LUA_REGISTRYINDEX);
+	lua_rawgeti(state, LUA_REGISTRYINDEX, ref);
+	lua_pushinteger(state, ref);
+	lua_setfield(state, -2, "__ref");
+	lua_pop(state, 1);
+	return ref;
+}
+
 ScriptingParam luaPull(lua_State* state, ScriptingType type) {
 	switch (type) {
 	case ScriptingType::Ptr:
@@ -131,8 +141,7 @@ ScriptingParam luaPull(lua_State* state, ScriptingType type) {
 	case ScriptingType::Bool:
 		return static_cast<bool>(lua_toboolean(state, -1));
 	case ScriptingType::Object:
-		return std::make_unique<Growl::LuaObject>(
-			state, luaL_ref(state, LUA_REGISTRYINDEX));
+		return std::make_unique<Growl::LuaObject>(state, luaTableRef(state));
 	default:
 		return ScriptingParam();
 	}
@@ -307,6 +316,30 @@ Error LuaScriptingAPI::addDestructorToClass(
 	return nullptr;
 }
 
+void dumpstack(lua_State* state) {
+	int top = lua_gettop(state);
+	for (int i = 1; i <= top; i++) {
+		printf("%d\t%s\t", i, luaL_typename(state, i));
+		switch (lua_type(state, i)) {
+		case LUA_TNUMBER:
+			printf("%g\n", lua_tonumber(state, i));
+			break;
+		case LUA_TSTRING:
+			printf("%s\n", lua_tostring(state, i));
+			break;
+		case LUA_TBOOLEAN:
+			printf("%s\n", (lua_toboolean(state, i) ? "true" : "false"));
+			break;
+		case LUA_TNIL:
+			printf("%s\n", "nil");
+			break;
+		default:
+			printf("%p\n", lua_topointer(state, i));
+			break;
+		}
+	}
+}
+
 Error LuaScriptingAPI::addMethodToClass(
 	Class* cls, const std::string& method_name,
 	const ScriptingSignature& signature, ScriptingFn fn, void* context) {
@@ -365,6 +398,13 @@ Error LuaScriptingAPI::addMethodToClass(
 						lua_topointer(state, i + stack_offset));
 					break;
 				}
+				case ScriptingType::Ref: {
+					luaL_checktype(state, i + stack_offset, LUA_TTABLE);
+					lua_getfield(state, -1, "__reg");
+					args[i] = std::make_unique<LuaRef>(lua_tointeger(state, -1));
+					lua_pop(state, 1);
+					break;
+				}
 				default:
 					continue;
 				}
@@ -396,8 +436,7 @@ LuaScriptingAPI::executeConstructor(
 		return Error(std::move(err));
 	}
 	return std::unique_ptr<Growl::ScriptingObject>(
-		std::make_unique<Growl::LuaObject>(
-			state, luaL_ref(state, LUA_REGISTRYINDEX)));
+		std::make_unique<Growl::LuaObject>(state, luaTableRef(state)));
 }
 
 Result<ScriptingParam> LuaScriptingAPI::executeMethod(

@@ -2,6 +2,7 @@
 
 #include "growl/core/error.h"
 #include "growl/core/scripting/object.h"
+#include "growl/core/scripting/ref.h"
 #include <memory>
 #include <variant>
 #include <vector>
@@ -61,7 +62,7 @@ using ScriptingParam = std::variant<
 	std::string_view,				  // String
 	const void*,					  // Ptr
 	std::unique_ptr<ScriptingObject>, // Object
-	ScriptingObject*				  // Ref
+	std::unique_ptr<ScriptingRef>				  // Ref
 	>;
 
 using ScriptingFn = Result<ScriptingParam> (*)(
@@ -135,7 +136,7 @@ struct ScriptingTypeOfType<ScriptingObject> {
 };
 
 template <>
-struct ScriptingTypeOfType<ScriptingObject*> {
+struct ScriptingTypeOfType<ScriptingRef> {
 	static ScriptingType value() {
 		return ScriptingType::Ref;
 	}
