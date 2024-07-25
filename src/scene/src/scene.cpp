@@ -226,8 +226,45 @@ Error Growl::initSceneGraph(API& api) {
 			"onMouseEvent",
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
-				-> Result<ScriptingParam> { return ScriptingParam(false); },
-			nullptr)) {
+				-> Result<ScriptingParam> {
+				ScriptingAPI* scripting = static_cast<ScriptingAPI*>(ctx);
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
+				auto& script_event =
+					std::get<std::unique_ptr<ScriptingRef>>(args.at(0));
+				InputMouseEvent event;
+				if (auto res = scripting->getField(
+						script_event.get(), "mouseX", ScriptingType::Int);
+					!res) {
+					return std::move(res.error());
+				} else {
+					event.mouseX = std::get<int>(res.get());
+				}
+				if (auto res = scripting->getField(
+						script_event.get(), "mouseY", ScriptingType::Int);
+					!res) {
+					return std::move(res.error());
+				} else {
+					event.mouseY = std::get<int>(res.get());
+				}
+				if (auto res = scripting->getField(
+						script_event.get(), "type", ScriptingType::Int);
+					!res) {
+					return std::move(res.error());
+				} else {
+					event.type = PointerEventType(std::get<int>(res.get()));
+				}
+				if (auto res = scripting->getField(
+						script_event.get(), "button", ScriptingType::Int);
+					!res) {
+					return std::move(res.error());
+				} else {
+					event.button = MouseButton(std::get<int>(res.get()));
+				}
+				return ScriptingParam(n->onMouseEventRaw(event));
+			},
+			&(api.scripting()))) {
 		return err;
 	}
 

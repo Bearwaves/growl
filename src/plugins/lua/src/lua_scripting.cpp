@@ -189,6 +189,33 @@ LuaScriptingAPI::createClass(std::string&& name, bool is_static) {
 	return std::make_unique<Class>(std::move(name), this, is_static);
 }
 
+Error LuaScriptingAPI::setClass(
+	ScriptingRef* obj, const std::string& class_name) {
+	auto ref = static_cast<LuaRef*>(obj)->getRef();
+	lua_rawgeti(this->state, LUA_REGISTRYINDEX, ref);
+	if (!lua_istable(this->state, -1)) {
+		return std::make_unique<LuaError>(
+			"Object must be a table to set fields");
+	}
+	luaL_getmetatable(
+		this->state, (std::string("Growl::meta::") + class_name).c_str());
+	lua_pushvalue(this->state, -1);
+	lua_setfield(this->state, -3, "__index");
+	lua_setmetatable(this->state, -2);
+	lua_rawseti(this->state, LUA_REGISTRYINDEX, ref);
+	return nullptr;
+}
+
+Result<ScriptingParam> LuaScriptingAPI::getField(
+	ScriptingRef* ref, const std::string& name, ScriptingType type) {
+	auto lua_ref = static_cast<LuaRef*>(ref)->getRef();
+	lua_rawgeti(state, LUA_REGISTRYINDEX, lua_ref);
+	LuaStack stack{state};
+	lua_getfield(this->state, 1, name.c_str());
+	stack.stack_count += 2;
+	return luaPull(state, type);
+}
+
 Error LuaScriptingAPI::setField(
 	ScriptingRef* obj, const std::string& name, ScriptingParam value) {
 	auto ref = static_cast<LuaRef*>(obj)->getRef();
@@ -207,23 +234,6 @@ Error LuaScriptingAPI::setField(
 		return std::make_unique<LuaError>("Unsupported field type");
 	}
 	lua_settable(this->state, -3);
-	lua_rawseti(this->state, LUA_REGISTRYINDEX, ref);
-	return nullptr;
-}
-
-Error LuaScriptingAPI::setClass(
-	ScriptingRef* obj, const std::string& class_name) {
-	auto ref = static_cast<LuaRef*>(obj)->getRef();
-	lua_rawgeti(this->state, LUA_REGISTRYINDEX, ref);
-	if (!lua_istable(this->state, -1)) {
-		return std::make_unique<LuaError>(
-			"Object must be a table to set fields");
-	}
-	luaL_getmetatable(
-		this->state, (std::string("Growl::meta::") + class_name).c_str());
-	lua_pushvalue(this->state, -1);
-	lua_setfield(this->state, -3, "__index");
-	lua_setmetatable(this->state, -2);
 	lua_rawseti(this->state, LUA_REGISTRYINDEX, ref);
 	return nullptr;
 }
@@ -355,6 +365,12 @@ Error LuaScriptingAPI::addMethodToClass(
 					args[i] = static_cast<const void*>(
 						lua_topointer(state, i + stack_offset));
 					break;
+				case ScriptingType::Ref: {
+					luaL_checktype(state, i + stack_offset, LUA_TTABLE);
+					args[i] = std::make_unique<LuaRef>(
+						state, luaL_ref(state, LUA_REGISTRYINDEX));
+					break;
+				}
 				}
 				default:
 					continue;

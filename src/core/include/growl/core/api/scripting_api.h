@@ -177,11 +177,14 @@ public:
 	virtual Result<std::unique_ptr<Class>>
 	createClass(std::string&& name, bool is_static) = 0;
 
-	virtual Error setField(
-		ScriptingRef* obj, const std::string& name, ScriptingParam value) = 0;
-
 	virtual Error
-	setClass(ScriptingRef* obj, const std::string& class_name) = 0;
+	setClass(ScriptingRef* ref, const std::string& class_name) = 0;
+
+	virtual Result<ScriptingParam> getField(
+		ScriptingRef* ref, const std::string& name, ScriptingType type) = 0;
+
+	virtual Error setField(
+		ScriptingRef* ref, const std::string& name, ScriptingParam value) = 0;
 
 	template <typename... Args>
 	Result<std::unique_ptr<ScriptingRef>> executeConstructor(
@@ -193,10 +196,10 @@ public:
 
 	template <typename T, typename... Args>
 	Result<ScriptingParam> executeMethod(
-		ScriptingRef* obj, const std::string& method_name,
+		ScriptingRef* ref, const std::string& method_name,
 		std::vector<ScriptingParam>& args) {
 		auto signature = GetFunctionSignature<T(Args...)>::value();
-		return executeMethod(obj, method_name, args, signature);
+		return executeMethod(ref, method_name, args, signature);
 	}
 
 private:
@@ -214,7 +217,7 @@ private:
 		const std::string& class_name, std::vector<ScriptingParam>& args,
 		ScriptingSignature signature) = 0;
 	virtual Result<ScriptingParam> executeMethod(
-		ScriptingRef* obj, const std::string& method_name,
+		ScriptingRef* ref, const std::string& method_name,
 		std::vector<ScriptingParam>& args, ScriptingSignature signature) = 0;
 };
 
