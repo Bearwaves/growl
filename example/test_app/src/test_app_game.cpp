@@ -119,8 +119,9 @@ Error TestAppGame::init() {
 	if (!node_script_src_res) {
 		return std::move(node_script_src_res.error());
 	}
-	auto node_script_res = getAPI().scripting().createScript<ScriptingObject>(
-		std::move(*node_script_src_res));
+	auto node_script_res =
+		getAPI().scripting().createScript<std::unique_ptr<ScriptingRef>>(
+			std::move(*node_script_src_res));
 	if (!node_script_res) {
 		return std::move(node_script_res.error());
 	}

@@ -204,7 +204,7 @@ Error Growl::initSceneGraph(API& api) {
 		return err;
 	}
 
-	if (auto err = node_cls->addMethod<ScriptingObject*>(
+	if (auto err = node_cls->addMethod<std::unique_ptr<ScriptingRef>>(
 			"getParent",
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
@@ -215,18 +215,18 @@ Error Growl::initSceneGraph(API& api) {
 				if (!n->getParent() || !n->getParent()->bound_script_obj) {
 					return ScriptingParam();
 				}
-				return ScriptingParam(n->getParent()->bound_script_obj.get());
+				return ScriptingParam(n->getParent()->bound_script_obj->copy());
 			},
 			nullptr);
 		err) {
 		return err;
 	}
 
-	if (auto err = node_cls->addMethod<void, ScriptingObject*>(
+	if (auto err = node_cls->addMethod<bool, std::unique_ptr<ScriptingRef>>(
 			"onMouseEvent",
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
-				-> Result<ScriptingParam> { return ScriptingParam(); },
+				-> Result<ScriptingParam> { return ScriptingParam(false); },
 			nullptr)) {
 		return err;
 	}

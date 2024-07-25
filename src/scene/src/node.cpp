@@ -115,12 +115,12 @@ Error Node::bindScript(API& api, Script& script) {
 	if (!res) {
 		return std::move(res.error());
 	}
-	auto obj = std::move(std::get<std::unique_ptr<ScriptingObject>>(*res));
-	if (auto err =
-			api.scripting().setField(*obj, "__ptr", static_cast<void*>(this))) {
+	auto obj = std::move(std::get<std::unique_ptr<ScriptingRef>>(*res));
+	if (auto err = api.scripting().setField(
+			obj.get(), "__ptr", static_cast<void*>(this))) {
 		return err;
 	}
-	if (auto err = api.scripting().setClass(*obj, "Node")) {
+	if (auto err = api.scripting().setClass(obj.get(), "Node")) {
 		return err;
 	}
 	bound_script_obj = std::move(obj);
@@ -155,18 +155,20 @@ bool Node::onMouseEvent(const InputMouseEvent& event) {
 	if (!ctor_result) {
 		api->system().log(
 			LogLevel::Warn, "Node::onMouseEvent",
-			"Failed to execute constructor: " + ctor_result.error()->message());
+			"Failed to execute constructor: {}",
+			ctor_result.error()->message());
 		return false;
 	}
 
 	std::vector<ScriptingParam> v;
-	v.push_back(ctor_result.get().get());
-	auto exec_res = api->scripting().executeMethod<bool, ScriptingObject*>(
-		*bound_script_obj, "onMouseEvent", v);
+	v.push_back(std::move(ctor_result.get()));
+	auto exec_res =
+		api->scripting().executeMethod<bool, std::unique_ptr<ScriptingRef>>(
+			bound_script_obj.get(), "onMouseEvent", v);
 	if (!exec_res) {
 		api->system().log(
 			LogLevel::Warn, "Node::onMouseEvent",
-			"Failed to execute method: " + exec_res.error()->message());
+			"Failed to execute method: {}", exec_res.error()->message());
 		return false;
 	}
 	return std::get<bool>(*exec_res);

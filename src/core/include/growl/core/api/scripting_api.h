@@ -1,7 +1,7 @@
 #pragma once
 
 #include "growl/core/error.h"
-#include "growl/core/scripting/object.h"
+#include "growl/core/scripting/ref.h"
 #include <memory>
 #include <variant>
 #include <vector>
@@ -15,7 +15,7 @@
 		if (bound_script_obj) { \
 			std::vector<ScriptingParam> v; \
 			auto res = api->scripting().executeMethod<type>( \
-				*bound_script_obj, "get" #name, v); \
+				bound_script_obj.get(), "get" #name, v); \
 			if (!res) { \
 				api->system().log( \
 					LogLevel::Warn, "Script::get" #name, "{}", \
@@ -36,7 +36,7 @@
 			std::vector<ScriptingParam> v; \
 			v.push_back(var); \
 			if (auto res = api->scripting().executeMethod<void, type>( \
-					*bound_script_obj, "set" #name, v); \
+					bound_script_obj.get(), "set" #name, v); \
 				!res) { \
 				api->system().log( \
 					LogLevel::Warn, "Script::set" #name, "{}", \
@@ -54,14 +54,13 @@ class ClassSelf;
 class Script;
 
 using ScriptingParam = std::variant<
-	std::monostate,					  // Void
-	bool,							  // Bool
-	float,							  // Float
-	int,							  // Int
-	std::string_view,				  // String
-	const void*,					  // Ptr
-	std::unique_ptr<ScriptingObject>, // Object
-	ScriptingObject*				  // Ref
+	std::monostate,				  // Void
+	bool,						  // Bool
+	float,						  // Float
+	int,						  // Int
+	std::string_view,			  // String
+	const void*,				  // Ptr
+	std::unique_ptr<ScriptingRef> // Ref
 	>;
 
 using ScriptingFn = Result<ScriptingParam> (*)(
@@ -75,11 +74,9 @@ enum class ScriptingType {
 	String,
 	// A Ptr is a pointer to something outside the scripting language's state.
 	Ptr,
-	// An Object is something in the scripting language's state, whose lifetime
-	// is owned by the ScriptingObject.
-	Object,
-	// A Ref is something in the scripting language's state, whose lifetime is
-	// owned by something else.
+	// A Ref is a reference to something in the scripting language's state.
+	// It might be reference counted, GC'd, or something else, depending on
+	// implementation.
 	Ref,
 };
 
@@ -128,14 +125,7 @@ struct ScriptingTypeOfType<float> {
 };
 
 template <>
-struct ScriptingTypeOfType<ScriptingObject> {
-	static ScriptingType value() {
-		return ScriptingType::Object;
-	}
-};
-
-template <>
-struct ScriptingTypeOfType<ScriptingObject*> {
+struct ScriptingTypeOfType<std::unique_ptr<ScriptingRef>> {
 	static ScriptingType value() {
 		return ScriptingType::Ref;
 	}
@@ -188,23 +178,22 @@ public:
 	createClass(std::string&& name, bool is_static) = 0;
 
 	virtual Error setField(
-		ScriptingObject& obj, const std::string& name,
-		ScriptingParam value) = 0;
+		ScriptingRef* obj, const std::string& name, ScriptingParam value) = 0;
 
 	virtual Error
-	setClass(ScriptingObject& obj, const std::string& class_name) = 0;
+	setClass(ScriptingRef* obj, const std::string& class_name) = 0;
 
 	template <typename... Args>
-	Result<std::unique_ptr<ScriptingObject>> executeConstructor(
+	Result<std::unique_ptr<ScriptingRef>> executeConstructor(
 		const std::string& class_name, std::vector<ScriptingParam>& args) {
-		auto signature =
-			GetFunctionSignature<ScriptingObject(Args...)>::value();
+		auto signature = GetFunctionSignature<std::unique_ptr<ScriptingRef>(
+			Args...)>::value();
 		return executeConstructor(class_name, args, signature);
 	}
 
 	template <typename T, typename... Args>
 	Result<ScriptingParam> executeMethod(
-		ScriptingObject& obj, const std::string& method_name,
+		ScriptingRef* obj, const std::string& method_name,
 		std::vector<ScriptingParam>& args) {
 		auto signature = GetFunctionSignature<T(Args...)>::value();
 		return executeMethod(obj, method_name, args, signature);
@@ -221,11 +210,11 @@ private:
 	virtual Error addMethodToClass(
 		Class* cls, const std::string& method_name,
 		const ScriptingSignature& signature, ScriptingFn fn, void* context) = 0;
-	virtual Result<std::unique_ptr<ScriptingObject>> executeConstructor(
+	virtual Result<std::unique_ptr<ScriptingRef>> executeConstructor(
 		const std::string& class_name, std::vector<ScriptingParam>& args,
 		ScriptingSignature signature) = 0;
 	virtual Result<ScriptingParam> executeMethod(
-		ScriptingObject& obj, const std::string& method_name,
+		ScriptingRef* obj, const std::string& method_name,
 		std::vector<ScriptingParam>& args, ScriptingSignature signature) = 0;
 };
 

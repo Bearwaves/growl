@@ -3,13 +3,13 @@
 #include "growl/core/api/system_api.h"
 #include "growl/core/error.h"
 #include "growl/core/scripting/class.h"
-#include "growl/core/scripting/object.h"
+#include "growl/core/scripting/ref.h"
 #include "growl/core/scripting/script.h"
 #include "lauxlib.h"
 #include "lua.h"
 #include "lua_class.h"
 #include "lua_error.h"
-#include "lua_object.h"
+#include "lua_ref.h"
 #include "lua_script.h"
 #include <cstring>
 #include <memory>
@@ -20,6 +20,7 @@ using Growl::Class;
 using Growl::ClassSelf;
 using Growl::Error;
 using Growl::LuaError;
+using Growl::LuaRef;
 using Growl::LuaScript;
 using Growl::LuaScriptingAPI;
 using Growl::LuaSelf;
@@ -88,20 +89,10 @@ bool luaPushArg(lua_State* state, ScriptingParam& param) {
 		lua_pushlightuserdata(
 			state, const_cast<void*>(std::get<const void*>(param)));
 		break;
-	case Growl::ScriptingType::Object: {
-		auto ptr =
-			std::get<std::unique_ptr<Growl::ScriptingObject>>(param).get();
-		lua_rawgeti(
-			state, LUA_REGISTRYINDEX,
-			static_cast<Growl::LuaObject*>(ptr)->getRef());
-		break;
-	}
 	case Growl::ScriptingType::Ref: {
+		auto ptr = std::get<std::unique_ptr<Growl::ScriptingRef>>(param).get();
 		lua_rawgeti(
-			state, LUA_REGISTRYINDEX,
-			static_cast<Growl::LuaObject*>(
-				std::get<Growl::ScriptingObject*>(param))
-				->getRef());
+			state, LUA_REGISTRYINDEX, static_cast<LuaRef*>(ptr)->getRef());
 		break;
 	}
 	}
@@ -130,8 +121,8 @@ ScriptingParam luaPull(lua_State* state, ScriptingType type) {
 		return static_cast<float>(lua_tonumber(state, -1));
 	case ScriptingType::Bool:
 		return static_cast<bool>(lua_toboolean(state, -1));
-	case ScriptingType::Object:
-		return std::make_unique<Growl::LuaObject>(
+	case ScriptingType::Ref:
+		return std::make_unique<Growl::LuaRef>(
 			state, luaL_ref(state, LUA_REGISTRYINDEX));
 	default:
 		return ScriptingParam();
@@ -199,8 +190,8 @@ LuaScriptingAPI::createClass(std::string&& name, bool is_static) {
 }
 
 Error LuaScriptingAPI::setField(
-	ScriptingObject& obj, const std::string& name, ScriptingParam value) {
-	auto ref = static_cast<LuaObject&>(obj).getRef();
+	ScriptingRef* obj, const std::string& name, ScriptingParam value) {
+	auto ref = static_cast<LuaRef*>(obj)->getRef();
 	lua_rawgeti(this->state, LUA_REGISTRYINDEX, ref);
 	if (!lua_istable(this->state, -1)) {
 		return std::make_unique<LuaError>(
@@ -221,8 +212,8 @@ Error LuaScriptingAPI::setField(
 }
 
 Error LuaScriptingAPI::setClass(
-	ScriptingObject& obj, const std::string& class_name) {
-	auto ref = static_cast<LuaObject&>(obj).getRef();
+	ScriptingRef* obj, const std::string& class_name) {
+	auto ref = static_cast<LuaRef*>(obj)->getRef();
 	lua_rawgeti(this->state, LUA_REGISTRYINDEX, ref);
 	if (!lua_istable(this->state, -1)) {
 		return std::make_unique<LuaError>(
@@ -378,7 +369,7 @@ Error LuaScriptingAPI::addMethodToClass(
 	return nullptr;
 }
 
-Result<std::unique_ptr<Growl::ScriptingObject>>
+Result<std::unique_ptr<Growl::ScriptingRef>>
 LuaScriptingAPI::executeConstructor(
 	const std::string& class_name, std::vector<ScriptingParam>& args,
 	ScriptingSignature signature) {
@@ -395,17 +386,16 @@ LuaScriptingAPI::executeConstructor(
 			std::string(lua_tostring(this->state, -1)));
 		return Error(std::move(err));
 	}
-	return std::unique_ptr<Growl::ScriptingObject>(
-		std::make_unique<Growl::LuaObject>(
-			state, luaL_ref(state, LUA_REGISTRYINDEX)));
+	return std::unique_ptr<Growl::ScriptingRef>(std::make_unique<Growl::LuaRef>(
+		state, luaL_ref(state, LUA_REGISTRYINDEX)));
 }
 
 Result<ScriptingParam> LuaScriptingAPI::executeMethod(
-	ScriptingObject& obj, const std::string& method_name,
+	ScriptingRef* obj, const std::string& method_name,
 	std::vector<ScriptingParam>& args, ScriptingSignature signature) {
 	LuaStack stack{this->state};
 	lua_rawgeti(
-		this->state, LUA_REGISTRYINDEX, static_cast<LuaObject&>(obj).getRef());
+		this->state, LUA_REGISTRYINDEX, static_cast<LuaRef*>(obj)->getRef());
 	lua_getfield(this->state, -1, method_name.c_str());
 	lua_pushvalue(this->state, -2);
 	int n_args = luaPushArgs(args, this->state);
