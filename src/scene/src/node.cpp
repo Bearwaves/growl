@@ -177,3 +177,39 @@ bool Node::onMouseEvent(const InputMouseEvent& event) {
 bool Node::onMouseEventRaw(const InputMouseEvent& event) {
 	return InputProcessor::onMouseEvent(event);
 }
+
+bool Node::onKeyboardEvent(const InputKeyboardEvent& event) {
+	if (!bound_script_obj) {
+		return onKeyboardEventRaw(event);
+	}
+
+	std::vector<ScriptingParam> ctor_args;
+	ctor_args.push_back(&event);
+	auto ctor_result =
+		api->scripting().executeConstructor<const InputKeyboardEvent*>(
+			"InputKeyboardEvent", ctor_args);
+	if (!ctor_result) {
+		api->system().log(
+			LogLevel::Warn, "Node::onKeyboardEvent",
+			"Failed to execute constructor: {}",
+			ctor_result.error()->message());
+		return false;
+	}
+
+	std::vector<ScriptingParam> v;
+	v.push_back(std::move(ctor_result.get()));
+	auto exec_res =
+		api->scripting().executeMethod<bool, std::unique_ptr<ScriptingRef>>(
+			bound_script_obj.get(), "onKeyboardEvent", v);
+	if (!exec_res) {
+		api->system().log(
+			LogLevel::Warn, "Node::onKeyboardEvent",
+			"Failed to execute method: {}", exec_res.error()->message());
+		return false;
+	}
+	return std::get<bool>(*exec_res);
+}
+
+bool Node::onKeyboardEventRaw(const InputKeyboardEvent& event) {
+	return InputProcessor::onKeyboardEvent(event);
+}
