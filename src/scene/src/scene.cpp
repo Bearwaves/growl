@@ -300,5 +300,51 @@ Error Growl::initSceneGraph(API& api) {
 		return err;
 	}
 
+	if (auto err = node_cls->addMethod<bool, std::unique_ptr<ScriptingRef>>(
+			"onTouchEvent",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
+				ScriptingAPI* scripting = static_cast<ScriptingAPI*>(ctx);
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
+				auto& script_event =
+					std::get<std::unique_ptr<ScriptingRef>>(args.at(0));
+				InputTouchEvent event;
+				if (auto res = scripting->getField(
+						script_event.get(), "touchX", ScriptingType::Int);
+					!res) {
+					return std::move(res.error());
+				} else {
+					event.touchX = std::get<int>(res.get());
+				}
+				if (auto res = scripting->getField(
+						script_event.get(), "touchY", ScriptingType::Int);
+					!res) {
+					return std::move(res.error());
+				} else {
+					event.touchY = std::get<int>(res.get());
+				}
+				if (auto res = scripting->getField(
+						script_event.get(), "type", ScriptingType::Int);
+					!res) {
+					return std::move(res.error());
+				} else {
+					event.type = PointerEventType(std::get<int>(res.get()));
+				}
+				if (auto res = scripting->getField(
+						script_event.get(), "id", ScriptingType::Int);
+					!res) {
+					return std::move(res.error());
+				} else {
+					event.id = std::get<int>(res.get());
+				}
+				return ScriptingParam(n->onTouchEventRaw(event));
+			},
+			&(api.scripting()))) {
+		return err;
+	}
+
 	return nullptr;
 }
