@@ -249,3 +249,39 @@ bool Node::onTouchEvent(const InputTouchEvent& event) {
 bool Node::onTouchEventRaw(const InputTouchEvent& event) {
 	return InputProcessor::onTouchEvent(event);
 }
+
+bool Node::onControllerEvent(const InputControllerEvent& event) {
+	if (!bound_script_obj) {
+		return onControllerEventRaw(event);
+	}
+
+	std::vector<ScriptingParam> ctor_args;
+	ctor_args.push_back(&event);
+	auto ctor_result =
+		api->scripting().executeConstructor<const InputControllerEvent*>(
+			"InputControllerEvent", ctor_args);
+	if (!ctor_result) {
+		api->system().log(
+			LogLevel::Warn, "Node::onControllerEvent",
+			"Failed to execute constructor: {}",
+			ctor_result.error()->message());
+		return false;
+	}
+
+	std::vector<ScriptingParam> v;
+	v.push_back(std::move(ctor_result.get()));
+	auto exec_res =
+		api->scripting().executeMethod<bool, std::unique_ptr<ScriptingRef>>(
+			bound_script_obj.get(), "onControllerEvent", v);
+	if (!exec_res) {
+		api->system().log(
+			LogLevel::Warn, "Node::onControllerEvent",
+			"Failed to execute method: {}", exec_res.error()->message());
+		return false;
+	}
+	return std::get<bool>(*exec_res);
+}
+
+bool Node::onControllerEventRaw(const InputControllerEvent& event) {
+	return InputProcessor::onControllerEvent(event);
+}

@@ -117,5 +117,29 @@ Error ScriptingAPI::mountGrowlScripts(API& api) {
 		return err;
 	}
 
+	auto input_controller_event_res =
+		createClass("InputControllerEvent", false);
+	if (!input_controller_event_res) {
+		return std::move(input_controller_event_res.error());
+	}
+	auto& input_controller_event_cls = *input_controller_event_res;
+
+	if (auto err = input_controller_event_cls
+					   ->addConstructor<const InputControllerEvent*>(
+						   [](ClassSelf* self, void* ctx,
+							  const std::vector<ScriptingParam>& args)
+							   -> Result<ScriptingParam> {
+							   auto event =
+								   static_cast<const InputControllerEvent*>(
+									   std::get<const void*>(args.at(0)));
+							   self->setField("type", (int)event->type);
+							   self->setField("id", (int)event->button);
+							   return ScriptingParam();
+						   },
+						   nullptr);
+		err) {
+		return err;
+	}
+
 	return nullptr;
 }

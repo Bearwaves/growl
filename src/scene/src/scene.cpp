@@ -346,5 +346,37 @@ Error Growl::initSceneGraph(API& api) {
 		return err;
 	}
 
+	if (auto err = node_cls->addMethod<bool, std::unique_ptr<ScriptingRef>>(
+			"onControllerEvent",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
+				ScriptingAPI* scripting = static_cast<ScriptingAPI*>(ctx);
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
+				auto& script_event =
+					std::get<std::unique_ptr<ScriptingRef>>(args.at(0));
+				InputControllerEvent event;
+				if (auto res = scripting->getField(
+						script_event.get(), "type", ScriptingType::Int);
+					!res) {
+					return std::move(res.error());
+				} else {
+					event.type = ControllerEventType(std::get<int>(res.get()));
+				}
+				if (auto res = scripting->getField(
+						script_event.get(), "button", ScriptingType::Int);
+					!res) {
+					return std::move(res.error());
+				} else {
+					event.button = ControllerButton(std::get<int>(res.get()));
+				}
+				return ScriptingParam(n->onControllerEventRaw(event));
+			},
+			&(api.scripting()))) {
+		return err;
+	}
+
 	return nullptr;
 }
