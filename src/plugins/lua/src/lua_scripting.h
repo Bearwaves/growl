@@ -37,6 +37,10 @@ public:
 		ScriptingRef* ref, const std::string& name,
 		ScriptingParam value) override;
 
+	Error createEnum(
+		const std::string& name,
+		const std::vector<std::string>& values) override;
+
 private:
 	Error addConstructorToClass(
 		Class* cls, const ScriptingSignature& signature, ScriptingFn fn,
@@ -54,6 +58,11 @@ private:
 		ScriptingRef* ref, const std::string& method_name,
 		std::vector<ScriptingParam>& args,
 		ScriptingSignature signature) override;
+	Error addEnumToClass(
+		Class* cls, const std::string& name,
+		const std::vector<std::string>& values) override;
+	Result<std::unique_ptr<Class>>
+	addClassToClass(Class* cls, std::string&& name) override;
 
 	API& api;
 	lua_State* state;

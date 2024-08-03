@@ -238,6 +238,23 @@ Error LuaScriptingAPI::setField(
 	return nullptr;
 }
 
+Error LuaScriptingAPI::createEnum(
+	const std::string& name, const std::vector<std::string>& values) {
+	lua_newtable(this->state); // enum table
+	lua_newtable(this->state); // names table
+	for (size_t i = 0; i < values.size(); i++) {
+		lua_pushinteger(this->state, i);
+		lua_setfield(this->state, -3, values.at(i).c_str());
+		lua_pushinteger(this->state, i);
+		lua_pushstring(this->state, values.at(i).c_str());
+		lua_settable(this->state, -3);
+	}
+	lua_setfield(this->state, -2, "__names");
+
+	lua_setglobal(state, name.c_str());
+	return nullptr;
+}
+
 Error LuaScriptingAPI::addConstructorToClass(
 	Class* cls, const ScriptingSignature& signature, ScriptingFn fn,
 	void* context) {
@@ -383,6 +400,55 @@ Error LuaScriptingAPI::addMethodToClass(
 		4);
 	lua_settable(this->state, -3);
 	return nullptr;
+}
+
+int luaGetTableHierarchy(lua_State* state, Class* cls) {
+	std::vector<std::string> classes;
+	for (auto* c = cls; c; c = c->getParent()) {
+		classes.push_back(c->getName());
+	}
+
+	int stack = 1;
+	lua_getglobal(state, classes.back().c_str());
+	classes.pop_back();
+	while (!classes.empty()) {
+		lua_getfield(state, -1, classes.back().c_str());
+		classes.pop_back();
+		stack++;
+	}
+
+	return stack;
+}
+
+Error LuaScriptingAPI::addEnumToClass(
+	Class* cls, const std::string& name,
+	const std::vector<std::string>& values) {
+	LuaStack stack{state};
+	stack.stack_count += luaGetTableHierarchy(state, cls);
+
+	lua_newtable(this->state); // enum table
+	lua_newtable(this->state); // names table
+	for (size_t i = 0; i < values.size(); i++) {
+		lua_pushinteger(this->state, i);
+		lua_setfield(this->state, -3, values.at(i).c_str());
+		lua_pushinteger(this->state, i);
+		lua_pushstring(this->state, values.at(i).c_str());
+		lua_settable(this->state, -3);
+	}
+	lua_setfield(this->state, -2, "__names");
+
+	lua_setfield(this->state, -2, name.c_str());
+	return nullptr;
+}
+
+Result<std::unique_ptr<Class>>
+LuaScriptingAPI::addClassToClass(Class* cls, std::string&& name) {
+	LuaStack stack{state};
+	stack.stack_count += luaGetTableHierarchy(state, cls);
+	lua_newtable(this->state);
+	lua_setfield(this->state, -2, name.c_str());
+
+	return std::make_unique<Class>(std::move(name), this, true, cls);
 }
 
 Result<std::unique_ptr<Growl::ScriptingRef>>

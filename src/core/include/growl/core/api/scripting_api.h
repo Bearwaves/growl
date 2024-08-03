@@ -186,6 +186,9 @@ public:
 	virtual Error setField(
 		ScriptingRef* ref, const std::string& name, ScriptingParam value) = 0;
 
+	virtual Error createEnum(
+		const std::string& name, const std::vector<std::string>& values) = 0;
+
 	template <typename... Args>
 	Result<std::unique_ptr<ScriptingRef>> executeConstructor(
 		const std::string& class_name, std::vector<ScriptingParam>& args) {
@@ -219,6 +222,11 @@ private:
 	virtual Result<ScriptingParam> executeMethod(
 		ScriptingRef* ref, const std::string& method_name,
 		std::vector<ScriptingParam>& args, ScriptingSignature signature) = 0;
+	virtual Error addEnumToClass(
+		Class* cls, const std::string& name,
+		const std::vector<std::string>& values) = 0;
+	virtual Result<std::unique_ptr<Class>>
+	addClassToClass(Class* cls, std::string&& name) = 0;
 };
 
 } // namespace Growl

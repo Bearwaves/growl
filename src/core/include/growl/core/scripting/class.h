@@ -23,10 +23,13 @@ class Class {
 	friend class ClassSelf;
 
 public:
-	Class(std::string&& name, ScriptingAPI* lang, bool is_static)
+	Class(
+		std::string&& name, ScriptingAPI* lang, bool is_static,
+		Class* parent = nullptr)
 		: name{name}
 		, lang{lang}
-		, is_static{is_static} {}
+		, is_static{is_static}
+		, parent{parent} {}
 	virtual ~Class() = default;
 
 	// Class is move-only
@@ -41,6 +44,10 @@ public:
 
 	const bool isStatic() {
 		return is_static;
+	}
+
+	Class* getParent() {
+		return parent;
 	}
 
 	template <typename... Args>
@@ -67,10 +74,28 @@ public:
 		return lang->addMethodToClass(this, name, signature, fn, context);
 	}
 
+	Result<std::unique_ptr<Class>> addClass(std::string&& name) {
+		if (!is_static) {
+			return Error(std::make_unique<ScriptingError>(
+				"Cannot add class to non-static class"));
+		}
+		return lang->addClassToClass(this, std::move(name));
+	}
+
+	Error
+	addEnum(const std::string& name, const std::vector<std::string>& values) {
+		if (!is_static) {
+			return Error(std::make_unique<ScriptingError>(
+				"Cannot add enum to non-static class"));
+		}
+		return lang->addEnumToClass(this, name, values);
+	}
+
 protected:
 	std::string name;
 	ScriptingAPI* lang;
 	bool is_static;
+	Class* parent;
 };
 
 class ClassSelf {
