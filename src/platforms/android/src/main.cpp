@@ -12,6 +12,7 @@
 
 using Growl::API;
 using Growl::AudioAPIInternal;
+using Growl::FrameTimer;
 using Growl::GraphicsAPIInternal;
 using Growl::LogLevel;
 using Growl::ScriptingAPIInternal;
@@ -70,6 +71,7 @@ void android_main(struct android_app* state) {
 	enableImmersiveMode(state);
 
 	auto api = std::make_unique<API>();
+	api->setFrameTimer(std::make_unique<FrameTimer>());
 
 	initAndroidPlugin(*api, state);
 	initOpenGLPlugin(*api);
@@ -144,12 +146,14 @@ void android_main(struct android_app* state) {
 	int resize_width, resize_height;
 	api->system().log("android_main", "Run!");
 	while (static_cast<SystemAPIInternal&>(api->system()).isRunning()) {
+		double delta_time = api->frameTimer().frame();
 		api->system().tick();
 		if (api->system().didResize(&resize_width, &resize_height)) {
 			game->resize(resize_width, resize_height);
 		}
+		game->tick(delta_time);
 		static_cast<GraphicsAPIInternal&>(api->graphics()).begin();
-		game->render();
+		game->render(delta_time);
 		static_cast<GraphicsAPIInternal&>(api->graphics()).end();
 	}
 
