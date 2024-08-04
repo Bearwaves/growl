@@ -14,6 +14,7 @@ class OpenGLGraphicsAPI;
 class FontTextureAtlas;
 class GlyphLayout;
 class Texture;
+class API;
 struct TextureAtlasRegion;
 
 struct VertexBlock {
@@ -29,9 +30,9 @@ struct FragmentBlock {
 class OpenGLBatch : public Batch {
 public:
 	OpenGLBatch(
-		OpenGLGraphicsAPI* graphics_api, OpenGLShader* default_shader,
-		OpenGLShader* sdf_shader, OpenGLShader* rect_shader, int width,
-		int height, Window* window, GLuint fbo);
+		API* api, OpenGLShader* default_shader, OpenGLShader* sdf_shader,
+		OpenGLShader* rect_shader, int width, int height, Window* window,
+		GLuint fbo);
 	~OpenGLBatch();
 
 	void clear(float r, float g, float b) override;
@@ -65,7 +66,7 @@ public:
 	int getTargetHeight() override;
 
 private:
-	OpenGLGraphicsAPI* graphics_api;
+	API* api;
 	OpenGLShader* default_shader;
 	OpenGLShader* sdf_shader;
 	OpenGLShader* rect_shader;

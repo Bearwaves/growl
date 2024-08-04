@@ -1,6 +1,7 @@
 #include "growl/core/api/scripting_api.h"
 #include "growl/core/api/api.h"
 #include "growl/core/error.h"
+#include "growl/core/frame_timer.h"
 #include "growl/core/scripting/class.h"
 
 using Growl::API;
@@ -38,11 +39,11 @@ Error ScriptingAPI::mountGrowlScripts(API& api) {
 			[](ClassSelf* self, void* ctx,
 			   const std::vector<ScriptingParam>& args)
 				-> Result<ScriptingParam> {
-				GraphicsAPI* graphics = static_cast<GraphicsAPI*>(ctx);
+				FrameTimer* frame_timer = static_cast<FrameTimer*>(ctx);
 				return ScriptingParam(
-					static_cast<float>(graphics->getDeltaTime()));
+					static_cast<float>(frame_timer->getDeltaTime()));
 			},
-			&(api.graphics()))) {
+			&(api.frameTimer()))) {
 		return err;
 	}
 

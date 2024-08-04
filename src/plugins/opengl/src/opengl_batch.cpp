@@ -1,26 +1,26 @@
 #include "opengl_batch.h"
 #include "glm/gtc/type_ptr.hpp"
+#include "growl/core/api/api.h"
 #include "growl/core/assets/atlas.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/graphics/font_texture_atlas.h"
 #include "growl/core/graphics/shader.h"
 #include "growl/core/graphics/texture_atlas.h"
 #include "growl/core/graphics/window.h"
-#include "opengl_graphics.h"
 #include "opengl_shader.h"
 #include "opengl_texture.h"
 #include <cmath>
 #include <vector>
 
+using Growl::API;
 using Growl::OpenGLBatch;
-using Growl::OpenGLGraphicsAPI;
 using Growl::Shader;
 
 OpenGLBatch::OpenGLBatch(
-	OpenGLGraphicsAPI* graphics_api, OpenGLShader* default_shader,
-	OpenGLShader* sdf_shader, OpenGLShader* rect_shader, int width, int height,
-	Window* window, GLuint fbo)
-	: graphics_api{graphics_api}
+	API* api, OpenGLShader* default_shader, OpenGLShader* sdf_shader,
+	OpenGLShader* rect_shader, int width, int height, Window* window,
+	GLuint fbo)
+	: api{api}
 	, default_shader{default_shader}
 	, sdf_shader{sdf_shader}
 	, rect_shader{rect_shader}
@@ -82,8 +82,8 @@ void OpenGLBatch::begin() {
 
 	FragmentBlock fragment{
 		glm::vec2{width, height},
-		static_cast<float>(graphics_api->getTotalTime()),
-		static_cast<float>(graphics_api->getDeltaTime())};
+		static_cast<float>(api->frameTimer().getTotalTime()),
+		static_cast<float>(api->frameTimer().getDeltaTime())};
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, ubo_f);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(fragment), &fragment);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
