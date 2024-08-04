@@ -138,7 +138,27 @@ Error TestAppGame::init() {
 	return nullptr;
 }
 
-void TestAppGame::render() {
+void TestAppGame::tick(double delta_time) {
+	if (!grass_tiled) {
+		getAPI().audio().play(*music);
+	}
+
+	catX += delta_time * SPEED *
+			(input->leftPressed() ? -1 : (input->rightPressed() ? 1 : 0));
+	catY += delta_time * SPEED *
+			(input->upPressed() ? -1 : (input->downPressed() ? 1 : 0));
+
+	float rotation = cats->getRotation();
+	rotation +=
+		delta_time * SPEED * 0.01f *
+		(input->anticlockwisePressed() ? -1
+									   : (input->clockwisePressed() ? 1 : 0));
+	cats->setX(catX);
+	cats->setY(catY);
+	cats->setRotation(rotation);
+}
+
+void TestAppGame::render(double delta_time) {
 #ifdef GROWL_IMGUI
 	ImGui::Begin("Growl Test App");
 	ImGui::SliderInt("Font size", &font_size, 1, 150);
@@ -161,24 +181,10 @@ void TestAppGame::render() {
 			}
 		}
 		batch->end();
-		getAPI().audio().play(*music);
 	}
 
-	counter += getAPI().graphics().getDeltaTime();
+	counter += delta_time;
 	frames++;
-	catX += getAPI().graphics().getDeltaTime() * SPEED *
-			(input->leftPressed() ? -1 : (input->rightPressed() ? 1 : 0));
-	catY += getAPI().graphics().getDeltaTime() * SPEED *
-			(input->upPressed() ? -1 : (input->downPressed() ? 1 : 0));
-
-	float rotation = cats->getRotation();
-	rotation +=
-		getAPI().graphics().getDeltaTime() * SPEED * 0.01f *
-		(input->anticlockwisePressed() ? -1
-									   : (input->clockwisePressed() ? 1 : 0));
-	cats->setX(catX);
-	cats->setY(catY);
-	cats->setRotation(rotation);
 
 	batch->clear(0, 0, 0);
 	batch->begin();

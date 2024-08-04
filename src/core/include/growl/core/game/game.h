@@ -14,7 +14,8 @@ public:
 
 	virtual Error init() = 0;
 	virtual Error dispose() = 0;
-	virtual void render() = 0;
+	virtual void tick(double delta_time) {}
+	virtual void render(double delta_time) = 0;
 	virtual void resize(const int width, const int height) = 0;
 
 	Game(const Game&) = delete;

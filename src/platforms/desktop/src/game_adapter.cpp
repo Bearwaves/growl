@@ -1,6 +1,7 @@
 #include "growl/platforms/desktop/game_adapter.h"
 #include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
+#include "growl/core/frame_timer.h"
 #include "growl/core/game/game.h"
 #include "growl/core/graphics/window.h"
 #include "growl/core/log.h"
@@ -31,6 +32,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 	initOpenGLPlugin(*m_api);
 #endif
 	m_game->setAPI(m_api.get());
+	m_api->setFrameTimer(std::make_unique<FrameTimer>());
 
 	if (auto err = static_cast<SystemAPIInternal&>(m_api->system()).init();
 		err) {
@@ -108,12 +110,14 @@ void GameAdapter::run() {
 	m_game->resize(w, h);
 	int resize_width, resize_height;
 	while (static_cast<SystemAPIInternal&>(m_api->system()).isRunning()) {
+		double delta_time = m_api->frameTimer().frame();
 		m_api->system().tick();
 		if (m_api->system().didResize(&resize_width, &resize_height)) {
 			m_game->resize(resize_width, resize_height);
 		}
+		m_game->tick(delta_time);
 		static_cast<GraphicsAPIInternal&>(m_api->graphics()).begin();
-		m_game->render();
+		m_game->render(delta_time);
 		static_cast<GraphicsAPIInternal&>(m_api->graphics()).end();
 	}
 }

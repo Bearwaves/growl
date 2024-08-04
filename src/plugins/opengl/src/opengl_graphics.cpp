@@ -44,11 +44,6 @@ void OpenGLGraphicsAPI::dispose() {
 }
 
 void OpenGLGraphicsAPI::begin() {
-	auto tp = high_resolution_clock::now();
-	deltaTime = duration<double, seconds::period>(tp - last_render).count();
-	totalTime += deltaTime;
-	last_render = tp;
-
 #ifdef GROWL_IMGUI
 	ImGui_ImplOpenGL3_NewFrame();
 	window->newImguiFrame();
@@ -202,7 +197,7 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {
 	int w, h;
 	window->getSize(&w, &h);
 	return std::make_unique<OpenGLBatch>(
-		this, default_shader.get(), sdf_shader.get(), rect_shader.get(), w, h,
+		&api, default_shader.get(), sdf_shader.get(), rect_shader.get(), w, h,
 		window.get(), 0);
 }
 
@@ -218,7 +213,7 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return std::make_unique<OpenGLBatch>(
-		this, default_shader.get(), sdf_shader.get(), rect_shader.get(),
+		&api, default_shader.get(), sdf_shader.get(), rect_shader.get(),
 		texture.getWidth(), texture.getHeight(), nullptr, fbo);
 }
 

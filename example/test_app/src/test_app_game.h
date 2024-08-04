@@ -23,7 +23,8 @@ public:
 	explicit TestAppGame() = default;
 	Error init() override;
 	Error dispose() override;
-	void render() override;
+	void tick(double delta_time) override;
+	void render(double delta_time) override;
 	void resize(const int width, const int height) override;
 
 private:

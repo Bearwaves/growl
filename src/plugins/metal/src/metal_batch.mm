@@ -42,8 +42,8 @@ void MetalBatch::begin() {
 
 	ConstantBlock block{
 		projection, glm::vec2{surface.width, surface.height},
-		static_cast<float>(metal_graphics.getTotalTime()),
-		static_cast<float>(metal_graphics.getDeltaTime())};
+		static_cast<float>(api.frameTimer().getTotalTime()),
+		static_cast<float>(api.frameTimer().getDeltaTime())};
 
 	constant_buffer->writeAndBind(
 		encoder, 0, &block, sizeof(block), BufferBinding::Both);

@@ -25,8 +25,6 @@ using Growl::ShaderPack;
 using Growl::Texture;
 using Growl::TextureAtlas;
 using Growl::TextureOptions;
-using std::chrono::duration;
-using std::chrono::seconds;
 
 constexpr int BUFFER_MAX_SIZE = 2 << 22; // 8MB
 
@@ -49,10 +47,6 @@ void MetalGraphicsAPI::begin() {
 	dispatch_semaphore_wait(frame_boundary_semaphore, DISPATCH_TIME_FOREVER);
 	surface = [swap_chain nextDrawable];
 	command_buffer = [command_queue commandBuffer];
-	auto tp = high_resolution_clock::now();
-	deltaTime = duration<double, seconds::period>(tp - last_render).count();
-	totalTime += deltaTime;
-	last_render = tp;
 	current_buffer = (current_buffer + 1) % swap_chain.maximumDrawableCount;
 	constant_buffer_offset = 0;
 	vertex_buffer_offset = 0;
@@ -244,14 +238,14 @@ MetalGraphicsAPI::createFontTextureAtlas(const FontFace& face) {
 
 std::unique_ptr<Batch> MetalGraphicsAPI::createBatch() {
 	return std::make_unique<MetalBatch>(
-		*this, default_shader.get(), rect_shader.get(), sdf_shader.get());
+		api, *this, default_shader.get(), rect_shader.get(), sdf_shader.get());
 }
 
 std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
 	auto& metal_texture = static_cast<const MetalTexture&>(texture);
 
 	return std::make_unique<MetalBatch>(
-		*this, default_shader.get(), rect_shader.get(), sdf_shader.get(),
+		api, *this, default_shader.get(), rect_shader.get(), sdf_shader.get(),
 		metal_texture.getRaw());
 }
 

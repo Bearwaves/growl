@@ -1,5 +1,6 @@
 #import "growl/platforms/ios/view_controller.h"
 #import "growl/core/api/api.h"
+#import "growl/core/frame_timer.h"
 #import "growl/core/game/game.h"
 #import "growl/core/graphics/window.h"
 #import "growl/platforms/ios/metal_view.h"
@@ -31,6 +32,7 @@ std::unique_ptr<Growl::Game> createGame();
 	initMetalPlugin(*api);
 	initLuaPlugin(*api);
 	game->setAPI(api.get());
+	api->setFrameTimer(std::make_unique<Growl::FrameTimer>());
 
 	auto& systemInternal =
 		static_cast<Growl::SystemAPIInternal&>(api->system());
@@ -134,9 +136,11 @@ std::unique_ptr<Growl::Game> createGame();
 }
 
 - (void)render {
+	double delta_time = api->frameTimer().frame();
 	api->system().tick();
+	game->tick(delta_time);
 	static_cast<Growl::GraphicsAPIInternal&>(api->graphics()).begin();
-	game->render();
+	game->render(delta_time);
 	static_cast<Growl::GraphicsAPIInternal&>(api->graphics()).end();
 }
 

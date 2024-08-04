@@ -1,6 +1,7 @@
 #pragma once
 
 #include "api_internal.h"
+#include "growl/core/frame_timer.h"
 
 #include <memory>
 
@@ -22,6 +23,10 @@ public:
 
 	ScriptingAPI& scripting() {
 		return *scriptingInternal;
+	}
+
+	FrameTimer& frameTimer() {
+		return *frame_timer;
 	}
 
 	void addSystemAPI(std::unique_ptr<SystemAPIInternal> internal);
@@ -53,11 +58,16 @@ public:
 		scriptingInternal = std::move(scripting);
 	}
 
+	void setFrameTimer(std::unique_ptr<FrameTimer> frame_timer) {
+		this->frame_timer = std::move(frame_timer);
+	}
+
 private:
 	std::unique_ptr<SystemAPIInternal> systemInternal;
 	std::unique_ptr<GraphicsAPIInternal> graphicsInternal;
 	std::unique_ptr<AudioAPIInternal> audioInternal;
 	std::unique_ptr<ScriptingAPIInternal> scriptingInternal;
+	std::unique_ptr<FrameTimer> frame_timer;
 	bool imgui_visible = false;
 };
 

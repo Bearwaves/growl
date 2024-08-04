@@ -1,6 +1,7 @@
 #include "growl/platforms/web/game_adapter.h"
 #include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
+#include "growl/core/frame_timer.h"
 #include "growl/core/game/game.h"
 #include "growl/core/graphics/window.h"
 #include "growl/core/log.h"
@@ -64,6 +65,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
 			err.get()->message());
 		exit(5);
 	}
+	g_api->setFrameTimer(std::make_unique<FrameTimer>());
 
 	g_api->system().log("GameAdapter", "Web adapter created");
 }
@@ -84,9 +86,11 @@ GameAdapter::~GameAdapter() {
 }
 
 void GameAdapter::doLoopIteration() {
+	double delta_time = g_api->frameTimer().frame();
 	g_api->system().tick();
+	g_game->tick(delta_time);
 	static_cast<GraphicsAPIInternal&>(g_api->graphics()).begin();
-	g_game->render();
+	g_game->render(delta_time);
 	static_cast<GraphicsAPIInternal&>(g_api->graphics()).end();
 }
 

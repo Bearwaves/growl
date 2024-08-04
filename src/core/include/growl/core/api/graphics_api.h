@@ -20,12 +20,6 @@ class GraphicsAPI {
 
 public:
 	virtual ~GraphicsAPI() {}
-	double getDeltaTime() {
-		return deltaTime;
-	}
-	double getTotalTime() {
-		return totalTime;
-	}
 
 	virtual std::unique_ptr<Texture> createTexture(
 		const Image& image,
@@ -50,10 +44,6 @@ public:
 	createShader(const std::string& fragment_src) = 0;
 	virtual Result<std::unique_ptr<Shader>>
 	createShader(const ShaderPack& shader_pack) = 0;
-
-protected:
-	double deltaTime = 0;
-	double totalTime = 0;
 };
 
 } // namespace Growl
