@@ -10,14 +10,16 @@
 namespace Growl {
 
 class MetalGraphicsAPI;
+class API;
 
 class MetalBatch : public Batch {
 public:
 	MetalBatch(
-		MetalGraphicsAPI& metal_graphics, MetalShader* default_shader,
+		API& api, MetalGraphicsAPI& metal_graphics, MetalShader* default_shader,
 		MetalShader* rect_shader, MetalShader* sdf_shader,
 		id<MTLTexture> target_texture = nil)
-		: metal_graphics{metal_graphics}
+		: api{api}
+		, metal_graphics{metal_graphics}
 		, default_shader{default_shader}
 		, rect_shader{rect_shader}
 		, sdf_shader{sdf_shader}
@@ -57,6 +59,7 @@ public:
 	int getTargetHeight() override;
 
 private:
+	API& api;
 	MetalGraphicsAPI& metal_graphics;
 	id<MTLRenderCommandEncoder> encoder;
 	MetalShader* default_shader;
