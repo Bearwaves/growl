@@ -32,8 +32,8 @@ public:
 	GROWL_SCRIPT_VAR(float, Rotation, rotation);
 
 	Node* addChild(std::unique_ptr<Node> node);
+	void tick(double delta_time);
 	void draw(Batch& batch, float parent_alpha);
-	void drawChildren(Batch& batch, float parent_alpha);
 
 	virtual bool onEvent(const InputEvent& event) override;
 	bool hit(float x, float y);
@@ -45,6 +45,7 @@ protected:
 		return parent;
 	}
 
+	virtual void onTick(double delta_time);
 	virtual void onPopulateDebugUI(Batch& batch) {}
 	virtual void
 	onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform);
@@ -74,6 +75,7 @@ private:
 	std::unique_ptr<ScriptingRef> bound_script_obj = nullptr;
 
 	void computeLocalTransform();
+	void drawChildren(Batch& batch, float parent_alpha);
 	void populateDebugUI(Batch& batch);
 };
 

@@ -71,6 +71,28 @@ void Node::populateDebugUI(Batch& batch) {
 #endif
 }
 
+void Node::tick(double delta_time) {
+	if (!bound_script_obj) {
+		return onTick(delta_time);
+	}
+
+	std::vector<ScriptingParam> params;
+	params.push_back(delta_time);
+	if (auto result = api->scripting().executeMethod<void, double>(
+			bound_script_obj.get(), "onTick", params);
+		!result) {
+		api->system().log(
+			LogLevel::Warn, "Node::onTick", "Failed to execute method: {}",
+			result.error()->message());
+	}
+}
+
+void Node::onTick(double delta_time) {
+	for (auto& child : children) {
+		child->tick(delta_time);
+	}
+}
+
 void Node::draw(Batch& batch, float parent_alpha) {
 	computeLocalTransform();
 	if (!parent) {
@@ -80,10 +102,6 @@ void Node::draw(Batch& batch, float parent_alpha) {
 }
 
 void Node::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
-	drawChildren(batch, parent_alpha);
-}
-
-void Node::drawChildren(Batch& batch, float parent_alpha) {
 	for (auto& child : children) {
 		child->draw(batch, parent_alpha);
 	}

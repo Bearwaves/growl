@@ -156,6 +156,8 @@ void TestAppGame::tick(double delta_time) {
 	cats->setX(catX);
 	cats->setY(catY);
 	cats->setRotation(rotation);
+
+	cats->tick(delta_time);
 }
 
 void TestAppGame::render(double delta_time) {

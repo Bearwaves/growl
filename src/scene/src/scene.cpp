@@ -222,6 +222,21 @@ Error Growl::initSceneGraph(API& api) {
 		return err;
 	}
 
+	if (auto err = node_cls->addMethod<void, double>(
+			"onTick",
+			[](ClassSelf* self, void* ctx,
+			   const std::vector<ScriptingParam>& args)
+				-> Result<ScriptingParam> {
+				Node* n =
+					static_cast<Node*>(const_cast<void*>(std::get<const void*>(
+						self->getField("__ptr", ScriptingType::Ptr))));
+				n->onTick(std::get<double>(args.at(0)));
+				return ScriptingParam();
+			},
+			nullptr)) {
+		return err;
+	}
+
 	if (auto err = node_cls->addMethod<bool, std::unique_ptr<ScriptingRef>>(
 			"onMouseEvent",
 			[](ClassSelf* self, void* ctx,

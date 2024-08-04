@@ -57,6 +57,7 @@ using ScriptingParam = std::variant<
 	std::monostate,				  // Void
 	bool,						  // Bool
 	float,						  // Float
+	double,						  // Double
 	int,						  // Int
 	std::string_view,			  // String
 	const void*,				  // Ptr
@@ -70,6 +71,7 @@ enum class ScriptingType {
 	Void,
 	Bool,
 	Float,
+	Double,
 	Int,
 	String,
 	// A Ptr is a pointer to something outside the scripting language's state.
@@ -121,6 +123,13 @@ template <>
 struct ScriptingTypeOfType<float> {
 	static ScriptingType value() {
 		return ScriptingType::Float;
+	}
+};
+
+template <>
+struct ScriptingTypeOfType<double> {
+	static ScriptingType value() {
+		return ScriptingType::Double;
 	}
 };
 

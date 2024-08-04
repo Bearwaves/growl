@@ -78,6 +78,9 @@ bool luaPushArg(lua_State* state, ScriptingParam& param) {
 	case Growl::ScriptingType::Float:
 		lua_pushnumber(state, std::get<float>(param));
 		break;
+	case Growl::ScriptingType::Double:
+		lua_pushnumber(state, std::get<double>(param));
+		break;
 	case Growl::ScriptingType::Int:
 		lua_pushinteger(state, std::get<int>(param));
 		break;
@@ -119,6 +122,8 @@ ScriptingParam luaPull(lua_State* state, ScriptingType type) {
 		return std::string_view(lua_tostring(state, -1));
 	case ScriptingType::Float:
 		return static_cast<float>(lua_tonumber(state, -1));
+	case ScriptingType::Double:
+		return static_cast<double>(lua_tonumber(state, -1));
 	case ScriptingType::Bool:
 		return static_cast<bool>(lua_toboolean(state, -1));
 	case ScriptingType::Ref:
@@ -371,12 +376,16 @@ Error LuaScriptingAPI::addMethodToClass(
 					args[i] =
 						std::string_view{lua_tostring(state, i + stack_offset)};
 					break;
-				case ScriptingType::Float: {
+				case ScriptingType::Float:
 					luaL_checktype(state, i + stack_offset, LUA_TNUMBER);
 					args[i] = static_cast<float>(
 						lua_tonumber(state, i + stack_offset));
 					break;
-				}
+				case ScriptingType::Double:
+					luaL_checktype(state, i + stack_offset, LUA_TNUMBER);
+					args[i] = static_cast<double>(
+						lua_tonumber(state, i + stack_offset));
+					break;
 				case ScriptingType::Ptr: {
 					luaL_checktype(state, i + stack_offset, LUA_TLIGHTUSERDATA);
 					args[i] = static_cast<const void*>(
