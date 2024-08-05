@@ -181,7 +181,7 @@ Error ScriptingAPI::mountGrowlScripts(API& api) {
 
 	if (auto err = input_cls.get()->addEnum(
 			"KeyEventType",
-			std::vector<std::string>{"Unknown", "Up", "Down"})) {
+			std::vector<std::string>{"Unknown", "KeyDown", "KeyUp"})) {
 		return err;
 	}
 
