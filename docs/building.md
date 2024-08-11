@@ -42,7 +42,7 @@ include(FetchContent)
 FetchContent_Declare(
 	growl
 	GIT_REPOSITORY git@github.com:Bearwaves/growl.git
-	GIT_TAG master
+	GIT_TAG main
 	)
 FetchContent_MakeAvailable(growl)
 ```
@@ -52,7 +52,7 @@ has frozen and isn't doing anything; in reality it's just fetching the various
 Git submodules from within Growl itself, the speed of which will vary based on
 your internet connection.
 
-You may wish to pin a specific commit (rather than `master`) so that CMake
+You may wish to pin a specific commit (rather than `main`) so that CMake
 doesn't fetch the new version of Growl on every update.
 
 You can read more about `FetchContent` in the [CMake documentation](
