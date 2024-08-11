@@ -18,10 +18,10 @@ void initMetalPlugin(API& api);
 void initOpenGLPlugin(API& api);
 void initLuaPlugin(API& api);
 
-GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
+GameAdapter::GameAdapter(std::unique_ptr<Game> game, Config config)
 	: m_api(std::make_unique<API>())
 	, m_game(std::move(game))
-	, m_window_config(std::move(window_config)) {
+	, m_config(std::move(config)) {
 
 	initSDL2Plugin(*m_api);
 	initSoLoudPlugin(*m_api);
@@ -89,7 +89,7 @@ GameAdapter::~GameAdapter() {
 
 void GameAdapter::run() {
 	if (auto err = static_cast<GraphicsAPIInternal&>(m_api->graphics())
-					   .setWindow(m_window_config);
+					   .setWindow(m_config);
 		err) {
 		m_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to create window: {}",

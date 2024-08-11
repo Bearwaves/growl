@@ -2,6 +2,7 @@
 
 #include "audio_api.h"
 #include "graphics_api.h"
+#include "growl/core/config.h"
 #include "growl/core/error.h"
 #include "growl/core/input/event.h"
 #include "scripting_api.h"
@@ -30,7 +31,7 @@ public:
 class GraphicsAPIInternal : public GraphicsAPI, public APIInternal {
 public:
 	virtual ~GraphicsAPIInternal() {}
-	virtual Error setWindow(const WindowConfig& window_descriptor) = 0;
+	virtual Error setWindow(const Config& config) = 0;
 	virtual void onWindowResize(int width, int height) = 0;
 	virtual void begin() = 0;
 	virtual void end() = 0;

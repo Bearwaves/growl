@@ -75,8 +75,7 @@ std::unique_ptr<Growl::Game> createGame();
 
 	api->system().log("ViewController", "iOS view controller created");
 
-	if (auto err =
-			graphicsInternal.setWindow(Growl::WindowConfig{"", 0, 0, false});
+	if (auto err = graphicsInternal.setWindow(Growl::Config{"", 0, 0, false});
 		err) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "GameAdapter",

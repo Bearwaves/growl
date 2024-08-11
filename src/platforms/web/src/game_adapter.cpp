@@ -11,6 +11,7 @@
 #include <iostream>
 
 using Growl::API;
+using Growl::Config;
 using Growl::Game;
 using Growl::GameAdapter;
 
@@ -21,8 +22,8 @@ void initLuaPlugin(API& api);
 std::unique_ptr<API> g_api;
 std::unique_ptr<Game> g_game;
 
-GameAdapter::GameAdapter(std::unique_ptr<Game> game, WindowConfig window_config)
-	: window_config{window_config} {
+GameAdapter::GameAdapter(std::unique_ptr<Game> game, Config config)
+	: config{config} {
 	g_api = std::make_unique<API>();
 	g_game = std::move(game);
 	initSDL2Plugin(*g_api);
@@ -96,7 +97,7 @@ void GameAdapter::doLoopIteration() {
 
 void GameAdapter::run() {
 	if (auto err = static_cast<GraphicsAPIInternal&>(g_api->graphics())
-					   .setWindow(window_config);
+					   .setWindow(config);
 		err) {
 		g_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to create window: {}",

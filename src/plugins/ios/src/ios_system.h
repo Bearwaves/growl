@@ -18,7 +18,7 @@ public:
 		return running;
 	}
 	virtual Result<std::unique_ptr<Window>>
-	createWindow(const WindowConfig& config) override;
+	createWindow(const Config& config) override;
 	void setLogLevel(LogLevel log_level) override;
 	Result<std::unique_ptr<File>>
 	openFile(std::string path, size_t start = 0, size_t end = 0) override;

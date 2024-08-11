@@ -1,7 +1,6 @@
 #include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
 #include "growl/core/game/game.h"
-#include "growl/core/graphics/window.h"
 #include "growl/core/log.h"
 #include "growl/scene/scene.h"
 #include <android/asset_manager.h>
@@ -12,12 +11,12 @@
 
 using Growl::API;
 using Growl::AudioAPIInternal;
+using Growl::Config;
 using Growl::FrameTimer;
 using Growl::GraphicsAPIInternal;
 using Growl::LogLevel;
 using Growl::ScriptingAPIInternal;
 using Growl::SystemAPIInternal;
-using Growl::WindowConfig;
 
 void initAndroidPlugin(API& api, android_app* state);
 void initSoLoudPlugin(API& api);
@@ -126,7 +125,7 @@ void android_main(struct android_app* state) {
 	}
 
 	if (auto err = static_cast<GraphicsAPIInternal&>(api->graphics())
-					   .setWindow(WindowConfig{"", 0, 0, false});
+					   .setWindow(Config{"", 0, 0, false});
 		err) {
 		api->system().log(
 			LogLevel::Fatal, "android_main", "Failed to create window: {}",

@@ -13,7 +13,7 @@ namespace Growl {
 class API;
 class File;
 class Window;
-class WindowConfig;
+struct Config;
 enum class ControllerButton;
 enum class ControllerEventType;
 enum class Key;
@@ -49,7 +49,7 @@ public:
 	}
 	void stop() override;
 	virtual Result<std::unique_ptr<Window>>
-	createWindow(const WindowConfig& config) override;
+	createWindow(const Config& config) override;
 	void setLogLevel(LogLevel log_level) override;
 	bool didResize(int* width, int* height) override;
 

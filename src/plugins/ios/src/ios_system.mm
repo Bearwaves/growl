@@ -80,7 +80,7 @@ void IOSSystemAPI::onTouch(InputTouchEvent event) {
 }
 
 Result<std::unique_ptr<Window>>
-IOSSystemAPI::createWindow(const WindowConfig& config) {
+IOSSystemAPI::createWindow(const Config& config) {
 	UIWindow* w = [[[UIApplication sharedApplication] delegate] window];
 	return std::unique_ptr<Window>(std::make_unique<IOSWindow>(w));
 }

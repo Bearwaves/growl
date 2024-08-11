@@ -11,9 +11,9 @@
 
 namespace Growl {
 
+struct Config;
 class File;
 class Window;
-class WindowConfig;
 
 class SystemAPI {
 public:
@@ -22,7 +22,7 @@ public:
 	virtual void stop() {}
 	virtual void tick() = 0;
 	virtual Result<std::unique_ptr<Window>>
-	createWindow(const WindowConfig& window) = 0;
+	createWindow(const Config& config) = 0;
 	virtual void setInputProcessor(InputProcessor* processor) {
 		inputProcessor = processor;
 	}
