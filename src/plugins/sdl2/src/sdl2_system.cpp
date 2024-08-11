@@ -46,16 +46,16 @@ Error SDL2SystemAPI::init() {
 }
 
 Result<std::unique_ptr<Window>>
-SDL2SystemAPI::createWindow(const WindowConfig& config) {
+SDL2SystemAPI::createWindow(const Config& config) {
 	int flags = SDL_WINDOW_INPUT_FOCUS;
 	flags |= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL |
 			 SDL_WINDOW_ALLOW_HIGHDPI;
 
 	SDL_Window* win = SDL_CreateWindow(
-		config.getTitle().c_str(),
-		config.isCentred() ? SDL_WINDOWPOS_CENTERED : 0,
-		config.isCentred() ? SDL_WINDOWPOS_CENTERED : 0, config.getWidth(),
-		config.getHeight(), flags);
+		config.name.c_str(),
+		config.window_centered ? SDL_WINDOWPOS_CENTERED : 0,
+		config.window_centered ? SDL_WINDOWPOS_CENTERED : 0,
+		config.window_width, config.window_height, flags);
 	if (win == nullptr) {
 		return Error(std::make_unique<SDL2Error>(SDL_GetError()));
 	}

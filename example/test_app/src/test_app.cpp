@@ -1,6 +1,6 @@
+#include "growl/core/config.h"
 #include "growl/core/game/game.h"
 #ifdef GROWL_DESKTOP
-#include "growl/core/graphics/window.h"
 #include "growl/platforms/desktop/game_adapter.h"
 #elif GROWL_IOS
 #include "growl/platforms/ios/app_delegate.h"
@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 #ifdef GROWL_DESKTOP
 	auto adapter = Growl::GameAdapter{
 		std::make_unique<Growl::TestAppGame>(),
-		Growl::WindowConfig{"Growl Test App", 1000, 1000, true}};
+		Growl::Config{"Growl Test App", 1000, 1000, true}};
 	adapter.run();
 #elif GROWL_IOS
 	NSString* appDelegateClassName;

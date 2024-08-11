@@ -64,7 +64,7 @@ void OpenGLGraphicsAPI::end() {
 	window->flip();
 }
 
-Error OpenGLGraphicsAPI::setWindow(const WindowConfig& config) {
+Error OpenGLGraphicsAPI::setWindow(const Config& config) {
 	auto window_result = api.system().createWindow(config);
 	if (window_result.hasError()) {
 		return std::move(window_result.error());
