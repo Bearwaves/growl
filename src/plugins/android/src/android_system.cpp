@@ -187,7 +187,7 @@ void AndroidSystemAPI::onControllerEvent(InputControllerEvent event) {
 }
 
 Result<std::unique_ptr<Window>>
-AndroidSystemAPI::createWindow(const WindowConfig& config) {
+AndroidSystemAPI::createWindow(const Config& config) {
 	return std::unique_ptr<Window>(
 		std::make_unique<AndroidWindow>(android_state->window));
 }

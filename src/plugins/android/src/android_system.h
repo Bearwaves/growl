@@ -22,7 +22,7 @@ public:
 		return android_state->destroyRequested == 0;
 	}
 	virtual Result<std::unique_ptr<Window>>
-	createWindow(const WindowConfig& config) override;
+	createWindow(const Config& config) override;
 	void setLogLevel(LogLevel log_level) override;
 	bool didResize(int* width, int* height) override;
 
