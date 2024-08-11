@@ -31,25 +31,32 @@ Node* Node::addChild(std::unique_ptr<Node> node) {
 
 void Node::populateDebugUI(Batch& batch) {
 #ifdef GROWL_IMGUI
-	if (ImGui::TreeNodeEx(
-			getLabel().c_str(),
-			parent ? ImGuiTreeNodeFlags_None : ImGuiTreeNodeFlags_Framed)) {
-		ImGui::SliderFloat(
-			"X", &x, 0.0f, parent ? parent->getWidth() : batch.getTargetWidth(),
-			"%.2f");
-		ImGui::SliderFloat(
-			"Y", &y, 0.0f,
-			parent ? parent->getHeight() : batch.getTargetHeight(), "%.2f");
-		ImGui::SliderFloat(
-			"Width", &w, 0.0f,
-			parent ? parent->getWidth() : batch.getTargetWidth(), "%.2f");
-		ImGui::SliderFloat(
-			"Height", &h, 0.0f,
-			parent ? parent->getHeight() : batch.getTargetHeight(), "%.2f");
-		ImGui::SliderFloat(
-			"Rotation", &rotation, 0.0f, 2 * glm::pi<float>(), "%.2f");
+	if (ImGui::TreeNodeEx(getLabel().c_str(), ImGuiTreeNodeFlags_Framed)) {
+		if (ImGui::TreeNodeEx("Node", ImGuiTreeNodeFlags_DefaultOpen)) {
+			ImGui::SliderFloat(
+				"X", &x, 0.0f,
+				parent ? parent->getWidth() : batch.getTargetWidth(), "%.2f");
+			ImGui::SliderFloat(
+				"Y", &y, 0.0f,
+				parent ? parent->getHeight() : batch.getTargetHeight(), "%.2f");
+			ImGui::SliderFloat(
+				"Width", &w, 0.0f,
+				parent ? parent->getWidth() : batch.getTargetWidth(), "%.2f");
+			ImGui::SliderFloat(
+				"Height", &h, 0.0f,
+				parent ? parent->getHeight() : batch.getTargetHeight(), "%.2f");
+			ImGui::SliderFloat(
+				"Rotation", &rotation, 0.0f, 2 * glm::pi<float>(), "%.2f");
+
+			onPopulateDebugUI(batch);
+			ImGui::TreePop();
+		}
+
 		if (script && ImGui::TreeNode("Script")) {
-			ImGui::InputTextMultiline("##source", &(script->getSource()));
+			ImGui::InputTextMultiline(
+				"##source", &(script->getSource()),
+				ImVec2(-1, ImGui::GetTextLineHeight() * 16),
+				ImGuiInputTextFlags_AllowTabInput);
 			if (ImGui::Button("Save")) {
 				if (auto err = bindScript(*api, *script)) {
 					api->system().log(
@@ -60,10 +67,11 @@ void Node::populateDebugUI(Batch& batch) {
 			ImGui::TreePop();
 		}
 
-		onPopulateDebugUI(batch);
-
-		for (auto& child : children) {
-			child->populateDebugUI(batch);
+		if (!children.empty() && ImGui::TreeNode("Children")) {
+			for (auto& child : children) {
+				child->populateDebugUI(batch);
+			}
+			ImGui::TreePop();
 		}
 
 		ImGui::TreePop();
