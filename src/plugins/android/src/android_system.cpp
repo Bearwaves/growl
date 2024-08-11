@@ -36,7 +36,7 @@ void AndroidSystemAPI::tick() {
 	int ident;
 	int events;
 	struct android_poll_source* source;
-	while ((ident = ALooper_pollAll(0, nullptr, &events, (void**)&source)) >=
+	while ((ident = ALooper_pollOnce(0, nullptr, &events, (void**)&source)) >=
 		   0) {
 		if (source != nullptr) {
 			source->process(android_state, source);
