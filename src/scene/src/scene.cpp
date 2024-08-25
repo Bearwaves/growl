@@ -3,6 +3,9 @@
 #include "growl/core/error.h"
 #include "growl/core/scripting/class.h"
 #include "growl/scene/node.h"
+#ifdef GROWL_IMGUI
+#include "imgui.h"
+#endif
 
 using Growl::API;
 using Growl::Class;
@@ -395,3 +398,13 @@ Error Growl::initSceneGraph(API& api) {
 
 	return nullptr;
 }
+
+#ifdef GROWL_IMGUI
+void Growl::imGuiBeginSceneWindow() {
+	ImGui::Begin("Scene");
+}
+
+void Growl::imGuiEndSceneWindow() {
+	ImGui::End();
+}
+#endif

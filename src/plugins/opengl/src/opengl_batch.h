@@ -89,6 +89,13 @@ private:
 	std::vector<GLuint> elements;
 	std::vector<VertexBlock> uniforms;
 
+#ifdef GROWL_IMGUI
+	GLuint im_fbo = 0;
+	GLuint im_tex = 0;
+	int im_w;
+	int im_h;
+#endif
+
 	void flush();
 	void addVertex(float x, float y, float tex_x, float tex_y);
 };

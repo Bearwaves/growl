@@ -4,7 +4,7 @@
 #include "SDL_video.h"
 #include "growl/core/error.h"
 #ifdef GROWL_IMGUI
-#include "imgui_impl_sdl.h"
+#include "imgui_impl_sdl2.h"
 #endif
 
 using Growl::Error;

@@ -6,20 +6,13 @@
 #include "growl/core/input/keyboard.h"
 #include "growl/core/input/processor.h"
 #include "sdl2_system.h"
-#ifdef GROWL_IMGUI
-#include "imgui.h"
-#endif
 
 using Growl::Key;
 using Growl::KeyEventType;
 using Growl::SDL2SystemAPI;
 
 void SDL2SystemAPI::handleKeyboardEvent(SDL_Event& event) {
-	if (inputProcessor
-#ifdef GROWL_IMGUI
-		&& !(api.imguiVisible() && imgui_io->WantCaptureKeyboard)
-#endif
-	) {
+	if (inputProcessor) {
 		InputEvent e(
 			InputEventType::Keyboard,
 			InputKeyboardEvent{getKeyEventType(event.key), getKey(event.key)});

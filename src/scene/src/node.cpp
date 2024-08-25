@@ -1,13 +1,14 @@
 #include "growl/scene/node.h"
 #include "glm/ext/matrix_transform.hpp"
-#include "glm/ext/scalar_constants.hpp"
 #include "growl/core/api/api.h"
 #include "growl/core/error.h"
 #include "growl/core/graphics/batch.h"
 #include "growl/core/input/event.h"
 #include "growl/core/scripting/script.h"
+#include "growl/scene/scene.h"
 #include <string>
 #ifdef GROWL_IMGUI
+#include "glm/ext/scalar_constants.hpp"
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #endif
@@ -31,6 +32,7 @@ Node* Node::addChild(std::unique_ptr<Node> node) {
 
 void Node::populateDebugUI(Batch& batch) {
 #ifdef GROWL_IMGUI
+	imGuiBeginSceneWindow();
 	if (ImGui::TreeNodeEx(getLabel().c_str(), ImGuiTreeNodeFlags_Framed)) {
 		if (ImGui::TreeNodeEx("Node", ImGuiTreeNodeFlags_DefaultOpen)) {
 			ImGui::SliderFloat(
@@ -76,6 +78,7 @@ void Node::populateDebugUI(Batch& batch) {
 
 		ImGui::TreePop();
 	}
+	imGuiEndSceneWindow();
 #endif
 }
 

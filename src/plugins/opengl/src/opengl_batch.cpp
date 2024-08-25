@@ -11,6 +11,10 @@
 #include "opengl_texture.h"
 #include <cmath>
 #include <vector>
+#ifdef GROWL_IMGUI
+#include "growl/core/imgui.h"
+#include "imgui.h"
+#endif
 
 using Growl::API;
 using Growl::OpenGLBatch;
@@ -29,9 +33,6 @@ OpenGLBatch::OpenGLBatch(
 	, color{1, 1, 1, 1}
 	, window{window}
 	, fbo{fbo} {
-	if (fbo) {
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	}
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);
@@ -48,6 +49,26 @@ OpenGLBatch::OpenGLBatch(
 	glBufferData(
 		GL_UNIFORM_BUFFER, sizeof(FragmentBlock), nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+#ifdef GROWL_IMGUI
+	if (!fbo) {
+		im_w = width;
+		im_h = height;
+		glGenFramebuffers(1, &im_fbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, im_fbo);
+		glGenTextures(1, &im_tex);
+		glBindTexture(GL_TEXTURE_2D, im_tex);
+		glTexImage2D(
+			GL_TEXTURE_2D, 0, GL_RGB, im_w, im_h, 0, GL_RGB, GL_UNSIGNED_BYTE,
+			NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glFramebufferTexture2D(
+			GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, im_tex, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+#endif
 }
 
 OpenGLBatch::~OpenGLBatch() {
@@ -59,6 +80,14 @@ OpenGLBatch::~OpenGLBatch() {
 	if (fbo) {
 		glDeleteFramebuffers(1, &fbo);
 	}
+#ifdef GROWL_IMGUI
+	if (im_fbo) {
+		glDeleteFramebuffers(1, &im_fbo);
+	}
+	if (im_tex) {
+		glDeleteTextures(1, &im_tex);
+	}
+#endif
 }
 
 void OpenGLBatch::clear(float r, float g, float b) {
@@ -70,10 +99,35 @@ void OpenGLBatch::begin() {
 	if (!fbo && window) {
 		window->getSize(&width, &height);
 	}
-	glViewport(0, 0, width, height);
+	if (fbo) {
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	}
+#ifdef GROWL_IMGUI
+	if (api->imguiVisible() && im_fbo) {
+		glBindFramebuffer(GL_FRAMEBUFFER, im_fbo);
+		imGuiBeginGameWindow();
+		int new_w, new_h;
+		imGuiGameWindowSize(&new_w, &new_h);
+		if (new_w != im_w || new_h != im_h) {
+			im_w = new_w;
+			im_h = new_h;
+			glBindTexture(GL_TEXTURE_2D, im_tex);
+			glTexImage2D(
+				GL_TEXTURE_2D, 0, GL_RGB, im_w, im_h, 0, GL_RGB,
+				GL_UNSIGNED_BYTE, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glFramebufferTexture2D(
+				GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, im_tex, 0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+	}
+#endif
+	glViewport(0, 0, getTargetWidth(), getTargetHeight());
 	auto projection = glm::ortho<float>(
-		0, static_cast<float>(width), fbo ? 0 : static_cast<float>(height),
-		fbo ? static_cast<float>(height) : 0, 1, -1);
+		0, static_cast<float>(getTargetWidth()),
+		fbo ? 0 : static_cast<float>(getTargetHeight()),
+		fbo ? static_cast<float>(getTargetHeight()) : 0, 1, -1);
 
 	glBindVertexArray(vao);
 	glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo_v, 0, sizeof(glm::mat4));
@@ -81,7 +135,7 @@ void OpenGLBatch::begin() {
 		GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
 
 	FragmentBlock fragment{
-		glm::vec2{width, height},
+		glm::vec2{getTargetWidth(), getTargetHeight()},
 		static_cast<float>(api->frameTimer().getTotalTime()),
 		static_cast<float>(api->frameTimer().getDeltaTime())};
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, ubo_f);
@@ -92,9 +146,15 @@ void OpenGLBatch::begin() {
 void OpenGLBatch::end() {
 	flush();
 	glBindVertexArray(0);
-	if (fbo) {
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+#ifdef GROWL_IMGUI
+	if (api->imguiVisible() && im_fbo) {
+		ImGui::Image(
+			reinterpret_cast<ImTextureID>(im_tex),
+			ImGui::GetContentRegionAvail(), ImVec2(0, 1), ImVec2(1, 0));
+		imGuiEndGameWindow();
 	}
+#endif
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void OpenGLBatch::setColor(float r, float g, float b, float a) {
@@ -221,10 +281,20 @@ void OpenGLBatch::drawRect(
 }
 
 int OpenGLBatch::getTargetWidth() {
+#ifdef GROWL_IMGUI
+	if (im_fbo && api->imguiVisible()) {
+		return im_w;
+	}
+#endif
 	return width;
 }
 
 int OpenGLBatch::getTargetHeight() {
+#ifdef GROWL_IMGUI
+	if (im_fbo && api->imguiVisible()) {
+		return im_h;
+	}
+#endif
 	return height;
 }
 

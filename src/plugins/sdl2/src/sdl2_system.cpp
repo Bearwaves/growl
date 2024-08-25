@@ -8,8 +8,9 @@
 #include "growl/core/log.h"
 #include "sdl2_file.h"
 #ifdef GROWL_IMGUI
+#include "growl/core/imgui.h"
 #include "imgui.h"
-#include "imgui_impl_sdl.h"
+#include "imgui_impl_sdl2.h"
 #endif
 #include "sdl2_error.h"
 #include "sdl2_window.h"
@@ -37,6 +38,7 @@ Error SDL2SystemAPI::init() {
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	imgui_io = &ImGui::GetIO();
+	imgui_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 #endif
 
 	this->log("SDL2SystemAPI", "Initialised SDL system");
@@ -66,9 +68,11 @@ SDL2SystemAPI::createWindow(const Config& config) {
 void SDL2SystemAPI::tick() {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
+		bool scene_focused = true;
 #ifdef GROWL_IMGUI
 		if (api.imguiVisible()) {
 			ImGui_ImplSDL2_ProcessEvent(&event);
+			scene_focused = imGuiGameWindowFocused();
 		}
 #endif
 		switch (event.type) {
@@ -80,11 +84,15 @@ void SDL2SystemAPI::tick() {
 		case SDL_MOUSEMOTION:
 		case SDL_MOUSEBUTTONDOWN:
 		case SDL_MOUSEBUTTONUP:
-			handleMouseEvent(event);
+			if (scene_focused) {
+				handleMouseEvent(event);
+			}
 			break;
 		case SDL_KEYDOWN:
 		case SDL_KEYUP:
-			handleKeyboardEvent(event);
+			if (scene_focused) {
+				handleKeyboardEvent(event);
+			}
 			break;
 		case SDL_CONTROLLERBUTTONDOWN:
 		case SDL_CONTROLLERBUTTONUP:
@@ -176,17 +184,23 @@ SDL_LogPriority SDL2SystemAPI::getLogPriority(LogLevel log_level) {
 }
 
 void SDL2SystemAPI::handleMouseEvent(SDL_Event& event) {
-	if (inputProcessor
-#ifdef GROWL_IMGUI
-		&& !(api.imguiVisible() && imgui_io->WantCaptureMouse)
-#endif
-	) {
+	if (inputProcessor) {
 		int display_w, display_h, window_w, window_h;
 		SDL_Window* window = SDL_GetWindowFromID(event.motion.windowID);
 		SDL_GetWindowSize(window, &window_w, &window_h);
 		SDL_GL_GetDrawableSize(window, &display_w, &display_h);
 		int x = event.motion.x * (display_w / (float)window_w);
 		int y = event.motion.y * (display_h / (float)window_h);
+
+#ifdef GROWL_IMGUI
+		if (api.imguiVisible()) {
+			int offset_x = 0;
+			int offset_y = 0;
+			imGuiGameWindowPos(&offset_x, &offset_y);
+			x -= offset_x;
+			y -= offset_y;
+		}
+#endif
 
 		PointerEventType event_type = PointerEventType::Unknown;
 		switch (event.type) {

@@ -19,7 +19,7 @@ set(SOURCES
 
 set(SOURCES
 	${SOURCES}
-	${SOURCE_PREFIX}/backends/imgui_impl_sdl.cpp
+	${SOURCE_PREFIX}/backends/imgui_impl_sdl2.cpp
 	)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
 	set(SOURCES
