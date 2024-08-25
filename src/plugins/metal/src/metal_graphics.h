@@ -61,6 +61,10 @@ public:
 		return surface;
 	}
 
+	id<MTLTexture> createMetalTargetTexture(
+		unsigned int width, unsigned int height,
+		const TextureOptions options = {false, false});
+
 	MetalBuffer getCurrentConstantBuffer() {
 		return MetalBuffer(
 			constant_buffers_ring[current_buffer], &constant_buffer_offset);

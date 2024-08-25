@@ -17,16 +17,15 @@ public:
 	MetalBatch(
 		API& api, MetalGraphicsAPI& metal_graphics, MetalShader* default_shader,
 		MetalShader* rect_shader, MetalShader* sdf_shader,
-		id<MTLTexture> target_texture = nil)
-		: api{api}
-		, metal_graphics{metal_graphics}
-		, default_shader{default_shader}
-		, rect_shader{rect_shader}
-		, sdf_shader{sdf_shader}
-		, target_texture{target_texture}
-		, constant_buffer{nil}
-		, vertex_buffer{nil}
-		, color{1, 1, 1, 1} {}
+		id<MTLTexture> target_texture = nil);
+
+	~MetalBatch() {
+#ifdef GROWL_IMGUI
+		if (im_surface) {
+			[im_surface release];
+		}
+#endif
+	}
 
 	void clear(float r, float g, float b) override;
 	void begin() override;
@@ -72,6 +71,11 @@ private:
 	bool should_clear = false;
 	MTLClearColor clear_color;
 	id<MTLTexture> surface;
+#ifdef GROWL_IMGUI
+	id<MTLTexture> im_surface;
+	int im_w;
+	int im_h;
+#endif
 
 	MTLRenderPassDescriptor* renderPassDescriptor();
 	void addVertex(

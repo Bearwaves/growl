@@ -5,6 +5,7 @@
 #include "growl/core/graphics/shader.h"
 #include "growl/core/imgui.h"
 #include "metal_error.h"
+#include <Metal/Metal.h>
 #ifdef GROWL_IMGUI
 #include "imgui_impl_metal.h"
 #endif
@@ -168,8 +169,7 @@ std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(
 	return setupTexture(metal_texture, options);
 }
 
-// Texture as render target
-std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(
+id<MTLTexture> MetalGraphicsAPI::createMetalTargetTexture(
 	unsigned int width, unsigned int height, const TextureOptions options) {
 	auto texture_descriptor = [MTLTextureDescriptor
 		texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm
@@ -185,7 +185,14 @@ std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(
 					 mipmapLevel:0
 					   withBytes:bytes.data()
 					 bytesPerRow:4 * width];
-	return setupTexture(metal_texture, options);
+	return metal_texture;
+}
+
+// Texture as render target
+std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(
+	unsigned int width, unsigned int height, const TextureOptions options) {
+	return setupTexture(
+		createMetalTargetTexture(width, height, options), options);
 }
 
 std::unique_ptr<Texture> MetalGraphicsAPI::setupTexture(

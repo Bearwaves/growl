@@ -3,6 +3,10 @@
 #include "glm/ext/matrix_float4x4.hpp"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/graphics/shader.h"
+#ifdef GROWL_IMGUI
+#include "growl/core/imgui.h"
+#include "imgui.h"
+#endif
 #include "metal_buffer.h"
 #include "metal_graphics.h"
 #include "metal_texture.h"
@@ -20,6 +24,26 @@ struct ConstantBlock {
 	float deltaTime;
 };
 
+MetalBatch::MetalBatch(
+	API& api, MetalGraphicsAPI& metal_graphics, MetalShader* default_shader,
+	MetalShader* rect_shader, MetalShader* sdf_shader,
+	id<MTLTexture> target_texture)
+	: api{api}
+	, metal_graphics{metal_graphics}
+	, default_shader{default_shader}
+	, rect_shader{rect_shader}
+	, sdf_shader{sdf_shader}
+	, target_texture{target_texture}
+	, constant_buffer{nil}
+	, vertex_buffer{nil}
+	, color{1, 1, 1, 1} {
+#ifdef GROWL_IMGUI
+	if (!target_texture) {
+		im_surface = metal_graphics.createMetalTargetTexture(1, 1);
+	}
+#endif
+}
+
 void MetalBatch::clear(float r, float g, float b) {
 	clear_color = MTLClearColorMake(r, g, b, 1);
 	should_clear = true;
@@ -28,12 +52,25 @@ void MetalBatch::clear(float r, float g, float b) {
 void MetalBatch::begin() {
 	surface =
 		target_texture ? target_texture : metal_graphics.getSurface().texture;
+#ifdef GROWL_IMGUI
+	if (api.imguiVisible() && im_surface) {
+		imGuiBeginGameWindow();
+		imGuiGameWindowSize(&im_w, &im_h);
+		if (surface.width > im_surface.width ||
+			surface.height > im_surface.height) {
+			[im_surface release];
+			im_surface = metal_graphics.createMetalTargetTexture(
+				surface.width, surface.height);
+		}
+		surface = im_surface;
+	}
+#endif
 
 	encoder = [metal_graphics.getCommandBuffer()
 		renderCommandEncoderWithDescriptor:renderPassDescriptor()];
 
 	auto projection =
-		glm::ortho<float>(0, surface.width, surface.height, 0, 1, -1);
+		glm::ortho<float>(0, getTargetWidth(), getTargetHeight(), 0, 1, -1);
 
 	constant_buffer = std::make_unique<MetalBuffer>(
 		metal_graphics.getCurrentConstantBuffer());
@@ -51,6 +88,14 @@ void MetalBatch::begin() {
 
 void MetalBatch::end() {
 	[encoder endEncoding];
+#ifdef GROWL_IMGUI
+	if (api.imguiVisible() && im_surface) {
+		ImGui::Image(
+			reinterpret_cast<ImTextureID>(im_surface),
+			ImGui::GetContentRegionAvail(), ImVec2(0, 0), ImVec2(1, 1));
+		imGuiEndGameWindow();
+	}
+#endif
 	encoder = nil;
 	surface = nil;
 }
@@ -181,10 +226,20 @@ void MetalBatch::drawRect(
 }
 
 int MetalBatch::getTargetWidth() {
+#ifdef GROWL_IMGUI
+	if (api.imguiVisible() && im_surface) {
+		return im_w;
+	}
+#endif
 	return static_cast<int>(surface.width);
 }
 
 int MetalBatch::getTargetHeight() {
+#ifdef GROWL_IMGUI
+	if (api.imguiVisible() && im_surface) {
+		return im_h;
+	}
+#endif
 	return static_cast<int>(surface.height);
 }
 
