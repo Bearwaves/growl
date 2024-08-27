@@ -80,6 +80,7 @@ private:
 	GLuint fbo = 0;
 	GLuint ubo_v = 0;
 	GLuint ubo_f = 0;
+	bool should_clear = false;
 
 	unsigned int idx = 0;
 	unsigned int verts = 0;

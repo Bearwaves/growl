@@ -92,7 +92,7 @@ OpenGLBatch::~OpenGLBatch() {
 
 void OpenGLBatch::clear(float r, float g, float b) {
 	glClearColor(r, g, b, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
+	should_clear = true;
 }
 
 void OpenGLBatch::begin() {
@@ -123,6 +123,10 @@ void OpenGLBatch::begin() {
 		}
 	}
 #endif
+	if (should_clear) {
+		glClear(GL_COLOR_BUFFER_BIT);
+		should_clear = false;
+	}
 	glViewport(0, 0, getTargetWidth(), getTargetHeight());
 	auto projection = glm::ortho<float>(
 		0, static_cast<float>(getTargetWidth()),
