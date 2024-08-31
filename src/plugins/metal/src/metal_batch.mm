@@ -78,7 +78,7 @@ void MetalBatch::begin() {
 		std::make_unique<MetalBuffer>(metal_graphics.getCurrentVertexBuffer());
 
 	ConstantBlock block{
-		projection, glm::vec2{surface.width, surface.height},
+		projection, glm::vec2{getTargetWidth(), getTargetHeight()},
 		static_cast<float>(api.frameTimer().getTotalTime()),
 		static_cast<float>(api.frameTimer().getDeltaTime())};
 
@@ -92,7 +92,10 @@ void MetalBatch::end() {
 	if (api.imguiVisible() && im_surface) {
 		ImGui::Image(
 			reinterpret_cast<ImTextureID>(im_surface),
-			ImGui::GetContentRegionAvail(), ImVec2(0, 0), ImVec2(1, 1));
+			ImGui::GetContentRegionAvail(), ImVec2(0, 0),
+			ImVec2(
+				static_cast<float>(im_w) / surface.width,
+				static_cast<float>(im_h) / surface.height));
 		imGuiEndGameWindow();
 	}
 #endif
