@@ -69,6 +69,10 @@ void MetalBatch::begin() {
 	encoder = [metal_graphics.getCommandBuffer()
 		renderCommandEncoderWithDescriptor:renderPassDescriptor()];
 
+	[encoder setViewport:MTLViewport{
+							 0, 0, static_cast<double>(getTargetWidth()),
+							 static_cast<double>(getTargetHeight()), 0, 1}];
+
 	auto projection =
 		glm::ortho<float>(0, getTargetWidth(), getTargetHeight(), 0, 1, -1);
 
