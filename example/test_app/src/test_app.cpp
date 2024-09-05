@@ -20,7 +20,8 @@ int main(int argc, char** argv) {
 #ifdef GROWL_DESKTOP
 	auto adapter = Growl::GameAdapter{
 		std::make_unique<Growl::TestAppGame>(),
-		Growl::Config{"Growl Test App", 1000, 1000, true}};
+		Growl::Config{
+			"Growl Test App", 1000, 1000, true, Growl::Key::FunctionF12}};
 	adapter.run();
 #elif GROWL_IOS
 	NSString* appDelegateClassName;

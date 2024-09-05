@@ -67,6 +67,7 @@ private:
 
 	KeyEventType getKeyEventType(SDL_KeyboardEvent& event);
 	Key getKey(SDL_KeyboardEvent& event);
+	SDL_Scancode getScancode(Key key);
 
 	ControllerEventType getControllerEventType(SDL_Event& event);
 	ControllerButton getButton(SDL_Event& event);
@@ -77,6 +78,7 @@ private:
 	std::unique_ptr<SDL2Controller> controller;
 	int resize_width = 0;
 	int resize_height = 0;
+	SDL_Scancode debug_mode_key;
 
 #ifdef GROWL_IMGUI
 	ImGuiIO* imgui_io;

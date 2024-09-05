@@ -62,6 +62,8 @@ SDL2SystemAPI::createWindow(const Config& config) {
 		return Error(std::make_unique<SDL2Error>(SDL_GetError()));
 	}
 
+	debug_mode_key = getScancode(config.debug_mode_key);
+
 	return std::unique_ptr<Window>(std::make_unique<SDL2Window>(win));
 }
 
@@ -90,7 +92,7 @@ void SDL2SystemAPI::tick() {
 			break;
 		case SDL_KEYDOWN:
 		case SDL_KEYUP:
-			if (scene_focused) {
+			if (scene_focused || event.key.keysym.scancode == debug_mode_key) {
 				handleKeyboardEvent(event);
 			}
 			break;
