@@ -18,7 +18,7 @@ set(GROWL_OPENGL ON PARENT_SCOPE)
 target_link_libraries(growl-platform-web
 	PUBLIC
 	growl-core
-	growl-scene
+	growl-ui
 	PRIVATE
 	growl-plugin-sdl2
 	growl-plugin-opengl

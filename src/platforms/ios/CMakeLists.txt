@@ -18,7 +18,7 @@ set(GROWL_METAL ON PARENT_SCOPE)
 target_link_libraries(growl-platform-ios
 	PUBLIC
 	growl-core
-	growl-scene
+	growl-ui
 	PRIVATE
 	growl-plugin-metal
 	growl-plugin-soloud

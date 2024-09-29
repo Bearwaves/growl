@@ -26,7 +26,7 @@ set(CMAKE_SHARED_LINKER_FLAGS
 target_link_libraries(growl-platform-android
 	PUBLIC
 	growl-core
-	growl-scene
+	growl-ui
 	PRIVATE
 	growl-plugin-android
 	growl-plugin-opengl

@@ -2,6 +2,7 @@
 
 #include "glm/ext/matrix_float4x4.hpp"
 #include "growl/core/api/api.h"
+#include "growl/core/entity.h"
 #include "growl/core/error.h"
 #include "growl/core/input/processor.h"
 #include "growl/core/scripting/script.h"
@@ -13,7 +14,7 @@ namespace Growl {
 
 class Batch;
 
-class Node : public InputProcessor {
+class Node : public InputProcessor, public Entity {
 
 	friend Error initSceneGraph(API& api);
 
@@ -31,7 +32,7 @@ public:
 	GROWL_SCRIPT_VAR(float, Height, h);
 	GROWL_SCRIPT_VAR(float, Rotation, rotation);
 
-	Node* addChild(std::unique_ptr<Node> node);
+	virtual Node* addChild(std::unique_ptr<Node> node);
 	void tick(double delta_time);
 	void draw(Batch& batch, float parent_alpha);
 
@@ -43,6 +44,9 @@ public:
 protected:
 	Node* getParent() {
 		return parent;
+	}
+	std::vector<std::unique_ptr<Node>>& getChildren() {
+		return children;
 	}
 
 	virtual void onTick(double delta_time);
