@@ -5,6 +5,7 @@ project(growl-ui)
 set(SOURCES
 	"src/widget.cpp"
 	"src/list.cpp"
+	"src/pack.cpp"
 	)
 
 add_library(growl-ui ${SOURCES})
