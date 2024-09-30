@@ -106,6 +106,11 @@ void SDL2SystemAPI::tick() {
 		case SDL_WINDOWEVENT:
 			switch (event.window.event) {
 			case SDL_WINDOWEVENT_RESIZED: {
+#ifdef GROWL_IMGUI
+				if (api.imguiVisible()) {
+					break;
+				}
+#endif
 				auto window = SDL_GetWindowFromID(event.window.windowID);
 				if (window) {
 					// SDL event doesn't account for HiDPI
@@ -121,6 +126,20 @@ void SDL2SystemAPI::tick() {
 			break;
 		}
 	}
+#ifdef GROWL_IMGUI
+	if (api.imguiVisible()) {
+		if ((imgui_resize_window || imGuiGameWindowResized())) {
+			imGuiGameWindowSize(&resize_width, &resize_height);
+			imgui_resize_window = 0;
+		}
+	} else if (imgui_resize_window) {
+		auto window = SDL_GetWindowFromID(imgui_resize_window);
+		if (window) {
+			SDL_GL_GetDrawableSize(window, &resize_width, &resize_height);
+		}
+		imgui_resize_window = 0;
+	}
+#endif
 }
 
 void SDL2SystemAPI::stop() {

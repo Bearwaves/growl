@@ -18,10 +18,13 @@ void SDL2SystemAPI::handleKeyboardEvent(SDL_Event& event) {
 			InputKeyboardEvent{getKeyEventType(event.key), getKey(event.key)});
 		inputProcessor->onEvent(e);
 	}
+#ifdef GROWL_IMGUI
 	if (event.type == SDL_KEYUP &&
 		event.key.keysym.scancode == debug_mode_key) {
 		api.setImguiVisible(!api.imguiVisible());
+		imgui_resize_window = event.window.windowID;
 	}
+#endif
 }
 
 KeyEventType SDL2SystemAPI::getKeyEventType(SDL_KeyboardEvent& event) {

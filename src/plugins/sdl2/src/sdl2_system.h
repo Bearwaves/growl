@@ -82,6 +82,7 @@ private:
 
 #ifdef GROWL_IMGUI
 	ImGuiIO* imgui_io;
+	uint32_t imgui_resize_window = 0;
 #endif
 };
 
