@@ -33,8 +33,20 @@ void List::layout() {
 		auto& node = getChildren().at(i++);
 		switch (direction) {
 		case Direction::VERTICAL: {
-			node->setX(0);
 			node->setWidth(pack.fill ? max_width : pack.prefWidth);
+
+			switch (pack.alignment) {
+			case Align::START:
+				node->setX(0);
+				break;
+			case Align::MIDDLE:
+				node->setX((max_width - node->getWidth()) / 2);
+				break;
+			case Align::END:
+				node->setX(max_width - node->getWidth());
+				break;
+			}
+
 			node->setY(position);
 			float height = pack.prefHeight;
 			if (pack.expand) {
@@ -45,8 +57,20 @@ void List::layout() {
 			break;
 		}
 		case Direction::HORIZONTAL: {
-			node->setY(0);
 			node->setHeight(pack.fill ? max_height : pack.prefHeight);
+
+			switch (pack.alignment) {
+			case Align::START:
+				node->setY(0);
+				break;
+			case Align::MIDDLE:
+				node->setY((max_height - node->getHeight()) / 2);
+				break;
+			case Align::END:
+				node->setY(max_height - node->getHeight());
+				break;
+			}
+
 			node->setX(position);
 			float width = pack.prefWidth;
 			if (pack.expand) {

@@ -6,6 +6,7 @@
 #include "growl/ui/list.h"
 #include "growl/ui/widget.h"
 
+using Growl::Align;
 using Growl::Color;
 using Growl::Error;
 using Growl::List;
@@ -35,14 +36,17 @@ Error Game::init() {
 			.expand()
 			.getNode());
 	row->addWithLayout(std::make_unique<Rectangle>("Yellow", Color{1, 1, 0, 1}))
-		.height(100)
+		.height(300)
+		.align(Align::START)
 		.expand();
 	row->addWithLayout(
 		   std::make_unique<Rectangle>("Magenta", Color{1, 0, 1, 1}))
-		.height(200)
+		.height(300)
+		.align(Align::MIDDLE)
 		.expand();
 	row->addWithLayout(std::make_unique<Rectangle>("Cyan", Color{0, 1, 1, 1}))
 		.height(300)
+		.align(Align::END)
 		.expand();
 
 	return nullptr;

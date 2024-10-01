@@ -22,3 +22,8 @@ Packer& Packer::height(int height) {
 	pack->prefHeight = height;
 	return *this;
 }
+
+Packer& Packer::align(Align align) {
+	pack->alignment = align;
+	return *this;
+}
