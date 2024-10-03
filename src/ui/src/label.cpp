@@ -19,4 +19,8 @@ void Label::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
 
 void Label::layout() {
 	glyph_layout->setWidth(getWidth());
+	if (getHeightRaw() != glyph_layout->getHeight()) {
+		setHeight(glyph_layout->getHeight());
+		invalidateHierarchy();
+	}
 }

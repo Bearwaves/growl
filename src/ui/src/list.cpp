@@ -12,11 +12,20 @@ void List::layout() {
 	float remaining = vertical ? max_height : max_width;
 
 	// First pass, work out how much extra room we have to play with.
+	// Resolve any nodes that already have a height or width (e.g. text labels).
+	int i = 0;
 	for (auto& pack : pack_info) {
+		auto& node = getChildren().at(i++);
+		if (auto w = node->getWidth(); w > pack.prefWidth) {
+			pack.prefWidth = w;
+		}
+		if (auto h = node->getHeight(); h > pack.prefHeight) {
+			pack.prefHeight = h;
+		}
+		remaining -= vertical ? pack.prefHeight : pack.prefWidth;
+
 		if (pack.expand) {
 			expands++;
-		} else {
-			remaining -= vertical ? pack.prefHeight : pack.prefWidth;
 		}
 	}
 
@@ -24,7 +33,7 @@ void List::layout() {
 	// sizes and positions accordingly.
 	float extra = expands > 0 ? remaining / expands : 0;
 	float position = 0;
-	int i = 0;
+	i = 0;
 	for (auto& pack : pack_info) {
 		auto& node = getChildren().at(i++);
 		switch (direction) {
@@ -78,8 +87,8 @@ void List::layout() {
 		}
 		}
 
-		if (nodeIsWidget(*node)) {
-			static_cast<Widget&>(*node).invalidate();
+		if (auto widget = nodeAsWidget(node.get())) {
+			widget->invalidate();
 		}
 	}
 }

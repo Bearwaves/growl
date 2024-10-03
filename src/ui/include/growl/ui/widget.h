@@ -13,6 +13,7 @@ public:
 	Packer addWithLayout(std::unique_ptr<Node> child);
 
 	void invalidate();
+	void invalidateHierarchy();
 	void validate();
 
 protected:
@@ -24,6 +25,6 @@ protected:
 	std::vector<PackInfo> pack_info;
 };
 
-bool nodeIsWidget(Node& node);
+Widget* nodeAsWidget(Node* node);
 
 } // namespace Growl

@@ -28,6 +28,15 @@ void Widget::invalidate() {
 	invalidated = true;
 }
 
+void Widget::invalidateHierarchy() {
+	invalidate();
+	if (getParent()) {
+		if (auto widget = nodeAsWidget(getParent())) {
+			widget->invalidateHierarchy();
+		}
+	}
+}
+
 void Widget::validate() {
 	if (invalidated) {
 		layout();
@@ -40,6 +49,9 @@ void Widget::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
 	Node::onDraw(batch, parent_alpha, transform);
 }
 
-bool Growl::nodeIsWidget(Node& node) {
-	return node.getUserData() == WIDGET_SIGNIFIER;
+Widget* Growl::nodeAsWidget(Node* node) {
+	if (node->getUserData() == WIDGET_SIGNIFIER) {
+		return static_cast<Widget*>(node);
+	}
+	return nullptr;
 }
