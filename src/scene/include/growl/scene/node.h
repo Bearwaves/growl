@@ -6,6 +6,7 @@
 #include "growl/core/error.h"
 #include "growl/core/input/processor.h"
 #include "growl/core/scripting/script.h"
+#include "growl/scene/debug.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -40,6 +41,8 @@ public:
 	bool hit(float x, float y);
 
 	Error bindScript(API& api, Script& script);
+
+	void setDebugRendering(DebugRendering debug);
 
 protected:
 	Node* getParent() {
@@ -77,6 +80,8 @@ private:
 	std::vector<std::unique_ptr<Node>> children;
 	glm::mat4x4 local_transform;
 	std::unique_ptr<ScriptingRef> bound_script_obj = nullptr;
+	DebugRendering debug_rendering = DebugRendering::OFF;
+	bool debug_mouseover = false;
 
 	void computeLocalTransform();
 	void drawChildren(Batch& batch, float parent_alpha);

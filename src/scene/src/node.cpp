@@ -20,6 +20,10 @@ using Growl::InputMouseEvent;
 using Growl::Node;
 using Growl::Script;
 
+#ifdef GROWL_IMGUI
+static const char* debug_rendering_options[]{"Off", "On", "Mouseover"};
+#endif
+
 std::string& Node::getLabel() {
 	return label;
 }
@@ -49,6 +53,12 @@ void Node::populateDebugUI(Batch& batch) {
 				parent ? parent->getHeight() : batch.getTargetHeight(), "%.2f");
 			ImGui::SliderFloat(
 				"Rotation", &rotation, 0.0f, 2 * glm::pi<float>(), "%.2f");
+			int selected_item = (int)debug_rendering;
+			if (ImGui::Combo(
+					"Debug rendering", &selected_item, debug_rendering_options,
+					IM_ARRAYSIZE(debug_rendering_options))) {
+				setDebugRendering((DebugRendering)selected_item);
+			}
 
 			onPopulateDebugUI(batch);
 			ImGui::TreePop();
@@ -82,6 +92,13 @@ void Node::populateDebugUI(Batch& batch) {
 #endif
 }
 
+void Node::setDebugRendering(DebugRendering debug_rendering) {
+	this->debug_rendering = debug_rendering;
+	for (auto& child : children) {
+		child->setDebugRendering(debug_rendering);
+	}
+}
+
 void Node::tick(double delta_time) {
 	if (!bound_script_obj) {
 		return onTick(delta_time);
@@ -110,6 +127,13 @@ void Node::draw(Batch& batch, float parent_alpha) {
 		populateDebugUI(batch);
 	}
 	onDraw(batch, parent_alpha, local_transform);
+	if (debug_rendering == DebugRendering::ON ||
+		(debug_rendering == DebugRendering::MOUSEOVER && debug_mouseover)) {
+		Color c = batch.getColor();
+		batch.setColor(1, 1, 1, 0.25f);
+		batch.drawRect(0, 0, getWidth(), getHeight(), local_transform);
+		batch.setColor(c);
+	}
 }
 
 void Node::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
@@ -204,6 +228,9 @@ bool Node::onMouseEvent(const InputMouseEvent& event) {
 }
 
 bool Node::onMouseEventRaw(const InputMouseEvent& event) {
+	if (debug_rendering == DebugRendering::MOUSEOVER) {
+		debug_mouseover = hit(event.mouseX, event.mouseY);
+	}
 	return InputProcessor::onMouseEvent(event);
 }
 
