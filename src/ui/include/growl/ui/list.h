@@ -8,7 +8,10 @@ class List : public Widget {
 public:
 	enum class Direction { VERTICAL, HORIZONTAL };
 
-	List(std::string&& name, Direction direction);
+	List(std::string&& name, Direction direction)
+		: Widget{std::move(name)}
+		, direction{direction} {}
+
 	void layout() override;
 
 private:

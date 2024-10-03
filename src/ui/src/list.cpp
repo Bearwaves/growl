@@ -4,10 +4,6 @@
 using Growl::List;
 using Growl::Node;
 
-List::List(std::string&& name, Direction direction)
-	: Widget{std::move(name)}
-	, direction{direction} {}
-
 void List::layout() {
 	int expands = 0;
 	bool vertical = direction == Direction::VERTICAL;
