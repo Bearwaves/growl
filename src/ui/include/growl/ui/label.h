@@ -20,6 +20,8 @@ public:
 		return *glyph_layout;
 	}
 
+	void setText(std::string text);
+
 private:
 	FontTextureAtlas& font_tex;
 	std::unique_ptr<GlyphLayout> glyph_layout;

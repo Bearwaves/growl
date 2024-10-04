@@ -24,3 +24,8 @@ void Label::layout() {
 		invalidateHierarchy();
 	}
 }
+
+void Label::setText(std::string text) {
+	glyph_layout->setText(text);
+	invalidate();
+}
