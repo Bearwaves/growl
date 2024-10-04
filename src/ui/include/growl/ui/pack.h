@@ -6,14 +6,44 @@ class Node;
 
 enum class Align { START, MIDDLE, END };
 
+class Value {
+public:
+	Value(float v)
+		: Value{v, Type::FIXED, nullptr} {}
+	float evaluate(Node* context);
+
+	static Value percentWidth(float percent, Node* of = nullptr) {
+		return Value{percent, Type::PERCENT_WIDTH, of};
+	}
+
+	static Value percentHeight(float percent, Node* of = nullptr) {
+		return Value{percent, Type::PERCENT_HEIGHT, of};
+	}
+
+private:
+	enum class Type { FIXED, PERCENT_WIDTH, PERCENT_HEIGHT };
+
+	Value(float value, Type type, Node* of)
+		: value{value}
+		, type{type}
+		, of{of} {}
+
+	float value;
+	Type type;
+	Node* of;
+};
+
 struct PackInfo {
 	bool expand = false;
 	bool fill = false;
 
-	int prefWidth = 0;
-	int prefHeight = 0;
+	Value prefWidth = 0;
+	Value prefHeight = 0;
 
 	Align alignment = Align::START;
+
+	float computedWidth = 0;
+	float computedHeight = 0;
 };
 
 class Packer {
@@ -28,8 +58,8 @@ public:
 
 	Packer& expand();
 	Packer& fill();
-	Packer& width(int width);
-	Packer& height(int height);
+	Packer& width(Value width);
+	Packer& height(Value height);
 	Packer& align(Align align);
 
 private:
