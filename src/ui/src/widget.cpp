@@ -19,11 +19,6 @@ Node* Widget::addChild(std::unique_ptr<Node> node) {
 	return Node::addChild(std::move(node));
 }
 
-Packer Widget::addWithLayout(std::unique_ptr<Node> child) {
-	Node* n = addChild(std::move(child));
-	return Packer{n, &(pack_info.at(pack_info.size() - 1))};
-}
-
 void Widget::invalidate() {
 	invalidated = true;
 }

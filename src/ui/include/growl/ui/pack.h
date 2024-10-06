@@ -51,32 +51,84 @@ struct PackInfo {
 	float computedHeight = 0;
 };
 
+template <class T>
 class Packer {
 public:
-	Packer(Node* node, PackInfo* pack)
+	Packer(T* node, PackInfo* pack)
 		: node{node}
 		, pack{pack} {}
 
-	Node* getNode() {
+	T* getNode() {
 		return node;
 	}
 
-	Packer& expand();
-	Packer& fill();
-	Packer& width(Value width);
-	Packer& height(Value height);
-	Packer& align(Align align);
+	Packer<T>& expand() {
+		pack->expand = true;
+		return *this;
+	}
 
-	Packer& margin(Value margin);
-	Packer& marginTop(Value margin);
-	Packer& marginBottom(Value margin);
-	Packer& marginLeft(Value margin);
-	Packer& marginRight(Value margin);
-	Packer& marginX(Value margin);
-	Packer& marginY(Value margin);
+	Packer<T>& fill() {
+		pack->fill = true;
+		return *this;
+	}
+
+	Packer<T>& width(Value width) {
+		pack->prefWidth = width;
+		return *this;
+	}
+
+	Packer<T>& height(Value height) {
+		pack->prefHeight = height;
+		return *this;
+	}
+
+	Packer<T>& align(Align align) {
+		pack->alignment = align;
+		return *this;
+	}
+
+	Packer<T>& margin(Value margin) {
+		pack->marginTop = margin;
+		pack->marginBottom = margin;
+		pack->marginLeft = margin;
+		pack->marginRight = margin;
+		return *this;
+	}
+
+	Packer<T>& marginTop(Value margin) {
+		pack->marginTop = margin;
+		return *this;
+	}
+
+	Packer<T>& marginBottom(Value margin) {
+		pack->marginBottom = margin;
+		return *this;
+	}
+
+	Packer<T>& marginLeft(Value margin) {
+		pack->marginLeft = margin;
+		return *this;
+	}
+
+	Packer<T>& marginRight(Value margin) {
+		pack->marginRight = margin;
+		return *this;
+	}
+
+	Packer<T>& marginX(Value margin) {
+		pack->marginLeft = margin;
+		pack->marginRight = margin;
+		return *this;
+	}
+
+	Packer<T>& marginY(Value margin) {
+		pack->marginTop = margin;
+		pack->marginBottom = margin;
+		return *this;
+	}
 
 private:
-	Node* node;
+	T* node;
 	PackInfo* pack;
 };
 

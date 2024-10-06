@@ -10,7 +10,13 @@ public:
 	Widget(std::string&& name);
 
 	virtual Node* addChild(std::unique_ptr<Node> node) override;
-	Packer addWithLayout(std::unique_ptr<Node> child);
+
+	template <class T, class... Args>
+	Packer<T> addWithLayout(Args&&... args) {
+		Node* n = addChild(std::make_unique<T>(std::forward<Args>(args)...));
+		return Packer{
+			static_cast<T*>(n), &(pack_info.at(pack_info.size() - 1))};
+	}
 
 	void invalidate();
 	void invalidateHierarchy();
