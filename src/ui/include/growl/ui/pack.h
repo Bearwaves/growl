@@ -40,6 +40,11 @@ struct PackInfo {
 	Value prefWidth = 0;
 	Value prefHeight = 0;
 
+	Value marginLeft = 0;
+	Value marginRight = 0;
+	Value marginTop = 0;
+	Value marginBottom = 0;
+
 	Align alignment = Align::START;
 
 	float computedWidth = 0;
@@ -61,6 +66,14 @@ public:
 	Packer& width(Value width);
 	Packer& height(Value height);
 	Packer& align(Align align);
+
+	Packer& margin(Value margin);
+	Packer& marginTop(Value margin);
+	Packer& marginBottom(Value margin);
+	Packer& marginLeft(Value margin);
+	Packer& marginRight(Value margin);
+	Packer& marginX(Value margin);
+	Packer& marginY(Value margin);
 
 private:
 	Node* node;

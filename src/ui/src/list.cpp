@@ -25,7 +25,11 @@ void List::layout() {
 				? std::fmax(node->getHeight(), pack.prefHeight.evaluate(node))
 				: pack.prefHeight.evaluate(node);
 
-		remaining -= vertical ? pack.computedHeight : pack.computedWidth;
+		remaining -= vertical
+						 ? pack.computedHeight + pack.marginTop.evaluate(node) +
+							   pack.marginBottom.evaluate(node)
+						 : pack.computedWidth + pack.marginLeft.evaluate(node) +
+							   pack.marginRight.evaluate(node);
 
 		if (pack.expand) {
 			expands++;
@@ -38,59 +42,61 @@ void List::layout() {
 	float position = 0;
 	i = 0;
 	for (auto& pack : pack_info) {
-		auto& node = getChildren().at(i++);
+		auto node = getChildren().at(i++).get();
 		switch (direction) {
 		case Direction::VERTICAL: {
 			node->setWidth(pack.fill ? max_width : pack.computedWidth);
 
+			float margin_left = pack.marginLeft.evaluate(node);
 			switch (pack.alignment) {
 			case Align::START:
-				node->setX(0);
+				node->setX(margin_left);
 				break;
 			case Align::MIDDLE:
-				node->setX((max_width - node->getWidth()) / 2);
+				node->setX((max_width - node->getWidth()) / 2 + margin_left);
 				break;
 			case Align::END:
-				node->setX(max_width - node->getWidth());
+				node->setX((max_width - node->getWidth()) + margin_left);
 				break;
 			}
 
-			node->setY(position);
+			node->setY(position + pack.marginTop.evaluate(node));
 			float height = pack.computedHeight;
 			if (pack.expand) {
 				height += extra;
 			}
-			position += height;
+			position += height + pack.marginBottom.evaluate(node);
 			node->setHeight(height);
 			break;
 		}
 		case Direction::HORIZONTAL: {
 			node->setHeight(pack.fill ? max_height : pack.computedHeight);
 
+			float margin_top = pack.marginTop.evaluate(node);
 			switch (pack.alignment) {
 			case Align::START:
-				node->setY(0);
+				node->setY(margin_top);
 				break;
 			case Align::MIDDLE:
-				node->setY((max_height - node->getHeight()) / 2);
+				node->setY((max_height - node->getHeight()) / 2 + margin_top);
 				break;
 			case Align::END:
-				node->setY(max_height - node->getHeight());
+				node->setY((max_height - node->getHeight()) + margin_top);
 				break;
 			}
 
-			node->setX(position);
+			node->setX(position + pack.marginLeft.evaluate(node));
 			float width = pack.computedWidth;
 			if (pack.expand) {
 				width += extra;
 			}
-			position += width;
+			position += width + pack.marginBottom.evaluate(node);
 			node->setWidth(width);
 			break;
 		}
 		}
 
-		if (auto widget = nodeAsWidget(node.get())) {
+		if (auto widget = nodeAsWidget(node)) {
 			widget->invalidate();
 		}
 	}

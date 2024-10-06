@@ -41,3 +41,43 @@ Packer& Packer::align(Align align) {
 	pack->alignment = align;
 	return *this;
 }
+
+Packer& Packer::margin(Value margin) {
+	pack->marginTop = margin;
+	pack->marginBottom = margin;
+	pack->marginLeft = margin;
+	pack->marginRight = margin;
+	return *this;
+}
+
+Packer& Packer::marginTop(Value margin) {
+	pack->marginTop = margin;
+	return *this;
+}
+
+Packer& Packer::marginBottom(Value margin) {
+	pack->marginBottom = margin;
+	return *this;
+}
+
+Packer& Packer::marginLeft(Value margin) {
+	pack->marginLeft = margin;
+	return *this;
+}
+
+Packer& Packer::marginRight(Value margin) {
+	pack->marginRight = margin;
+	return *this;
+}
+
+Packer& Packer::marginX(Value margin) {
+	pack->marginLeft = margin;
+	pack->marginRight = margin;
+	return *this;
+}
+
+Packer& Packer::marginY(Value margin) {
+	pack->marginTop = margin;
+	pack->marginBottom = margin;
+	return *this;
+}
