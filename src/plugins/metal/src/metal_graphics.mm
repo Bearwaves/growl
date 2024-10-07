@@ -34,6 +34,9 @@ MetalGraphicsAPI::MetalGraphicsAPI(API& api)
 
 Error MetalGraphicsAPI::init() {
 	last_render = high_resolution_clock::now();
+
+	api.system().log("MetalGraphicsAPI", "Initialised Metal graphics");
+
 	return nullptr;
 }
 
