@@ -3,6 +3,7 @@
 #include "growl/core/api/api.h"
 #include "growl/core/error.h"
 #include "growl/core/graphics/batch.h"
+#include "growl/core/graphics/color.h"
 #include "growl/core/input/event.h"
 #include "growl/core/scripting/script.h"
 #include "growl/scene/scene.h"
@@ -15,6 +16,7 @@
 
 using Growl::API;
 using Growl::Batch;
+using Growl::Color;
 using Growl::Error;
 using Growl::InputMouseEvent;
 using Growl::Node;
@@ -22,6 +24,11 @@ using Growl::Script;
 
 #ifdef GROWL_IMGUI
 static const char* debug_rendering_options[]{"Off", "On", "Mouseover"};
+static const Color debug_rendering_colors[]{
+	{1, 0, 0, .5f}, {0, 1, 0, .5f}, {0, 1, 1, .5f},
+	{1, 0, 1, .5f}, {1, 1, 0, .5f},
+};
+static constexpr int DEBUG_RENDERING_COLORS_COUNT = 5;
 #endif
 
 std::string& Node::getLabel() {
@@ -30,6 +37,7 @@ std::string& Node::getLabel() {
 
 Node* Node::addChild(std::unique_ptr<Node> node) {
 	node->parent = this;
+	node->depth = this->depth + 1;
 	children.emplace_back(std::move(node));
 	return children.back().get();
 }
@@ -130,8 +138,9 @@ void Node::draw(Batch& batch, float parent_alpha) {
 	if (debug_rendering == DebugRendering::ON ||
 		(debug_rendering == DebugRendering::MOUSEOVER && debug_mouseover)) {
 		Color c = batch.getColor();
-		batch.setColor(1, 1, 1, 0.25f);
-		batch.drawRect(0, 0, getWidth(), getHeight(), local_transform);
+		batch.setColor(
+			debug_rendering_colors[depth % DEBUG_RENDERING_COLORS_COUNT]);
+		batch.drawRect(0, 0, getWidth(), getHeight(), local_transform, 5.f);
 		batch.setColor(c);
 	}
 }

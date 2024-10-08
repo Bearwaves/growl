@@ -82,6 +82,7 @@ private:
 	std::unique_ptr<ScriptingRef> bound_script_obj = nullptr;
 	DebugRendering debug_rendering = DebugRendering::OFF;
 	bool debug_mouseover = false;
+	int depth = 0;
 
 	void computeLocalTransform();
 	void drawChildren(Batch& batch, float parent_alpha);
