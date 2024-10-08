@@ -9,18 +9,20 @@ namespace Growl {
 class MetalShader : public Shader {
 public:
 	explicit MetalShader(
-		id<MTLDevice> device, const std::string& vertex_src,
-		const std::string& fragment_src)
-		: Shader(vertex_src, fragment_src)
+		id<MTLDevice> device, const std::string& uniforms_src,
+		const std::string& vertex_src, const std::string& fragment_src)
+		: Shader(uniforms_src, vertex_src, fragment_src)
 		, device{device} {}
 	~MetalShader();
 	void bind(id<MTLTexture> dst_texture, id<MTLRenderCommandEncoder> encoder);
 
 	Error compile() override;
 
+	static const std::string default_uniforms;
 	static const std::string default_vertex;
 	static const std::string default_fragment;
 	static const std::string sdf_fragment;
+	static const std::string rect_uniforms;
 	static const std::string rect_fragment;
 
 private:

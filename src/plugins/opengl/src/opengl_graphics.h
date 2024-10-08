@@ -47,7 +47,11 @@ public:
 	std::unique_ptr<Batch> createBatch(const Texture& texture) override;
 
 	Result<std::unique_ptr<Shader>> createShader(
-		const std::string& vert_src, const std::string& fragment_src) override;
+		const std::string& uniforms_src, const std::string& vert_src,
+		const std::string& fragment_src) override;
+	Result<std::unique_ptr<Shader>> createShader(
+		const std::string& uniforms_src,
+		const std::string& fragment_src) override;
 	Result<std::unique_ptr<Shader>>
 	createShader(const std::string& fragment_src) override;
 	Result<std::unique_ptr<Shader>>

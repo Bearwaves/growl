@@ -27,6 +27,15 @@ struct FragmentBlock {
 	float deltaTime;
 };
 
+namespace {
+struct Vertex {
+	glm::vec2 pos;
+	glm::vec2 tex_pos;
+	glm::vec4 color;
+	GLuint idx;
+};
+} // namespace
+
 class OpenGLBatch : public Batch {
 public:
 	OpenGLBatch(
@@ -56,11 +65,12 @@ public:
 		glm::mat4x4 transform) override;
 
 	void drawRect(
-		float x, float y, float width, float height,
-		glm::mat4x4 transform) override;
+		float x, float y, float width, float height, glm::mat4x4 transform,
+		float border_width = 0) override;
 	void drawRect(
 		float x, float y, float width, float height, Shader& shader,
-		glm::mat4x4 transform) override;
+		glm::mat4x4 transform, float border_width = 0,
+		void* uniform_data = nullptr, int uniforms_length = 0) override;
 
 	int getTargetWidth() override;
 	int getTargetHeight() override;
@@ -86,7 +96,7 @@ private:
 	unsigned int verts = 0;
 	const OpenGLTexture* bound_tex = nullptr;
 	OpenGLShader* bound_shader = nullptr;
-	std::vector<GLfloat> vertices;
+	std::vector<Vertex> vertices;
 	std::vector<GLuint> elements;
 	std::vector<VertexBlock> uniforms;
 

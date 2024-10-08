@@ -39,7 +39,10 @@ public:
 	virtual std::unique_ptr<Batch> createBatch(const Texture& texture) = 0;
 
 	virtual Result<std::unique_ptr<Shader>> createShader(
-		const std::string& vertex_src, const std::string& fragment_src) = 0;
+		const std::string& uniforms_src, const std::string& vertex_src,
+		const std::string& fragment_src) = 0;
+	virtual Result<std::unique_ptr<Shader>> createShader(
+		const std::string& uniforms_src, const std::string& fragment_src) = 0;
 	virtual Result<std::unique_ptr<Shader>>
 	createShader(const std::string& fragment_src) = 0;
 	virtual Result<std::unique_ptr<Shader>>

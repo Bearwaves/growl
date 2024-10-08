@@ -107,6 +107,7 @@ Error MetalGraphicsAPI::setWindow(const Config& config) {
 	frame_boundary_semaphore =
 		dispatch_semaphore_create(swap_chain.maximumDrawableCount);
 	current_buffer = 0;
+
 	NSMutableArray* constant_buffers = [[NSMutableArray
 		arrayWithCapacity:swap_chain.maximumDrawableCount] retain];
 	for (int i = 0; i < swap_chain.maximumDrawableCount; i++) {
@@ -116,6 +117,7 @@ Error MetalGraphicsAPI::setWindow(const Config& config) {
 		[constant_buffers addObject:buffer];
 	}
 	constant_buffers_ring = constant_buffers;
+
 	NSMutableArray* vertex_buffers = [[NSMutableArray
 		arrayWithCapacity:swap_chain.maximumDrawableCount] retain];
 	for (int i = 0; i < swap_chain.maximumDrawableCount; i++) {
@@ -125,19 +127,23 @@ Error MetalGraphicsAPI::setWindow(const Config& config) {
 		[vertex_buffers addObject:buffer];
 	}
 	vertex_buffers_ring = vertex_buffers;
+
 	command_queue = [device newCommandQueue];
 	default_shader = std::make_unique<MetalShader>(
-		device, MetalShader::default_vertex, MetalShader::default_fragment);
+		device, MetalShader::default_uniforms, MetalShader::default_vertex,
+		MetalShader::default_fragment);
 	if (auto err = default_shader->compile()) {
 		return err;
 	}
 	rect_shader = std::make_unique<MetalShader>(
-		device, MetalShader::default_vertex, MetalShader::rect_fragment);
+		device, MetalShader::rect_uniforms, MetalShader::default_vertex,
+		MetalShader::rect_fragment);
 	if (auto err = rect_shader->compile()) {
 		return err;
 	}
 	sdf_shader = std::make_unique<MetalShader>(
-		device, MetalShader::default_vertex, MetalShader::sdf_fragment);
+		device, MetalShader::default_uniforms, MetalShader::default_vertex,
+		MetalShader::sdf_fragment);
 	if (auto err = sdf_shader->compile()) {
 		return err;
 	}
@@ -260,9 +266,10 @@ std::unique_ptr<Batch> MetalGraphicsAPI::createBatch(const Texture& texture) {
 }
 
 Result<std::unique_ptr<Shader>> MetalGraphicsAPI::createShader(
-	const std::string& vertex_src, const std::string& fragment_src) {
-	auto shader =
-		std::make_unique<MetalShader>(device, vertex_src, fragment_src);
+	const std::string& uniforms_src, const std::string& vertex_src,
+	const std::string& fragment_src) {
+	auto shader = std::make_unique<MetalShader>(
+		device, uniforms_src, vertex_src, fragment_src);
 	if (auto err = shader->compile()) {
 		return Error(std::make_unique<MetalError>(
 			"Failed to compile Metal shader: " + err->message()));
@@ -270,9 +277,17 @@ Result<std::unique_ptr<Shader>> MetalGraphicsAPI::createShader(
 	return std::unique_ptr<Shader>(std::move(shader));
 }
 
+Result<std::unique_ptr<Shader>> MetalGraphicsAPI::createShader(
+	const std::string& uniforms_src, const std::string& fragment_src) {
+	return createShader(
+		uniforms_src, MetalShader::default_vertex, fragment_src);
+}
+
 Result<std::unique_ptr<Shader>>
 MetalGraphicsAPI::createShader(const std::string& fragment_src) {
-	return createShader(MetalShader::default_vertex, fragment_src);
+	return createShader(
+		MetalShader::default_uniforms, MetalShader::default_vertex,
+		fragment_src);
 }
 
 Result<std::unique_ptr<Shader>>

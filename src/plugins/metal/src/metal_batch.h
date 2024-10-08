@@ -48,11 +48,12 @@ public:
 		glm::mat4x4 transform) override;
 
 	void drawRect(
-		float x, float y, float width, float height,
-		glm::mat4x4 transform) override;
+		float x, float y, float width, float height, glm::mat4x4 transform,
+		float border_width) override;
 	void drawRect(
 		float x, float y, float width, float height, Shader& shader,
-		glm::mat4x4 transform) override;
+		glm::mat4x4 transform, float border_width, void* uniforms,
+		int uniforms_length) override;
 
 	int getTargetWidth() override;
 	int getTargetHeight() override;

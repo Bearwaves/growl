@@ -1,5 +1,6 @@
 #include "opengl_shader.h"
 #include "growl/core/error.h"
+#include "opengl.h"
 #include "opengl_error.h"
 #include <vector>
 
@@ -13,7 +14,7 @@ OpenGLShader::~OpenGLShader() {
 	}
 }
 
-constexpr GLsizei VERTEX_ATTRIB_STRIDE = 9 * sizeof(GLfloat);
+constexpr GLsizei VERTEX_ATTRIB_STRIDE = 8 * sizeof(GLfloat) + sizeof(GLuint);
 
 void OpenGLShader::bind() {
 	glUseProgram(program);
@@ -38,8 +39,8 @@ void OpenGLShader::bind() {
 	GLuint index_attrib = glGetAttribLocation(program, "idx");
 	if (index_attrib >= 0) {
 		glEnableVertexAttribArray(index_attrib);
-		glVertexAttribPointer(
-			index_attrib, 1, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE,
+		glVertexAttribIPointer(
+			index_attrib, 1, GL_UNSIGNED_INT, VERTEX_ATTRIB_STRIDE,
 			(void*)(8 * sizeof(GLfloat)));
 	}
 }
@@ -55,7 +56,8 @@ Error OpenGLShader::compile() {
 	}
 
 	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	auto fragment_source = header + fragment_block + fragment_src;
+	auto fragment_source =
+		header + uniforms_src + fragment_block + fragment_src;
 	const char* fragment_source_c = fragment_source.c_str();
 	glShaderSource(fragment, 1, &fragment_source_c, nullptr);
 	glCompileShader(fragment);
@@ -102,14 +104,21 @@ std::string const OpenGLShader::header =
 	"#version 150 core\n";
 #endif
 
+const std::string OpenGLShader::default_uniforms = R"(
+	struct Uniforms {
+		float _padding;
+	};
+)";
+
 const std::string OpenGLShader::vertex_block = R"(
 in vec2 position;
 in vec2 texCoord;
 in vec4 color;
-in float idx;
+in int idx;
 
 out vec2 TexCoord;
 out vec4 Color;
+flat out int Idx;
 
 layout (std140) uniform VertexBlock {
 	mat4 projection;
@@ -122,6 +131,7 @@ layout (std140) uniform FragmentBlock {
 	vec2 resolution;
 	float time;
 	float deltaTime;
+	Uniforms uniforms[100];
 };
 )";
 
@@ -129,7 +139,8 @@ const std::string OpenGLShader::default_vertex = R"(
 void main() {
 	TexCoord = texCoord;
 	Color = color;
-	gl_Position = projection * transforms[int(idx)] * vec4(position, 0, 1);
+	Idx = idx;
+	gl_Position = projection * transforms[idx] * vec4(position, 0, 1);
 }
 )";
 
@@ -165,11 +176,25 @@ void main() {
 }
 )";
 
+const std::string OpenGLShader::rect_uniforms = R"(
+struct Uniforms {
+	vec2 rect_size;
+	float border_size;
+};
+)";
+
 const std::string OpenGLShader::rect_fragment = R"(
+in vec2 TexCoord;
 in vec4 Color;
+flat in int Idx;
 out vec4 outCol;
 
 void main() {
-	outCol = Color;
+	Uniforms u = uniforms[Idx];
+	vec2 border_uv = u.border_size / u.rect_size;
+	vec2 dist = min(TexCoord, 1.0 - TexCoord);
+	float inside = step(border_uv.x, dist.x) * step(border_uv.y, dist.y);
+	vec4 fill_color = mix(Color, vec4(0.0), step(1.0, u.border_size));
+	outCol = mix(Color, fill_color, inside);
 }
 )";

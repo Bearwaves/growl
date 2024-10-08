@@ -102,17 +102,20 @@ Error OpenGLGraphicsAPI::setWindow(const Config& config) {
 #endif
 
 	default_shader = std::make_unique<OpenGLShader>(
-		OpenGLShader::default_vertex, OpenGLShader::default_fragment);
+		OpenGLShader::default_uniforms, OpenGLShader::default_vertex,
+		OpenGLShader::default_fragment);
 	if (auto err = default_shader->compile()) {
 		return err;
 	}
 	sdf_shader = std::make_unique<OpenGLShader>(
-		OpenGLShader::default_vertex, OpenGLShader::sdf_fragment);
+		OpenGLShader::default_uniforms, OpenGLShader::default_vertex,
+		OpenGLShader::sdf_fragment);
 	if (auto err = sdf_shader->compile()) {
 		return err;
 	}
 	rect_shader = std::make_unique<OpenGLShader>(
-		OpenGLShader::default_vertex, OpenGLShader::rect_fragment);
+		OpenGLShader::rect_uniforms, OpenGLShader::default_vertex,
+		OpenGLShader::rect_fragment);
 	if (auto err = rect_shader->compile()) {
 		return err;
 	}
@@ -218,8 +221,10 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
 }
 
 Result<std::unique_ptr<Shader>> OpenGLGraphicsAPI::createShader(
-	const std::string& vert_src, const std::string& fragment_src) {
-	auto shader = std::make_unique<OpenGLShader>(vert_src, fragment_src);
+	const std::string& uniforms_src, const std::string& vert_src,
+	const std::string& fragment_src) {
+	auto shader =
+		std::make_unique<OpenGLShader>(uniforms_src, vert_src, fragment_src);
 	if (auto err = shader->compile()) {
 		return err;
 	}
@@ -227,9 +232,17 @@ Result<std::unique_ptr<Shader>> OpenGLGraphicsAPI::createShader(
 	return std::unique_ptr<Shader>(std::move(shader));
 }
 
+Result<std::unique_ptr<Shader>> OpenGLGraphicsAPI::createShader(
+	const std::string& uniforms_src, const std::string& fragment_src) {
+	return createShader(
+		uniforms_src, OpenGLShader::default_vertex, fragment_src);
+}
+
 Result<std::unique_ptr<Shader>>
 OpenGLGraphicsAPI::createShader(const std::string& fragment_src) {
-	return createShader(OpenGLShader::default_vertex, fragment_src);
+	return createShader(
+		OpenGLShader::default_uniforms, OpenGLShader::default_vertex,
+		fragment_src);
 }
 
 Result<std::unique_ptr<Shader>>

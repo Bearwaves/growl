@@ -45,10 +45,13 @@ public:
 
 	virtual void drawRect(
 		float x, float y, float width, float height,
-		glm::mat4x4 transform = glm::identity<glm::mat4x4>()) = 0;
+		glm::mat4x4 transform = glm::identity<glm::mat4x4>(),
+		float border_width = 0) = 0;
 	virtual void drawRect(
 		float x, float y, float width, float height, Shader& shader,
-		glm::mat4x4 transform = glm::identity<glm::mat4x4>()) = 0;
+		glm::mat4x4 transform = glm::identity<glm::mat4x4>(),
+		float border_width = 0, void* uniforms = nullptr,
+		int uniforms_length = 0) = 0;
 
 	virtual int getTargetWidth() = 0;
 	virtual int getTargetHeight() = 0;

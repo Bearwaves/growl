@@ -20,7 +20,8 @@ Error MetalShader::compile() {
 		auto compile_options = [[MTLCompileOptions new] autorelease];
 		NSError* compile_error = nil;
 		[compile_error autorelease];
-		std::string src = growl_shader_header + vertex_src + fragment_src;
+		std::string src =
+			growl_shader_header + uniforms_src + vertex_src + fragment_src;
 		id<MTLLibrary> lib = [[device
 			newLibraryWithSource:
 				[NSString stringWithCString:src.c_str()
@@ -102,6 +103,10 @@ struct VertexOut {
 };
 )";
 
+const std::string MetalShader::default_uniforms = R"(
+struct Uniforms {};
+)";
+
 const std::string MetalShader::default_vertex = R"(
 vertex VertexOut vertex_func (
 	constant ConstantBlock& constant_block [[ buffer(0) ]],
@@ -130,17 +135,29 @@ fragment float4 fragment_func (
 }
 )";
 
+const std::string MetalShader::rect_uniforms = R"(
+struct Uniforms {
+	float2 rect_size;
+	float border_size;
+};
+)";
+
 const std::string MetalShader::rect_fragment = R"(
 fragment float4 fragment_func (
-	VertexOut v [[ stage_in ]]
+	VertexOut v [[ stage_in ]],
+	constant Uniforms& uniforms [[ buffer(2) ]]
 ) {
-	return v.color;
+	float2 border_uv = uniforms.border_size / uniforms.rect_size;
+	float2 dist = min(v.texCoord0, 1.0 - v.texCoord0);
+	float inside = step(border_uv.x, dist.x) * step(border_uv.y, dist.y);
+	float4 fill_color = mix(v.color, float4(0.0), step(1.0, uniforms.border_size));
+	return mix(v.color, fill_color, inside);
 }
 )";
 
 const std::string MetalShader::sdf_fragment = R"(
 float median(float r, float g, float b) {
-    return max(min(r, g), min(max(r, g), b));
+	return max(min(r, g), min(max(r, g), b));
 }
 
 fragment float4 fragment_func (

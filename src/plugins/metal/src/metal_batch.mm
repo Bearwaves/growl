@@ -206,15 +206,35 @@ void MetalBatch::draw(
 }
 
 void MetalBatch::drawRect(
-	float x, float y, float width, float height, glm::mat4x4 transform) {
-	drawRect(x, y, width, height, *rect_shader, transform);
+	float x, float y, float width, float height, glm::mat4x4 transform,
+	float border_width) {
+	drawRect(
+		x, y, width, height, *rect_shader, transform, border_width, nullptr, 0);
 }
+
+struct RectUniforms {
+	glm::vec2 rect_size;
+	float border_size;
+};
 
 void MetalBatch::drawRect(
 	float x, float y, float width, float height, Shader& shader,
-	glm::mat4x4 transform) {
+	glm::mat4x4 transform, float border_width, void* uniforms,
+	int uniforms_length) {
 	static_cast<MetalShader&>(shader).bind(surface, encoder);
 	constant_buffer->writeAndBind(encoder, 2, &transform, sizeof(transform));
+
+	if (!uniforms) {
+		RectUniforms rect;
+		rect.rect_size.x = width;
+		rect.rect_size.y = height;
+		rect.border_size = border_width;
+		uniforms = &rect;
+		uniforms_length = sizeof(rect);
+	}
+	constant_buffer->writeAndBind(
+		encoder, 2, uniforms, uniforms_length, BufferBinding::Fragment);
+
 	float right = x + width;
 	float bottom = y + height;
 	std::vector<float> vertices;

@@ -5,25 +5,26 @@
 
 namespace Growl {
 
-// TODO this should not be hardcoded
-constexpr GLsizei MAX_BATCH_SIZE = 1000;
-
 struct Color;
 class OpenGLGraphicsAPI;
 
 class OpenGLShader : public Shader {
 public:
-	OpenGLShader(const std::string& vertex_src, const std::string& fragment_src)
-		: Shader(vertex_src, fragment_src) {}
+	OpenGLShader(
+		const std::string& uniforms_src, const std::string& vertex_src,
+		const std::string& fragment_src)
+		: Shader(uniforms_src, vertex_src, fragment_src) {}
 	~OpenGLShader();
 
 	Error compile() override;
 
 	void bind();
 
+	static const std::string default_uniforms;
 	static const std::string default_vertex;
 	static const std::string default_fragment;
 	static const std::string sdf_fragment;
+	static const std::string rect_uniforms;
 	static const std::string rect_fragment;
 
 private:

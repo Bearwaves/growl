@@ -20,6 +20,10 @@ using Growl::API;
 using Growl::OpenGLBatch;
 using Growl::Shader;
 
+// TODO this should not be hardcoded
+constexpr GLsizei MAX_BATCH_SIZE = 1000;
+constexpr int UNIFORMS_MAX_SIZE_BYTES = 256;
+
 OpenGLBatch::OpenGLBatch(
 	API* api, OpenGLShader* default_shader, OpenGLShader* sdf_shader,
 	OpenGLShader* rect_shader, int width, int height, Window* window,
@@ -47,7 +51,9 @@ OpenGLBatch::OpenGLBatch(
 	glGenBuffers(1, &ubo_f);
 	glBindBuffer(GL_UNIFORM_BUFFER, ubo_f);
 	glBufferData(
-		GL_UNIFORM_BUFFER, sizeof(FragmentBlock), nullptr, GL_DYNAMIC_DRAW);
+		GL_UNIFORM_BUFFER,
+		sizeof(FragmentBlock) + MAX_BATCH_SIZE * UNIFORMS_MAX_SIZE_BYTES,
+		nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 #ifdef GROWL_IMGUI
@@ -255,13 +261,21 @@ void OpenGLBatch::draw(
 }
 
 void OpenGLBatch::drawRect(
-	float x, float y, float width, float height, glm::mat4x4 transform) {
-	drawRect(x, y, width, height, *rect_shader, transform);
+	float x, float y, float width, float height, glm::mat4x4 transform,
+	float border_width) {
+	drawRect(x, y, width, height, *rect_shader, transform, border_width);
 }
+
+struct RectUniforms {
+	glm::vec2 rect_size;
+	float border_size;
+	float _padding;
+};
 
 void OpenGLBatch::drawRect(
 	float x, float y, float width, float height, Shader& shader,
-	glm::mat4x4 transform) {
+	glm::mat4x4 transform, float border_width, void* uniform_data,
+	int uniforms_length) {
 
 	auto& gl_shader = static_cast<OpenGLShader&>(shader);
 	if (bound_tex || bound_shader != &gl_shader || idx >= MAX_BATCH_SIZE) {
@@ -271,12 +285,27 @@ void OpenGLBatch::drawRect(
 
 	uniforms.insert(uniforms.end(), VertexBlock{transform});
 
+	RectUniforms rect_uniforms;
+	if (!uniform_data) {
+		rect_uniforms.rect_size.x = width;
+		rect_uniforms.rect_size.y = height;
+		rect_uniforms.border_size = border_width;
+		uniform_data = &rect_uniforms;
+		uniforms_length = sizeof(rect_uniforms);
+	}
+
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo_f);
+	glBufferSubData(
+		GL_UNIFORM_BUFFER, sizeof(FragmentBlock) + uniforms_length * idx,
+		uniforms_length, uniform_data);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 	float right = x + width;
 	float bottom = y + height;
-	addVertex(x, y, 0.0f, 0.0f);
-	addVertex(right, y, 1.0f, 0.0f);
+	addVertex(x, y, 0.0f, 1.0f);
+	addVertex(right, y, 1.0f, 1.0f);
 	addVertex(right, bottom, 1.0f, 0.0f);
-	addVertex(x, bottom, 0.0f, 1.0f);
+	addVertex(x, bottom, 0.0f, 0.0f);
 	elements.insert(
 		elements.end(),
 		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
@@ -312,7 +341,7 @@ void OpenGLBatch::flush() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(
-		GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(),
+		GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(),
 		GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(
@@ -347,6 +376,7 @@ void OpenGLBatch::flush() {
 
 void OpenGLBatch::addVertex(float x, float y, float tex_x, float tex_y) {
 	vertices.insert(
-		vertices.end(), {x, y, tex_x, tex_y, color.r, color.g, color.b, color.a,
-						 static_cast<GLfloat>(idx)});
+		vertices.end(),
+		Vertex{
+			{x, y}, {tex_x, tex_y}, {color.r, color.g, color.b, color.a}, idx});
 }
