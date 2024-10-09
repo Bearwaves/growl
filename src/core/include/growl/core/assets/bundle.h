@@ -51,6 +51,8 @@ struct AssetsBundleMSDFFontInfo {
 struct AssetsBundleShaderSourceInfo {
 	uint64_t vertex_pos;
 	uint64_t vertex_size;
+	uint64_t uniforms_pos;
+	uint64_t uniforms_size;
 	uint64_t fragment_pos;
 	uint64_t fragment_size;
 };

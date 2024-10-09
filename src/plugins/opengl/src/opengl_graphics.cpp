@@ -257,6 +257,9 @@ OpenGLGraphicsAPI::createShader(const ShaderPack& shader_pack) {
 			"No fragment source found in shader pack"));
 	}
 	return createShader(
+		source->second.uniforms_src.has_value()
+			? source->second.uniforms_src.value()
+			: OpenGLShader::default_uniforms,
 		source->second.vertex_src.has_value()
 			? source->second.vertex_src.value()
 			: OpenGLShader::default_vertex,

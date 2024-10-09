@@ -75,6 +75,8 @@ AssetsIncludeError includeShaderPack(
 			sources[shader_type].fragment_src = source;
 		} else if (entry.path().stem().string() == "vertex") {
 			sources[shader_type].vertex_src = source;
+		} else if (entry.path().stem().string() == "uniforms") {
+			sources[shader_type].uniforms_src = source;
 		} else {
 			return AssetsIncludeError(
 				"Unsupported file name " + entry.path().filename().string() +
@@ -99,12 +101,18 @@ AssetsIncludeError includeShaderPack(
 				" shader does not include fragment source, which is required.");
 		}
 
-		AssetsBundleShaderSourceInfo source_info{0, 0, 0, 0};
+		AssetsBundleShaderSourceInfo source_info{0, 0, 0, 0, 0, 0};
 		if (entry.second.vertex_src.has_value()) {
 			source_info.vertex_pos = outfile.tellp();
 			outfile << entry.second.vertex_src.value().c_str();
 			source_info.vertex_size =
 				static_cast<uint64_t>(outfile.tellp()) - source_info.vertex_pos;
+		}
+		if (entry.second.uniforms_src.has_value()) {
+			source_info.uniforms_pos = outfile.tellp();
+			outfile << entry.second.uniforms_src.value().c_str();
+			source_info.uniforms_size = static_cast<uint64_t>(outfile.tellp()) -
+										source_info.uniforms_pos;
 		}
 		source_info.fragment_pos = outfile.tellp();
 		outfile << entry.second.fragment_src.value().c_str();

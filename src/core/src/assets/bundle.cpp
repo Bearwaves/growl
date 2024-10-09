@@ -111,16 +111,17 @@ void Growl::from_json(const json& j, AssetsBundleShaderPackInfo& r) {
 
 void Growl::to_json(json& j, const AssetsBundleShaderSourceInfo& r) {
 	j = json{
-		{"vertexPos", r.vertex_pos},
-		{"vertexSize", r.vertex_size},
-		{"fragmentPos", r.fragment_pos},
-		{"fragmentSize", r.fragment_size},
+		{"vertexPos", r.vertex_pos},	 {"vertexSize", r.vertex_size},
+		{"uniformsPos", r.uniforms_pos}, {"uniformsSize", r.uniforms_size},
+		{"fragmentPos", r.fragment_pos}, {"fragmentSize", r.fragment_size},
 	};
 }
 
 void Growl::from_json(const json& j, AssetsBundleShaderSourceInfo& r) {
 	j.at("vertexPos").get_to(r.vertex_pos);
 	j.at("vertexSize").get_to(r.vertex_size);
+	j.at("uniformsPos").get_to(r.uniforms_pos);
+	j.at("uniformsSize").get_to(r.uniforms_size);
 	j.at("fragmentPos").get_to(r.fragment_pos);
 	j.at("fragmentSize").get_to(r.fragment_size);
 }
@@ -300,6 +301,14 @@ Result<ShaderPack> AssetsBundle::getShaderPack(std::string name) noexcept {
 				reinterpret_cast<unsigned char*>(vertex_src.data()),
 				mappings.vertex_size);
 			source.vertex_src = vertex_src;
+		}
+		if (mappings.uniforms_size) {
+			std::string uniforms_src(mappings.uniforms_size, 0);
+			file->seek(static_cast<int>(mappings.uniforms_pos));
+			file->read(
+				reinterpret_cast<unsigned char*>(uniforms_src.data()),
+				mappings.uniforms_size);
+			source.uniforms_src = uniforms_src;
 		}
 		if (mappings.fragment_size) {
 			std::string fragment_src(mappings.fragment_size, 0);

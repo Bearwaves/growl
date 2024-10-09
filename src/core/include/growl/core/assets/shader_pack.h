@@ -8,6 +8,7 @@ namespace Growl {
 enum class ShaderType { GLSL, Metal };
 
 struct ShaderSource {
+	std::optional<std::string> uniforms_src;
 	std::optional<std::string> vertex_src;
 	std::optional<std::string> fragment_src;
 };
