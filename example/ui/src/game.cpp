@@ -3,51 +3,69 @@
 #include "growl/core/error.h"
 #include "growl/core/graphics/color.h"
 #include "growl/scene/rectangle.h"
+#include "growl/ui/label.h"
 #include "growl/ui/list.h"
+#include "growl/ui/pack.h"
 #include "growl/ui/widget.h"
 
 using Growl::Align;
+using Growl::AssetsBundle;
 using Growl::Color;
 using Growl::Error;
+using Growl::FontFace;
+using Growl::GlyphLayout;
+using Growl::Label;
 using Growl::List;
+using Growl::Node;
 using Growl::Rectangle;
+using Growl::Result;
+using Growl::Value;
 using Growl::Widget;
 using UIExample::Game;
 
 Error Game::init() {
 	getAPI().system().log("Game", "Game starting up!");
+
+	getAPI().system().log("Game", "Loading asset bundle");
+	Result<AssetsBundle> bundle_result =
+		loadAssetsBundle(getAPI().system(), "assets.growl");
+	if (!bundle_result) {
+		return std::move(bundle_result.error());
+	}
+
+	getAPI().system().log("Game", "Loading font");
+	{
+		Result<FontFace> font_result =
+			bundle_result.get().getDistanceFieldFont("fonts/andada.otf");
+		if (!font_result) {
+			return std::move(font_result.error());
+		}
+		font = std::make_unique<FontFace>(std::move(font_result.get()));
+		font_atlas = getAPI().graphics().createFontTextureAtlas(*font);
+	}
+	getAPI().system().log("TestAppGame", "Generating layout");
+
 	batch = getAPI().graphics().createBatch();
 
-	root = std::make_unique<List>("Root", List::Direction::VERTICAL);
-	root->addWithLayout(std::make_unique<Rectangle>("Red", Color{1, 0, 0, 1}))
-		.fill()
-		.height(50);
-	root->addWithLayout(std::make_unique<Rectangle>("Green", Color{0, 1, 0, 1}))
-		.fill()
-		.height(100);
-	root->addWithLayout(std::make_unique<Rectangle>("Blue", Color{0, 0, 1, 1}))
-		.fill()
-		.height(50);
+	root = std::make_unique<List>("Root", List::Direction::HORIZONTAL);
+	getAPI().system().setInputProcessor(root.get());
 
-	auto row = static_cast<Widget*>(
-		root->addWithLayout(
-				std::make_unique<List>("Row", List::Direction::HORIZONTAL))
-			.fill()
-			.expand()
-			.getNode());
-	row->addWithLayout(std::make_unique<Rectangle>("Yellow", Color{1, 1, 0, 1}))
-		.height(300)
-		.align(Align::START)
-		.expand();
-	row->addWithLayout(
-		   std::make_unique<Rectangle>("Magenta", Color{1, 0, 1, 1}))
-		.height(300)
-		.align(Align::MIDDLE)
-		.expand();
-	row->addWithLayout(std::make_unique<Rectangle>("Cyan", Color{0, 1, 1, 1}))
-		.height(300)
-		.align(Align::END)
-		.expand();
+	root->addWithLayout<Node>("Spacer L").expand();
+	auto col = root->addWithLayout<List>("Column", List::Direction::VERTICAL)
+				   .fill()
+				   .width(Value::percentWidth(0.2f, root.get()))
+				   .getNode();
+	root->addWithLayout<Node>("Spacer R").expand();
+
+	col->addWithLayout<Node>("Spacer T").expand();
+	label = col->addWithLayout<Label>(
+				   "Text", *font_atlas,
+				   std::make_unique<GlyphLayout>(*font, text, 0, 50))
+				.height(20)
+				.fill()
+				.getNode();
+	col->addWithLayout<Node>("Spacer B").expand();
+	root->setDebugRendering(DebugRendering::ON);
 
 	return nullptr;
 }

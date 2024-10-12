@@ -2,8 +2,7 @@
   "*": {
     "font": {
       "msdf": true,
-      "msdfSize": 32,
-      "msdfCharacters": "HelloGrowlFPS01234567890!:."
+      "msdfSize": 32
     }
   }
 }

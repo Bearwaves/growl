@@ -2,6 +2,7 @@
 
 #include "growl/core/game/game.h"
 #include "growl/core/graphics/batch.h"
+#include "growl/ui/label.h"
 #include "growl/ui/widget.h"
 
 namespace UIExample {
@@ -17,6 +18,11 @@ public:
 private:
 	std::unique_ptr<Growl::Batch> batch;
 	std::unique_ptr<Growl::Widget> root;
+	std::unique_ptr<Growl::FontFace> font;
+	std::unique_ptr<Growl::FontTextureAtlas> font_atlas;
+	Growl::Label* label;
+	std::string text = "Hello this is some example text in Growl.\n\nIt's got "
+					   "newlines and everything.";
 };
 
 } // namespace UIExample
