@@ -9,7 +9,7 @@ class Label : public Widget {
 public:
 	Label(
 		std::string&& name, FontTextureAtlas& font_tex,
-		std::unique_ptr<GlyphLayout> glyph_layout);
+		std::unique_ptr<GlyphLayout> glyph_layout, bool wrap = false);
 
 	void layout() override;
 
@@ -25,6 +25,7 @@ public:
 private:
 	FontTextureAtlas& font_tex;
 	std::unique_ptr<GlyphLayout> glyph_layout;
+	bool wrap;
 };
 
 } // namespace Growl

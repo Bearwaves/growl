@@ -60,9 +60,8 @@ Error Game::init() {
 	col->addWithLayout<Node>("Spacer T").expand();
 	label = col->addWithLayout<Label>(
 				   "Text", *font_atlas,
-				   std::make_unique<GlyphLayout>(*font, text, 0, 50))
-				.height(20)
-				.fill()
+				   std::make_unique<GlyphLayout>(*font, text, 0, 50), true)
+				.width(Value::percentWidth(1.f, col))
 				.getNode();
 	col->addWithLayout<Node>("Spacer B").expand();
 	root->setDebugRendering(DebugRendering::ON);

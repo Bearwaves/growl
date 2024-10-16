@@ -17,13 +17,9 @@ void List::layout() {
 	for (auto& pack : pack_info) {
 		auto node = getChildren().at(i++).get();
 		pack.computedWidth =
-			vertical
-				? std::fmax(node->getWidth(), pack.prefWidth.evaluate(node))
-				: pack.prefWidth.evaluate(node);
-		pack.computedHeight =
-			vertical
-				? std::fmax(node->getHeight(), pack.prefHeight.evaluate(node))
-				: pack.prefHeight.evaluate(node);
+			pack.prefWidth ? pack.prefWidth.evaluate(node) : node->getWidth();
+		pack.computedHeight = pack.prefHeight ? pack.prefHeight.evaluate(node)
+											  : node->getHeight();
 
 		remaining -= vertical
 						 ? pack.computedHeight + pack.marginTop.evaluate(node) +

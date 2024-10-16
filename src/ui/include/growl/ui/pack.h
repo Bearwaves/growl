@@ -8,9 +8,14 @@ enum class Align { START, MIDDLE, END };
 
 class Value {
 public:
+	Value()
+		: Value{0, Type::NONE, nullptr} {}
 	Value(float v)
 		: Value{v, Type::FIXED, nullptr} {}
 	float evaluate(Node* context);
+	operator bool() {
+		return type != Type::NONE;
+	}
 
 	static Value percentWidth(float percent, Node* of = nullptr) {
 		return Value{percent, Type::PERCENT_WIDTH, of};
@@ -21,7 +26,7 @@ public:
 	}
 
 private:
-	enum class Type { FIXED, PERCENT_WIDTH, PERCENT_HEIGHT };
+	enum class Type { NONE, FIXED, PERCENT_WIDTH, PERCENT_HEIGHT };
 
 	Value(float value, Type type, Node* of)
 		: value{value}
@@ -37,13 +42,13 @@ struct PackInfo {
 	bool expand = false;
 	bool fill = false;
 
-	Value prefWidth = 0;
-	Value prefHeight = 0;
+	Value prefWidth;
+	Value prefHeight;
 
-	Value marginLeft = 0;
-	Value marginRight = 0;
-	Value marginTop = 0;
-	Value marginBottom = 0;
+	Value marginLeft;
+	Value marginRight;
+	Value marginTop;
+	Value marginBottom;
 
 	Align alignment = Align::START;
 
