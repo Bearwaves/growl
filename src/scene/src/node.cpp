@@ -37,9 +37,17 @@ std::string& Node::getLabel() {
 
 Node* Node::addChild(std::unique_ptr<Node> node) {
 	node->parent = this;
-	node->depth = this->depth + 1;
 	children.emplace_back(std::move(node));
-	return children.back().get();
+	Node* n = children.back().get();
+	n->setDepth(depth + 1);
+	return n;
+}
+
+void Node::setDepth(int depth) {
+	this->depth = depth;
+	for (auto& child : children) {
+		child->setDepth(depth + 1);
+	}
 }
 
 void Node::populateDebugUI(Batch& batch) {

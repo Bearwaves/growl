@@ -87,6 +87,7 @@ private:
 	void computeLocalTransform();
 	void drawChildren(Batch& batch, float parent_alpha);
 	void populateDebugUI(Batch& batch);
+	void setDepth(int depth);
 };
 
 } // namespace Growl

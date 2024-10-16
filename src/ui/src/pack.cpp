@@ -7,6 +7,8 @@ using Growl::Value;
 
 float Value::evaluate(Node* context) {
 	switch (type) {
+	case Type::NONE:
+		return 0;
 	case Type::FIXED:
 		return value;
 	case Type::PERCENT_WIDTH:
