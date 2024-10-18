@@ -8,8 +8,8 @@ namespace Growl {
 class Label : public Widget {
 public:
 	Label(
-		std::string&& name, FontTextureAtlas& font_tex,
-		std::unique_ptr<GlyphLayout> glyph_layout, bool wrap = false);
+		std::string&& name, std::string text, FontTextureAtlas& font_tex,
+		FontFace& font, Value font_size, bool wrap = false);
 
 	void layout() override;
 
@@ -25,6 +25,7 @@ public:
 private:
 	FontTextureAtlas& font_tex;
 	std::unique_ptr<GlyphLayout> glyph_layout;
+	Value font_size;
 	bool wrap;
 };
 

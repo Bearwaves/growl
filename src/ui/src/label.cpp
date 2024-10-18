@@ -1,16 +1,18 @@
 #include "growl/ui/label.h"
 #include "growl/core/graphics/batch.h"
+#include "growl/core/text/glyph_layout.h"
 #include "growl/ui/widget.h"
 
 using Growl::Label;
 using Growl::Widget;
 
 Label::Label(
-	std::string&& name, FontTextureAtlas& font_tex,
-	std::unique_ptr<GlyphLayout> glyph_layout, bool wrap)
+	std::string&& name, std::string text, FontTextureAtlas& font_tex,
+	FontFace& font, Value font_size, bool wrap)
 	: Widget{std::move(name)}
 	, font_tex{font_tex}
-	, glyph_layout{std::move(glyph_layout)}
+	, glyph_layout{std::make_unique<GlyphLayout>(font, std::move(text), 0, 0)}
+	, font_size{font_size}
 	, wrap{wrap} {}
 
 void Label::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
@@ -20,6 +22,11 @@ void Label::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
 
 void Label::layout() {
 	bool should_invalidate = false;
+	int font_size_val = std::floor(font_size.evaluate(this));
+	if (glyph_layout->getFontSize() != font_size_val) {
+		glyph_layout->setFontSize(font_size_val);
+		should_invalidate = true;
+	}
 	if (wrap) {
 		glyph_layout->setWidth(getWidth());
 	}
