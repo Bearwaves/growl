@@ -56,7 +56,9 @@ void List::layout() {
 				break;
 			}
 
-			node->setY(position + pack.marginTop.evaluate(node));
+			position += pack.marginTop.evaluate(node);
+
+			node->setY(position);
 			float height = pack.computedHeight;
 			if (pack.expand) {
 				height += extra;
@@ -81,7 +83,9 @@ void List::layout() {
 				break;
 			}
 
-			node->setX(position + pack.marginLeft.evaluate(node));
+			position += pack.marginLeft.evaluate(node);
+
+			node->setX(position);
 			float width = pack.computedWidth;
 			if (pack.expand) {
 				width += extra;

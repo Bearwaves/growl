@@ -159,6 +159,10 @@ void Node::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
 	}
 }
 
+void Node::setClickListener(std::function<bool(float, float)> listener) {
+	this->click_listener = std::move(listener);
+}
+
 bool Node::onEvent(const InputEvent& event) {
 	if (InputProcessor::onEvent(event)) {
 		return true;
@@ -170,9 +174,16 @@ bool Node::onEvent(const InputEvent& event) {
 	return handled;
 }
 
+glm::vec4 Node::worldToLocalCoordinates(float x, float y) {
+	return glm::inverse(local_transform) * glm::vec4(x, y, 0, 1);
+}
+
 bool Node::hit(float x, float y) {
-	glm::vec4 internal_coordinates =
-		glm::inverse(local_transform) * glm::vec4(x, y, 0, 1);
+	glm::vec4 internal_coordinates = worldToLocalCoordinates(x, y);
+	return hit(internal_coordinates);
+}
+
+bool Node::hit(glm::vec4& internal_coordinates) {
 	return !(
 		internal_coordinates.x < 0 || internal_coordinates.y < 0 ||
 		internal_coordinates.x >= this->w || internal_coordinates.y >= this->h);
@@ -248,6 +259,10 @@ bool Node::onMouseEventRaw(const InputMouseEvent& event) {
 	if (debug_rendering == DebugRendering::MOUSEOVER) {
 		debug_mouseover = hit(event.mouseX, event.mouseY);
 	}
+	if (click_listener &&
+		processClick(event.mouseX, event.mouseY, event.type)) {
+		return true;
+	}
 	return InputProcessor::onMouseEvent(event);
 }
 
@@ -320,6 +335,10 @@ bool Node::onTouchEvent(const InputTouchEvent& event) {
 }
 
 bool Node::onTouchEventRaw(const InputTouchEvent& event) {
+	if (click_listener &&
+		processClick(event.touchX, event.touchY, event.type)) {
+		return true;
+	}
 	return InputProcessor::onTouchEvent(event);
 }
 
@@ -357,4 +376,25 @@ bool Node::onControllerEvent(const InputControllerEvent& event) {
 
 bool Node::onControllerEventRaw(const InputControllerEvent& event) {
 	return InputProcessor::onControllerEvent(event);
+}
+
+bool Node::processClick(float x, float y, PointerEventType type) {
+	bool handled = false;
+	auto coords = worldToLocalCoordinates(x, y);
+	if (hit(coords)) {
+		switch (type) {
+		case PointerEventType::Up:
+			handled = click_listener_down && click_listener(coords.x, coords.y);
+			break;
+		case PointerEventType::Down:
+			click_listener_down = true;
+			break;
+		default:
+			return false;
+		}
+	}
+	if (type == PointerEventType::Up) {
+		click_listener_down = false;
+	}
+	return handled;
 }

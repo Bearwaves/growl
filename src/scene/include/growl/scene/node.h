@@ -39,10 +39,14 @@ public:
 
 	virtual bool onEvent(const InputEvent& event) override;
 	bool hit(float x, float y);
+	bool hit(glm::vec4& local_coords);
+	glm::vec4 worldToLocalCoordinates(float x, float y);
 
 	Error bindScript(API& api, Script& script);
 
 	void setDebugRendering(DebugRendering debug);
+
+	void setClickListener(std::function<bool(float, float)> listener);
 
 protected:
 	Node* getParent() {
@@ -84,10 +88,14 @@ private:
 	bool debug_mouseover = false;
 	int depth = 0;
 
+	std::function<bool(float x, float y)> click_listener;
+	bool click_listener_down = false;
+
 	void computeLocalTransform();
 	void drawChildren(Batch& batch, float parent_alpha);
 	void populateDebugUI(Batch& batch);
 	void setDepth(int depth);
+	bool processClick(float x, float y, PointerEventType type);
 };
 
 } // namespace Growl
