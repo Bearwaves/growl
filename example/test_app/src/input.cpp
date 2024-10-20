@@ -49,6 +49,7 @@ bool InputHandler::onKeyboardEvent(const InputKeyboardEvent& event) {
 		}
 		return false;
 	}
+	return false;
 }
 
 bool InputHandler::onControllerEvent(const InputControllerEvent& event) {

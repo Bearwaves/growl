@@ -36,7 +36,7 @@ jobs:
           key: growl-assets-${{ hashFiles('example/test_app/assets') }}
       - name: Build assets
         if: ${{ steps.cache-assets.outputs.cache-hit != 'true' }}
-        run: ./build/growl-cmd assets bundle ./assets
+        run: ./build/growl-cmd assets bundle ../assets
         working-directory: example/test_app
 
 
