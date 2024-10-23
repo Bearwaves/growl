@@ -4,15 +4,20 @@ project(growl-plugin-opengl)
 
 message(STATUS "[Growl] Enabled OpenGL plugin.")
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+option(GROWL_FORCE_OPENGL_4_1 "Whether to force OpenGL 4.1 (older) regardless of platform" OFF)
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR GROWL_FORCE_OPENGL_4_1)
 	set(GROWL_OPENGL_4_1 1)
 	add_definitions(-DGROWL_OPENGL_4_1)
+	message(STATUS "[Growl] Building with OpenGL 4.1")
 elseif (ANDROID OR ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 	set(GROWL_OPENGL_ES 1)
 	add_definitions(-DGROWL_OPENGL_ES)
+	message(STATUS "[Growl] Building with OpenGL ES")
 else ()
 	set(GROWL_OPENGL_4_5 1)
 	add_definitions(-DGROWL_OPENGL_4_5)
+	message(STATUS "[Growl] Building with OpenGL 4.5")
 endif ()
 
 if (ANDROID)
