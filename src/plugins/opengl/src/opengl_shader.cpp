@@ -140,7 +140,7 @@ void main() {
 	TexCoord = texCoord;
 	Color = color;
 	Idx = idx;
-	gl_Position = projection * transforms[0] * vec4(position, 0, 1);
+	gl_Position = projection * vec4(position, 0, 1);
 }
 )";
 
