@@ -122,7 +122,7 @@ flat out int Idx;
 
 layout (std140) uniform VertexBlock {
 	mat4 projection;
-	mat4 transforms[100];
+	mat4 transforms[1];
 };
 )";
 
@@ -131,7 +131,7 @@ layout (std140) uniform FragmentBlock {
 	vec2 resolution;
 	float time;
 	float deltaTime;
-	Uniforms uniforms[100];
+	Uniforms uniforms[1];
 };
 )";
 
@@ -140,7 +140,7 @@ void main() {
 	TexCoord = texCoord;
 	Color = color;
 	Idx = idx;
-	gl_Position = projection * transforms[idx] * vec4(position, 0, 1);
+	gl_Position = projection * transforms[0] * vec4(position, 0, 1);
 }
 )";
 
