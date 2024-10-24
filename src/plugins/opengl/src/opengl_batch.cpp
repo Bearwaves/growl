@@ -140,7 +140,7 @@ void OpenGLBatch::begin() {
 		fbo ? static_cast<float>(getTargetHeight()) : 0, 1, -1);
 
 	glBindVertexArray(vao);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo_v, 0, sizeof(glm::mat4));
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo_v);
 	glBufferSubData(
 		GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
 
