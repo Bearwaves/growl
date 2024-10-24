@@ -296,9 +296,10 @@ void OpenGLGraphicsAPI::onGLDebugMessage(
 	GLenum source, GLenum type, GLuint id, GLenum severity,
 	const GLchar* message) const {
 #ifdef GROWL_OPENGL_4_5
-	if (severity == GL_DEBUG_SEVERITY_HIGH ||
-		severity == GL_DEBUG_SEVERITY_MEDIUM) {
-		api.system().log(LogLevel::Error, "OpenGL", "{}", message);
-	}
+	Growl::LogLevel level = (severity == GL_DEBUG_SEVERITY_HIGH ||
+							 severity == GL_DEBUG_SEVERITY_MEDIUM)
+								? LogLevel::Error
+								: LogLevel::Debug;
+	api.system().log(level, "OpenGL", "{}", message);
 #endif
 }
