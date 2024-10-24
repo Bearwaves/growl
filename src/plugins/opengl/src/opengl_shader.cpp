@@ -122,7 +122,7 @@ flat out int Idx;
 
 layout (std140) uniform VertexBlock {
 	mat4 projection;
-	mat4 transforms[1];
+	mat4 transforms;
 };
 )";
 
@@ -140,7 +140,7 @@ void main() {
 	TexCoord = texCoord;
 	Color = color;
 	Idx = idx;
-	gl_Position = projection * vec4(position, 0, 1);
+	gl_Position = projection * transforms * vec4(position, 0, 1);
 }
 )";
 
