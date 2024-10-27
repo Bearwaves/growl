@@ -215,6 +215,7 @@ void MetalBatch::drawRect(
 struct RectUniforms {
 	glm::vec2 rect_size;
 	float border_size;
+	float _padding;
 };
 
 void MetalBatch::drawRect(
