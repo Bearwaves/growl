@@ -151,4 +151,12 @@ std::unique_ptr<Growl::Game> createGame();
 	[displayLink setPaused:YES];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+	int w = [[UIScreen mainScreen] bounds].size.width *
+			self.view.contentScaleFactor;
+	int h = [[UIScreen mainScreen] bounds].size.height *
+			self.view.contentScaleFactor;
+	game->resize(w, h);
+}
+
 @end
