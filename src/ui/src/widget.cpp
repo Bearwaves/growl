@@ -7,6 +7,7 @@ using Growl::Packer;
 using Growl::Widget;
 
 constexpr size_t WIDGET_SIGNIFIER = 0x2DFACE;
+constexpr int VALIDATION_MAX_PASSES = 5;
 
 Widget::Widget(std::string&& label)
 	: Node{std::move(label)}
@@ -33,9 +34,25 @@ void Widget::invalidateHierarchy() {
 }
 
 void Widget::validate() {
+	if (!invalidated) {
+		return;
+	}
+
+	invalidated = false;
+	layout();
+
 	if (invalidated) {
-		layout();
+		if (getParent() && nodeAsWidget(getParent())) {
+			// We can rely on the root to call validate again.
+			return;
+		}
+	}
+	for (int i = 0; i < VALIDATION_MAX_PASSES; i++) {
 		invalidated = false;
+		layout();
+		if (!invalidated) {
+			break;
+		}
 	}
 }
 

@@ -109,6 +109,7 @@ void List::layout() {
 
 		if (auto widget = nodeAsWidget(node)) {
 			widget->invalidate();
+			widget->validate();
 		}
 	}
 }
