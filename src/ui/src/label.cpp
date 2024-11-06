@@ -30,12 +30,13 @@ void Label::layout() {
 	if (wrap) {
 		glyph_layout->setWidth(getWidth());
 	}
-	if (glyph_layout->getWidth() != getWidthRaw()) {
-		setWidth(glyph_layout->getWidth());
+
+	if (glyph_layout->getWidth() != pref_width) {
+		pref_width = glyph_layout->getWidth();
 		should_invalidate = true;
 	}
-	if (glyph_layout->getHeight() != getHeightRaw()) {
-		setHeight(glyph_layout->getHeight());
+	if (glyph_layout->getHeight() != pref_height) {
+		pref_height = glyph_layout->getHeight();
 		should_invalidate = true;
 	}
 

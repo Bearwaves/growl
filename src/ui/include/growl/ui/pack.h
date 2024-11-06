@@ -52,8 +52,10 @@ struct PackInfo {
 
 	Align alignment = Align::START;
 
-	float computedWidth = 0;
-	float computedHeight = 0;
+	float prefWidthResult = 0;
+	float prefHeightResult = 0;
+	float resolvedWidth = 0;
+	float resolvedHeight = 0;
 };
 
 template <class T>

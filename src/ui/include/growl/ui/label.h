@@ -22,11 +22,21 @@ public:
 
 	void setText(std::string text);
 
+	float getPrefWidth() override {
+		return pref_width;
+	}
+
+	float getPrefHeight() override {
+		return pref_height;
+	}
+
 private:
 	FontTextureAtlas& font_tex;
 	std::unique_ptr<GlyphLayout> glyph_layout;
 	Value font_size;
 	bool wrap;
+	float pref_width;
+	float pref_height;
 };
 
 } // namespace Growl

@@ -16,15 +16,20 @@ void List::layout() {
 	int i = 0;
 	for (auto& pack : pack_info) {
 		auto node = getChildren().at(i++).get();
-		pack.computedWidth =
-			pack.prefWidth ? pack.prefWidth.evaluate(node) : node->getWidth();
-		pack.computedHeight = pack.prefHeight ? pack.prefHeight.evaluate(node)
-											  : node->getHeight();
+		auto widget = nodeAsWidget(node);
+		pack.prefWidthResult = pack.prefWidth.evaluate(node);
+		pack.prefHeightResult = pack.prefHeight.evaluate(node);
+		pack.resolvedWidth = widget && widget->getPrefWidth()
+								 ? widget->getPrefWidth()
+								 : pack.prefWidthResult;
+		pack.resolvedHeight = widget && widget->getPrefHeight()
+								  ? widget->getPrefHeight()
+								  : pack.prefHeightResult;
 
 		remaining -= vertical
-						 ? pack.computedHeight + pack.marginTop.evaluate(node) +
+						 ? pack.resolvedHeight + pack.marginTop.evaluate(node) +
 							   pack.marginBottom.evaluate(node)
-						 : pack.computedWidth + pack.marginLeft.evaluate(node) +
+						 : pack.resolvedWidth + pack.marginLeft.evaluate(node) +
 							   pack.marginRight.evaluate(node);
 
 		if (pack.expand) {
@@ -41,7 +46,10 @@ void List::layout() {
 		auto node = getChildren().at(i++).get();
 		switch (direction) {
 		case Direction::VERTICAL: {
-			node->setWidth(pack.fill ? max_width : pack.computedWidth);
+			node->setWidth(
+				pack.fill			   ? max_width
+				: pack.prefWidthResult ? pack.prefWidthResult
+									   : pack.resolvedWidth);
 
 			float margin_left = pack.marginLeft.evaluate(node);
 			switch (pack.alignment) {
@@ -59,7 +67,7 @@ void List::layout() {
 			position += pack.marginTop.evaluate(node);
 
 			node->setY(position);
-			float height = pack.computedHeight;
+			float height = pack.resolvedHeight;
 			if (pack.expand) {
 				height += extra;
 			}
@@ -68,7 +76,10 @@ void List::layout() {
 			break;
 		}
 		case Direction::HORIZONTAL: {
-			node->setHeight(pack.fill ? max_height : pack.computedHeight);
+			node->setHeight(
+				pack.fill				? max_height
+				: pack.prefHeightResult ? pack.prefHeightResult
+										: pack.resolvedHeight);
 
 			float margin_top = pack.marginTop.evaluate(node);
 			switch (pack.alignment) {
@@ -86,7 +97,7 @@ void List::layout() {
 			position += pack.marginLeft.evaluate(node);
 
 			node->setX(position);
-			float width = pack.computedWidth;
+			float width = pack.resolvedWidth;
 			if (pack.expand) {
 				width += extra;
 			}

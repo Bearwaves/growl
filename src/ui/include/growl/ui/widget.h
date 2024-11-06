@@ -22,6 +22,14 @@ public:
 	void invalidateHierarchy();
 	void validate();
 
+	virtual float getPrefWidth() {
+		return 0;
+	}
+
+	virtual float getPrefHeight() {
+		return 0;
+	}
+
 protected:
 	virtual void layout() = 0;
 	virtual void
