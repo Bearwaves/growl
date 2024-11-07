@@ -56,6 +56,10 @@ public:
 		return window.get();
 	}
 
+	WindowSafeAreaInsets getSafeAreaInsets() override {
+		return getWindow()->getSafeAreaInsets();
+	}
+
 	id<MTLCommandBuffer> getCommandBuffer() {
 		return command_buffer;
 	}

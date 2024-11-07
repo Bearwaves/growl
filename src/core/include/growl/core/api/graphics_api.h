@@ -15,6 +15,7 @@ class Shader;
 class ShaderPack;
 class Texture;
 class TextureAtlas;
+struct WindowSafeAreaInsets;
 
 class GraphicsAPI {
 
@@ -47,6 +48,8 @@ public:
 	createShader(const std::string& fragment_src) = 0;
 	virtual Result<std::unique_ptr<Shader>>
 	createShader(const ShaderPack& shader_pack) = 0;
+
+	virtual WindowSafeAreaInsets getSafeAreaInsets() = 0;
 };
 
 } // namespace Growl

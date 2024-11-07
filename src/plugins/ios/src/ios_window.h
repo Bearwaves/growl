@@ -12,6 +12,8 @@ public:
 
 	void* getMetalLayer() override;
 
+	virtual WindowSafeAreaInsets getSafeAreaInsets() override;
+
 private:
 	UIWindow* native;
 };

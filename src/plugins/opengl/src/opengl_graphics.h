@@ -57,6 +57,10 @@ public:
 	Result<std::unique_ptr<Shader>>
 	createShader(const ShaderPack& shader_pack) override;
 
+	WindowSafeAreaInsets getSafeAreaInsets() override {
+		return getWindow()->getSafeAreaInsets();
+	}
+
 	Window* getWindow() override {
 		return window.get();
 	}

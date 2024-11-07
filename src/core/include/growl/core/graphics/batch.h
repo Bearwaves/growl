@@ -23,6 +23,9 @@ public:
 	Batch& operator=(Batch&&) = default;
 
 	virtual void clear(float r, float g, float b) = 0;
+	virtual void clear(Color color) {
+		clear(color.r, color.g, color.b);
+	}
 	virtual void begin() = 0;
 	virtual void end() = 0;
 

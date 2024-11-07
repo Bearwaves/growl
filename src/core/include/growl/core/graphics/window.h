@@ -3,11 +3,21 @@
 #include "growl/core/error.h"
 namespace Growl {
 
+struct WindowSafeAreaInsets {
+	float top;
+	float bottom;
+	float left;
+	float right;
+};
+
 class Window {
 public:
 	virtual ~Window() = default;
-	virtual void flip() {};
-	virtual void getSize(int* w, int* h) {};
+	virtual void flip() {}
+	virtual void getSize(int* w, int* h) {}
+	virtual WindowSafeAreaInsets getSafeAreaInsets() {
+		return WindowSafeAreaInsets{0, 0, 0, 0};
+	}
 
 	virtual void* getMetalLayer() {
 		return nullptr;
