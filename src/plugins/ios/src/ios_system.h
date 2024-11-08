@@ -17,6 +17,10 @@ public:
 	bool isRunning() override {
 		return running;
 	}
+
+	void setDarkMode(bool dark_mode) override;
+	bool isDarkMode() override;
+
 	virtual Result<std::unique_ptr<Window>>
 	createWindow(const Config& config) override;
 	void setLogLevel(LogLevel log_level) override;
@@ -36,6 +40,7 @@ private:
 
 	API& api;
 	bool running;
+	bool dark_mode;
 	GCController* controller = nullptr;
 	id game_controller_connect_observer;
 	id game_controller_disconnect_observer;

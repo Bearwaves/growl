@@ -26,6 +26,7 @@ public:
 	virtual ~SystemAPIInternal() {}
 	// Used in push-style touch input e.g. on iOS.
 	virtual void onTouch(InputTouchEvent touch) {}
+	virtual void setDarkMode(bool dark_mode) {}
 };
 
 class GraphicsAPIInternal : public GraphicsAPI, public APIInternal {

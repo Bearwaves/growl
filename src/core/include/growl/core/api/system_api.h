@@ -45,6 +45,10 @@ public:
 
 	virtual void setLogLevel(LogLevel log_level) = 0;
 
+	virtual bool isDarkMode() {
+		return false;
+	}
+
 	virtual Result<std::unique_ptr<File>>
 	openFile(std::string path, size_t start = 0, size_t end = 0) = 0;
 

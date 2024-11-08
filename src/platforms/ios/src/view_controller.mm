@@ -47,6 +47,10 @@ std::unique_ptr<Growl::Game> createGame();
 				  << std::endl;
 		exit(1);
 	}
+
+	systemInternal.setDarkMode(
+		self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+
 	if (auto err = graphicsInternal.init()) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "ViewController",
@@ -157,6 +161,15 @@ std::unique_ptr<Growl::Game> createGame();
 	int h = [[UIScreen mainScreen] bounds].size.height *
 			self.view.contentScaleFactor;
 	game->resize(w, h);
+}
+
+- (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection
+			  withTransitionCoordinator:
+				  (id<UIViewControllerTransitionCoordinator>)coordinator {
+	auto& systemInternal =
+		static_cast<Growl::SystemAPIInternal&>(api->system());
+	systemInternal.setDarkMode(
+		newCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
 }
 
 @end
