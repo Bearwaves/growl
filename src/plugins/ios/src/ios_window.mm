@@ -9,7 +9,10 @@ void* IOSWindow::getMetalLayer() {
 
 WindowSafeAreaInsets IOSWindow::getSafeAreaInsets() {
 	auto insets = native.safeAreaInsets;
+	auto scale = native.screen.scale;
 	return WindowSafeAreaInsets{
-		static_cast<float>(insets.top), static_cast<float>(insets.bottom),
-		static_cast<float>(insets.left), static_cast<float>(insets.right)};
+		static_cast<float>(insets.top * scale),
+		static_cast<float>(insets.bottom * scale),
+		static_cast<float>(insets.left * scale),
+		static_cast<float>(insets.right * scale)};
 }
