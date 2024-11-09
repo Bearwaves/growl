@@ -32,7 +32,9 @@ public:
 	virtual void setDarkMode(bool dark_mode) {
 		this->dark_mode = dark_mode;
 	}
+#ifdef GROWL_IMGUI
 	virtual void populateDebugMenu() override;
+#endif
 };
 
 class GraphicsAPIInternal : public GraphicsAPI, public APIInternal {
