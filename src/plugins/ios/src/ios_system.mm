@@ -93,14 +93,6 @@ void IOSSystemAPI::logInternal(
 		OS_LOG_DEFAULT, OS_LOG_TYPE_DEBUG, "[%s] %s", tag.c_str(), msg.c_str());
 }
 
-void IOSSystemAPI::setDarkMode(bool dark_mode) {
-	this->dark_mode = dark_mode;
-}
-
-bool IOSSystemAPI::isDarkMode() {
-	return dark_mode;
-}
-
 Result<std::unique_ptr<File>>
 IOSSystemAPI::openFile(std::string path, size_t start, size_t end) {
 	auto full_path =

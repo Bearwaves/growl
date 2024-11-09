@@ -47,7 +47,7 @@ void OpenGLGraphicsAPI::begin() {
 #ifdef GROWL_IMGUI
 	ImGui_ImplOpenGL3_NewFrame();
 	window->newImguiFrame();
-	imGuiBegin();
+	imGuiBegin(api);
 #endif
 }
 

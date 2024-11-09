@@ -19,6 +19,9 @@ public:
 
 	virtual Error init() = 0;
 	virtual void dispose() = 0;
+#ifdef GROWL_IMGUI
+	virtual void populateDebugMenu() {}
+#endif
 };
 
 class SystemAPIInternal : public SystemAPI, public APIInternal {
@@ -26,7 +29,10 @@ public:
 	virtual ~SystemAPIInternal() {}
 	// Used in push-style touch input e.g. on iOS.
 	virtual void onTouch(InputTouchEvent touch) {}
-	virtual void setDarkMode(bool dark_mode) {}
+	virtual void setDarkMode(bool dark_mode) {
+		this->dark_mode = dark_mode;
+	}
+	virtual void populateDebugMenu() override;
 };
 
 class GraphicsAPIInternal : public GraphicsAPI, public APIInternal {

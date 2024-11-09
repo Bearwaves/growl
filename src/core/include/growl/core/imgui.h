@@ -4,7 +4,9 @@
 
 namespace Growl {
 
-void imGuiBegin();
+class API;
+
+void imGuiBegin(API& api);
 void imGuiBeginGameWindow();
 void imGuiEndGameWindow();
 bool imGuiGameWindowFocused();
@@ -20,6 +22,7 @@ int game_window_y;
 int game_window_w = 0;
 int game_window_h = 0;
 bool game_window_resized;
+bool system_api_view = false;
 } // namespace
 } // namespace Growl
 

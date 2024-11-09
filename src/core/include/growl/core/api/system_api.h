@@ -16,6 +16,8 @@ class File;
 class Window;
 
 class SystemAPI {
+	friend class SystemAPIInternal;
+
 public:
 	virtual ~SystemAPI() {}
 	virtual bool isRunning() = 0;
@@ -46,7 +48,7 @@ public:
 	virtual void setLogLevel(LogLevel log_level) = 0;
 
 	virtual bool isDarkMode() {
-		return false;
+		return dark_mode;
 	}
 
 	virtual Result<std::unique_ptr<File>>
@@ -56,6 +58,9 @@ protected:
 	virtual void
 	logInternal(LogLevel log_level, std::string tag, std::string formatted) = 0;
 	InputProcessor* inputProcessor = nullptr;
+
+private:
+	bool dark_mode;
 };
 
 } // namespace Growl

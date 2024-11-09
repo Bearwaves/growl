@@ -1,12 +1,29 @@
 #ifdef GROWL_IMGUI
-
 #include "growl/core/imgui.h"
+#include "growl/core/api/api.h"
 #include "imgui.h"
 
-void Growl::imGuiBegin() {
+constexpr const char* SYSTEM_API_WINDOW = "System API";
+
+namespace Growl {
+void doApiWindows(API& api) {
+	if (system_api_view) {
+		ImGui::Begin(SYSTEM_API_WINDOW, &system_api_view);
+		static_cast<SystemAPIInternal&>(api.system()).populateDebugMenu();
+		ImGui::End();
+	}
+}
+} // namespace Growl
+
+void Growl::imGuiBegin(API& api) {
 	ImGui::NewFrame();
 	ImGui::BeginMainMenuBar();
 	ImGui::Text("Growl");
+	if (ImGui::BeginMenu("Views")) {
+		ImGui::SeparatorText("Growl APIs");
+		ImGui::MenuItem("System API", nullptr, &system_api_view);
+		ImGui::EndMenu();
+	}
 	auto size = ImGui::CalcTextSize("0.00 ms/frame (000.0 FPS)");
 	ImGuiStyle& style = ImGui::GetStyle();
 	size.x += style.FramePadding.x * 2 + style.ItemSpacing.x;
@@ -19,6 +36,7 @@ void Growl::imGuiBegin() {
 	ImGui::EndMainMenuBar();
 	ImGuiID dockspace_id = ImGui::GetID("DockSpace");
 	ImGui::DockSpaceOverViewport(dockspace_id);
+	doApiWindows(api);
 }
 
 void Growl::imGuiBeginGameWindow() {

@@ -65,7 +65,7 @@ void MetalGraphicsAPI::begin() {
 	// Start the Dear ImGui frame
 	ImGui_ImplMetal_NewFrame(imgui_pass);
 	window->newImguiFrame();
-	imGuiBegin();
+	imGuiBegin(api);
 #endif
 }
 
