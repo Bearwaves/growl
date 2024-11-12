@@ -7,6 +7,7 @@
 #include "growl/core/input/controller.h"
 #include "growl/core/input/event.h"
 #include "growl/core/log.h"
+#include <android/configuration.h>
 #include <android/input.h>
 #include <android/log.h>
 #include <android_native_app_glue.h>
@@ -59,12 +60,16 @@ void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 		api->system().log("AndroidSystemAPI", "Window is ready for creation");
 		break;
 	case APP_CMD_WINDOW_RESIZED:
-	case APP_CMD_CONFIG_CHANGED:
-		static_cast<AndroidSystemAPI&>(api->system())
-			.onResizeEvent(
-				ANativeWindow_getWidth(app->window),
-				ANativeWindow_getHeight(app->window));
+	case APP_CMD_CONFIG_CHANGED: {
+		auto& system_internal = static_cast<AndroidSystemAPI&>(api->system());
+		system_internal.onResizeEvent(
+			ANativeWindow_getWidth(app->window),
+			ANativeWindow_getHeight(app->window));
+		auto dark_mode_config = AConfiguration_getUiModeNight(app->config);
+		system_internal.setDarkMode(
+			dark_mode_config == ACONFIGURATION_UI_MODE_NIGHT_YES);
 		break;
+	}
 	}
 }
 
@@ -189,7 +194,7 @@ void AndroidSystemAPI::onControllerEvent(InputControllerEvent event) {
 Result<std::unique_ptr<Window>>
 AndroidSystemAPI::createWindow(const Config& config) {
 	return std::unique_ptr<Window>(
-		std::make_unique<AndroidWindow>(android_state->window));
+		std::make_unique<AndroidWindow>(android_state->window, android_state));
 }
 
 void AndroidSystemAPI::setLogLevel(LogLevel log_level) {}

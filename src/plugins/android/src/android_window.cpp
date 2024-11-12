@@ -1,11 +1,14 @@
 #include "android_window.h"
 #include "android_error.h"
 #include "growl/core/error.h"
+#include "growl/core/graphics/window.h"
 #include <EGL/egl.h>
+#include <android/native_window.h>
 
 using Growl::AndroidError;
 using Growl::AndroidWindow;
 using Growl::Error;
+using Growl::WindowSafeAreaInsets;
 
 AndroidWindow::~AndroidWindow() {
 	if (display != EGL_NO_DISPLAY) {
@@ -27,6 +30,16 @@ void AndroidWindow::flip() {
 void AndroidWindow::getSize(int* w, int* h) {
 	eglQuerySurface(display, surface, EGL_WIDTH, w);
 	eglQuerySurface(display, surface, EGL_HEIGHT, h);
+}
+
+WindowSafeAreaInsets AndroidWindow::getSafeAreaInsets() {
+	int w, h;
+	getSize(&w, &h);
+	return WindowSafeAreaInsets{
+		static_cast<float>(app->contentRect.top),
+		static_cast<float>(h - app->contentRect.bottom),
+		static_cast<float>(app->contentRect.left),
+		static_cast<float>(w - app->contentRect.right)};
 }
 
 Error AndroidWindow::createGLContext(
