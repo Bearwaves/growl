@@ -44,6 +44,8 @@ struct PackInfo {
 
 	Value prefWidth;
 	Value prefHeight;
+	Value maxWidth;
+	Value maxHeight;
 
 	Value marginLeft;
 	Value marginRight;
@@ -86,6 +88,16 @@ public:
 
 	Packer<T>& height(Value height) {
 		pack->prefHeight = height;
+		return *this;
+	}
+
+	Packer<T>& maxWidth(Value max_width) {
+		pack->maxWidth = max_width;
+		return *this;
+	}
+
+	Packer<T>& maxHeight(Value max_height) {
+		pack->maxHeight = max_height;
 		return *this;
 	}
 

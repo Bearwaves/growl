@@ -18,7 +18,15 @@ void List::layout() {
 		auto node = getChildren().at(i++).get();
 		auto widget = nodeAsWidget(node);
 		pack.prefWidthResult = pack.prefWidth.evaluate(node);
+		if (pack.maxWidth) {
+			pack.prefWidthResult =
+				std::min(pack.prefWidthResult, pack.maxWidth.evaluate(node));
+		}
 		pack.prefHeightResult = pack.prefHeight.evaluate(node);
+		if (pack.maxHeight) {
+			pack.prefHeightResult =
+				std::min(pack.prefHeightResult, pack.maxHeight.evaluate(node));
+		}
 		pack.resolvedWidth = widget && widget->getPrefWidth()
 								 ? widget->getPrefWidth()
 								 : pack.prefWidthResult;
