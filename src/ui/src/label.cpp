@@ -8,12 +8,13 @@ using Growl::Widget;
 
 Label::Label(
 	std::string&& name, std::string text, FontTextureAtlas& font_tex,
-	FontFace& font, Value font_size, bool wrap)
+	FontFace& font, Value font_size, bool wrap, Value max_width)
 	: Widget{std::move(name)}
 	, font_tex{font_tex}
 	, glyph_layout{std::make_unique<GlyphLayout>(font, std::move(text), 0, 0)}
 	, font_size{font_size}
-	, wrap{wrap} {}
+	, wrap{wrap}
+	, max_width{max_width} {}
 
 void Label::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
 	Widget::onDraw(batch, parent_alpha, transform);
@@ -22,13 +23,22 @@ void Label::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
 
 void Label::layout() {
 	bool should_invalidate = false;
-	int font_size_val = std::floor(font_size.evaluate(this));
-	if (glyph_layout->getFontSize() != font_size_val) {
-		glyph_layout->setFontSize(font_size_val);
-		should_invalidate = true;
-	}
+	float font_size_val = font_size.evaluate(this);
+	glyph_layout->setFontSize(font_size_val);
+
+	// TODO rethink how maxWidth vs width is used
 	if (wrap) {
 		glyph_layout->setWidth(getWidth());
+	}
+	if (max_width && glyph_layout->getWidth() > max_width.evaluate(this)) {
+		font_size_val = glyph_layout->getFontSize() * max_width.evaluate(this) /
+						glyph_layout->getWidth();
+		glyph_layout->setFontSize(font_size_val);
+	}
+
+	if (font_size_val != last_font_size) {
+		should_invalidate = true;
+		last_font_size = font_size_val;
 	}
 
 	if (glyph_layout->getWidth() != pref_width) {
