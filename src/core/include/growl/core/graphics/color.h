@@ -7,6 +7,9 @@ struct Color {
 	float b;
 	float a;
 
+	Color()
+		: Color(0, 0, 0, 0) {}
+
 	Color(float r, float g, float b, float a)
 		: r{r}
 		, g{g}
