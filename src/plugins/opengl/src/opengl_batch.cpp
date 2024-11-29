@@ -219,6 +219,12 @@ void OpenGLBatch::draw(
 	verts += 4;
 }
 
+struct SDFUniforms {
+	glm::vec2 texture_size;
+	float pixel_range;
+	float _padding;
+};
+
 void OpenGLBatch::draw(
 	const GlyphLayout& glyph_layout, const FontTextureAtlas& font_texture_atlas,
 	float x, float y, glm::mat4x4 transform) {
@@ -233,6 +239,20 @@ void OpenGLBatch::draw(
 	uniforms.insert(uniforms.end(), VertexBlock{transform});
 	bound_tex = &tex;
 	bound_shader = shader;
+
+	if (font_texture_atlas.getType() == FontFaceType::MSDF) {
+		SDFUniforms sdf_uniforms{
+			glm::vec2{
+				font_texture_atlas.getTexture().getWidth(),
+				font_texture_atlas.getTexture().getHeight()},
+			font_texture_atlas.getPixelRange()};
+		glBindBuffer(GL_UNIFORM_BUFFER, ubo_f);
+		glBufferSubData(
+			GL_UNIFORM_BUFFER,
+			sizeof(FragmentBlock) + sizeof(SDFUniforms) * idx,
+			sizeof(SDFUniforms), &sdf_uniforms);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
 
 	GLuint i = verts;
 	for (auto& glyph : glyph_layout.getLayout()) {

@@ -108,7 +108,7 @@ Error OpenGLGraphicsAPI::setWindow(const Config& config) {
 		return err;
 	}
 	sdf_shader = std::make_unique<OpenGLShader>(
-		OpenGLShader::default_uniforms, OpenGLShader::default_vertex,
+		OpenGLShader::sdf_uniforms, OpenGLShader::default_vertex,
 		OpenGLShader::sdf_fragment);
 	if (auto err = sdf_shader->compile()) {
 		return err;

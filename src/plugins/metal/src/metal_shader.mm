@@ -155,20 +155,34 @@ fragment float4 fragment_func (
 }
 )";
 
+const std::string MetalShader::sdf_uniforms = R"(
+struct Uniforms {
+	float2 texture_size;
+	float pixel_range;
+};
+)";
+
 const std::string MetalShader::sdf_fragment = R"(
 float median(float r, float g, float b) {
 	return max(min(r, g), min(max(r, g), b));
 }
 
+float screenPxRange(float2 texCoord, float2 textureSize, float pixelRange) {
+  float2 unitRange = float2(pixelRange)/textureSize;
+  float2 screenTexSize = float2(1.0)/fwidth(texCoord);
+  return max(0.5*dot(unitRange, screenTexSize), 1.0);
+}
+
 fragment float4 fragment_func (
 	VertexOut v [[ stage_in ]],
 	texture2d<float> tex0 [[ texture(0) ]],
-	sampler sampler0 [[ sampler(0) ]]
+	sampler sampler0 [[ sampler(0) ]],
+	constant Uniforms& uniforms [[ buffer(2) ]]
 ) {
-	float4 msd = tex0.sample(sampler0, v.texCoord0);
-	float sd = median(msd.r, msd.g, msd.b) - 0.5;
-	float d = fwidth(sd);
-	float opacity = smoothstep(-d, d, sd);
+	float3 msd = tex0.sample(sampler0, v.texCoord0).rgb;
+	float sd = median(msd.r, msd.g, msd.b);
+	float d = screenPxRange(v.texCoord0, uniforms.texture_size, uniforms.pixel_range) * (sd-0.5);
+	float opacity = clamp(d + 0.5, 0.0, 1.0);
 	return float4(v.color.rgb, v.color.a * opacity);
 }
 )";

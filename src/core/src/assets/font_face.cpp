@@ -52,11 +52,12 @@ Result<FTFontData> loadFont(std::vector<unsigned char>&& data) noexcept {
 
 FontFace::FontFace(
 	FontFaceType type, FTFontData font_data, std::unique_ptr<Image> img,
-	std::unordered_map<int, AtlasRegion> glyphs)
+	std::unordered_map<int, AtlasRegion> glyphs, float pixel_range)
 	: type{type}
 	, font_data{std::make_unique<FTFontData>(std::move(font_data))}
 	, img{std::move(img)}
-	, glyphs{std::move(glyphs)} {}
+	, glyphs{std::move(glyphs)}
+	, pixel_range{pixel_range} {}
 
 FontFace::~FontFace() = default;
 FontFace::FontFace(FontFace&&) = default;
@@ -113,12 +114,12 @@ Result<FontFace> Growl::createDistanceFieldFontFaceFromFile(
 
 Result<FontFace> Growl::createDistanceFieldFontFaceFromBundleData(
 	std::vector<unsigned char>&& font_data, std::unique_ptr<Image> img,
-	std::unordered_map<int, AtlasRegion>&& glyphs) {
+	std::unordered_map<int, AtlasRegion>&& glyphs, float pixel_range) {
 	auto data_result = loadFont(std::move(font_data));
 	if (data_result.hasError()) {
 		return std::move(data_result.error());
 	}
 	return FontFace(
 		FontFaceType::MSDF, std::move(data_result.get()), std::move(img),
-		std::move(glyphs));
+		std::move(glyphs), pixel_range);
 }

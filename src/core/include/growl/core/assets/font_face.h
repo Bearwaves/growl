@@ -18,7 +18,7 @@ class FontFace {
 public:
 	FontFace(
 		FontFaceType type, FTFontData font_data, std::unique_ptr<Image> img,
-		std::unordered_map<int, AtlasRegion> glyphs);
+		std::unordered_map<int, AtlasRegion> glyphs, float pixel_range = 0);
 	~FontFace();
 
 	// FontFace is move-only
@@ -47,11 +47,16 @@ public:
 		return glyphs;
 	}
 
+	const float getPixelRange() const {
+		return pixel_range;
+	}
+
 private:
 	FontFaceType type;
 	std::unique_ptr<FTFontData> font_data;
 	std::unique_ptr<Image> img;
 	std::unordered_map<int, AtlasRegion> glyphs;
+	float pixel_range;
 };
 
 bool isValidFont(std::string path);
@@ -65,6 +70,6 @@ Result<FontFace> createDistanceFieldFontFaceFromFile(
 	std::string path, int size, std::string characters = "");
 Result<FontFace> createDistanceFieldFontFaceFromBundleData(
 	std::vector<unsigned char>&& font_data, std::unique_ptr<Image> img,
-	std::unordered_map<int, AtlasRegion>&& glyphs);
+	std::unordered_map<int, AtlasRegion>&& glyphs, float pixel_range);
 
 } // namespace Growl

@@ -142,7 +142,7 @@ Error MetalGraphicsAPI::setWindow(const Config& config) {
 		return err;
 	}
 	sdf_shader = std::make_unique<MetalShader>(
-		device, MetalShader::default_uniforms, MetalShader::default_vertex,
+		device, MetalShader::sdf_uniforms, MetalShader::default_vertex,
 		MetalShader::sdf_fragment);
 	if (auto err = sdf_shader->compile()) {
 		return err;

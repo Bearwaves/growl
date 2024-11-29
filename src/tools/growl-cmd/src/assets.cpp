@@ -140,7 +140,7 @@ AssetsIncludeError includeFont(
 		}
 		info.font = AssetsBundleMSDFFontInfo{
 			static_cast<unsigned int>(outfile.tellp()), out_buf.size(),
-			dist_result.get().getGlyphs()};
+			dist_result.get().getGlyphs(), dist_result.get().getPixelRange()};
 		outfile.write(
 			reinterpret_cast<const char*>(out_buf.data()), out_buf.size());
 		std::cout << "Included MSDF font atlas for " << style::bold

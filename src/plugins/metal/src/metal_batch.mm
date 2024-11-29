@@ -163,18 +163,31 @@ void MetalBatch::draw(
 				vertexCount:6];
 }
 
+struct SDFUniforms {
+	glm::vec2 texture_size;
+	float pixel_range;
+	float _padding;
+};
+
 void MetalBatch::draw(
 	const GlyphLayout& glyph_layout, const FontTextureAtlas& font_texture_atlas,
 	float x, float y, glm::mat4x4 transform) {
 	auto& tex =
 		static_cast<const MetalTexture&>(font_texture_atlas.getTexture());
 	tex.bind(encoder);
+	constant_buffer->writeAndBind(encoder, 2, &transform, sizeof(transform));
 	if (font_texture_atlas.getType() == FontFaceType::MSDF) {
 		sdf_shader->bind(surface, encoder);
+		SDFUniforms uniforms{
+			glm::vec2{
+				font_texture_atlas.getTexture().getWidth(),
+				font_texture_atlas.getTexture().getHeight()},
+			font_texture_atlas.getPixelRange()};
+		constant_buffer->writeAndBind(
+			encoder, 2, &uniforms, sizeof(uniforms), BufferBinding::Fragment);
 	} else {
 		default_shader->bind(surface, encoder);
 	}
-	constant_buffer->writeAndBind(encoder, 2, &transform, sizeof(transform));
 
 	std::vector<float> vertices;
 	for (auto& glyph : glyph_layout.getLayout()) {
