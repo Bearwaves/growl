@@ -7,6 +7,7 @@ set(SOURCES
 	"${SOURCE_PREFIX}/src/base/ftsystem.c"
 	"${SOURCE_PREFIX}/src/base/ftdebug.c"
 	"${SOURCE_PREFIX}/src/base/ftbbox.c"
+	"${SOURCE_PREFIX}/src/base/ftmm.c"
 	"${SOURCE_PREFIX}/src/sdf/sdf.c"
 	"${SOURCE_PREFIX}/src/sfnt/sfnt.c"
 	"${SOURCE_PREFIX}/src/smooth/smooth.c"
