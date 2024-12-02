@@ -11,38 +11,6 @@
 #include <memory>
 namespace Growl {
 
-class SoLoudAudioClip : public AudioClip {
-	friend class SoLoudAudioAPI;
-
-public:
-	SoLoudAudioClip(
-		std::string name, std::unique_ptr<SoLoud::Wav> wav,
-		std::vector<unsigned char>&& raw)
-		: AudioClip(name)
-		, sample{std::move(wav)}
-		, raw{std::move(raw)} {}
-
-private:
-	std::unique_ptr<SoLoud::Wav> sample;
-	std::vector<unsigned char> raw;
-};
-
-class SoLoudAudioStream : public AudioStream {
-	friend class SoLoudAudioAPI;
-
-public:
-	SoLoudAudioStream(
-		std::string name, std::unique_ptr<SoLoud::WavStream> wav,
-		std::unique_ptr<SoLoud::File> file)
-		: AudioStream(name)
-		, stream{std::move(wav)}
-		, file{std::move(file)} {}
-
-private:
-	std::unique_ptr<SoLoud::WavStream> stream;
-	std::unique_ptr<SoLoud::File> file;
-};
-
 class SoLoudAudioAPI : public AudioAPIInternal {
 public:
 	explicit SoLoudAudioAPI(SystemAPI& system)
@@ -60,13 +28,59 @@ public:
 	Result<std::unique_ptr<AudioStream>>
 	createStreamFromBundle(AssetsBundle& bundle, std::string name) override;
 
-	void play(AudioClip& sfx) override;
-	void play(AudioStream& stream, bool loop = true) override;
+	SoLoud::Soloud* getSoloud() {
+		return soloud.get();
+	}
 
 private:
 	SystemAPI& system;
 	std::unique_ptr<SoLoud::Soloud> soloud;
 	std::vector<AudioDevice> devices;
+};
+
+class SoLoudAudioClip : public AudioClip {
+
+public:
+	SoLoudAudioClip(
+		std::string name, SoLoudAudioAPI& api, std::unique_ptr<SoLoud::Wav> wav,
+		std::vector<unsigned char>&& raw)
+		: AudioClip(name)
+		, api{api}
+		, sample{std::move(wav)}
+		, raw{std::move(raw)} {}
+
+	void play() override;
+	float getVolume() override;
+	void setVolume(float volume) override;
+
+private:
+	SoLoudAudioAPI& api;
+	std::unique_ptr<SoLoud::Wav> sample;
+	std::vector<unsigned char> raw;
+	int handle = 0;
+};
+
+class SoLoudAudioStream : public AudioStream {
+
+public:
+	SoLoudAudioStream(
+		std::string name, SoLoudAudioAPI& api,
+		std::unique_ptr<SoLoud::WavStream> wav,
+		std::unique_ptr<SoLoud::File> file)
+		: AudioStream(name)
+		, api{api}
+		, stream{std::move(wav)}
+		, file{std::move(file)} {}
+
+	void play(bool loop) override;
+	float getVolume() override;
+	void setVolume(float volume) override;
+
+private:
+	SoLoudAudioAPI& api;
+	std::unique_ptr<SoLoud::WavStream> stream;
+	std::unique_ptr<SoLoud::File> file;
+	int handle = 0;
 };
 
 }; // namespace Growl

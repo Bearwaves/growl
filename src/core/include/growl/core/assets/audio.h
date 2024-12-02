@@ -14,6 +14,10 @@ public:
 	AudioClip(AudioClip&&) = default;
 	AudioClip& operator=(AudioClip&&) = default;
 
+	virtual void play() = 0;
+	virtual float getVolume() = 0;
+	virtual void setVolume(float volume) = 0;
+
 private:
 	std::string name;
 };
@@ -28,6 +32,10 @@ public:
 	AudioStream& operator=(const AudioStream&) = delete;
 	AudioStream(AudioStream&&) = default;
 	AudioStream& operator=(AudioStream&&) = default;
+
+	virtual void play(bool loop) = 0;
+	virtual float getVolume() = 0;
+	virtual void setVolume(float volume) = 0;
 
 private:
 	std::string name;

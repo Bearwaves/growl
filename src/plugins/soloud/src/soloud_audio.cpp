@@ -67,7 +67,7 @@ SoLoudAudioAPI::loadClipFromBundle(AssetsBundle& bundle, std::string path) {
 			std::to_string(error)));
 	}
 	std::unique_ptr<AudioClip> ret(std::make_unique<SoLoudAudioClip>(
-		path, std::move(wav), std::move(raw)));
+		path, *this, std::move(wav), std::move(raw)));
 	return std::move(ret);
 }
 
@@ -88,17 +88,6 @@ SoLoudAudioAPI::createStreamFromBundle(AssetsBundle& bundle, std::string name) {
 			std::to_string(error)));
 	}
 	std::unique_ptr<AudioStream> ret(std::make_unique<SoLoudAudioStream>(
-		name, std::move(stream), std::move(file)));
+		name, *this, std::move(stream), std::move(file)));
 	return std::move(ret);
-}
-
-void SoLoudAudioAPI::play(AudioClip& clip) {
-	auto& soloud_clip = static_cast<SoLoudAudioClip&>(clip);
-	soloud->play(*soloud_clip.sample);
-}
-
-void SoLoudAudioAPI::play(AudioStream& stream, bool loop) {
-	auto& soloud_stream = static_cast<SoLoudAudioStream&>(stream);
-	int handle = soloud->play(*soloud_stream.stream);
-	soloud->setLooping(handle, loop);
 }

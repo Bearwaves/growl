@@ -6,6 +6,8 @@ set(SOURCES
 	"src/soloud_plugin.cpp"
 	"src/soloud_audio.cpp"
 	"src/bundle_file.cpp"
+	"src/soloud_clip.cpp"
+	"src/soloud_stream.cpp"
 	)
 
 set(HEADERS
