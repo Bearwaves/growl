@@ -33,12 +33,14 @@ void List::layout() {
 		pack.resolvedHeight = widget && widget->getPrefHeight()
 								  ? widget->getPrefHeight()
 								  : pack.prefHeightResult;
+		pack.boundsWidth = pack.prefWidthResult +
+						   pack.marginLeft.evaluate(node) +
+						   pack.marginRight.evaluate(node);
+		pack.boundsHeight = pack.resolvedHeight +
+							pack.marginTop.evaluate(node) +
+							pack.marginBottom.evaluate(node);
 
-		remaining -= vertical
-						 ? pack.resolvedHeight + pack.marginTop.evaluate(node) +
-							   pack.marginBottom.evaluate(node)
-						 : pack.resolvedWidth + pack.marginLeft.evaluate(node) +
-							   pack.marginRight.evaluate(node);
+		remaining -= vertical ? pack.boundsHeight : pack.boundsWidth;
 
 		if (pack.expand) {
 			expands++;
@@ -52,65 +54,120 @@ void List::layout() {
 	i = 0;
 	for (auto& pack : pack_info) {
 		auto node = getChildren().at(i++).get();
+
+		float margin_top = pack.marginTop.evaluate(node);
+		float margin_bottom = pack.marginBottom.evaluate(node);
+		float margin_left = pack.marginLeft.evaluate(node);
+		float margin_right = pack.marginRight.evaluate(node);
+
 		switch (direction) {
 		case Direction::VERTICAL: {
+			if (pack.expand) {
+				pack.boundsHeight += extra;
+			}
+
 			node->setWidth(
-				pack.fill			   ? max_width
+				pack.fill_across ? max_width - (margin_left + margin_right)
 				: pack.prefWidthResult ? pack.prefWidthResult
 									   : pack.resolvedWidth);
+			node->setHeight(
+				pack.fill_along
+					? pack.boundsHeight - (margin_top + margin_bottom)
+					: pack.resolvedHeight);
 
-			float margin_left = pack.marginLeft.evaluate(node);
-			switch (pack.alignment) {
-			case Align::START:
+			switch (pack.align_across) {
+			case Align::LEFT:
 				node->setX(margin_left);
 				break;
 			case Align::MIDDLE:
-				node->setX((max_width - node->getWidth()) / 2 + margin_left);
+				node->setX(
+					(max_width - node->getWidth()) / 2 + margin_left -
+					margin_right);
 				break;
-			case Align::END:
+			case Align::RIGHT:
 				node->setX((max_width - node->getWidth()) + margin_left);
 				break;
+			default:
+				break;
 			}
 
-			position += pack.marginTop.evaluate(node);
-
-			node->setY(position);
-			float height = pack.resolvedHeight;
-			if (pack.expand) {
-				height += extra;
+			switch (pack.align_along) {
+			case Align::TOP:
+				node->setY(position + margin_top);
+				break;
+			case Align::MIDDLE:
+				node->setY(
+					position +
+					((pack.boundsHeight + margin_top - margin_bottom) -
+					 node->getHeightRaw()) /
+						2);
+				break;
+			case Align::BOTTOM:
+				node->setY(
+					position + (pack.boundsHeight - node->getHeightRaw()) -
+					margin_bottom);
+				break;
+			default:
+				break;
 			}
-			position += height + pack.marginBottom.evaluate(node);
-			node->setHeight(height);
+
+			position += pack.boundsHeight;
+
 			break;
 		}
 		case Direction::HORIZONTAL: {
+			if (pack.expand) {
+				pack.boundsWidth += extra;
+			}
+
+			node->setWidth(
+				pack.fill_along
+					? pack.boundsWidth - (margin_left + margin_right)
+					: pack.resolvedWidth);
 			node->setHeight(
-				pack.fill				? max_height
+				pack.fill_across ? max_height - (margin_top + margin_bottom)
 				: pack.prefHeightResult ? pack.prefHeightResult
 										: pack.resolvedHeight);
 
-			float margin_top = pack.marginTop.evaluate(node);
-			switch (pack.alignment) {
-			case Align::START:
+			switch (pack.align_across) {
+				// TODO fix these
+			case Align::TOP:
 				node->setY(margin_top);
 				break;
 			case Align::MIDDLE:
-				node->setY((max_height - node->getHeight()) / 2 + margin_top);
+				node->setY(
+					(max_height - node->getHeightRaw()) / 2 + margin_top -
+					margin_bottom);
 				break;
-			case Align::END:
-				node->setY((max_height - node->getHeight()) + margin_top);
+			case Align::BOTTOM:
+				node->setY((max_height - node->getHeightRaw()) + margin_top);
+				break;
+			default:
 				break;
 			}
 
-			position += pack.marginLeft.evaluate(node);
-
-			node->setX(position);
-			float width = pack.resolvedWidth;
-			if (pack.expand) {
-				width += extra;
+			switch (pack.align_along) {
+			case Align::LEFT:
+				node->setX(position + margin_left);
+				break;
+			case Align::MIDDLE:
+				node->setX(
+					position +
+					((pack.boundsWidth + margin_left - margin_right) -
+					 node->getWidthRaw()) /
+						2);
+				break;
+			case Align::RIGHT:
+				node->setX(
+					position + (pack.boundsWidth - node->getWidthRaw()) -
+					margin_right);
+				break;
+			default:
+				break;
 			}
-			position += width + pack.marginBottom.evaluate(node);
-			node->setWidth(width);
+
+			position += pack.boundsWidth;
+
 			break;
 		}
 		}

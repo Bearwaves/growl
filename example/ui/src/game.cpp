@@ -50,20 +50,18 @@ Error Game::init() {
 	root = std::make_unique<List>("Root", List::Direction::HORIZONTAL);
 	getAPI().system().setInputProcessor(root.get());
 
-	root->addWithLayout<Node>("Spacer L").expand();
 	auto col = root->addWithLayout<List>("Column", List::Direction::VERTICAL)
-				   .fill()
+				   .fillAcross()
+					 .expand()
 				   .width(Value::percentWidth(0.2f, root.get()))
 				   .getNode();
-	root->addWithLayout<Node>("Spacer R").expand();
 
-	col->addWithLayout<Node>("Spacer T").expand();
 	label = col->addWithLayout<Label>(
 				   "Text", text, *font_atlas, *font,
 				   Value::percentHeight(0.03f, col), true)
 				.width(Value::percentWidth(1.f, col))
+				.expand()
 				.getNode();
-	col->addWithLayout<Node>("Spacer B").expand();
 	root->setDebugRendering(DebugRendering::ON);
 
 	return nullptr;

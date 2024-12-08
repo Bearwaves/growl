@@ -4,7 +4,7 @@ namespace Growl {
 
 class Node;
 
-enum class Align { START, MIDDLE, END };
+enum class Align { LEFT, TOP, MIDDLE, RIGHT, BOTTOM };
 
 class Value {
 public:
@@ -40,7 +40,8 @@ private:
 
 struct PackInfo {
 	bool expand = false;
-	bool fill = false;
+	bool fill_along = false;
+	bool fill_across = false;
 
 	Value prefWidth;
 	Value prefHeight;
@@ -52,8 +53,11 @@ struct PackInfo {
 	Value marginTop;
 	Value marginBottom;
 
-	Align alignment = Align::START;
+	Align align_along = Align::MIDDLE;
+	Align align_across = Align::MIDDLE;
 
+	float boundsWidth = 0;
+	float boundsHeight = 0;
 	float prefWidthResult = 0;
 	float prefHeightResult = 0;
 	float resolvedWidth = 0;
@@ -77,7 +81,18 @@ public:
 	}
 
 	Packer<T>& fill() {
-		pack->fill = true;
+		pack->fill_along = true;
+		pack->fill_across = true;
+		return *this;
+	}
+
+	Packer<T>& fillAlong() {
+		pack->fill_along = true;
+		return *this;
+	}
+
+	Packer<T>& fillAcross() {
+		pack->fill_across = true;
 		return *this;
 	}
 
@@ -101,8 +116,13 @@ public:
 		return *this;
 	}
 
-	Packer<T>& align(Align align) {
-		pack->alignment = align;
+	Packer<T>& alignAlong(Align align) {
+		pack->align_along = align;
+		return *this;
+	}
+
+	Packer<T>& alignAcross(Align align) {
+		pack->align_across = align;
 		return *this;
 	}
 
