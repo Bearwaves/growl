@@ -190,25 +190,11 @@ void main() {
 }
 )";
 
-const std::string OpenGLShader::rect_uniforms = R"(
-struct Uniforms {
-	vec2 rect_size;
-	float border_size;
-};
-)";
-
 const std::string OpenGLShader::rect_fragment = R"(
-in vec2 TexCoord;
 in vec4 Color;
-flat in int Idx;
 out vec4 outCol;
 
 void main() {
-	Uniforms u = uniforms[Idx];
-	vec2 border_uv = u.border_size / u.rect_size;
-	vec2 dist = min(TexCoord, 1.0 - TexCoord);
-	float inside = step(border_uv.x, dist.x) * step(border_uv.y, dist.y);
-	vec4 fill_color = mix(Color, vec4(0.0), step(1.0, u.border_size));
-	outCol = mix(Color, fill_color, inside);
+	outCol = Color;
 }
 )";

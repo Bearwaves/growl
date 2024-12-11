@@ -52,7 +52,7 @@ Error Game::init() {
 
 	auto col = root->addWithLayout<List>("Column", List::Direction::VERTICAL)
 				   .fillAcross()
-					 .expand()
+				   .expand()
 				   .width(Value::percentWidth(0.2f, root.get()))
 				   .getNode();
 

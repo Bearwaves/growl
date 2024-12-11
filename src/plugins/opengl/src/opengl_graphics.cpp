@@ -114,7 +114,7 @@ Error OpenGLGraphicsAPI::setWindow(const Config& config) {
 		return err;
 	}
 	rect_shader = std::make_unique<OpenGLShader>(
-		OpenGLShader::rect_uniforms, OpenGLShader::default_vertex,
+		OpenGLShader::default_uniforms, OpenGLShader::default_vertex,
 		OpenGLShader::rect_fragment);
 	if (auto err = rect_shader->compile()) {
 		return err;

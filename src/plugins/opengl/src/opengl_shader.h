@@ -25,7 +25,6 @@ public:
 	static const std::string default_fragment;
 	static const std::string sdf_uniforms;
 	static const std::string sdf_fragment;
-	static const std::string rect_uniforms;
 	static const std::string rect_fragment;
 
 private:

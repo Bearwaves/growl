@@ -135,23 +135,11 @@ fragment float4 fragment_func (
 }
 )";
 
-const std::string MetalShader::rect_uniforms = R"(
-struct Uniforms {
-	float2 rect_size;
-	float border_size;
-};
-)";
-
 const std::string MetalShader::rect_fragment = R"(
 fragment float4 fragment_func (
-	VertexOut v [[ stage_in ]],
-	constant Uniforms& uniforms [[ buffer(2) ]]
+	VertexOut v [[ stage_in ]]
 ) {
-	float2 border_uv = uniforms.border_size / uniforms.rect_size;
-	float2 dist = min(v.texCoord0, 1.0 - v.texCoord0);
-	float inside = step(border_uv.x, dist.x) * step(border_uv.y, dist.y);
-	float4 fill_color = mix(v.color, float4(0.0), step(1.0, uniforms.border_size));
-	return mix(v.color, fill_color, inside);
+	return v.color;
 }
 )";
 

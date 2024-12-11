@@ -136,7 +136,7 @@ Error MetalGraphicsAPI::setWindow(const Config& config) {
 		return err;
 	}
 	rect_shader = std::make_unique<MetalShader>(
-		device, MetalShader::rect_uniforms, MetalShader::default_vertex,
+		device, MetalShader::default_uniforms, MetalShader::default_vertex,
 		MetalShader::rect_fragment);
 	if (auto err = rect_shader->compile()) {
 		return err;

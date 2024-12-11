@@ -286,12 +286,6 @@ void OpenGLBatch::drawRect(
 	drawRect(x, y, width, height, *rect_shader, transform, border_width);
 }
 
-struct RectUniforms {
-	glm::vec2 rect_size;
-	float border_size;
-	float _padding;
-};
-
 void OpenGLBatch::drawRect(
 	float x, float y, float width, float height, Shader& shader,
 	glm::mat4x4 transform, float border_width, void* uniform_data,
@@ -305,31 +299,75 @@ void OpenGLBatch::drawRect(
 
 	uniforms.insert(uniforms.end(), VertexBlock{transform});
 
-	RectUniforms rect_uniforms;
-	if (!uniform_data) {
-		rect_uniforms.rect_size.x = width;
-		rect_uniforms.rect_size.y = height;
-		rect_uniforms.border_size = border_width;
-		uniform_data = &rect_uniforms;
-		uniforms_length = sizeof(rect_uniforms);
+	if (uniform_data) {
+		glBindBuffer(GL_UNIFORM_BUFFER, ubo_f);
+		glBufferSubData(
+			GL_UNIFORM_BUFFER, sizeof(FragmentBlock) + uniforms_length * idx,
+			uniforms_length, uniform_data);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	glBindBuffer(GL_UNIFORM_BUFFER, ubo_f);
-	glBufferSubData(
-		GL_UNIFORM_BUFFER, sizeof(FragmentBlock) + uniforms_length * idx,
-		uniforms_length, uniform_data);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
+	x = std::round(x) + 0.5f;
+	y = std::round(y) + 0.5f;
 	float right = x + width;
 	float bottom = y + height;
-	addVertex(x, y, 0.0f, 1.0f);
-	addVertex(right, y, 1.0f, 1.0f);
-	addVertex(right, bottom, 1.0f, 0.0f);
-	addVertex(x, bottom, 0.0f, 0.0f);
-	elements.insert(
-		elements.end(),
-		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
-	verts += 4;
+
+	if (border_width == 0) {
+		addVertex(x, y, 0.0f, 1.0f);
+		addVertex(right, y, 1.0f, 1.0f);
+		addVertex(right, bottom, 1.0f, 0.0f);
+		addVertex(x, bottom, 0.0f, 0.0f);
+		elements.insert(
+			elements.end(),
+			{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
+		verts += 4;
+	} else {
+		border_width = std::max(1.0f, std::round(border_width));
+
+		// Top
+		float top_inner = y + border_width;
+		addVertex(x, y, 0.0f, 1.0f);
+		addVertex(right, y, 1.0f, 1.0f);
+		addVertex(right, top_inner, 1.0f, 0.0f);
+		addVertex(x, top_inner, 0.0f, 0.0f);
+		elements.insert(
+			elements.end(),
+			{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
+		verts += 4;
+
+		// Bottom
+		float bottom_inner = y + height - border_width;
+		addVertex(x, bottom_inner, 0.0f, 1.0f);
+		addVertex(right, bottom_inner, 1.0f, 1.0f);
+		addVertex(right, bottom, 1.0f, 0.0f);
+		addVertex(x, bottom, 0.0f, 0.0f);
+		elements.insert(
+			elements.end(),
+			{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
+		verts += 4;
+
+		// Left
+		float left_inner = x + border_width;
+		addVertex(x, y, 0.0f, 1.0f);
+		addVertex(left_inner, y, 1.0f, 1.0f);
+		addVertex(left_inner, bottom, 1.0f, 0.0f);
+		addVertex(x, bottom, 0.0f, 0.0f);
+		elements.insert(
+			elements.end(),
+			{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
+		verts += 4;
+
+		// Right
+		float right_inner = x + width - border_width;
+		addVertex(right_inner, y, 0.0f, 1.0f);
+		addVertex(right, y, 1.0f, 1.0f);
+		addVertex(right, bottom, 1.0f, 0.0f);
+		addVertex(right_inner, bottom, 0.0f, 0.0f);
+		elements.insert(
+			elements.end(),
+			{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
+		verts += 4;
+	}
 	idx++;
 }
 
