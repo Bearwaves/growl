@@ -22,6 +22,9 @@ public:
 	void
 	onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) override;
 
+	void setRegion(TextureAtlasRegion&& region);
+	void setTexture(Texture* texture);
+
 private:
 	std::unique_ptr<TextureAtlasRegion> region;
 	Texture* texture;
