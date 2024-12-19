@@ -79,6 +79,10 @@ enum class Key {
 	FunctionF22,
 	FunctionF23,
 	FunctionF24,
+
+	Return,
+	Space,
+	Escape,
 };
 
 struct InputKeyboardEvent {

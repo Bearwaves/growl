@@ -174,6 +174,13 @@ Key SDL2SystemAPI::getKey(SDL_KeyboardEvent& event) {
 	case SDL_SCANCODE_F24:
 		return Key::FunctionF24;
 
+	case SDL_SCANCODE_RETURN:
+		return Key::Return;
+	case SDL_SCANCODE_SPACE:
+		return Key::Space;
+	case SDL_SCANCODE_ESCAPE:
+		return Key::Escape;
+
 	default:
 		return Key::Unknown;
 	}
@@ -314,6 +321,13 @@ SDL_Scancode SDL2SystemAPI::getScancode(Key key) {
 		return SDL_SCANCODE_F23;
 	case Key::FunctionF24:
 		return SDL_SCANCODE_F24;
+
+	case Key::Return:
+		return SDL_SCANCODE_RETURN;
+	case Key::Space:
+		return SDL_SCANCODE_SPACE;
+	case Key::Escape:
+		return SDL_SCANCODE_ESCAPE;
 
 	default:
 		return SDL_SCANCODE_UNKNOWN;
