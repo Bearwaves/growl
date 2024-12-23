@@ -71,7 +71,7 @@ e.g. `make -j 4` to build with four threads.
 1. Two executables will be built: `growl-test-app` and `growl-cmd`. Use
 `growl-cmd` to generate the asset bundle, like so:
 ```bash
-./growl-cmd assets bundle ../assets/
+./growl-cmd assets bundle ../../assets/
 ```
 
 1. Run the app!
