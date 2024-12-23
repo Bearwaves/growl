@@ -4,6 +4,7 @@
 #include "growl/core/api/api.h"
 #include "growl/core/entity.h"
 #include "growl/core/error.h"
+#include "growl/core/graphics/color.h"
 #include "growl/core/input/processor.h"
 #include "growl/core/scripting/script.h"
 #include "growl/scene/debug.h"
@@ -36,6 +37,10 @@ public:
 	virtual Node* addChild(std::unique_ptr<Node> node);
 	void tick(double delta_time);
 	void draw(Batch& batch, float parent_alpha);
+
+	void setColor(Color color) {
+		this->color = color;
+	}
 
 	virtual bool onEvent(const InputEvent& event) override;
 	bool hit(float x, float y);
@@ -87,6 +92,7 @@ private:
 	DebugRendering debug_rendering = DebugRendering::OFF;
 	bool debug_mouseover = false;
 	int depth = 0;
+	std::optional<Color> color;
 
 	std::function<bool(float x, float y)> click_listener;
 	bool click_listener_down = false;

@@ -91,13 +91,15 @@ void Growl::to_json(json& j, const AssetsBundleMSDFFontInfo& r) {
 	j = json{
 		{"msdfPosition", r.msdf_position},
 		{"msdfSize", r.msdf_size},
-		{"glyphs", r.glyphs}};
+		{"glyphs", r.glyphs},
+		{"pixelRange", r.pixel_range}};
 }
 
 void Growl::from_json(const json& j, AssetsBundleMSDFFontInfo& r) {
 	j.at("msdfPosition").get_to(r.msdf_position);
 	j.at("msdfSize").get_to(r.msdf_size);
 	j.at("glyphs").get_to(r.glyphs);
+	j.at("pixelRange").get_to(r.pixel_range);
 }
 
 void Growl::to_json(json& j, const AssetsBundleShaderPackInfo& r) {
@@ -272,7 +274,7 @@ Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 	return createDistanceFieldFontFaceFromBundleData(
 		std::move(font_data),
 		std::make_unique<Image>(std::move(image_result.get())),
-		std::move(info.font.value().glyphs));
+		std::move(info.font->glyphs), info.font->pixel_range);
 }
 
 Result<ShaderPack> AssetsBundle::getShaderPack(std::string name) noexcept {

@@ -142,17 +142,20 @@ void Node::draw(Batch& batch, float parent_alpha) {
 	if (!parent) {
 		populateDebugUI(batch);
 	}
+	Color c = batch.getColor();
+	if (color) {
+		batch.setColor(*color);
+	}
 	onDraw(batch, parent_alpha, local_transform);
 #ifdef GROWL_IMGUI
 	if (debug_rendering == DebugRendering::ON ||
 		(debug_rendering == DebugRendering::MOUSEOVER && debug_mouseover)) {
-		Color c = batch.getColor();
 		batch.setColor(
 			debug_rendering_colors[depth % DEBUG_RENDERING_COLORS_COUNT]);
 		batch.drawRect(0, 0, getWidth(), getHeight(), local_transform, 5.f);
-		batch.setColor(c);
 	}
 #endif
+	batch.setColor(c);
 }
 
 void Node::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {

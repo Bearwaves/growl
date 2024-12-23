@@ -19,6 +19,10 @@ using Growl::FTFontData;
 using Growl::Image;
 using Growl::Result;
 
+constexpr float RANGE = 4.f;
+constexpr int BORDER = 2;
+constexpr int FT_LOAD_PARAMS = FT_LOAD_RENDER;
+
 Result<FontFace> createDistanceFieldFontFace(
 	FTFontData font_data, int size, std::string characters) {
 	if (FT_HAS_COLOR(font_data.face)) {
@@ -32,31 +36,22 @@ Result<FontFace> createDistanceFieldFontFace(
 	}
 	msdfgen::FontHandle* font_handle =
 		msdfgen::adoptFreetypeFont(font_data.face);
-	msdfgen::FontMetrics font_metrics;
-	msdfgen::getFontMetrics(font_metrics, font_handle);
-
-	float scale = size / font_metrics.emSize;
-	int border = 2;
-	int pack_border = 1;
-	float range = 2;
 
 	std::vector<stbrp_rect> glyph_rects;
+
 	if (characters.empty()) {
 		for (int i = 0; i < font_data.face->num_glyphs; i++) {
-			msdfgen::Shape shape;
-			msdfgen::loadGlyph(shape, font_handle, msdfgen::GlyphIndex(i));
-			if (shape.validate() && shape.contours.size() > 0) {
-				shape.inverseYAxis = true;
-				shape.normalize();
-				shape.orientContours();
-
-				auto bounds = shape.getBounds(border);
-				int glyph_width = round((bounds.r - bounds.l) * scale);
-				int glyph_height = round((bounds.t - bounds.b) * scale);
-				glyph_rects.push_back(stbrp_rect{
-					i, glyph_width + (pack_border * 2),
-					glyph_height + (pack_border * 2)});
+			if (auto err = FT_Load_Glyph(font_data.face, i, FT_LOAD_PARAMS);
+				err) {
+				return Error(std::make_unique<FontError>(
+					"Failed to load glyph bitmap", err));
 			}
+			glyph_rects.push_back(stbrp_rect{
+				i,
+				static_cast<stbrp_coord>(
+					font_data.face->glyph->bitmap.width + 2 * BORDER),
+				static_cast<stbrp_coord>(
+					font_data.face->glyph->bitmap.rows + 2 * BORDER)});
 		}
 	} else {
 		// If characters is specified, use a Harfbuzz buffer to work
@@ -77,20 +72,17 @@ Result<FontFace> createDistanceFieldFontFace(
 				continue;
 			}
 
-			msdfgen::Shape shape;
-			msdfgen::loadGlyph(shape, font_handle, msdfgen::GlyphIndex(glyph));
-			if (shape.validate() && shape.contours.size() > 0) {
-				shape.inverseYAxis = true;
-				shape.normalize();
-				shape.orientContours();
-
-				auto bounds = shape.getBounds(border);
-				int glyph_width = round((bounds.r - bounds.l) * scale);
-				int glyph_height = round((bounds.t - bounds.b) * scale);
-				glyph_rects.push_back(stbrp_rect{
-					static_cast<int>(glyph), glyph_width + (pack_border * 2),
-					glyph_height + (pack_border * 2)});
+			if (auto err = FT_Load_Glyph(font_data.face, glyph, FT_LOAD_PARAMS);
+				err) {
+				return Error(std::make_unique<FontError>(
+					"Failed to load glyph bitmap", err));
 			}
+			glyph_rects.push_back(stbrp_rect{
+				static_cast<int>(glyph),
+				static_cast<stbrp_coord>(
+					font_data.face->glyph->bitmap.width + 2 * BORDER),
+				static_cast<stbrp_coord>(
+					font_data.face->glyph->bitmap.rows + 2 * BORDER)});
 		}
 		hb_font_destroy(face);
 		hb_buffer_destroy(buffer);
@@ -105,32 +97,44 @@ Result<FontFace> createDistanceFieldFontFace(
 		return Error(std::make_unique<AssetsError>(
 			"Failed to pack font in texture; too large"));
 	}
-
-	std::unordered_map<int, AtlasRegion> glyphs;
-	std::vector<unsigned char> image_data(width * height * 4, 0);
 	const float inv_tex_width = 1.0f / width;
 	const float inv_tex_height = 1.0f / height;
 
+	std::unordered_map<int, AtlasRegion> glyphs;
+	std::vector<unsigned char> image_data(width * height * 4, 0);
 	for (const auto& rect : glyph_rects) {
 		msdfgen::Shape shape;
-		msdfgen::loadGlyph(shape, font_handle, msdfgen::GlyphIndex(rect.id));
+		msdfgen::loadGlyph(
+			shape, font_handle, msdfgen::GlyphIndex(rect.id),
+			msdfgen::FONT_SCALING_EM_NORMALIZED);
 		if (shape.validate() && shape.contours.size() > 0) {
 			shape.inverseYAxis = true;
 			shape.normalize();
 			shape.orientContours();
-
-			auto bounds = shape.getBounds(border);
 			msdfgen::edgeColoringSimple(shape, 3);
-			msdfgen::Bitmap<float, 4> bitmap(
-				rect.w - (pack_border * 2), rect.h - (pack_border * 2));
-			msdfgen::generateMTSDF(
-				bitmap, shape, range, scale,
-				msdfgen::Vector2(-bounds.l, -bounds.b));
+
+			int load_params = FT_LOAD_RENDER;
+			if (auto err = FT_Load_Glyph(font_data.face, rect.id, load_params);
+				err) {
+				return Error(std::make_unique<FontError>(
+					"Failed to load glyph bitmap", err));
+			}
+
+			float bl =
+				(font_data.face->glyph->bitmap_left - BORDER) / (float)size;
+			float bb = (rect.h - font_data.face->glyph->bitmap_top - BORDER) /
+					   (float)size;
+
+			msdfgen::Bitmap<float, 4> bitmap(rect.w, rect.h);
+			msdfgen::SDFTransformation t(
+				msdfgen::Projection(size, msdfgen::Vector2(-bl, bb)),
+				msdfgen::Range(RANGE / size));
+			msdfgen::generateMTSDF(bitmap, shape, t);
 
 			for (int row = 0; row < bitmap.height(); row++) {
 				for (int col = 0; col < bitmap.width(); col++) {
-					int x = rect.x + pack_border + col;
-					int y = rect.y + pack_border + row;
+					int x = rect.x + col;
+					int y = rect.y + row;
 					unsigned char* dst =
 						image_data.data() + 4 * (y * width + x);
 					*dst++ = msdfgen::pixelFloatToByte(bitmap(col, row)[0]);
@@ -140,16 +144,13 @@ Result<FontFace> createDistanceFieldFontFace(
 				}
 			}
 
-			int border_calc = border * scale;
 			glyphs[rect.id] = AtlasRegion{
 				bitmap.width(),
 				bitmap.height(),
-				(rect.x + pack_border + border_calc) * inv_tex_width,
-				(rect.y + pack_border + border_calc) * inv_tex_height,
-				(rect.x + (rect.w - (pack_border + border_calc))) *
-					inv_tex_width,
-				(rect.y + (rect.h - (pack_border + border_calc))) *
-					inv_tex_height};
+				(rect.x + BORDER - 0.5f) * inv_tex_width,
+				(rect.y + BORDER - 0.5f) * inv_tex_height,
+				(rect.x + rect.w - BORDER + 0.5f) * inv_tex_width,
+				(rect.y + rect.h - BORDER + 0.5f) * inv_tex_height};
 		}
 	}
 
@@ -157,5 +158,5 @@ Result<FontFace> createDistanceFieldFontFace(
 	return FontFace(
 		FontFaceType::MSDF, std::move(font_data),
 		std::make_unique<Image>(width, height, 4, image_data),
-		std::move(glyphs));
+		std::move(glyphs), RANGE);
 }

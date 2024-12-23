@@ -156,9 +156,17 @@ void main() {
 }
 )";
 
+const std::string OpenGLShader::sdf_uniforms = R"(
+struct Uniforms {
+	vec2 texture_size;
+	float pixel_range;
+};
+)";
+
 const std::string OpenGLShader::sdf_fragment = R"(
 in vec2 TexCoord;
 in vec4 Color;
+flat in int Idx;
 out vec4 outCol;
 uniform sampler2D texture0;
 
@@ -166,35 +174,27 @@ float median(float r, float g, float b) {
 	return max(min(r, g), min(max(r, g), b));
 }
 
+float screenPxRange(vec2 texCoord, vec2 textureSize, float pxRange) {
+	vec2 unitRange = vec2(pxRange)/textureSize;
+	vec2 screenTexSize = vec2(1.0)/fwidth(texCoord);
+	return max(0.5*dot(unitRange, screenTexSize), 1.0);
+}
+
 void main() {
-	vec4 msd = texture(texture0, TexCoord).rgba;
+	Uniforms u = uniforms[Idx];
+	vec3 msd = texture(texture0, TexCoord).rgb;
 	float sd = median(msd.r, msd.g, msd.b);
-	float signed_dist = sd - 0.5;
-	float d = fwidth(signed_dist);
-	float opacity = smoothstep(-d, d, signed_dist);
+	float screenPxDistance = screenPxRange(TexCoord, u.texture_size, u.pixel_range)*(sd - 0.5);
+	float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
 	outCol = vec4(Color.rgb, Color.a * opacity);
 }
 )";
 
-const std::string OpenGLShader::rect_uniforms = R"(
-struct Uniforms {
-	vec2 rect_size;
-	float border_size;
-};
-)";
-
 const std::string OpenGLShader::rect_fragment = R"(
-in vec2 TexCoord;
 in vec4 Color;
-flat in int Idx;
 out vec4 outCol;
 
 void main() {
-	Uniforms u = uniforms[Idx];
-	vec2 border_uv = u.border_size / u.rect_size;
-	vec2 dist = min(TexCoord, 1.0 - TexCoord);
-	float inside = step(border_uv.x, dist.x) * step(border_uv.y, dist.y);
-	vec4 fill_color = mix(Color, vec4(0.0), step(1.0, u.border_size));
-	outCol = mix(Color, fill_color, inside);
+	outCol = Color;
 }
 )";

@@ -140,7 +140,7 @@ Error TestAppGame::init() {
 
 void TestAppGame::tick(double delta_time) {
 	if (!grass_tiled) {
-		getAPI().audio().play(*music);
+		music->play(true);
 	}
 
 	catX += delta_time * SPEED *

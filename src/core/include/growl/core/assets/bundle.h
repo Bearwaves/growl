@@ -46,6 +46,7 @@ struct AssetsBundleMSDFFontInfo {
 	uint64_t msdf_position;
 	uint64_t msdf_size;
 	std::unordered_map<int, AtlasRegion> glyphs;
+	float pixel_range;
 };
 
 struct AssetsBundleShaderSourceInfo {

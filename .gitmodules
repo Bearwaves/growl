@@ -49,3 +49,6 @@
 [submodule "thirdparty/lua"]
 	path = thirdparty/lua
 	url = git@github.com:lua/lua.git
+[submodule "thirdparty/date"]
+	path = thirdparty/date
+	url = git@github.com:HowardHinnant/date.git
