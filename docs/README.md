@@ -27,7 +27,8 @@ To build with Growl, you will need the following:
 
 - A modern C++ compiler. Growl has been built with Clang, GCC, MSVC and
 Emscripten.
-- CMake (3.20+)
+- [CMake](https://formulae.brew.sh/formula/cmake) (3.20+)
+- [make](https://formulae.brew.sh/formula/make) (4.4.1+)
 
 Growl assumes familiarity with modern C++ features like smart pointers and  move
 semantics, but it doesn't use anything particularly arcane. Familiarity with
@@ -70,7 +71,7 @@ e.g. `make -j 4` to build with four threads.
 1. Two executables will be built: `growl-test-app` and `growl-cmd`. Use
 `growl-cmd` to generate the asset bundle, like so:
 ```bash
-./growl-cmd assets bundle ../assets/
+./growl-cmd assets bundle ../../assets/
 ```
 
 1. Run the app!
