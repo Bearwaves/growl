@@ -56,10 +56,8 @@ The first thing to do is build the included test app, so you can check
 everything is working on your system. This guide assumes you're using a command
 line, but you can use the CMake GUI if you like.
 1. Clone the repository to your local system. Ensure you clone recursively so
-that submodules (for third-party dependencies) get pulled too.
-`git clone --recursive git@github.com:Bearwaves/growl.git`
-1. From the root of the repository, navigate to `example/testapp`, and create
-a `build` directory.
+that submodules (for third-party dependencies) get pulled too. `git clone --recursive git@github.com:Bearwaves/growl.git`
+1. From the root of the repository, navigate to `example/test_app`, and create a `build` directory.
 1. From your newly created `build` directory, run `cmake ..`.<br>
 **Note:** If CMake isn't able to find SDL2 on your system it will shout at you. You
 can use `-D <var>=<value>` to append `SDL2_INCLUDE_DIR` and `SDL2_LIBRARY` to your `cmake ..` command to tell CMake where it
