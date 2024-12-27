@@ -60,7 +60,7 @@ protected:
 	InputProcessor* inputProcessor = nullptr;
 
 private:
-	bool dark_mode;
+	bool dark_mode = false;
 };
 
 } // namespace Growl
