@@ -55,7 +55,7 @@ that submodules (for third-party dependencies) get pulled too.
 git clone --recursive git@github.com:Bearwaves/growl.git
 ```
 
-1. From the root of the repository, navigate to `example/testapp`, and create
+1. From the root of the repository, navigate to `example/test_app`, and create
 a `build` directory.
 
 1. From your newly created `build` directory, run `cmake ..`. This is known as
