@@ -27,8 +27,12 @@ To build with Growl, you will need the following:
 
 - A modern C++ compiler. Growl has been built with Clang, GCC, MSVC and
 Emscripten.
-- [CMake](https://formulae.brew.sh/formula/cmake) (3.20+)
-- [make](https://formulae.brew.sh/formula/make) (4.4.1+)
+- CMake (3.20+)
+  -   On macOS or Linux `run brew install cmake` to install [cmake](https://formulae.brew.sh/formula/cmake).
+  -   On Windows download this [installer](https://cmake.org/download/) and run it.
+- A utility for directing code compilation.
+  -   On macOS or Linux `run brew install make` to install [make](https://formulae.brew.sh/formula/make) (4.4.1+).
+  -   On Windows we recommend installing [Visual Studio](https://visualstudio.microsoft.com/downloads/) and selecting the **Desktop development with C++** workload duing the installation process.
 
 Growl assumes familiarity with modern C++ features like smart pointers and  move
 semantics, but it doesn't use anything particularly arcane. Familiarity with
@@ -42,6 +46,8 @@ than the ones necessary for your specific platform (e.g. Android NDK,
 Emscripten). The exception to this is [SDL2](
 https://www.libsdl.org/
 ), which you'll need to provide yourself if building on a desktop platform.
+ - Get the current stable [SDL version 2.30.10](https://github.com/libsdl-org/SDL/releases/tag/release-2.30.10)
+   -   There are lots of options on this page, we tested with `SDL2-devel-2.30.10-VC.zip`.
 
 ## Getting started
 
