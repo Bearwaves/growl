@@ -31,8 +31,8 @@ Emscripten.
   -   On macOS or Linux `run brew install cmake` to install [cmake](https://formulae.brew.sh/formula/cmake).
   -   On Windows download this [installer](https://cmake.org/download/) and run it.
 - A utility for directing code compilation.
-  -   On macOS or Linux `run brew install make` to install [make](https://formulae.brew.sh/formula/make) (4.4.1+).
-  -   On Windows we recommend installing [Visual Studio](https://visualstudio.microsoft.com/downloads/) and selecting the **Desktop development with C++** workload duing the installation process.
+  -   On macOS and Linux we recommend [make](https://formulae.brew.sh/formula/make) (4.4.1+). `run brew install make` to install it.
+  -   On Windows we recommend installing [Visual Studio](https://visualstudio.microsoft.com/downloads/). Be sure to select the **Desktop development with C++** workload duing the installation process, this includes everything that you'll need.
 
 Growl assumes familiarity with modern C++ features like smart pointers and  move
 semantics, but it doesn't use anything particularly arcane. Familiarity with
