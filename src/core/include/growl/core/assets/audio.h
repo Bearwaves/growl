@@ -14,7 +14,7 @@ public:
 	AudioClip(AudioClip&&) = default;
 	AudioClip& operator=(AudioClip&&) = default;
 
-	virtual void play() = 0;
+	virtual void play(bool loop = false) = 0;
 	virtual float getVolume() = 0;
 	virtual void setVolume(float volume) = 0;
 

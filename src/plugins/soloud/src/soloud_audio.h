@@ -49,7 +49,7 @@ public:
 		, sample{std::move(wav)}
 		, raw{std::move(raw)} {}
 
-	void play() override;
+	void play(bool loop) override;
 	float getVolume() override;
 	void setVolume(float volume) override;
 
