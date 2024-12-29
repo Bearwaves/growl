@@ -2,11 +2,12 @@
 
 using Growl::SoLoudAudioClip;
 
-void SoLoudAudioClip::play() {
+void SoLoudAudioClip::play(bool loop) {
 	if (handle) {
 		api.getSoloud()->setPause(handle, false);
 	} else {
 		handle = api.getSoloud()->play(*sample);
+		api.getSoloud()->setLooping(handle, loop);
 	}
 }
 
