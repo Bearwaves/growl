@@ -48,13 +48,28 @@ Emscripten). The exception to this is [SDL2](
 https://www.libsdl.org/
 ), which you'll need to provide yourself.
  - Get the current stable [SDL version 2.30.10](https://github.com/libsdl-org/SDL/releases/tag/release-2.30.10)
-   -   There are lots of options on this page, we tested with `SDL2-devel-2.30.10-VC.zip`.
+   -   There are lots of download options on this page, we tested with `SDL2-devel-2.30.10-VC.zip`.
 
 ## Getting started
 
 The first thing to do is build the included test app, so you can check
 everything is working on your system. This guide assumes you're using a command
 line, but you can use the CMake GUI if you like.
+
+### macOS & Linux guide
+1. Clone the repository to your local system. Ensure you clone recursively so
+that submodules (for third-party dependencies) get pulled too. `git clone --recursive git@github.com:Bearwaves/growl.git`
+1. From the root of the repository, navigate to `example/test_app`, and create a `build` directory.
+1. From your newly created `build` directory, run `cmake ..`.<br>
+**Note:** If CMake isn't able to find SDL2 on your system it will shout at you. You
+can use `-D <var>=<path>` to append `SDL2_INCLUDE_DIR` and `SDL2_LIBRARY` to your `cmake ..` command to tell CMake where it
+is.
+1. Once CMake has generated all the necessary files you'll need to compile eveything. To do that run `make`. You may want to pass the `-j` flag to enable multithreading, e.g. `make -j 4` to build with four threads.<br>
+1. Two executables will be built: `growl-test-app` and `growl-cmd`. Still in the `build` directory, use
+`growl-cmd` to generate the asset bundle, like so: `./growl-cmd assets bundle ../../assets/`
+1. Still in the `build` directory, run `./growl-test-app`.
+
+### Windows guide
 1. Clone the repository to your local system. Ensure you clone recursively so
 that submodules (for third-party dependencies) get pulled too. `git clone --recursive git@github.com:Bearwaves/growl.git`
 1. From the root of the repository, navigate to `example/test_app`, and create a `build` directory.
@@ -62,22 +77,17 @@ that submodules (for third-party dependencies) get pulled too. `git clone --recu
 **Note:** If CMake isn't able to find SDL2 on your system it will shout at you. You
 can use `-D <var>=<value>` to append `SDL2_INCLUDE_DIR` and `SDL2_LIBRARY` to your `cmake ..` command to tell CMake where it
 is. Your command will look something like: `cmake -D SDL2_LIBRARY="C:\SDL2-2.30.10\lib\x64\SDL2.lib" -D SDL2_INCLUDE_DIR="C:\SDL2-2.30.10\include" ..`
-1. Once CMake has generated all the necessary files you'll need to compile eveything. To do that:<br>
-On macOS or Linux run `make`. You may want to pass the `-j` flag to enable multithreading, e.g. `make -j 4` to build with four threads.<br>
-On Windows locate the `growl-test-app.sln` that CMake just generated in your `build` folder. Open it in Visual Studio and hit F6 on your keyboard to build the solution. Once the build succeeds, you can close Visual Studio.
+1. Once CMake has generated all the necessary files you'll need to compile eveything. To do that, 
+locate the `growl-test-app.sln` that CMake just generated in your `build` folder. Open it in Visual Studio and hit **F6** on your keyboard to build the solution. Once the build succeeds, you can close Visual Studio.
 1. Two executables will be built: `growl-test-app` and `growl-cmd`. Still in the `build` directory, use
-`growl-cmd` to generate the asset bundle, like so:<br>
-On macOS or Linux run: `./growl-cmd assets bundle ../../assets/`<br>
-On Windows run: `Debug\growl-cmd.exe assets bundle ../../assets/`
-1. On Windows only, you will need to copy `SDL2.dll` from `SDL2-2.30.10\lib\x64` and paste it into `growl\example\test_app\build\Debug` so that it sits alongside `growl-test-app.exe`.<br>If you're using macOS or Linux you can skip this step.
-1. Still in the `build` directory, run
-`growl-test-app` like so:<br>
-On macOS or Linux run: `./growl-test-app`<br>
-On Windows run: `Debug\growl-test-app.exe`
+`growl-cmd` to generate the asset bundle, like so: `Debug\growl-cmd.exe assets bundle ../../assets/`
+1. Copy `SDL2.dll` from `SDL2-2.30.10\lib\x64` and paste it into `growl\example\test_app\build\Debug` so that it sits alongside `growl-test-app.exe`.
+1. Still in the `build` directory, run `growl-test-app` like so: `Debug\growl-test-app.exe`.
+
 ![testapp](_media/testapp.png)
 
 The test app demonstrates asset loading, rendering, audio, input, text
-rendering and the debug menu (try pressing F12).
+rendering and the debug menu (try pressing **F12**).
 
 ## Next steps 
 
