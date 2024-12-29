@@ -75,7 +75,7 @@ that submodules (for third-party dependencies) get pulled too. `git clone --recu
 1. From the root of the repository, navigate to `example/test_app`, and create a `build` directory.
 1. From your newly created `build` directory, run `cmake ..`.<br>
 **Note:** If CMake isn't able to find SDL2 on your system it will shout at you. You
-can use `-D <var>=<value>` to append `SDL2_INCLUDE_DIR` and `SDL2_LIBRARY` to your `cmake ..` command to tell CMake where it
+can use `-D <var>=<path>` to append `SDL2_INCLUDE_DIR` and `SDL2_LIBRARY` to your `cmake ..` command to tell CMake where it
 is. Your command will look something like: `cmake -D SDL2_LIBRARY="C:\SDL2-2.30.10\lib\x64\SDL2.lib" -D SDL2_INCLUDE_DIR="C:\SDL2-2.30.10\include" ..`
 1. Once CMake has generated all the necessary files you'll need to compile eveything. To do that, 
 locate the `growl-test-app.sln` that CMake just generated in your `build` folder. Open it in Visual Studio and hit **F6** on your keyboard to build the solution. Once the build succeeds, you can close Visual Studio.
