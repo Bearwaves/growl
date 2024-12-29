@@ -47,8 +47,9 @@ than the ones necessary for your specific platform (e.g. Android NDK,
 Emscripten). The exception to this is [SDL2](
 https://www.libsdl.org/
 ), which you'll need to provide yourself.
- - Get the current stable [SDL version 2.30.10](https://github.com/libsdl-org/SDL/releases/tag/release-2.30.10)
-   -   There are lots of download options on this page, we tested with `SDL2-devel-2.30.10-VC.zip`.
+- On macOS or Linux run `brew install sdl2` to install [sdl2](https://formulae.brew.sh/formula/sdl2).
+- On Windows get the current stable [SDL version 2.30.10](https://github.com/libsdl-org/SDL/releases/tag/release-2.30.10)
+  -   There are lots of download options on this page, we tested with `SDL2-devel-2.30.10-VC.zip`.
 
 ## Getting started
 
