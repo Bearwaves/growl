@@ -5,7 +5,7 @@ project(growl-platform-android)
 message(STATUS "[Growl] Enabled Android platform.")
 
 set(SOURCES
-	"src/main.cpp"
+	"src/main/cpp/main.cpp"
 	)
 
 add_library(growl-platform-android ${SOURCES})
@@ -13,15 +13,7 @@ add_library(growl-platform-android ${SOURCES})
 set(GROWL_OPENGL ON)
 set(GROWL_OPENGL ON PARENT_SCOPE)
 
-add_library(android-native-app-glue
-	STATIC
-	${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c
-	)
-
-# Export ANativeActivity_onCreate(),
-# Refer to: https://github.com/android-ndk/ndk/issues/381.
-set(CMAKE_SHARED_LINKER_FLAGS
-    "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
+find_package(game-activity REQUIRED CONFIG)
 
 target_link_libraries(growl-platform-android
 	PUBLIC
@@ -32,16 +24,12 @@ target_link_libraries(growl-platform-android
 	growl-plugin-opengl
 	growl-plugin-soloud
 	growl-plugin-lua
-	android-native-app-glue
 	android
 	log
-	)
-target_include_directories(growl-platform-android
-	PRIVATE
-	${ANDROID_NDK}/sources/android/native_app_glue
+	game-activity::game-activity_static
 	)
 target_compile_definitions(growl-platform-android INTERFACE "GROWL_ANDROID")
 target_link_options(growl-platform-android
 	PUBLIC
-	-u ANativeActivity_onCreate
+	-u Java_com_google_androidgamesdk_GameActivity_initializeNativeCode
 	)

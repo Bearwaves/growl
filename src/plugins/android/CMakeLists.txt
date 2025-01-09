@@ -21,17 +21,14 @@ set(HEADERS
 add_library(growl-plugin-android ${SOURCES} ${HEADERS})
 
 find_library(EGL_LIBRARY libEGL.so HINTS ${ANDROID_NDK})
+find_package(game-activity REQUIRED CONFIG)
 
 target_link_libraries(growl-plugin-android
 	PRIVATE
 	android
-	android-native-app-glue
 	log
+	game-activity::game-activity_static
 	growl-core
 	${EGL_LIBRARY}
-	)
-target_include_directories(growl-plugin-android
-	PRIVATE
-	${ANDROID_NDK}/sources/android/native_app_glue
 	)
 target_compile_definitions(growl-plugin-android INTERFACE "GROWL_ANDROID")
