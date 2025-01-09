@@ -1,0 +1,87 @@
+import java.nio.file.Paths
+
+plugins {
+    id 'com.android.application' version '8.7.0' apply true
+    id 'com.android.library' version '8.7.0' apply false
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.games.activity
+    implementation libs.androidx.activity
+}
+
+// Prevent Kotlin library collisions.
+configurations.implementation {
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+}
+
+// Load user's Growl properties if provided
+def growlProperties = new Properties()
+String growlProjectPath = ""
+if (project.hasProperty('growlProperties')) {
+    def growlPropertiesFile = file(project['growlProperties'])
+    if (growlPropertiesFile.exists()) {
+        growlProperties.load(new FileInputStream(growlPropertiesFile))
+        growlProjectPath = growlPropertiesFile.parent
+    } else {
+        throw new GradleException("Growl properties file not found at: ${project['growlProperties']}")
+    }
+} else {
+    throw new GradleException("Growl properties must be provided")
+}
+
+android {
+    namespace 'com.bearwaves.growl'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId growlProperties['appId'] as String
+        minSdk 21
+        targetSdk 34
+        versionCode Integer.parseInt(growlProperties['versionCode'] as String)
+        versionName growlProperties['versionName'] as String
+
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs += ['../../plugins/android']
+            if (growlProperties['assetsDir']) {
+                assets.srcDirs += Paths.get(growlProjectPath, growlProperties['assetsDir'] as String) as String
+            }
+            if (growlProperties['resDir']) {
+                res.srcDirs += Paths.get(growlProjectPath, growlProperties['resDir'] as String) as String
+            }
+            if (growlProperties['manifest']) {
+                manifest.srcFile Paths.get(growlProjectPath, growlProperties['manifest'] as String) as String
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        prefab true
+    }
+    externalNativeBuild {
+        cmake {
+            if (growlProperties['cmakelists']) {
+                path file(Paths.get(growlProjectPath, growlProperties['cmakelists'] as String) as String)
+            } else {
+                throw new GradleException("Growl property 'cmakelists' must be provided.")
+            }
+        }
+    }
+}

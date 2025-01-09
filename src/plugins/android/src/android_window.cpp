@@ -33,13 +33,25 @@ void AndroidWindow::getSize(int* w, int* h) {
 }
 
 WindowSafeAreaInsets AndroidWindow::getSafeAreaInsets() {
-	int w, h;
-	getSize(&w, &h);
-	return WindowSafeAreaInsets{
-		static_cast<float>(app->contentRect.top),
-		static_cast<float>(h - app->contentRect.bottom),
-		static_cast<float>(app->contentRect.left),
-		static_cast<float>(w - app->contentRect.right)};
+	JNIEnv* env{};
+	app->activity->vm->AttachCurrentThread(&env, NULL);
+	jclass activity_class =
+		env->GetObjectClass(app->activity->javaGameActivity);
+	jmethodID insets_method =
+		env->GetMethodID(activity_class, "getInsets", "()[I");
+	jintArray insets_array = (jintArray)env->CallObjectMethod(
+		app->activity->javaGameActivity, insets_method);
+	jint* insets = env->GetIntArrayElements(insets_array, nullptr);
+
+	auto ret = WindowSafeAreaInsets{
+		static_cast<float>(insets[0]),
+		static_cast<float>(insets[1]),
+		static_cast<float>(insets[2]),
+		static_cast<float>(insets[3]),
+	};
+
+	env->ReleaseIntArrayElements(insets_array, insets, 0);
+	return ret;
 }
 
 Error AndroidWindow::createGLContext(

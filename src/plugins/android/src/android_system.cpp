@@ -10,8 +10,7 @@
 #include <android/configuration.h>
 #include <android/input.h>
 #include <android/log.h>
-#include <android_native_app_glue.h>
-#include <memory>
+#include <game-activity/native_app_glue/android_native_app_glue.h>
 
 using Growl::AndroidFile;
 using Growl::AndroidSystemAPI;
@@ -27,22 +26,22 @@ using Growl::Window;
 
 Error AndroidSystemAPI::init() {
 	android_state->onAppCmd = handleAppCmd;
-	android_state->onInputEvent = handleInput;
 	android_state->userData = &api;
+	android_app_set_key_event_filter(android_state, nullptr);
+	android_app_set_motion_event_filter(android_state, nullptr);
 	this->log("AndroidSystemAPI", "Initialised Android system");
 	return nullptr;
 }
 
 void AndroidSystemAPI::tick() {
-	int ident;
 	int events;
 	struct android_poll_source* source;
-	while ((ident = ALooper_pollOnce(0, nullptr, &events, (void**)&source)) >=
-		   0) {
+	while ((ALooper_pollOnce(0, nullptr, &events, (void**)&source)) >= 0) {
 		if (source != nullptr) {
 			source->process(android_state, source);
 		}
 	}
+	handleInput(android_state);
 }
 
 bool AndroidSystemAPI::didResize(int* width, int* height) {
@@ -78,9 +77,48 @@ void AndroidSystemAPI::onResizeEvent(int width, int height) {
 	resize_height = height;
 }
 
-int32_t AndroidSystemAPI::handleInput(android_app* app, AInputEvent* event) {
+void AndroidSystemAPI::handleInput(android_app* app) {
 	API* api = (API*)app->userData;
-	switch (AInputEvent_getType(event)) {
+	auto ib = android_app_swap_input_buffers(app);
+
+	if (ib && ib->motionEventsCount) {
+		for (int i = 0; i < ib->motionEventsCount; i++) {
+			auto* event = &ib->motionEvents[i];
+			switch (event->source & AINPUT_SOURCE_CLASS_MASK) {
+
+			case AINPUT_SOURCE_CLASS_POINTER:
+				static_cast<AndroidSystemAPI&>(api->system())
+					.onTouch(InputTouchEvent{
+						getPointerEventType(event->action),
+						static_cast<int>(GameActivityPointerAxes_getAxisValue(
+							&event->pointers[0], AMOTION_EVENT_AXIS_X)),
+						static_cast<int>(GameActivityPointerAxes_getAxisValue(
+							&event->pointers[0], AMOTION_EVENT_AXIS_Y)),
+					});
+				break;
+			}
+		}
+		android_app_clear_motion_events(ib);
+	}
+
+	if (ib && ib->keyEventsCount) {
+		for (int i = 0; i < ib->keyEventsCount; i++) {
+			auto* event = &ib->keyEvents[i];
+			auto button = getControllerButton(event->keyCode);
+			if (button == ControllerButton::Unknown) {
+				// Avoid capturing back button etc. for now.
+				continue;
+			}
+			static_cast<AndroidSystemAPI&>(api->system())
+				.onControllerEvent(InputControllerEvent{
+					getControllerEventType(event->action),
+					button,
+				});
+		}
+		android_app_clear_key_events(ib);
+	}
+
+	/*switch (AInputEvent_getType(event)) {
 	case AINPUT_EVENT_TYPE_MOTION:
 		switch (AInputEvent_getSource(event)) {
 		case AINPUT_SOURCE_TOUCHSCREEN:
@@ -106,11 +144,11 @@ int32_t AndroidSystemAPI::handleInput(android_app* app, AInputEvent* event) {
 			});
 		return 1;
 	}
-	return 0;
+	return 0;*/
 }
 
-PointerEventType AndroidSystemAPI::getPointerEventType(AInputEvent* event) {
-	switch (AMotionEvent_getAction(event)) {
+PointerEventType AndroidSystemAPI::getPointerEventType(int32_t action) {
+	switch (action & AMOTION_EVENT_ACTION_MASK) {
 	case AMOTION_EVENT_ACTION_DOWN:
 		return PointerEventType::Down;
 	case AMOTION_EVENT_ACTION_UP:
@@ -121,8 +159,8 @@ PointerEventType AndroidSystemAPI::getPointerEventType(AInputEvent* event) {
 	return PointerEventType::Unknown;
 }
 
-ControllerButton AndroidSystemAPI::getControllerButton(AInputEvent* event) {
-	switch (AKeyEvent_getKeyCode(event)) {
+ControllerButton AndroidSystemAPI::getControllerButton(int32_t key_code) {
+	switch (key_code) {
 	case AKEYCODE_BUTTON_A:
 		return ControllerButton::A;
 	case AKEYCODE_BUTTON_B:
@@ -161,9 +199,8 @@ ControllerButton AndroidSystemAPI::getControllerButton(AInputEvent* event) {
 	return ControllerButton::Unknown;
 }
 
-ControllerEventType
-AndroidSystemAPI::getControllerEventType(AInputEvent* event) {
-	switch (AKeyEvent_getAction(event)) {
+ControllerEventType AndroidSystemAPI::getControllerEventType(int32_t action) {
+	switch (action) {
 	case AKEY_EVENT_ACTION_DOWN:
 		return ControllerEventType::ButtonDown;
 	case AKEY_EVENT_ACTION_UP:

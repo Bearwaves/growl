@@ -5,7 +5,7 @@
 #include "growl/core/input/controller.h"
 #include "growl/core/input/event.h"
 #include <android/input.h>
-#include <android_native_app_glue.h>
+#include <game-activity/native_app_glue/android_native_app_glue.h>
 
 namespace Growl {
 
@@ -36,10 +36,10 @@ private:
 	void onControllerEvent(InputControllerEvent event);
 	void onResizeEvent(int width, int height);
 	static void handleAppCmd(android_app* app, int32_t cmd);
-	static int32_t handleInput(android_app* app, AInputEvent* cmd);
-	static PointerEventType getPointerEventType(AInputEvent* event);
-	static ControllerButton getControllerButton(AInputEvent* event);
-	static ControllerEventType getControllerEventType(AInputEvent* event);
+	static void handleInput(android_app* app);
+	static PointerEventType getPointerEventType(int32_t action);
+	static ControllerButton getControllerButton(int32_t key_code);
+	static ControllerEventType getControllerEventType(int32_t action);
 
 	API& api;
 	android_app* android_state;

@@ -6,7 +6,7 @@
 #include <android/asset_manager.h>
 #include <android/log.h>
 #include <android/native_window.h>
-#include <android_native_app_glue.h>
+#include <game-activity/native_app_glue/android_native_app_glue.h>
 #include <memory>
 
 using Growl::API;
@@ -24,51 +24,8 @@ void initOpenGLPlugin(API& api);
 void initLuaPlugin(API& api);
 std::unique_ptr<Growl::Game> createGame();
 
-void enableImmersiveMode(struct android_app* state) {
-	JNIEnv* env{};
-	state->activity->vm->AttachCurrentThread(&env, NULL);
-
-	jclass activity_class = env->FindClass("android/app/NativeActivity");
-	jmethodID get_window = env->GetMethodID(
-		activity_class, "getWindow", "()Landroid/view/Window;");
-
-	jclass window_class = env->FindClass("android/view/Window");
-	jmethodID get_decor_view =
-		env->GetMethodID(window_class, "getDecorView", "()Landroid/view/View;");
-
-	jclass view_class = env->FindClass("android/view/View");
-	jmethodID set_system_ui_visibility =
-		env->GetMethodID(view_class, "setSystemUiVisibility", "(I)V");
-
-	jobject window = env->CallObjectMethod(state->activity->clazz, get_window);
-
-	jobject decor_view = env->CallObjectMethod(window, get_decor_view);
-
-	jfieldID flag_fullscreen_id =
-		env->GetStaticFieldID(view_class, "SYSTEM_UI_FLAG_FULLSCREEN", "I");
-	jfieldID flag_hide_navigation_id = env->GetStaticFieldID(
-		view_class, "SYSTEM_UI_FLAG_HIDE_NAVIGATION", "I");
-	jfieldID flag_immersive_sticky_id = env->GetStaticFieldID(
-		view_class, "SYSTEM_UI_FLAG_IMMERSIVE_STICKY", "I");
-
-	const int flag_fullscreen =
-		env->GetStaticIntField(view_class, flag_fullscreen_id);
-	const int flag_hide_navigation =
-		env->GetStaticIntField(view_class, flag_hide_navigation_id);
-	const int flag_immersive_sticky =
-		env->GetStaticIntField(view_class, flag_immersive_sticky_id);
-	const int flag =
-		flag_fullscreen | flag_hide_navigation | flag_immersive_sticky;
-
-	env->CallVoidMethod(decor_view, set_system_ui_visibility, flag);
-
-	state->activity->vm->DetachCurrentThread();
-}
-
 // NOLINTNEXTLINE defined name for Android native entry point.
 void android_main(struct android_app* state) {
-	enableImmersiveMode(state);
-
 	auto api = std::make_unique<API>();
 	api->setFrameTimer(std::make_unique<FrameTimer>());
 

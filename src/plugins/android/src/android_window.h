@@ -4,7 +4,7 @@
 #include "growl/core/graphics/window.h"
 #include <EGL/egl.h>
 #include <android/native_window.h>
-#include <android_native_app_glue.h>
+#include <game-activity/native_app_glue/android_native_app_glue.h>
 
 namespace Growl {
 
