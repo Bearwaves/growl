@@ -27,7 +27,8 @@ using Growl::Window;
 Error AndroidSystemAPI::init() {
 	android_state->onAppCmd = handleAppCmd;
 	android_state->userData = &api;
-	android_app_set_key_event_filter(android_state, nullptr);
+	// Leave key event filter as default to allow volume keys to propagate
+	// back up to system. Clear motion filter so controller events get through.
 	android_app_set_motion_event_filter(android_state, nullptr);
 	this->log("AndroidSystemAPI", "Initialised Android system");
 	return nullptr;
@@ -106,6 +107,12 @@ void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 		system_internal.setDarkMode(getDarkMode(app));
 		break;
 	}
+	case APP_CMD_PAUSE:
+		api->audio().setMuted(true);
+		break;
+	case APP_CMD_RESUME:
+		api->audio().setMuted(false);
+		break;
 	}
 }
 

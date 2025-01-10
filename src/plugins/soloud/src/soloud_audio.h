@@ -22,6 +22,8 @@ public:
 		return devices;
 	}
 
+	void setMuted(bool muted) override;
+
 	Result<std::unique_ptr<AudioClip>>
 	loadClipFromBundle(AssetsBundle& bundle, std::string name) override;
 

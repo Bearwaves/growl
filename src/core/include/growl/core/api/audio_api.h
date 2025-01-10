@@ -13,6 +13,8 @@ public:
 
 	virtual const std::vector<AudioDevice>& getDevices() = 0;
 
+	virtual void setMuted(bool muted) = 0;
+
 	virtual Result<std::unique_ptr<AudioClip>>
 	loadClipFromBundle(AssetsBundle& bundle, std::string asset) = 0;
 

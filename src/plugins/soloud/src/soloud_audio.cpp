@@ -50,6 +50,10 @@ void SoLoudAudioAPI::dispose() {
 	soloud->deinit();
 }
 
+void SoLoudAudioAPI::setMuted(bool muted) {
+	soloud->setGlobalVolume(muted ? 0.f : 1.f);
+}
+
 Result<std::unique_ptr<AudioClip>>
 SoLoudAudioAPI::loadClipFromBundle(AssetsBundle& bundle, std::string path) {
 	auto wav = std::make_unique<SoLoud::Wav>();
