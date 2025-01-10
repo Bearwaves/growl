@@ -3,7 +3,6 @@
 #include "growl/core/error.h"
 #include "growl/core/graphics/window.h"
 #include <EGL/egl.h>
-#include <android/native_window.h>
 
 using Growl::AndroidError;
 using Growl::AndroidWindow;
@@ -18,13 +17,16 @@ AndroidWindow::~AndroidWindow() {
 		}
 		if (surface != EGL_NO_SURFACE) {
 			eglDestroySurface(display, surface);
+			surface = EGL_NO_SURFACE;
 		}
 		eglTerminate(display);
 	}
 }
 
 void AndroidWindow::flip() {
-	eglSwapBuffers(display, surface);
+	if (surface != EGL_NO_SURFACE) {
+		eglSwapBuffers(display, surface);
+	}
 }
 
 void AndroidWindow::getSize(int* w, int* h) {
@@ -62,7 +64,6 @@ Error AndroidWindow::createGLContext(
 							  EGL_RED_SIZE,		8,
 							  EGL_NONE};
 	EGLint num_configs;
-	EGLConfig egl_config = nullptr;
 	display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 	eglInitialize(display, nullptr, nullptr);
 
@@ -93,7 +94,6 @@ Error AndroidWindow::createGLContext(
 	}
 
 	// todo handle error
-	surface = eglCreateWindowSurface(display, egl_config, native, nullptr);
 	const EGLint context_attribs[] = {EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE};
 	context = eglCreateContext(display, egl_config, nullptr, context_attribs);
 
@@ -103,5 +103,25 @@ Error AndroidWindow::createGLContext(
 			std::to_string(eglGetError()));
 	}
 
+	return nullptr;
+}
+
+Error AndroidWindow::initSurface() {
+	// todo handle error
+	surface = eglCreateWindowSurface(display, egl_config, app->window, nullptr);
+	if (eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {
+		return std::make_unique<AndroidError>(
+			"Failed to get an EGL display: code " +
+			std::to_string(eglGetError()));
+	}
+	return nullptr;
+}
+
+Error AndroidWindow::deinitSurface() {
+	if (surface != EGL_NO_SURFACE) {
+		eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+		eglDestroySurface(display, surface);
+		surface = EGL_NO_SURFACE;
+	}
 	return nullptr;
 }

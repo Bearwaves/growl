@@ -21,6 +21,9 @@ class SystemAPI {
 public:
 	virtual ~SystemAPI() {}
 	virtual bool isRunning() = 0;
+	virtual bool isPaused() {
+		return paused;
+	}
 	virtual void stop() {}
 	virtual void tick() = 0;
 	virtual Result<std::unique_ptr<Window>>
@@ -61,6 +64,7 @@ protected:
 
 private:
 	bool dark_mode = false;
+	bool paused = false;
 };
 
 } // namespace Growl

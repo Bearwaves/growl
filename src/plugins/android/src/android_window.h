@@ -11,8 +11,7 @@ namespace Growl {
 class AndroidWindow final : public Window {
 public:
 	explicit AndroidWindow(ANativeWindow* window, android_app* app)
-		: native{window}
-		, app{app} {}
+		: app{app} {}
 	~AndroidWindow();
 
 	void flip() override;
@@ -23,13 +22,16 @@ public:
 	Error
 	createGLContext(int major_version, int minor_version, bool es) override;
 
+	Error initSurface();
+	Error deinitSurface();
+
 private:
-	ANativeWindow* native;
 	android_app* app;
 
-	EGLDisplay display;
-	EGLSurface surface;
-	EGLContext context;
+	EGLDisplay display = EGL_NO_DISPLAY;
+	EGLConfig egl_config = nullptr;
+	EGLSurface surface = EGL_NO_SURFACE;
+	EGLContext context = EGL_NO_CONTEXT;
 };
 
 } // namespace Growl

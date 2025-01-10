@@ -32,6 +32,9 @@ public:
 	virtual void setDarkMode(bool dark_mode) {
 		this->dark_mode = dark_mode;
 	}
+	virtual void setPaused(bool paused) {
+		this->paused = paused;
+	}
 #ifdef GROWL_IMGUI
 	virtual void populateDebugMenu() override;
 #endif

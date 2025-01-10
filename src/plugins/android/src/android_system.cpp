@@ -55,8 +55,45 @@ bool AndroidSystemAPI::didResize(int* width, int* height) {
 void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 	API* api = (API*)app->userData;
 	switch (cmd) {
-	case APP_CMD_INIT_WINDOW:
+	case APP_CMD_INIT_WINDOW: {
 		api->system().log("AndroidSystemAPI", "Window is ready for creation");
+		if (!app->window) {
+			api->system().log("AndroidSystemAPI", "No native window");
+			break;
+		}
+		auto& graphics_internal =
+			static_cast<GraphicsAPIInternal&>(api->graphics());
+		if (!graphics_internal.getWindow()) {
+			if (auto err =
+					graphics_internal.setWindow(Config{"", 0, 0, false})) {
+				api->system().log(
+					LogLevel::Fatal, "android_main",
+					"Failed to create window: {}", err.get()->message());
+				break;
+			}
+		}
+		if (auto err =
+				static_cast<AndroidWindow*>(graphics_internal.getWindow())
+					->initSurface()) {
+			api->system().log(
+				LogLevel::Error, "AndroidSystemAPI",
+				"Failed to init surface " + err->message());
+			break;
+		}
+		static_cast<SystemAPIInternal&>(api->system()).setPaused(false);
+		break;
+	}
+	case APP_CMD_TERM_WINDOW:
+		api->system().log("AndroidSystemAPI", "Window needs termination");
+		static_cast<SystemAPIInternal&>(api->system()).setPaused(true);
+		if (auto err = static_cast<AndroidWindow*>(
+						   static_cast<GraphicsAPIInternal&>(api->graphics())
+							   .getWindow())
+						   ->deinitSurface()) {
+			api->system().log(
+				LogLevel::Error, "AndroidSystemAPI",
+				"Failed to deinit surface " + err->message());
+		}
 		break;
 	case APP_CMD_WINDOW_RESIZED:
 	case APP_CMD_CONFIG_CHANGED: {

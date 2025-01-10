@@ -81,15 +81,6 @@ void android_main(struct android_app* state) {
 		api->system().tick();
 	}
 
-	if (auto err = static_cast<GraphicsAPIInternal&>(api->graphics())
-					   .setWindow(Config{"", 0, 0, false});
-		err) {
-		api->system().log(
-			LogLevel::Fatal, "android_main", "Failed to create window: {}",
-			err.get()->message());
-		exit(4);
-	}
-
 	api->system().log("android_main", "Window created");
 
 	if (auto err = game->init()) {
@@ -104,6 +95,9 @@ void android_main(struct android_app* state) {
 	while (static_cast<SystemAPIInternal&>(api->system()).isRunning()) {
 		double delta_time = api->frameTimer().frame();
 		api->system().tick();
+		if (api->system().isPaused()) {
+			continue;
+		}
 		if (api->system().didResize(&resize_width, &resize_height)) {
 			game->resize(resize_width, resize_height);
 		}
