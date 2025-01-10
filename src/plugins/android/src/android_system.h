@@ -40,6 +40,7 @@ private:
 	static PointerEventType getPointerEventType(int32_t action);
 	static ControllerButton getControllerButton(int32_t key_code);
 	static ControllerEventType getControllerEventType(int32_t action);
+	static bool getDarkMode(android_app* app);
 
 	API& api;
 	android_app* android_state;

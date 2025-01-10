@@ -1,5 +1,6 @@
 package com.bearwaves.growl;
 
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowInsets;
@@ -27,5 +28,9 @@ public class GrowlActivity extends GameActivity {
             }
         }
         return new int[]{0, 0, 0, 0};
+    }
+
+    public boolean getDarkMode() {
+        return (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 }

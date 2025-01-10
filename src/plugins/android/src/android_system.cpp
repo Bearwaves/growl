@@ -98,12 +98,12 @@ void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 	case APP_CMD_WINDOW_RESIZED:
 	case APP_CMD_CONFIG_CHANGED: {
 		auto& system_internal = static_cast<AndroidSystemAPI&>(api->system());
-		system_internal.onResizeEvent(
-			ANativeWindow_getWidth(app->window),
-			ANativeWindow_getHeight(app->window));
-		auto dark_mode_config = AConfiguration_getUiModeNight(app->config);
-		system_internal.setDarkMode(
-			dark_mode_config == ACONFIGURATION_UI_MODE_NIGHT_YES);
+		if (app->window) {
+			system_internal.onResizeEvent(
+				ANativeWindow_getWidth(app->window),
+				ANativeWindow_getHeight(app->window));
+		}
+		system_internal.setDarkMode(getDarkMode(app));
 		break;
 	}
 	}
@@ -154,34 +154,6 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 		}
 		android_app_clear_key_events(ib);
 	}
-
-	/*switch (AInputEvent_getType(event)) {
-	case AINPUT_EVENT_TYPE_MOTION:
-		switch (AInputEvent_getSource(event)) {
-		case AINPUT_SOURCE_TOUCHSCREEN:
-			static_cast<AndroidSystemAPI&>(api->system())
-				.onTouch(InputTouchEvent{
-					getPointerEventType(event),
-					static_cast<int>(AMotionEvent_getX(event, 0)),
-					static_cast<int>(AMotionEvent_getY(event, 0)),
-				});
-			return 1;
-		}
-		break;
-	case AINPUT_EVENT_TYPE_KEY:
-		auto button = getControllerButton(event);
-		if (button == ControllerButton::Unknown) {
-			// Avoid capturing back button etc. for now.
-			return 0;
-		}
-		static_cast<AndroidSystemAPI&>(api->system())
-			.onControllerEvent(InputControllerEvent{
-				getControllerEventType(event),
-				button,
-			});
-		return 1;
-	}
-	return 0;*/
 }
 
 PointerEventType AndroidSystemAPI::getPointerEventType(int32_t action) {
@@ -308,4 +280,15 @@ int AndroidSystemAPI::logPriorityForLevel(LogLevel level) {
 	case LogLevel::Fatal:
 		return ANDROID_LOG_FATAL;
 	}
+}
+
+bool AndroidSystemAPI::getDarkMode(android_app* app) {
+	JNIEnv* env{};
+	app->activity->vm->AttachCurrentThread(&env, NULL);
+	jclass activity_class =
+		env->GetObjectClass(app->activity->javaGameActivity);
+	jmethodID method = env->GetMethodID(activity_class, "getDarkMode", "()Z");
+	jboolean dark_mode =
+		env->CallBooleanMethod(app->activity->javaGameActivity, method);
+	return dark_mode == JNI_TRUE;
 }
