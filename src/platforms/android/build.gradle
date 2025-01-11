@@ -19,16 +19,23 @@ configurations.implementation {
 // Load user's Growl properties if provided
 def growlProperties = new Properties()
 String growlProjectPath = ""
-if (project.hasProperty('growlProperties')) {
-    def growlPropertiesFile = file(project['growlProperties'])
-    if (growlPropertiesFile.exists()) {
-        growlProperties.load(new FileInputStream(growlPropertiesFile))
-        growlProjectPath = growlPropertiesFile.parent
-    } else {
-        throw new GradleException("Growl properties file not found at: ${project['growlProperties']}")
-    }
-} else {
+if (!project.hasProperty('growlProperties')) {
     throw new GradleException("Growl properties must be provided")
+}
+def growlPropertiesFile = file(project['growlProperties'])
+if (!growlPropertiesFile.exists()) {
+    throw new GradleException("Growl properties file not found at: ${project['growlProperties']}")
+}
+growlProperties.load(new FileInputStream(growlPropertiesFile as File))
+growlProjectPath = growlPropertiesFile.parent
+
+def keystoreProperties = new Properties()
+if (growlProperties['keystore']) {
+    def keystorePropertiesFile = file(Paths.get(growlProjectPath, growlProperties['keystore'] as String))
+    if (!keystorePropertiesFile.exists()) {
+        throw new GradleException("Keystore properties file not found at: ${growlProperties['keystore']}")
+    }
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile as File))
 }
 
 android {
@@ -62,10 +69,27 @@ android {
         }
     }
 
+    if (growlProperties['keystore']) {
+        signingConfigs {
+            release {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
+            if (growlProperties['keystore']) {
+                signingConfig signingConfigs.release
+            }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
         }
     }
     compileOptions {
