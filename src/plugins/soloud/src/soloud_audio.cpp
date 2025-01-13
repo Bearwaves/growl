@@ -32,6 +32,7 @@ Error SoLoudAudioAPI::init() {
 			"SoLoud error code " + std::to_string(res));
 	}
 	soloud->setGlobalVolume(1.0);
+	soloud->setMaxActiveVoiceCount(64);
 
 	this->devices = std::vector<AudioDevice>{
 		{soloud->getBackendString(),
