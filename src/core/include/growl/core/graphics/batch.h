@@ -55,6 +55,11 @@ public:
 		glm::mat4x4 transform = glm::identity<glm::mat4x4>(),
 		float border_width = 0, void* uniforms = nullptr,
 		int uniforms_length = 0) = 0;
+	virtual void drawRect(
+		float x, float y, float width, float height, Color gradient_top_left,
+		Color gradient_top_right, Color gradient_bottom_left,
+		Color gradient_bottom_right,
+		glm::mat4x4 transform = glm::identity<glm::mat4x4>()) = 0;
 
 	virtual int getTargetWidth() = 0;
 	virtual int getTargetHeight() = 0;

@@ -54,6 +54,10 @@ public:
 		float x, float y, float width, float height, Shader& shader,
 		glm::mat4x4 transform, float border_width, void* uniforms,
 		int uniforms_length) override;
+	void drawRect(
+		float x, float y, float width, float height, Color gradient_top_left,
+		Color gradient_top_right, Color gradient_bottom_left,
+		Color gradient_bottom_right, glm::mat4x4 transform) override;
 
 	int getTargetWidth() override;
 	int getTargetHeight() override;
@@ -82,6 +86,9 @@ private:
 	void addVertex(
 		std::vector<float>& vertices, float x, float y, float tex_x,
 		float tex_y);
+	void addVertex(
+		std::vector<float>& vertices, float x, float y, float tex_x,
+		float tex_y, Color color);
 };
 
 } // namespace Growl

@@ -371,6 +371,32 @@ void OpenGLBatch::drawRect(
 	idx++;
 }
 
+void OpenGLBatch::drawRect(
+	float x, float y, float width, float height, Color gradient_top_left,
+	Color gradient_top_right, Color gradient_bottom_left,
+	Color gradient_bottom_right, glm::mat4x4 transform) {
+	if (bound_tex || bound_shader != rect_shader || idx >= MAX_BATCH_SIZE) {
+		flush();
+	}
+	bound_shader = rect_shader;
+	uniforms.insert(uniforms.end(), VertexBlock{transform});
+
+	x = std::round(x) + 0.5f;
+	y = std::round(y) + 0.5f;
+	float right = x + width;
+	float bottom = y + height;
+
+	addVertex(x, y, 0.0f, 1.0f, gradient_top_left);
+	addVertex(right, y, 1.0f, 1.0f, gradient_top_right);
+	addVertex(right, bottom, 1.0f, 0.0f, gradient_bottom_right);
+	addVertex(x, bottom, 0.0f, 0.0f, gradient_bottom_left);
+	elements.insert(
+		elements.end(),
+		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
+	verts += 4;
+	idx++;
+}
+
 int OpenGLBatch::getTargetWidth() {
 #ifdef GROWL_IMGUI
 	if (im_fbo && api->imguiVisible()) {
@@ -433,6 +459,11 @@ void OpenGLBatch::flush() {
 }
 
 void OpenGLBatch::addVertex(float x, float y, float tex_x, float tex_y) {
+	addVertex(x, y, tex_x, tex_y, this->color);
+}
+
+void OpenGLBatch::addVertex(
+	float x, float y, float tex_x, float tex_y, Color color) {
 	vertices.insert(
 		vertices.end(),
 		Vertex{

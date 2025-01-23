@@ -303,6 +303,33 @@ void MetalBatch::drawRect(
 	}
 }
 
+void MetalBatch::drawRect(
+	float x, float y, float width, float height, Color gradient_top_left,
+	Color gradient_top_right, Color gradient_bottom_left,
+	Color gradient_bottom_right, glm::mat4x4 transform) {
+
+	rect_shader->bind(surface, encoder);
+	constant_buffer->writeAndBind(encoder, 2, &transform, sizeof(transform));
+
+	std::vector<float> vertices;
+	x = std::round(x) + 0.5f;
+	y = std::round(y) + 0.5f;
+	float right = x + width;
+	float bottom = y + height;
+	addVertex(vertices, right, bottom, 1.f, 1.f, gradient_bottom_right);
+	addVertex(vertices, x, bottom, 0.f, 1.f, gradient_bottom_left);
+	addVertex(vertices, x, y, 0.f, 0.f, gradient_top_left);
+	addVertex(vertices, right, bottom, 1.f, 1.f, gradient_bottom_right);
+	addVertex(vertices, x, y, 0.f, 0.f, gradient_top_left);
+	addVertex(vertices, right, y, 1.f, 0.f, gradient_top_right);
+	[encoder setVertexBytes:vertices.data()
+					 length:vertices.size() * sizeof(float)
+					atIndex:1];
+	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
+				vertexStart:0
+				vertexCount:6];
+}
+
 int MetalBatch::getTargetWidth() {
 #ifdef GROWL_IMGUI
 	if (api.imguiVisible() && im_surface) {
@@ -337,6 +364,12 @@ MTLRenderPassDescriptor* MetalBatch::renderPassDescriptor() {
 
 void MetalBatch::addVertex(
 	std::vector<float>& vertices, float x, float y, float tex_x, float tex_y) {
+	addVertex(vertices, x, y, tex_x, tex_y, this->color);
+}
+
+void MetalBatch::addVertex(
+	std::vector<float>& vertices, float x, float y, float tex_x, float tex_y,
+	Color color) {
 	vertices.insert(
 		vertices.end(),
 		{x, y, tex_x, tex_y, color.r, color.g, color.b, color.a});
