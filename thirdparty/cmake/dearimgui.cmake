@@ -33,7 +33,7 @@ else()
 		)
 endif()
 
-if (GROWL_SDL3 AND NOT GROWL_WEB)
+if (GROWL_SDL3)
 	set(SDL_LIB growl-thirdparty::sdl)
 endif()
 
@@ -44,6 +44,3 @@ growl_thirdparty_lib(imgui
 	LINK ${SDL_LIB}
 	)
 target_compile_definitions(imgui INTERFACE GROWL_IMGUI)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-	target_compile_options(imgui PRIVATE -sUSE_SDL=3)
-endif ()

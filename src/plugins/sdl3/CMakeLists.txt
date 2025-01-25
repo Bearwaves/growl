@@ -2,9 +2,7 @@ project(growl-plugin-sdl3)
 
 message(STATUS "[Growl] Enabled SDL3 plugin.")
 
-if (NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Emscripten")
-	set(SDL_LINK_LIBS growl-thirdparty::sdl)
-endif()
+set(SDL_LINK_LIBS growl-thirdparty::sdl)
 
 if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 	set(SDL_LINK_LIBS
@@ -36,10 +34,7 @@ target_link_libraries(growl-plugin-sdl3
 	growl-core
 	${SDL_LINK_LIBS}
 	)
-	target_compile_definitions(growl-plugin-sdl3
-		INTERFACE "GROWL_SDL3"
-		PRIVATE "SDL_FUNCTION_POINTER_IS_VOID_POINTER"
-		)
-if ("${CMAKE_SYSTEM_NAME}" MATCHES "Emscripten")
-	target_compile_options(growl-plugin-sdl3 PRIVATE -sUSE_SDL=3)
-endif()
+target_compile_definitions(growl-plugin-sdl3
+	INTERFACE "GROWL_SDL3"
+	PRIVATE "SDL_FUNCTION_POINTER_IS_VOID_POINTER"
+	)

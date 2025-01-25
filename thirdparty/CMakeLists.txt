@@ -92,7 +92,7 @@ target_link_libraries(growl-thirdparty
 	growl-thirdparty::stb
 	)
 
-if (GROWL_SDL3 AND NOT GROWL_WEB)
+if (GROWL_SDL3)
 	add_subdirectory(SDL)
 	get_target_property(SDL_aliased SDL3::SDL3 ALIASED_TARGET)
 	add_library(growl-thirdparty::sdl ALIAS ${SDL_aliased})

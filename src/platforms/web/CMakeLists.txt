@@ -27,4 +27,4 @@ target_link_libraries(growl-platform-web
 	)
 target_include_directories(growl-platform-web PUBLIC "include")
 target_compile_definitions(growl-platform-web INTERFACE "GROWL_WEB")
-target_link_options(growl-platform-web INTERFACE -sALLOW_MEMORY_GROWTH -sEXIT_RUNTIME -sUSE_SDL=3 -sUSE_WEBGL2=1)
+target_link_options(growl-platform-web INTERFACE -sALLOW_MEMORY_GROWTH -sEXIT_RUNTIME -sUSE_WEBGL2=1)
