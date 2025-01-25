@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SDL_events.h"
-#include "SDL_gamecontroller.h"
-#include "SDL_log.h"
+#include "SDL3/SDL_events.h"
+#include "SDL3/SDL_gamepad.h"
+#include "SDL3/SDL_log.h"
 #include "growl/core/api/api_internal.h"
 #include <memory>
 
@@ -20,26 +20,26 @@ enum class Key;
 enum class KeyEventType;
 enum class LogLevel;
 
-class SDL2Controller {
+class SDL3Controller {
 public:
-	SDL2Controller(SystemAPI* system, SDL_GameController* controller)
+	SDL3Controller(SystemAPI* system, SDL_Gamepad* controller)
 		: system{system}
 		, controller{controller} {}
-	~SDL2Controller() {
+	~SDL3Controller() {
 		system->log(
-			"SDL2Controller", "Closed controller: {}",
-			SDL_GameControllerName(controller));
-		SDL_GameControllerClose(controller);
+			"SDL3Controller", "Closed controller: {}",
+			SDL_GetGamepadName(controller));
+		SDL_CloseGamepad(controller);
 	}
 
 private:
 	SystemAPI* system;
-	SDL_GameController* controller;
+	SDL_Gamepad* controller;
 };
 
-class SDL2SystemAPI : public SystemAPIInternal {
+class SDL3SystemAPI : public SystemAPIInternal {
 public:
-	explicit SDL2SystemAPI(API& api)
+	explicit SDL3SystemAPI(API& api)
 		: api{api} {}
 	Error init() override;
 	void tick() override;
@@ -75,7 +75,7 @@ private:
 
 	API& api;
 	bool running;
-	std::unique_ptr<SDL2Controller> controller;
+	std::unique_ptr<SDL3Controller> controller;
 	int resize_width = 0;
 	int resize_height = 0;
 	SDL_Scancode debug_mode_key;

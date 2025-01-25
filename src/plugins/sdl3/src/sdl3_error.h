@@ -3,9 +3,9 @@
 #include "growl/core/error.h"
 namespace Growl {
 
-class SDL2Error : public BaseError {
+class SDL3Error : public BaseError {
 public:
-	explicit SDL2Error(std::string message)
+	explicit SDL3Error(std::string message)
 		: message_str{message} {}
 
 	std::string message() override {

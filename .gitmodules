@@ -52,3 +52,6 @@
 [submodule "thirdparty/date"]
 	path = thirdparty/date
 	url = git@github.com:HowardHinnant/date.git
+[submodule "thirdparty/SDL"]
+	path = thirdparty/SDL
+	url = git@github.com:libsdl-org/SDL.git
