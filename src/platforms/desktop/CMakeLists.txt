@@ -10,8 +10,8 @@ set(SOURCES
 
 add_library(growl-platform-desktop ${SOURCES})
 
-set(GROWL_SDL2 ON)
-set(GROWL_SDL2 ON PARENT_SCOPE)
+set(GROWL_SDL3 ON)
+set(GROWL_SDL3 ON PARENT_SCOPE)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
 	set(GROWL_METAL ON)
@@ -39,7 +39,7 @@ target_link_libraries(growl-platform-desktop
 	growl-core
 	growl-ui
 	PRIVATE
-	growl-plugin-sdl2
+	growl-plugin-sdl3
 	growl-plugin-soloud
 	growl-plugin-lua
 	${GROWL_DESKTOP_LIBS}

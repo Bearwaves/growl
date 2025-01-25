@@ -19,7 +19,7 @@ set(SOURCES
 
 set(SOURCES
 	${SOURCES}
-	${SOURCE_PREFIX}/backends/imgui_impl_sdl2.cpp
+	${SOURCE_PREFIX}/backends/imgui_impl_sdl3.cpp
 	)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT GROWL_OPENGL)
 	set(SOURCES
@@ -33,21 +33,14 @@ else()
 		)
 endif()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-	set(SDL2_INCLUDE_DIR "")
-else ()
-	set(SDL2_BUILDING_LIBRARY 1)
-	find_package(SDL2 REQUIRED)
-endif ()
+if (GROWL_SDL3)
+	set(SDL_LIB growl-thirdparty::sdl)
+endif()
 
 growl_thirdparty_lib(imgui
 	SOURCES ${SOURCES}
 	INCLUDES
 		PUBLIC ${SOURCE_PREFIX} "${SOURCE_PREFIX}/backends" "${SOURCE_PREFIX}/misc/cpp"
-		PRIVATE ${SDL2_INCLUDE_DIR}
-	LINK ${SDL2_LIBRARY}
+	LINK ${SDL_LIB}
 	)
 target_compile_definitions(imgui INTERFACE GROWL_IMGUI)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-	target_compile_options(imgui PRIVATE -sUSE_SDL=2)
-endif ()

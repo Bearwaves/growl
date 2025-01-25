@@ -1,14 +1,14 @@
 #pragma once
 
-#include "SDL_rwops.h"
+#include "SDL3/SDL_iostream.h"
 #include "growl/core/assets/file.h"
 #include <cstddef>
 namespace Growl {
 
-class SDL2File : public File {
+class SDL3File : public File {
 public:
-	explicit SDL2File(SDL_RWops* fp, size_t start, size_t end);
-	~SDL2File();
+	explicit SDL3File(SDL_IOStream* fp, size_t start, size_t end);
+	~SDL3File();
 
 	bool eof() override;
 	size_t read(unsigned char* dst, size_t n_bytes) override;
@@ -17,7 +17,7 @@ public:
 	size_t pos() override;
 
 private:
-	SDL_RWops* fp;
+	SDL_IOStream* fp;
 	size_t ptr;
 	size_t start;
 	size_t end;

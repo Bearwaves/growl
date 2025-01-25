@@ -1,5 +1,5 @@
-if (GROWL_SDL2)
-	add_subdirectory(sdl2)
+if (GROWL_SDL3)
+	add_subdirectory(sdl3)
 endif()
 
 if (GROWL_SOLOUD)

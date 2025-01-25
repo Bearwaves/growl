@@ -159,8 +159,7 @@ void OpenGLBatch::end() {
 #ifdef GROWL_IMGUI
 	if (api->imguiVisible() && im_fbo) {
 		ImGui::Image(
-			reinterpret_cast<ImTextureID>(im_tex),
-			ImGui::GetContentRegionAvail(), ImVec2(0, 1), ImVec2(1, 0));
+			im_tex, ImGui::GetContentRegionAvail(), ImVec2(0, 1), ImVec2(1, 0));
 		imGuiEndGameWindow();
 	}
 #endif

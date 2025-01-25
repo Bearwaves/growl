@@ -1,14 +1,14 @@
 #pragma once
 
-#include "SDL_video.h"
+#include "SDL3/SDL_video.h"
 #include "growl/core/graphics/window.h"
 
 namespace Growl {
 
-class SDL2Window final : public Window {
+class SDL3Window final : public Window {
 public:
-	explicit SDL2Window(SDL_Window* window);
-	~SDL2Window();
+	explicit SDL3Window(SDL_Window* window);
+	~SDL3Window();
 
 	void flip() override;
 	void getSize(int* w, int* h) override;

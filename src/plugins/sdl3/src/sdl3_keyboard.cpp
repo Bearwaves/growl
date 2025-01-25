@@ -1,17 +1,16 @@
-#include "SDL_events.h"
-#include "SDL_keyboard.h"
-#include "SDL_scancode.h"
+#include "SDL3/SDL_events.h"
+#include "SDL3/SDL_scancode.h"
 #include "growl/core/api/api.h"
 #include "growl/core/input/event.h"
 #include "growl/core/input/keyboard.h"
 #include "growl/core/input/processor.h"
-#include "sdl2_system.h"
+#include "sdl3_system.h"
 
 using Growl::Key;
 using Growl::KeyEventType;
-using Growl::SDL2SystemAPI;
+using Growl::SDL3SystemAPI;
 
-void SDL2SystemAPI::handleKeyboardEvent(SDL_Event& event) {
+void SDL3SystemAPI::handleKeyboardEvent(SDL_Event& event) {
 	if (inputProcessor) {
 		InputEvent e(
 			InputEventType::Keyboard,
@@ -19,27 +18,27 @@ void SDL2SystemAPI::handleKeyboardEvent(SDL_Event& event) {
 		inputProcessor->onEvent(e);
 	}
 #ifdef GROWL_IMGUI
-	if (event.type == SDL_KEYUP &&
-		event.key.keysym.scancode == debug_mode_key) {
+	if (event.type == SDL_EVENT_KEY_UP &&
+		event.key.scancode == debug_mode_key) {
 		api.setImguiVisible(!api.imguiVisible());
 		imgui_resize_window = event.window.windowID;
 	}
 #endif
 }
 
-KeyEventType SDL2SystemAPI::getKeyEventType(SDL_KeyboardEvent& event) {
+KeyEventType SDL3SystemAPI::getKeyEventType(SDL_KeyboardEvent& event) {
 	switch (event.type) {
-	case SDL_KEYDOWN:
+	case SDL_EVENT_KEY_DOWN:
 		return KeyEventType::KeyDown;
-	case SDL_KEYUP:
+	case SDL_EVENT_KEY_UP:
 		return KeyEventType::KeyUp;
 	default:
 		return KeyEventType::Unknown;
 	}
 }
 
-Key SDL2SystemAPI::getKey(SDL_KeyboardEvent& event) {
-	switch (event.keysym.scancode) {
+Key SDL3SystemAPI::getKey(SDL_KeyboardEvent& event) {
+	switch (event.scancode) {
 	// Arrows
 	case SDL_SCANCODE_UP:
 		return Key::ArrowUp;
@@ -186,7 +185,7 @@ Key SDL2SystemAPI::getKey(SDL_KeyboardEvent& event) {
 	}
 }
 
-SDL_Scancode SDL2SystemAPI::getScancode(Key key) {
+SDL_Scancode SDL3SystemAPI::getScancode(Key key) {
 	switch (key) {
 	// Arrows
 	case Key::ArrowUp:

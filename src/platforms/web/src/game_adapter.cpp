@@ -15,7 +15,7 @@ using Growl::Config;
 using Growl::Game;
 using Growl::GameAdapter;
 
-void initSDL2Plugin(API& api);
+void initSDL3Plugin(API& api);
 void initSoLoudPlugin(API& api);
 void initOpenGLPlugin(API& api);
 void initLuaPlugin(API& api);
@@ -26,7 +26,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, Config config)
 	: config{config} {
 	g_api = std::make_unique<API>();
 	g_game = std::move(game);
-	initSDL2Plugin(*g_api);
+	initSDL3Plugin(*g_api);
 	initSoLoudPlugin(*g_api);
 	initOpenGLPlugin(*g_api);
 	initLuaPlugin(*g_api);

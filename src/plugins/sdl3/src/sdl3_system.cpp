@@ -1,37 +1,37 @@
-#include "sdl2_system.h"
-#include "SDL.h"
-#include "SDL_video.h"
+#include "sdl3_system.h"
+#include "SDL3/SDL_events.h"
+#include "SDL3/SDL_init.h"
+#include "SDL3/SDL_video.h"
 #include "growl/core/api/api.h"
 #include "growl/core/assets/file.h"
 #include "growl/core/input/event.h"
 #include "growl/core/input/processor.h"
 #include "growl/core/log.h"
-#include "sdl2_file.h"
+#include "sdl3_file.h"
 #ifdef GROWL_IMGUI
 #include "growl/core/imgui.h"
 #include "imgui.h"
-#include "imgui_impl_sdl2.h"
+#include "imgui_impl_sdl3.h"
 #endif
-#include "sdl2_error.h"
-#include "sdl2_window.h"
+#include "sdl3_error.h"
+#include "sdl3_window.h"
 #include <memory>
 
 using Growl::Error;
 using Growl::File;
 using Growl::InputEvent;
 using Growl::Result;
-using Growl::SDL2SystemAPI;
+using Growl::SDL3SystemAPI;
 using Growl::Window;
 
-Error SDL2SystemAPI::init() {
+Error SDL3SystemAPI::init() {
 	if (SDL_WasInit(SDL_INIT_VIDEO) != 0) {
-		return std::make_unique<SDL2Error>(SDL_GetError());
+		return std::make_unique<SDL3Error>(SDL_GetError());
 	}
-	SDL_LogSetPriority(SDL_LOG_CATEGORY_CUSTOM, SDL_LOG_PRIORITY_INFO);
-	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) == -1) {
-		return std::make_unique<SDL2Error>(SDL_GetError());
+	SDL_SetLogPriority(SDL_LOG_CATEGORY_CUSTOM, SDL_LOG_PRIORITY_INFO);
+	if (!SDL_InitSubSystem(SDL_INIT_GAMEPAD)) {
+		return std::make_unique<SDL3Error>(SDL_GetError());
 	}
-	SDL_ShowCursor(SDL_DISABLE);
 
 #ifdef GROWL_IMGUI
 	IMGUI_CHECKVERSION();
@@ -41,89 +41,97 @@ Error SDL2SystemAPI::init() {
 	imgui_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 #endif
 
-	this->log("SDL2SystemAPI", "Initialised SDL system");
+	this->log("SDL3SystemAPI", "Initialised SDL system");
 
 	running = true;
 	return nullptr;
 }
 
 Result<std::unique_ptr<Window>>
-SDL2SystemAPI::createWindow(const Config& config) {
-	int flags = SDL_WINDOW_INPUT_FOCUS;
-	flags |= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL |
-			 SDL_WINDOW_ALLOW_HIGHDPI;
-
-	SDL_Window* win = SDL_CreateWindow(
-		config.name.c_str(),
-		config.window_centered ? SDL_WINDOWPOS_CENTERED : 0,
-		config.window_centered ? SDL_WINDOWPOS_CENTERED : 0,
-		config.window_width, config.window_height, flags);
-	if (win == nullptr) {
-		return Error(std::make_unique<SDL2Error>(SDL_GetError()));
+SDL3SystemAPI::createWindow(const Config& config) {
+	SDL_PropertiesID props = SDL_CreateProperties();
+	SDL_SetStringProperty(
+		props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, config.name.c_str());
+	SDL_SetNumberProperty(
+		props, SDL_PROP_WINDOW_CREATE_X_NUMBER,
+		config.window_centered ? SDL_WINDOWPOS_CENTERED : 0);
+	SDL_SetNumberProperty(
+		props, SDL_PROP_WINDOW_CREATE_Y_NUMBER,
+		config.window_centered ? SDL_WINDOWPOS_CENTERED : 0);
+	SDL_SetNumberProperty(
+		props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, config.window_width);
+	SDL_SetNumberProperty(
+		props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, config.window_height);
+	SDL_SetBooleanProperty(
+		props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true);
+	SDL_SetBooleanProperty(
+		props, SDL_PROP_WINDOW_CREATE_FOCUSABLE_BOOLEAN, true);
+	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
+	SDL_SetBooleanProperty(
+		props, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true);
+	SDL_Window* win = SDL_CreateWindowWithProperties(props);
+	if (!win) {
+		return Error(std::make_unique<SDL3Error>(SDL_GetError()));
 	}
 
 	debug_mode_key = getScancode(config.debug_mode_key);
 
-	return std::unique_ptr<Window>(std::make_unique<SDL2Window>(win));
+	return std::unique_ptr<Window>(std::make_unique<SDL3Window>(win));
 }
 
-void SDL2SystemAPI::tick() {
+void SDL3SystemAPI::tick() {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 		bool scene_focused = true;
 #ifdef GROWL_IMGUI
 		if (api.imguiVisible()) {
-			ImGui_ImplSDL2_ProcessEvent(&event);
+			ImGui_ImplSDL3_ProcessEvent(&event);
 			scene_focused = imGuiGameWindowFocused();
 		}
 #endif
 		switch (event.type) {
-		case SDL_QUIT: {
-			log("SDL2SystemAPI", "Got stop signal");
+		case SDL_EVENT_QUIT: {
+			log("SDL3SystemAPI", "Got stop signal");
 			running = false;
 			break;
 		}
-		case SDL_MOUSEMOTION:
-		case SDL_MOUSEBUTTONDOWN:
-		case SDL_MOUSEBUTTONUP:
+		case SDL_EVENT_MOUSE_MOTION:
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+		case SDL_EVENT_MOUSE_BUTTON_UP:
 			if (scene_focused) {
 				handleMouseEvent(event);
 			}
 			break;
-		case SDL_KEYDOWN:
-		case SDL_KEYUP:
-			if (scene_focused || event.key.keysym.scancode == debug_mode_key) {
+		case SDL_EVENT_KEY_DOWN:
+		case SDL_EVENT_KEY_UP:
+			if (scene_focused || event.key.scancode == debug_mode_key) {
 				handleKeyboardEvent(event);
 			}
 			break;
-		case SDL_CONTROLLERBUTTONDOWN:
-		case SDL_CONTROLLERBUTTONUP:
+		case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+		case SDL_EVENT_GAMEPAD_BUTTON_UP:
 			handleControllerEvent(event);
 			break;
-		case SDL_CONTROLLERDEVICEADDED:
+		case SDL_EVENT_GAMEPAD_ADDED:
 			openGameController(event.cdevice.which);
 			break;
-		case SDL_WINDOWEVENT:
-			switch (event.window.event) {
-			case SDL_WINDOWEVENT_RESIZED: {
+		case SDL_EVENT_WINDOW_RESIZED: {
 #ifdef GROWL_IMGUI
-				if (api.imguiVisible()) {
-					break;
-				}
-#endif
-				auto window = SDL_GetWindowFromID(event.window.windowID);
-				if (window) {
-					// SDL event doesn't account for HiDPI
-					SDL_GL_GetDrawableSize(
-						window, &resize_width, &resize_height);
-				} else {
-					resize_width = event.window.data1;
-					resize_height = event.window.data2;
-				}
+			if (api.imguiVisible()) {
 				break;
 			}
+#endif
+			auto window = SDL_GetWindowFromID(event.window.windowID);
+			if (window) {
+				// SDL event doesn't account for HiDPI
+				SDL_GetWindowSizeInPixels(
+					window, &resize_width, &resize_height);
+			} else {
+				resize_width = event.window.data1;
+				resize_height = event.window.data2;
 			}
 			break;
+		}
 		}
 	}
 #ifdef GROWL_IMGUI
@@ -135,27 +143,27 @@ void SDL2SystemAPI::tick() {
 	} else if (imgui_resize_window) {
 		auto window = SDL_GetWindowFromID(imgui_resize_window);
 		if (window) {
-			SDL_GL_GetDrawableSize(window, &resize_width, &resize_height);
+			SDL_GetWindowSizeInPixels(window, &resize_width, &resize_height);
 		}
 		imgui_resize_window = 0;
 	}
 #endif
 }
 
-void SDL2SystemAPI::stop() {
+void SDL3SystemAPI::stop() {
 	SDL_Quit();
 }
 
-void SDL2SystemAPI::dispose() {
+void SDL3SystemAPI::dispose() {
 	controller = nullptr;
 	SDL_Quit();
 #ifdef GROWL_IMGUI
-	ImGui_ImplSDL2_Shutdown();
+	ImGui_ImplSDL3_Shutdown();
 	ImGui::DestroyContext();
 #endif
 }
 
-bool SDL2SystemAPI::didResize(int* width, int* height) {
+bool SDL3SystemAPI::didResize(int* width, int* height) {
 	*width = resize_width;
 	*height = resize_height;
 	resize_width = 0;
@@ -163,32 +171,32 @@ bool SDL2SystemAPI::didResize(int* width, int* height) {
 	return *width || *height;
 }
 
-void SDL2SystemAPI::setLogLevel(LogLevel log_level) {
-	SDL_LogSetPriority(SDL_LOG_CATEGORY_CUSTOM, getLogPriority(log_level));
+void SDL3SystemAPI::setLogLevel(LogLevel log_level) {
+	SDL_SetLogPriority(SDL_LOG_CATEGORY_CUSTOM, getLogPriority(log_level));
 }
 
 Result<std::unique_ptr<File>>
-SDL2SystemAPI::openFile(std::string path, size_t start, size_t end) {
-	auto fp = SDL_RWFromFile(path.c_str(), "rb");
+SDL3SystemAPI::openFile(std::string path, size_t start, size_t end) {
+	auto fp = SDL_IOFromFile(path.c_str(), "rb");
 	if (!fp) {
-		return Error(std::make_unique<SDL2Error>(SDL_GetError()));
+		return Error(std::make_unique<SDL3Error>(SDL_GetError()));
 	}
 
 	if (end == 0) {
-		end = SDL_RWsize(fp);
+		end = SDL_GetIOSize(fp);
 	}
 
-	return std::unique_ptr<File>(std::make_unique<SDL2File>(fp, start, end));
+	return std::unique_ptr<File>(std::make_unique<SDL3File>(fp, start, end));
 }
 
-void SDL2SystemAPI::logInternal(
+void SDL3SystemAPI::logInternal(
 	LogLevel log_level, std::string tag, std::string msg) {
 	SDL_LogMessage(
 		SDL_LOG_CATEGORY_CUSTOM, getLogPriority(log_level), "[%s] %s",
 		tag.c_str(), msg.c_str());
 }
 
-SDL_LogPriority SDL2SystemAPI::getLogPriority(LogLevel log_level) {
+SDL_LogPriority SDL3SystemAPI::getLogPriority(LogLevel log_level) {
 	switch (log_level) {
 	case LogLevel::Debug:
 		return SDL_LOG_PRIORITY_DEBUG;
@@ -204,12 +212,12 @@ SDL_LogPriority SDL2SystemAPI::getLogPriority(LogLevel log_level) {
 	return SDL_LOG_PRIORITY_VERBOSE;
 }
 
-void SDL2SystemAPI::handleMouseEvent(SDL_Event& event) {
+void SDL3SystemAPI::handleMouseEvent(SDL_Event& event) {
 	if (inputProcessor) {
 		int display_w, display_h, window_w, window_h;
 		SDL_Window* window = SDL_GetWindowFromID(event.motion.windowID);
 		SDL_GetWindowSize(window, &window_w, &window_h);
-		SDL_GL_GetDrawableSize(window, &display_w, &display_h);
+		SDL_GetWindowSizeInPixels(window, &display_w, &display_h);
 		int x = event.motion.x * (display_w / (float)window_w);
 		int y = event.motion.y * (display_h / (float)window_h);
 
@@ -225,13 +233,13 @@ void SDL2SystemAPI::handleMouseEvent(SDL_Event& event) {
 
 		PointerEventType event_type = PointerEventType::Unknown;
 		switch (event.type) {
-		case SDL_MOUSEBUTTONDOWN:
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			event_type = PointerEventType::Down;
 			break;
-		case SDL_MOUSEBUTTONUP:
+		case SDL_EVENT_MOUSE_BUTTON_UP:
 			event_type = PointerEventType::Up;
 			break;
-		case SDL_MOUSEMOTION:
+		case SDL_EVENT_MOUSE_MOTION:
 			event_type = PointerEventType::Move;
 			break;
 		}
