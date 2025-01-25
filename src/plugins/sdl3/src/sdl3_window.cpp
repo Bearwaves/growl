@@ -30,8 +30,7 @@ void SDL3Window::getSize(int* w, int* h) {
 
 void* SDL3Window::getMetalLayer() {
 	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal");
-	SDL_Renderer* renderer =
-		SDL_CreateRenderer(native, "metal");
+	SDL_Renderer* renderer = SDL_CreateRenderer(native, "metal");
 	SDL_SetRenderVSync(renderer, 1);
 	void* layer = SDL_GetRenderMetalLayer(renderer);
 	SDL_DestroyRenderer(renderer);

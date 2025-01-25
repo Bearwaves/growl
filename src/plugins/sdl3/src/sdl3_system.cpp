@@ -75,6 +75,7 @@ SDL3SystemAPI::createWindow(const Config& config) {
 	}
 
 	debug_mode_key = getScancode(config.debug_mode_key);
+	setDarkMode(SDL_GetSystemTheme() == SDL_SYSTEM_THEME_DARK);
 
 	return std::unique_ptr<Window>(std::make_unique<SDL3Window>(win));
 }
@@ -114,6 +115,9 @@ void SDL3SystemAPI::tick() {
 			break;
 		case SDL_EVENT_GAMEPAD_ADDED:
 			openGameController(event.cdevice.which);
+			break;
+		case SDL_EVENT_SYSTEM_THEME_CHANGED:
+			setDarkMode(SDL_GetSystemTheme() == SDL_SYSTEM_THEME_DARK);
 			break;
 		case SDL_EVENT_WINDOW_RESIZED: {
 #ifdef GROWL_IMGUI
