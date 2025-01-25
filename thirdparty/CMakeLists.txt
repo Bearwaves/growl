@@ -61,15 +61,6 @@ add_subdirectory(json)
 add_subdirectory(fmt)
 add_subdirectory(utfcpp)
 
-if (GROWL_DESKTOP)
-	add_subdirectory(SDL)
-	get_target_property(SDL_aliased SDL3::SDL3 ALIASED_TARGET)
-	add_library(growl-thirdparty::sdl ALIAS ${SDL_aliased})
-endif()
-
-unset(MESSAGE_QUIET)
-message(STATUS "[Growl] All done with third-party.")
-
 add_library(growl-thirdparty::json ALIAS nlohmann_json)
 add_library(growl-thirdparty::fmt ALIAS fmt)
 add_library(growl-thirdparty::utf8cpp ALIAS utf8cpp)
@@ -99,8 +90,14 @@ target_link_libraries(growl-thirdparty
 	growl-thirdparty::libunibreak
 	growl-thirdparty::fpng
 	growl-thirdparty::stb
-	growl-thirdparty::sdl
 	)
+
+if (GROWL_SDL3 AND NOT GROWL_WEB)
+	add_subdirectory(SDL)
+	get_target_property(SDL_aliased SDL3::SDL3 ALIASED_TARGET)
+	add_library(growl-thirdparty::sdl ALIAS ${SDL_aliased})
+	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::sdl)
+endif()
 
 if (GROWL_IMGUI)
 	include(cmake/dearimgui.cmake)
@@ -116,3 +113,6 @@ if (GROWL_LUA)
 	include(cmake/lua.cmake)
 	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::lua)
 endif()
+
+unset(MESSAGE_QUIET)
+message(STATUS "[Growl] All done with third-party.")

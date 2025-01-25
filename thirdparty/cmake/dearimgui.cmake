@@ -33,7 +33,7 @@ else()
 		)
 endif()
 
-if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+if (GROWL_SDL3 AND NOT GROWL_WEB)
 	set(SDL_LIB growl-thirdparty::sdl)
 endif()
 
