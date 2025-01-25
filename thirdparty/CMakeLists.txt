@@ -61,7 +61,7 @@ add_subdirectory(json)
 add_subdirectory(fmt)
 add_subdirectory(utfcpp)
 
-if (NOT GROWL_WEB)
+if (GROWL_DESKTOP)
 	add_subdirectory(SDL)
 	get_target_property(SDL_aliased SDL3::SDL3 ALIASED_TARGET)
 	add_library(growl-thirdparty::sdl ALIAS ${SDL_aliased})
