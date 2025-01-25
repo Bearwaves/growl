@@ -33,11 +33,15 @@ else()
 		)
 endif()
 
+if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+	set(SDL_LIB growl-thirdparty::sdl)
+endif()
+
 growl_thirdparty_lib(imgui
 	SOURCES ${SOURCES}
 	INCLUDES
 		PUBLIC ${SOURCE_PREFIX} "${SOURCE_PREFIX}/backends" "${SOURCE_PREFIX}/misc/cpp"
-	LINK growl-thirdparty::sdl
+	LINK ${SDL_LIB}
 	)
 target_compile_definitions(imgui INTERFACE GROWL_IMGUI)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
