@@ -76,10 +76,10 @@ jobs:
         with:
           submodules: recursive
       - name: Configure CMake
-        run: cmake -S . -B build -G Ninja
+        run: cmake -S . -B build
         working-directory: example/test_app
       - name: Build
-        run: nj
+        run: make -j 4
         working-directory: example/test_app/build
 
   windows:
