@@ -43,6 +43,14 @@ Node* Node::addChild(std::unique_ptr<Node> node) {
 	return n;
 }
 
+void Node::removeChild(int i) {
+	children.erase(std::next(children.begin(), i));
+}
+
+void Node::clear() {
+	children.clear();
+}
+
 void Node::setDepth(int depth) {
 	this->depth = depth;
 	for (auto& child : children) {

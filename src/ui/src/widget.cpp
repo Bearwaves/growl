@@ -20,6 +20,12 @@ Node* Widget::addChild(std::unique_ptr<Node> node) {
 	return Node::addChild(std::move(node));
 }
 
+void Widget::clear() {
+	Node::clear();
+	pack_info.clear();
+	invalidate();
+}
+
 void Widget::invalidate() {
 	invalidated = true;
 }
@@ -66,4 +72,9 @@ Widget* Growl::nodeAsWidget(Node* node) {
 		return static_cast<Widget*>(node);
 	}
 	return nullptr;
+}
+
+void Widget::removeChild(int i) {
+	Node::removeChild(i);
+	pack_info.erase(std::next(pack_info.begin(), i));
 }

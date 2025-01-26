@@ -35,6 +35,27 @@ public:
 	GROWL_SCRIPT_VAR(float, Rotation, rotation);
 
 	virtual Node* addChild(std::unique_ptr<Node> node);
+
+	template <class T>
+	typename std::enable_if<
+		std::is_base_of<Node, T>::value, std::unique_ptr<T>>::type
+	removeNode(T* search) {
+		for (int i = 0; i < children.size(); i++) {
+			if (children.at(i).get() == search) {
+				std::unique_ptr<Node> removed = std::move(children.at(i));
+				removeChild(i);
+				return std::unique_ptr<T>(static_cast<T*>(removed.release()));
+				;
+			}
+			if (auto removed = children.at(i)->removeNode(search)) {
+				return removed;
+			}
+		}
+		return nullptr;
+	}
+
+	virtual void clear();
+
 	void tick(double delta_time);
 	void draw(Batch& batch, float parent_alpha);
 
@@ -60,6 +81,7 @@ protected:
 	std::vector<std::unique_ptr<Node>>& getChildren() {
 		return children;
 	}
+	virtual void removeChild(int i);
 
 	virtual void onTick(double delta_time);
 	virtual void onPopulateDebugUI(Batch& batch) {}
