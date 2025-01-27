@@ -49,7 +49,7 @@ AssetsIncludeError includeAtlas(
 	}
 	auto atlas = std::move(result.get());
 	for (auto& [name, _] : atlas.getMappings()) {
-		std::cout << "=> [" << style::bold << resolved_path.string()
+		std::cout << "=> [" << style::bold << resolved_path.generic_string()
 				  << style::reset << "] Included image " << style::bold << name
 				  << style::reset << "." << std::endl;
 	}
@@ -62,7 +62,7 @@ AssetsIncludeError includeAtlas(
 		return AssetsIncludeError("Failed to encode image.");
 	}
 	auto ptr = static_cast<unsigned int>(outfile.tellp());
-	assets_map[resolved_path.string()] = {
+	assets_map[resolved_path.generic_string()] = {
 		ptr, out_buf.size(), AssetType::Atlas, atlas.getMappings()};
 	outfile.write(
 		reinterpret_cast<const char*>(out_buf.data()), out_buf.size());

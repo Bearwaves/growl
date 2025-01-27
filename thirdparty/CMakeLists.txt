@@ -42,7 +42,7 @@ else ()
 	add_compile_options(-w)
 endif ()
 
-if (GROWL_DESKTOP)
+if (GROWL_DESKTOP AND NOT MSVC)
 	add_compile_options(-msse4.1 -mpclmul)
 endif ()
 
@@ -93,10 +93,12 @@ target_link_libraries(growl-thirdparty
 	)
 
 if (GROWL_SDL3)
+	set(SDL_TEST_LIBRARY OFF)
 	add_subdirectory(SDL)
 	get_target_property(SDL_aliased SDL3::SDL3 ALIASED_TARGET)
 	add_library(growl-thirdparty::sdl ALIAS ${SDL_aliased})
 	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::sdl)
+	set_property(TARGET ${SDL_aliased} PROPERTY FOLDER "growl-thirdparty")
 endif()
 
 if (GROWL_IMGUI)

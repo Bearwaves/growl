@@ -83,7 +83,7 @@ AssetsIncludeError includeShaderPack(
 				", must be vertex or fragment");
 		}
 
-		std::cout << "=> [" << style::bold << resolved_path.string()
+		std::cout << "=> [" << style::bold << resolved_path.generic_string()
 				  << style::reset << "] Included " << style::bold
 				  << shaderFormat(shader_type) << " "
 				  << entry.path().stem().string() << style::reset << " source."
@@ -123,7 +123,7 @@ AssetsIncludeError includeShaderPack(
 	info.shader_pack = pack_info;
 	info.size = static_cast<uint64_t>(outfile.tellp()) - start;
 
-	assets_map[resolved_path.string()] = info;
+	assets_map[resolved_path.generic_string()] = info;
 
 	return AssetsIncludeErrorCode::None;
 }
