@@ -11,6 +11,7 @@ namespace Growl {
 struct AtlasConfig {
 	int padding = 2;
 	int bleed_passes = 2;
+	bool recursive = false;
 };
 
 struct FontConfig {

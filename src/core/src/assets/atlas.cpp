@@ -40,8 +40,8 @@ Result<AtlasRegion> Atlas::getRegion(const std::string& name) noexcept {
 }
 
 Result<Atlas> Growl::packAtlasFromFiles(
-	std::vector<AtlasImagePackInfo>& images, int padding,
-	int bleed_passes) noexcept {
+	std::vector<AtlasImagePackInfo>& images, int padding, int bleed_passes,
+	std::filesystem::path from) noexcept {
 	stbrp_context ctx;
 	std::vector<stbrp_rect> rects;
 	int i = 0;
@@ -97,7 +97,7 @@ Result<Atlas> Growl::packAtlasFromFiles(
 				"Failed to parse image data: wrong dimensions"));
 		}
 
-		mappings[image.path.filename().string()] = AtlasRegion{
+		mappings[std::filesystem::relative(image.path, from)] = AtlasRegion{
 			img_width,
 			img_height,
 			(rect.x + padding) * inv_tex_width,

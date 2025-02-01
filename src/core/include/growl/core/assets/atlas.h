@@ -18,8 +18,8 @@ class AtlasImagePackInfo {
 public:
 	friend class Atlas;
 	friend Result<Atlas> packAtlasFromFiles(
-		std::vector<AtlasImagePackInfo>& images, int padding,
-		int bleed_passes) noexcept;
+		std::vector<AtlasImagePackInfo>& images, int padding, int bleed_passes,
+		std::filesystem::path from) noexcept;
 
 	AtlasImagePackInfo(std::filesystem::path path, int width, int height)
 		: path{path}

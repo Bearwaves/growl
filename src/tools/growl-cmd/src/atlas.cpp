@@ -32,18 +32,35 @@ AssetsIncludeError includeAtlas(
 	std::ofstream& outfile) noexcept {
 
 	std::vector<Growl::AtlasImagePackInfo> images;
-	for (auto entry : std::filesystem::directory_iterator(path)) {
-		int width, height, channels;
-		if (!stbi_info(
-				entry.path().string().c_str(), &width, &height, &channels)) {
-			// Not an image
-			continue;
+	if (config.recursive) {
+		for (auto entry : std::filesystem::recursive_directory_iterator(path)) {
+			if (entry.is_directory()) {
+				continue;
+			}
+			int width, height, channels;
+			if (!stbi_info(
+					entry.path().string().c_str(), &width, &height,
+					&channels)) {
+				// Not an image
+				continue;
+			}
+			images.push_back(AtlasImagePackInfo(entry.path(), width, height));
 		}
-		images.push_back(AtlasImagePackInfo(entry.path(), width, height));
+	} else {
+		for (auto entry : std::filesystem::directory_iterator(path)) {
+			int width, height, channels;
+			if (!stbi_info(
+					entry.path().string().c_str(), &width, &height,
+					&channels)) {
+				// Not an image
+				continue;
+			}
+			images.push_back(AtlasImagePackInfo(entry.path(), width, height));
+		}
 	}
 
 	auto result =
-		packAtlasFromFiles(images, config.padding, config.bleed_passes);
+		packAtlasFromFiles(images, config.padding, config.bleed_passes, path);
 	if (result.hasError()) {
 		return AssetsIncludeError(result.error()->message());
 	}
@@ -53,6 +70,11 @@ AssetsIncludeError includeAtlas(
 				  << style::reset << "] Included image " << style::bold << name
 				  << style::reset << "." << std::endl;
 	}
+	std::cout << "=> [" << style::bold << resolved_path.generic_string()
+			  << style::reset << "] Final size: " << style::bold
+			  << atlas.getImage().getWidth() << "x"
+			  << atlas.getImage().getHeight() << style::reset << "."
+			  << std::endl;
 
 	std::vector<uint8_t> out_buf;
 	if (!fpng::fpng_encode_image_to_memory(

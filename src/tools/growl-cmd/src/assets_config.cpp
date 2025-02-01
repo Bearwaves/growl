@@ -16,6 +16,7 @@ void Growl::from_json(const json& j, AssetConfig& s) {
 void Growl::from_json(const json& j, AtlasConfig& s) {
 	s.padding = j.value("padding", s.padding);
 	s.bleed_passes = j.value("bleedPasses", s.bleed_passes);
+	s.recursive = j.value("recursive", s.recursive);
 }
 
 void Growl::from_json(const json& j, FontConfig& s) {

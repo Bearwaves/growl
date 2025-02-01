@@ -218,7 +218,7 @@ AssetsIncludeError includeText(
 	return AssetsIncludeErrorCode::None;
 }
 
-Error processDirectory(
+Result<bool> processDirectory(
 	std::string& assets_dir, std::filesystem::path path, AssetsMap& assets_map,
 	std::ofstream& outfile) {
 	std::filesystem::path dir_resolved_path =
@@ -229,8 +229,8 @@ Error processDirectory(
 			std::ifstream config_file(path / ASSETS_CONFIG_FILENAME);
 			config = json::parse(config_file);
 		} catch (std::exception& e) {
-			return std::make_unique<AssetsError>(
-				"Failed to parse assets.json: " + std::string(e.what()));
+			return Error(std::make_unique<AssetsError>(
+				"Failed to parse assets.json: " + std::string(e.what())));
 		}
 	}
 	if (auto it = config.find("."); it != config.end()) {
@@ -242,8 +242,11 @@ Error processDirectory(
 					it->second.atlas.value(), path, dir_resolved_path,
 					assets_map, outfile);
 				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-				return std::make_unique<AssetsError>(
-					"Failed to build atlas: " + err.message());
+				return Error(std::make_unique<AssetsError>(
+					"Failed to build atlas: " + err.message()));
+			}
+			if (it->second.atlas->recursive) {
+				return false;
 			}
 		}
 		if (it->second.shader_pack.has_value()) {
@@ -254,11 +257,11 @@ Error processDirectory(
 					it->second.shader_pack.value(), path, dir_resolved_path,
 					assets_map, outfile);
 				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-				return std::make_unique<AssetsError>(
-					"Failed to build shader pack: " + err.message());
+				return Error(std::make_unique<AssetsError>(
+					"Failed to build shader pack: " + err.message()));
 			}
 		}
-		return nullptr;
+		return true;
 	}
 	for (const auto& file_entry : std::filesystem::directory_iterator(path)) {
 		std::filesystem::path resolved_path =
@@ -281,8 +284,8 @@ Error processDirectory(
 			if (auto err =
 					includeText(file_entry, resolved_path, assets_map, outfile);
 				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-				return std::make_unique<AssetsError>(
-					"Failed to include text file: " + err.message());
+				return Error(std::make_unique<AssetsError>(
+					"Failed to include text file: " + err.message()));
 			}
 			continue;
 		}
@@ -294,8 +297,8 @@ Error processDirectory(
 			continue;
 		}
 		if (img_err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-			return std::make_unique<AssetsError>(
-				"Failed to include image: " + img_err.message());
+			return Error(std::make_unique<AssetsError>(
+				"Failed to include image: " + img_err.message()));
 		}
 
 		FontConfig font_config;
@@ -308,8 +311,8 @@ Error processDirectory(
 			continue;
 		}
 		if (font_err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-			return std::make_unique<AssetsError>(
-				"Failed to include font: " + font_err.message());
+			return Error(std::make_unique<AssetsError>(
+				"Failed to include font: " + font_err.message()));
 		}
 
 		auto sound_err =
@@ -318,11 +321,11 @@ Error processDirectory(
 			continue;
 		}
 		if (sound_err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-			return std::make_unique<AssetsError>(
-				"Failed to include sound: " + sound_err.message());
+			return Error(std::make_unique<AssetsError>(
+				"Failed to include sound: " + sound_err.message()));
 		}
 	}
-	return nullptr;
+	return true;
 }
 
 void bundleAssets(std::string assets_dir, std::string output) noexcept {
@@ -341,25 +344,31 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 	outfile.write(reinterpret_cast<const char*>(&info), sizeof(info));
 
 	std::filesystem::path assets_path(assets_dir);
-	if (auto err =
-			processDirectory(assets_dir, assets_path, assets_map, outfile);
-		err) {
-		cout << fg::red << "Failed to build asset bundle: " << err->message()
+	auto res = processDirectory(assets_dir, assets_path, assets_map, outfile);
+	if (res.hasError()) {
+		cout << fg::red
+			 << "Failed to build asset bundle: " << res.error()->message()
 			 << style::reset << endl;
 		exit(1);
 	}
-	for (const auto& dir_entry :
-		 std::filesystem::recursive_directory_iterator(assets_dir)) {
+	if (!*res) {
+		return;
+	}
+	auto iter = std::filesystem::recursive_directory_iterator(assets_dir);
+	for (const auto& dir_entry : iter) {
 		if (!std::filesystem::is_directory(dir_entry)) {
 			continue;
 		}
-		if (auto err = processDirectory(
-				assets_dir, dir_entry.path(), assets_map, outfile);
-			err) {
+		res =
+			processDirectory(assets_dir, dir_entry.path(), assets_map, outfile);
+		if (res.hasError()) {
 			cout << fg::red
-				 << "Failed to build asset bundle: " << err->message()
+				 << "Failed to build asset bundle: " << res.error()->message()
 				 << style::reset << endl;
 			exit(1);
+		}
+		if (!*res) {
+			iter.disable_recursion_pending();
 		}
 	}
 
