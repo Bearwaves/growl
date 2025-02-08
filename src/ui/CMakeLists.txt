@@ -8,6 +8,7 @@ set(SOURCES
 
 	"src/list.cpp"
 	"src/label.cpp"
+	"src/container.cpp"
 	)
 
 add_library(growl-ui ${SOURCES})
