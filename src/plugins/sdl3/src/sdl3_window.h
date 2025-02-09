@@ -21,6 +21,10 @@ public:
 #ifdef GROWL_IMGUI
 	void initImgui() override;
 	void newImguiFrame() override;
+	void populateDebugMenu() override;
+	WindowSafeAreaInsets getSafeAreaInsets() override {
+		return insets;
+	}
 #endif
 
 private:
@@ -28,6 +32,10 @@ private:
 
 	// OpenGL
 	SDL_GLContext gl_context = nullptr;
+
+#ifdef GROWL_IMGUI
+	WindowSafeAreaInsets insets{0, 0, 0, 0};
+#endif
 };
 
 } // namespace Growl

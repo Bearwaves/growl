@@ -4,6 +4,7 @@
 #include "SDL3/SDL_video.h"
 #include "growl/core/error.h"
 #ifdef GROWL_IMGUI
+#include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #endif
 
@@ -65,5 +66,15 @@ void SDL3Window::initImgui() {
 
 void SDL3Window::newImguiFrame() {
 	ImGui_ImplSDL3_NewFrame();
+}
+
+void SDL3Window::populateDebugMenu() {
+	int w, h;
+	getSize(&w, &h);
+	ImGui::SeparatorText("Insets");
+	ImGui::SliderFloat("Top", &insets.top, 0, h);
+	ImGui::SliderFloat("Bottom", &insets.bottom, 0, h);
+	ImGui::SliderFloat("Left", &insets.left, 0, w);
+	ImGui::SliderFloat("Right", &insets.right, 0, w);
 }
 #endif

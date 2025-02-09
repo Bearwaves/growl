@@ -32,6 +32,7 @@ public:
 #ifdef GROWL_IMGUI
 	virtual void initImgui() {}
 	virtual void newImguiFrame() {}
+	virtual void populateDebugMenu() {}
 #endif
 };
 

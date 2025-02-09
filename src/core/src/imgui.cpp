@@ -1,15 +1,24 @@
 #ifdef GROWL_IMGUI
 #include "growl/core/imgui.h"
 #include "growl/core/api/api.h"
+#include "growl/core/graphics/window.h"
 #include "imgui.h"
 
 constexpr const char* SYSTEM_API_WINDOW = "System API";
+constexpr const char* WINDOW_WINDOW = "Window";
 
 namespace Growl {
 void doApiWindows(API& api) {
 	if (system_api_view) {
 		ImGui::Begin(SYSTEM_API_WINDOW, &system_api_view);
 		static_cast<SystemAPIInternal&>(api.system()).populateDebugMenu();
+		ImGui::End();
+	}
+	if (window_view) {
+		ImGui::Begin(WINDOW_WINDOW, &window_view);
+		static_cast<GraphicsAPIInternal&>(api.graphics())
+			.getWindow()
+			->populateDebugMenu();
 		ImGui::End();
 	}
 }
@@ -22,6 +31,7 @@ void Growl::imGuiBegin(API& api) {
 	if (ImGui::BeginMenu("Views")) {
 		ImGui::SeparatorText("Growl APIs");
 		ImGui::MenuItem("System API", nullptr, &system_api_view);
+		ImGui::MenuItem("Window", nullptr, &window_view);
 		ImGui::EndMenu();
 	}
 	auto size = ImGui::CalcTextSize("0.00 ms/frame (000.0 FPS)");

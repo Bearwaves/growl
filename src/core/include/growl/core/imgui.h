@@ -23,6 +23,7 @@ int game_window_w = 0;
 int game_window_h = 0;
 bool game_window_resized;
 bool system_api_view = false;
+bool window_view = false;
 } // namespace
 } // namespace Growl
 
