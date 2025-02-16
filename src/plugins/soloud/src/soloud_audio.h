@@ -50,8 +50,10 @@ public:
 		, api{api}
 		, sample{std::move(wav)}
 		, raw{std::move(raw)} {}
+	~SoLoudAudioClip();
 
 	void play(bool loop) override;
+	void stop() override;
 	float getVolume() override;
 	void setVolume(float volume) override;
 
@@ -73,8 +75,10 @@ public:
 		, api{api}
 		, stream{std::move(wav)}
 		, file{std::move(file)} {}
+	~SoLoudAudioStream();
 
 	void play(bool loop) override;
+	void stop() override;
 	float getVolume() override;
 	void setVolume(float volume) override;
 
