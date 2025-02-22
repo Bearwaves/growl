@@ -49,6 +49,8 @@ jobs:
       - uses: mymindstorm/setup-emsdk@v11
         with:
           version: 3.1.70
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install libgl1-mesa-dev
       - name: Configure CMake
         run: emcmake cmake -S . -B build
         working-directory: example/test_app
