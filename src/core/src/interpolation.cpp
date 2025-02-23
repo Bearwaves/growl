@@ -69,9 +69,13 @@ Color Growl::interpolate(
 	Color from, Color to, float factor, Interpolation interpolation,
 	float scale) {
 	return Color{
-		interpolate(from.r, to.r, factor, interpolation, scale),
-		interpolate(from.g, to.g, factor, interpolation, scale),
-		interpolate(from.b, to.b, factor, interpolation, scale),
-		interpolate(from.a, to.a, factor, interpolation, scale),
+		static_cast<float>(std::fmax(
+			0, interpolate(from.r, to.r, factor, interpolation, scale))),
+		static_cast<float>(std::fmax(
+			0, interpolate(from.g, to.g, factor, interpolation, scale))),
+		static_cast<float>(std::fmax(
+			0, interpolate(from.b, to.b, factor, interpolation, scale))),
+		static_cast<float>(std::fmax(
+			0, interpolate(from.a, to.a, factor, interpolation, scale))),
 	};
 }
