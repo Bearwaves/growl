@@ -170,6 +170,19 @@ void OpenGLBatch::setColor(float r, float g, float b, float a) {
 	color = {r, g, b, a};
 }
 
+void OpenGLBatch::setScissor(
+	float x, float y, float w, float h, glm::mat4x4 transform) {
+	flush();
+	auto world_coordinates = transform * glm::vec4{x, y, 0, 1};
+	glScissor(world_coordinates.x, world_coordinates.y, w, h);
+	glEnable(GL_SCISSOR_TEST);
+}
+
+void OpenGLBatch::resetScissor() {
+	flush();
+	glDisable(GL_SCISSOR_TEST);
+}
+
 void OpenGLBatch::draw(
 	const Texture& texture, float x, float y, float width, float height,
 	glm::mat4x4 transform) {

@@ -3,6 +3,7 @@
 #include "glm/ext/matrix_float4x4.hpp"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/graphics/shader.h"
+#include <Metal/Metal.h>
 #ifdef GROWL_IMGUI
 #include "growl/core/imgui.h"
 #include "imgui.h"
@@ -109,6 +110,26 @@ void MetalBatch::end() {
 
 void MetalBatch::setColor(float r, float g, float b, float a) {
 	color = {r, g, b, a};
+}
+
+void MetalBatch::setScissor(
+	float x, float y, float w, float h, glm::mat4x4 transform) {
+	auto world_coordinates = transform * glm::vec4{x, y, 0, 1};
+	[encoder setScissorRect:MTLScissorRect{
+								static_cast<NSUInteger>(world_coordinates.x),
+								static_cast<NSUInteger>(world_coordinates.y),
+								static_cast<NSUInteger>(w),
+								static_cast<NSUInteger>(h),
+							}];
+}
+
+void MetalBatch::resetScissor() {
+	[encoder setScissorRect:MTLScissorRect{
+								0,
+								0,
+								static_cast<NSUInteger>(getTargetWidth()),
+								static_cast<NSUInteger>(getTargetHeight()),
+							}];
 }
 
 void MetalBatch::draw(

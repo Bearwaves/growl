@@ -35,6 +35,11 @@ public:
 		setColor(color.r, color.g, color.b, color.a);
 	}
 
+	virtual void setScissor(
+		float x, float y, float w, float h,
+		glm::mat4x4 transform = glm::identity<glm::mat4x4>()) = 0;
+	virtual void resetScissor() = 0;
+
 	virtual void draw(
 		const Texture& texture, float x, float y, float width, float height,
 		glm::mat4x4 transform = glm::identity<glm::mat4x4>()) = 0;

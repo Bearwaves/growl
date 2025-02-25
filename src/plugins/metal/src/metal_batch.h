@@ -36,6 +36,10 @@ public:
 	}
 	void setColor(float r, float g, float b, float a) override;
 
+	void setScissor(
+		float x, float y, float w, float h, glm::mat4x4 transform) override;
+	void resetScissor() override;
+
 	void draw(
 		const Texture& texture, float x, float y, float width, float height,
 		glm::mat4x4 transform = glm::identity<glm::mat4x4>()) override;
