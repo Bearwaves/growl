@@ -17,7 +17,7 @@ enum class InputEventType {
 	Custom
 };
 
-enum class PointerEventType { Unknown, Up, Down, Move };
+enum class PointerEventType { Unknown, Up, Down, Move, Scroll };
 
 enum class MouseButton { Unknown, LeftClick, RightClick, MiddleClick };
 
@@ -26,6 +26,8 @@ struct InputMouseEvent {
 	MouseButton button;
 	int mouseX;
 	int mouseY;
+	float scrollX;
+	float scrollY;
 };
 
 struct InputTouchEvent {

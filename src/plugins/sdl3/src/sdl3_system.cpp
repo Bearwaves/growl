@@ -99,6 +99,7 @@ void SDL3SystemAPI::tick() {
 		case SDL_EVENT_MOUSE_MOTION:
 		case SDL_EVENT_MOUSE_BUTTON_DOWN:
 		case SDL_EVENT_MOUSE_BUTTON_UP:
+		case SDL_EVENT_MOUSE_WHEEL:
 			if (scene_focused) {
 				handleMouseEvent(event);
 			}
@@ -222,8 +223,19 @@ void SDL3SystemAPI::handleMouseEvent(SDL_Event& event) {
 		SDL_Window* window = SDL_GetWindowFromID(event.motion.windowID);
 		SDL_GetWindowSize(window, &window_w, &window_h);
 		SDL_GetWindowSizeInPixels(window, &display_w, &display_h);
-		int x = event.motion.x * (display_w / (float)window_w);
-		int y = event.motion.y * (display_h / (float)window_h);
+
+		int x = event.motion.x;
+		int y = event.motion.y;
+		float scroll_x = 0;
+		float scroll_y = 0;
+		if (event.type == SDL_EVENT_MOUSE_WHEEL) {
+			x = event.wheel.mouse_x;
+			y = event.wheel.mouse_y;
+			scroll_x = -event.wheel.x;
+			scroll_y = event.wheel.y;
+		}
+		x *= display_w / (float)window_w;
+		y *= display_h / (float)window_h;
 
 #ifdef GROWL_IMGUI
 		if (api.imguiVisible()) {
@@ -246,6 +258,9 @@ void SDL3SystemAPI::handleMouseEvent(SDL_Event& event) {
 		case SDL_EVENT_MOUSE_MOTION:
 			event_type = PointerEventType::Move;
 			break;
+		case SDL_EVENT_MOUSE_WHEEL:
+			event_type = PointerEventType::Scroll;
+			break;
 		}
 
 		MouseButton mouse_button = MouseButton::Unknown;
@@ -263,7 +278,8 @@ void SDL3SystemAPI::handleMouseEvent(SDL_Event& event) {
 
 		InputEvent e(
 			InputEventType::Mouse,
-			InputMouseEvent{event_type, mouse_button, x, y});
+			InputMouseEvent{
+				event_type, mouse_button, x, y, scroll_x, scroll_y});
 		inputProcessor->onEvent(e);
 	}
 }
