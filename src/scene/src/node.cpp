@@ -184,7 +184,11 @@ bool Node::onEvent(const InputEvent& event) {
 	for (auto& child : children) {
 		handled |= child->onEvent(event);
 	}
-	return handled;
+	return onPostEvent(event, handled);
+}
+
+bool Node::onPostEvent(const InputEvent& event, bool children_handled) {
+	return children_handled;
 }
 
 glm::vec4 Node::worldToLocalCoordinates(float x, float y) {
@@ -401,6 +405,7 @@ bool Node::processClick(float x, float y, PointerEventType type) {
 			break;
 		case PointerEventType::Down:
 			click_listener_down = true;
+			handled = true;
 			break;
 		default:
 			return false;

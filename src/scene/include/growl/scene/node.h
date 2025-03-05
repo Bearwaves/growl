@@ -64,6 +64,7 @@ public:
 	}
 
 	virtual bool onEvent(const InputEvent& event) override;
+	virtual bool onPostEvent(const InputEvent& event, bool children_handled);
 	bool hit(float x, float y);
 	bool hit(glm::vec4& local_coords);
 	glm::vec4 worldToLocalCoordinates(float x, float y);
