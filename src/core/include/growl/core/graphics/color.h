@@ -29,5 +29,9 @@ struct Color {
 	float* data() {
 		return &r;
 	}
+
+	Color multiplyAlpha(float a) {
+		return Color{r, g, b, this->a * a};
+	}
 };
 } // namespace Growl
