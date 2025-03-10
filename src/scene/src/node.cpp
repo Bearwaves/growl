@@ -7,6 +7,7 @@
 #include "growl/core/input/event.h"
 #include "growl/core/scripting/script.h"
 #include "growl/scene/scene.h"
+#include <algorithm>
 #include <string>
 #ifdef GROWL_IMGUI
 #include "glm/ext/scalar_constants.hpp"
@@ -40,15 +41,22 @@ Node* Node::addChild(std::unique_ptr<Node> node) {
 	children.emplace_back(std::move(node));
 	Node* n = children.back().get();
 	n->setDepth(depth + 1);
+	children_z_order.emplace_back(n);
 	return n;
 }
 
 void Node::removeChild(int i) {
 	children.erase(std::next(children.begin(), i));
+	children_z_order.clear();
+	for (auto& child : children) {
+		children_z_order.emplace_back(child.get());
+	}
+	reorderZ();
 }
 
 void Node::clear() {
 	children.clear();
+	children_z_order.clear();
 }
 
 void Node::setDepth(int depth) {
@@ -167,7 +175,7 @@ void Node::draw(Batch& batch, float parent_alpha) {
 }
 
 void Node::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
-	for (auto& child : children) {
+	for (auto child : children_z_order) {
 		child->draw(batch, parent_alpha);
 	}
 }
@@ -176,13 +184,31 @@ void Node::setClickListener(std::function<bool(float, float)> listener) {
 	this->click_listener = std::move(listener);
 }
 
+void Node::setZPriority(float z) {
+	this->z = z;
+	if (this->parent) {
+		this->parent->reorderZ();
+	}
+}
+
+void Node::cancelEvent() {
+	event_cancelled = true;
+	if (parent) {
+		parent->cancelEvent();
+	}
+}
+
 bool Node::onEvent(const InputEvent& event) {
 	if (InputProcessor::onEvent(event)) {
 		return true;
 	}
 	bool handled = false;
+	this->event_cancelled = false;
 	for (auto& child : children) {
 		handled |= child->onEvent(event);
+		if (this->event_cancelled) {
+			break;
+		}
 	}
 	return onPostEvent(event, handled);
 }
@@ -238,6 +264,12 @@ void Node::computeLocalTransform() {
 	if (parent) {
 		local_transform = parent->local_transform * local_transform;
 	}
+}
+
+void Node::reorderZ() {
+	std::stable_sort(
+		children_z_order.begin(), children_z_order.end(),
+		[](const Node* a, const Node* b) -> bool { return a->z < b->z; });
 }
 
 bool Node::onMouseEvent(const InputMouseEvent& event) {
@@ -410,7 +442,11 @@ bool Node::processClick(float x, float y, PointerEventType type) {
 		default:
 			return false;
 		}
+	} else if (type == PointerEventType::Move) {
+		// Move outside, cancel click
+		click_listener_down = false;
 	}
+
 	if (type == PointerEventType::Up) {
 		click_listener_down = false;
 	}

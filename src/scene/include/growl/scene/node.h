@@ -75,6 +75,10 @@ public:
 
 	void setClickListener(std::function<bool(float, float)> listener);
 
+	// A higher Z priority means the node will be drawn later in the order
+	// of children.
+	void setZPriority(float z);
+
 protected:
 	Node* getParent() {
 		return parent;
@@ -99,6 +103,15 @@ protected:
 	virtual bool onControllerEvent(const InputControllerEvent& event) override;
 	bool onControllerEventRaw(const InputControllerEvent& event);
 
+	bool clickListenerDown() {
+		return click_listener_down;
+	}
+	std::function<bool(float x, float y)>& getClickListener() {
+		return click_listener;
+	}
+
+	void cancelEvent();
+
 private:
 	API* api;
 	std::unique_ptr<Script> script;
@@ -109,22 +122,25 @@ private:
 	float w = 0;
 	float h = 0;
 	float rotation = 0;
+	float z = 0;
 	std::vector<std::unique_ptr<Node>> children;
+	std::vector<Node*> children_z_order;
 	glm::mat4x4 local_transform;
 	std::unique_ptr<ScriptingRef> bound_script_obj = nullptr;
 	DebugRendering debug_rendering = DebugRendering::OFF;
 	bool debug_mouseover = false;
 	int depth = 0;
 	std::optional<Color> color;
-
 	std::function<bool(float x, float y)> click_listener;
 	bool click_listener_down = false;
+	bool event_cancelled = false;
 
 	void computeLocalTransform();
 	void drawChildren(Batch& batch, float parent_alpha);
 	void populateDebugUI(Batch& batch);
 	void setDepth(int depth);
 	bool processClick(float x, float y, PointerEventType type);
+	void reorderZ();
 };
 
 } // namespace Growl
