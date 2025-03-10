@@ -177,4 +177,18 @@ void List::layout() {
 			widget->validate();
 		}
 	}
+
+	// Ensure the list always has dimensions
+	switch (direction) {
+	case Direction::VERTICAL:
+		if (getHeight() == 0) {
+			setHeight(position);
+		}
+		break;
+	case Direction::HORIZONTAL:
+		if (getWidth() == 0) {
+			setWidth(position);
+		}
+		break;
+	}
 }

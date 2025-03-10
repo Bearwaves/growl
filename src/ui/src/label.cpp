@@ -18,7 +18,10 @@ Label::Label(
 
 void Label::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
 	Widget::onDraw(batch, parent_alpha, transform);
+	Color c = batch.getColor();
+	batch.setColor(c.multiplyAlpha(parent_alpha));
 	batch.draw(*glyph_layout, font_tex, 0, 0, transform);
+	batch.setColor(c);
 }
 
 void Label::layout() {

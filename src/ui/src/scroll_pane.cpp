@@ -33,15 +33,19 @@ void ScrollPane::layout() {
 
 		node->setWidth(pack.resolvedWidth);
 		node->setHeight(pack.resolvedHeight);
+		if (widget) {
+			widget->invalidate();
+			widget->validate();
+		}
 
 		float margin_top = pack.marginTop.evaluate(node);
 		float margin_bottom = pack.marginBottom.evaluate(node);
 		float margin_left = pack.marginLeft.evaluate(node);
 		float margin_right = pack.marginRight.evaluate(node);
 
-		min_x = -(node->getWidth() - getWidth() - margin_right);
+		min_x = getWidth() - (node->getWidth() + margin_right);
 		max_x = margin_left;
-		min_y = -(node->getHeight() - getHeight() - margin_bottom);
+		min_y = getHeight() - (node->getHeight() + margin_bottom);
 		max_y = margin_top;
 		node->setX(clampX(node->getX()));
 		node->setY(clampY(node->getY()));
@@ -75,17 +79,17 @@ bool ScrollPane::onPostEvent(const InputEvent& event, bool children_handled) {
 		if (mouse_event_result.hasResult()) {
 			return onMouseEventPost(mouse_event_result.get(), children_handled);
 		}
-		return false;
+		return children_handled;
 	}
 	case InputEventType::Touch: {
 		auto touch_event_result = event.getEvent<InputTouchEvent>();
 		if (touch_event_result.hasResult()) {
 			return onTouchEventPost(touch_event_result.get(), children_handled);
 		}
-		return false;
+		return children_handled;
 	}
 	default:
-		return false;
+		return children_handled;
 	}
 }
 
