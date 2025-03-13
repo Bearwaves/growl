@@ -205,6 +205,9 @@ bool Node::onEvent(const InputEvent& event) {
 	bool handled = false;
 	this->event_cancelled = false;
 	for (auto& child : children) {
+		if (!child->shouldReceiveParentEvents()) {
+			continue;
+		}
 		handled |= child->onEvent(event);
 		if (this->event_cancelled) {
 			break;

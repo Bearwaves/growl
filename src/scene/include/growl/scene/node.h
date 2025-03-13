@@ -69,6 +69,13 @@ public:
 	bool hit(glm::vec4& local_coords);
 	glm::vec4 worldToLocalCoordinates(float x, float y);
 
+	void setShouldReceiveParentEvents(bool should_receive) {
+		this->should_receive_parent_events = should_receive;
+	}
+	bool shouldReceiveParentEvents() {
+		return this->should_receive_parent_events;
+	}
+
 	Error bindScript(API& api, Script& script);
 
 	void setDebugRendering(DebugRendering debug);
@@ -123,6 +130,7 @@ private:
 	float h = 0;
 	float rotation = 0;
 	float z = 0;
+	bool should_receive_parent_events = true;
 	std::vector<std::unique_ptr<Node>> children;
 	std::vector<Node*> children_z_order;
 	glm::mat4x4 local_transform;
