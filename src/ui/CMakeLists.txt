@@ -10,6 +10,7 @@ set(SOURCES
 	"src/label.cpp"
 	"src/container.cpp"
 	"src/scroll_pane.cpp"
+	"src/slider.cpp"
 	)
 
 add_library(growl-ui ${SOURCES})
