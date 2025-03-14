@@ -271,8 +271,9 @@ Result<std::unique_ptr<Shader>> MetalGraphicsAPI::createShader(
 	auto shader = std::make_unique<MetalShader>(
 		device, uniforms_src, vertex_src, fragment_src);
 	if (auto err = shader->compile()) {
-		return Error(std::make_unique<MetalError>(
-			"Failed to compile Metal shader: " + err->message()));
+		return Error(
+			std::make_unique<MetalError>(
+				"Failed to compile Metal shader: " + err->message()));
 	}
 	return std::unique_ptr<Shader>(std::move(shader));
 }
@@ -294,12 +295,14 @@ Result<std::unique_ptr<Shader>>
 MetalGraphicsAPI::createShader(const ShaderPack& shader_pack) {
 	auto source = shader_pack.getSources().find(ShaderType::Metal);
 	if (source == shader_pack.getSources().end()) {
-		return Error(std::make_unique<MetalError>(
-			"No Metal sources found in shader pack"));
+		return Error(
+			std::make_unique<MetalError>(
+				"No Metal sources found in shader pack"));
 	}
 	if (!source->second.fragment_src.has_value()) {
-		return Error(std::make_unique<MetalError>(
-			"No fragment source found in shader pack"));
+		return Error(
+			std::make_unique<MetalError>(
+				"No fragment source found in shader pack"));
 	}
 	return createShader(
 		source->second.uniforms_src.has_value()

@@ -134,15 +134,16 @@ void GlyphLayout::layout() noexcept {
 				return;
 			}
 			if (face->glyph->metrics.width || face->glyph->metrics.height) {
-				new_layout.push_back(LayoutInfo{
-					static_cast<int>(info[i].codepoint),
-					cursor_x + (pos[i].x_offset >> 6) +
-						face->glyph->bitmap_left,
-					cursor_y -
-						((pos[i].y_offset >> 6) + face->glyph->bitmap_top),
-					static_cast<int>(face->glyph->metrics.width >> 6),
-					static_cast<int>(face->glyph->metrics.height >> 6),
-				});
+				new_layout.push_back(
+					LayoutInfo{
+						static_cast<int>(info[i].codepoint),
+						cursor_x + (pos[i].x_offset >> 6) +
+							face->glyph->bitmap_left,
+						cursor_y -
+							((pos[i].y_offset >> 6) + face->glyph->bitmap_top),
+						static_cast<int>(face->glyph->metrics.width >> 6),
+						static_cast<int>(face->glyph->metrics.height >> 6),
+					});
 				glyphs_added++;
 				int y_above_baseline =
 					(pos[i].y_offset) + face->glyph->metrics.horiBearingY;

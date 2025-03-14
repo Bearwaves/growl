@@ -76,8 +76,9 @@ public:
 
 	Result<std::unique_ptr<Class>> addClass(std::string&& name) {
 		if (!is_static) {
-			return Error(std::make_unique<ScriptingError>(
-				"Cannot add class to non-static class"));
+			return Error(
+				std::make_unique<ScriptingError>(
+					"Cannot add class to non-static class"));
 		}
 		return lang->addClassToClass(this, std::move(name));
 	}
@@ -85,8 +86,9 @@ public:
 	Error
 	addEnum(const std::string& name, const std::vector<std::string>& values) {
 		if (!is_static) {
-			return Error(std::make_unique<ScriptingError>(
-				"Cannot add enum to non-static class"));
+			return Error(
+				std::make_unique<ScriptingError>(
+					"Cannot add enum to non-static class"));
 		}
 		return lang->addEnumToClass(this, name, values);
 	}

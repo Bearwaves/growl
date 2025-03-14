@@ -105,8 +105,9 @@ Error TestAppGame::init() {
 	cats->setHeight(500);
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
-			auto cat = cats->addChild(std::make_unique<Cat>(
-				"Cat " + std::to_string(i * 4 + j), texture_atlas.get()));
+			auto cat = cats->addChild(
+				std::make_unique<Cat>(
+					"Cat " + std::to_string(i * 4 + j), texture_atlas.get()));
 			cat->setWidth(125);
 			cat->setHeight(125);
 			cat->setX(125 * i);

@@ -18,10 +18,11 @@
 		CGPoint point = [touch locationInView:self];
 		point.x *= self.contentScaleFactor;
 		point.y *= self.contentScaleFactor;
-		system->onTouch(Growl::InputTouchEvent{
-			.type = type,
-			.touchX = static_cast<int>(point.x),
-			.touchY = static_cast<int>(point.y)});
+		system->onTouch(
+			Growl::InputTouchEvent{
+				.type = type,
+				.touchX = static_cast<int>(point.x),
+				.touchY = static_cast<int>(point.y)});
 	}
 }
 

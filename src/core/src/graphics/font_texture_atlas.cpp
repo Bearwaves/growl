@@ -10,6 +10,8 @@ Result<AtlasRegion> FontTextureAtlas::getRegion(int glyph_code) const {
 	if (auto it = glyphs.find(glyph_code); it != glyphs.end()) {
 		return it->second;
 	}
-	return Error(std::make_unique<AssetsError>(
-		"Failed to find glyph " + std::to_string(glyph_code) + " in atlas."));
+	return Error(
+		std::make_unique<AssetsError>(
+			"Failed to find glyph " + std::to_string(glyph_code) +
+			" in atlas."));
 }

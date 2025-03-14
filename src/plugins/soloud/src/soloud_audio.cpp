@@ -60,19 +60,22 @@ SoLoudAudioAPI::loadClipFromBundle(AssetsBundle& bundle, std::string path) {
 	auto wav = std::make_unique<SoLoud::Wav>();
 	auto bundle_result = bundle.getRawData(path);
 	if (bundle_result.hasError()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load clip: " + bundle_result.error()->message()));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load clip: " + bundle_result.error()->message()));
 	}
 	auto raw = std::move(bundle_result.get());
 	if (int error = wav->loadMem(
 			raw.data(), static_cast<unsigned int>(raw.size()), false, false);
 		error) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load clip: got SoLoud error code " +
-			std::to_string(error)));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load clip: got SoLoud error code " +
+				std::to_string(error)));
 	}
-	std::unique_ptr<AudioClip> ret(std::make_unique<SoLoudAudioClip>(
-		path, *this, std::move(wav), std::move(raw)));
+	std::unique_ptr<AudioClip> ret(
+		std::make_unique<SoLoudAudioClip>(
+			path, *this, std::move(wav), std::move(raw)));
 	return std::move(ret);
 }
 
@@ -81,18 +84,21 @@ SoLoudAudioAPI::createStreamFromBundle(AssetsBundle& bundle, std::string name) {
 	Result<std::unique_ptr<SoLoudBundleFile>> bundle_file_result =
 		openFileFromBundle(system, bundle, name);
 	if (bundle_file_result.hasError()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load file from bundle: " +
-			bundle_file_result.error()->message()));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load file from bundle: " +
+				bundle_file_result.error()->message()));
 	}
 	auto file = std::move(bundle_file_result.get());
 	auto stream = std::make_unique<SoLoud::WavStream>();
 	if (int error = stream->loadFile(file.get())) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load stream: got SoLoud error code " +
-			std::to_string(error)));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load stream: got SoLoud error code " +
+				std::to_string(error)));
 	}
-	std::unique_ptr<AudioStream> ret(std::make_unique<SoLoudAudioStream>(
-		name, *this, std::move(stream), std::move(file)));
+	std::unique_ptr<AudioStream> ret(
+		std::make_unique<SoLoudAudioStream>(
+			name, *this, std::move(stream), std::move(file)));
 	return std::move(ret);
 }

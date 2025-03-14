@@ -43,8 +43,9 @@ Result<FTFontData> loadFont(std::vector<unsigned char>&& data) noexcept {
 	if (auto err = FT_New_Memory_Face(lib, data.data(), data.size(), 0, &face);
 		err) {
 		FT_Done_Library(lib);
-		return Error(std::make_unique<FontError>(
-			"Failed to load font from memory", err));
+		return Error(
+			std::make_unique<FontError>(
+				"Failed to load font from memory", err));
 	}
 
 	return FTFontData{lib, face, std::move(data)};

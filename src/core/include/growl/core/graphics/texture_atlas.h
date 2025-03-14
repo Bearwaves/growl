@@ -34,8 +34,9 @@ public:
 		if (auto it = mappings.find(name); it != mappings.end()) {
 			return TextureAtlasRegion{this, it->second};
 		}
-		return Error(std::make_unique<AssetsError>(
-			"Failed to find region " + name + " in atlas."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to find region " + name + " in atlas."));
 	}
 
 	const Texture& getTexture() const {

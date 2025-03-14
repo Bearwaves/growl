@@ -22,8 +22,9 @@ Error Growl::Internal::setFontFacePixelSize(
 			}
 		}
 		if (auto err = FT_Select_Size(font_data.face, best)) {
-			return Error(std::make_unique<FontError>(
-				"Failed to select font face size", err));
+			return Error(
+				std::make_unique<FontError>(
+					"Failed to select font face size", err));
 		}
 		return nullptr;
 	}

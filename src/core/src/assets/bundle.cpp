@@ -51,8 +51,9 @@ Result<AssetsBundle> Growl::loadAssetsBundle(
 	try {
 		resource_map = json::parse(resource_map_json);
 	} catch (std::exception& e) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load assets map JSON: " + std::string(e.what())));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load assets map JSON: " + std::string(e.what())));
 	}
 
 	return AssetsBundle(std::move(file), file_path, resource_map);
@@ -150,16 +151,18 @@ std::string Growl::getAssetTypeName(AssetType type) {
 Result<Image> AssetsBundle::getImage(std::string name) noexcept {
 	auto info_find = assetsMap.find(name);
 	if (info_find == assetsMap.end()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load image " + name + "; not found in asset map."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load image " + name + "; not found in asset map."));
 	}
 	auto& info = info_find->second;
 
 	if (info.type != AssetType::Image) {
 		auto type_name = getAssetTypeName(info.type);
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load image " + name + "; expected Image type but was " +
-			type_name + "."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load image " + name +
+				"; expected Image type but was " + type_name + "."));
 	}
 
 	std::vector<unsigned char> img_data;
@@ -173,22 +176,25 @@ Result<Image> AssetsBundle::getImage(std::string name) noexcept {
 Result<Atlas> AssetsBundle::getAtlas(std::string name) noexcept {
 	auto info_find = assetsMap.find(name);
 	if (info_find == assetsMap.end()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load atlas " + name + "; not found in asset map."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load atlas " + name + "; not found in asset map."));
 	}
 	auto& info = info_find->second;
 
 	if (info.type != AssetType::Atlas) {
 		auto type_name = getAssetTypeName(info.type);
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load atlas " + name + "; expected Atlas type but was " +
-			type_name + "."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load atlas " + name +
+				"; expected Atlas type but was " + type_name + "."));
 	}
 
 	if (!info.atlas_regions.has_value()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load atlas " + name +
-			"; atlas region data is missing."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load atlas " + name +
+				"; atlas region data is missing."));
 	}
 
 	std::vector<unsigned char> img_data;
@@ -199,9 +205,10 @@ Result<Atlas> AssetsBundle::getAtlas(std::string name) noexcept {
 	Result<Image> image_result =
 		loadImageFromMemory(img_data.data(), info.size);
 	if (image_result.hasError()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load atlas " + name +
-			" image data: " + image_result.error()->message()));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load atlas " + name +
+				" image data: " + image_result.error()->message()));
 	}
 
 	return Atlas(
@@ -213,16 +220,18 @@ Result<FontFace> AssetsBundle::getBitmapFont(
 	std::string name, int size, std::string characters) noexcept {
 	auto info_find = assetsMap.find(name);
 	if (info_find == assetsMap.end()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load font " + name + "; not found in asset map."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load font " + name + "; not found in asset map."));
 	}
 	auto& info = info_find->second;
 
 	if (info.type != AssetType::Font) {
 		auto type_name = getAssetTypeName(info.type);
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load font " + name + "; expected Font type but was " +
-			type_name + "."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load font " + name +
+				"; expected Font type but was " + type_name + "."));
 	}
 
 	std::vector<unsigned char> font_data;
@@ -237,16 +246,18 @@ Result<FontFace> AssetsBundle::getBitmapFont(
 Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 	auto info_find = assetsMap.find(name);
 	if (info_find == assetsMap.end()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load font " + name + "; not found in asset map."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load font " + name + "; not found in asset map."));
 	}
 	auto& info = info_find->second;
 
 	if (info.type != AssetType::Font) {
 		auto type_name = getAssetTypeName(info.type);
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load font " + name + "; expected Font type but was " +
-			type_name + "."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load font " + name +
+				"; expected Font type but was " + type_name + "."));
 	}
 
 	std::vector<unsigned char> font_data;
@@ -255,8 +266,9 @@ Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 	file->read(font_data.data(), info.size);
 
 	if (!info.font.has_value()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load MSDF data from font"));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load MSDF data from font"));
 	}
 
 	std::vector<unsigned char> image_data;
@@ -267,8 +279,10 @@ Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 	Result<Image> image_result =
 		loadImageFromMemory(image_data.data(), info.font.value().msdf_size);
 	if (image_result.hasError()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load MSDF image: " + image_result.error()->message()));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load MSDF image: " +
+				image_result.error()->message()));
 	}
 
 	return createDistanceFieldFontFaceFromBundleData(
@@ -280,17 +294,19 @@ Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 Result<ShaderPack> AssetsBundle::getShaderPack(std::string name) noexcept {
 	auto info_find = assetsMap.find(name);
 	if (info_find == assetsMap.end()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load shader pack " + name +
-			"; not found in asset map."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load shader pack " + name +
+				"; not found in asset map."));
 	}
 	auto& info = info_find->second;
 
 	if (info.type != AssetType::ShaderPack) {
 		auto type_name = getAssetTypeName(info.type);
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load shader pack " + name +
-			"; expected Shader Pack type but was " + type_name + "."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load shader pack " + name +
+				"; expected Shader Pack type but was " + type_name + "."));
 	}
 
 	std::unordered_map<ShaderType, ShaderSource> sources;
@@ -330,16 +346,19 @@ Result<std::string>
 AssetsBundle::getTextFileAsString(std::string name) noexcept {
 	auto info_find = assetsMap.find(name);
 	if (info_find == assetsMap.end()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load text file " + name + "; not found in asset map."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load text file " + name +
+				"; not found in asset map."));
 	}
 	auto& info = info_find->second;
 
 	if (info.type != AssetType::Text) {
 		auto type_name = getAssetTypeName(info.type);
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load text file " + name +
-			"; expected Text type but was " + type_name + "."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load text file " + name +
+				"; expected Text type but was " + type_name + "."));
 	}
 
 	std::string data(info.size, 0);
@@ -353,8 +372,9 @@ Result<std::vector<unsigned char>>
 AssetsBundle::getRawData(std::string name) noexcept {
 	auto info_find = assetsMap.find(name);
 	if (info_find == assetsMap.end()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load asset " + name + "; not found in asset map."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load asset " + name + "; not found in asset map."));
 	}
 	auto& info = info_find->second;
 
@@ -370,18 +390,20 @@ Result<std::unique_ptr<File>>
 AssetsBundle::getAssetAsFile(SystemAPI& system, std::string name) noexcept {
 	auto info_find = assetsMap.find(name);
 	if (info_find == assetsMap.end()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to load asset " + name +
-			" as file; not found in asset map."));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load asset " + name +
+				" as file; not found in asset map."));
 	}
 	auto& info = info_find->second;
 
 	auto file_result =
 		system.openFile(path, info.position, info.position + info.size);
 	if (file_result.hasError()) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to open file " + path + ": " +
-			file_result.error()->message()));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to open file " + path + ": " +
+				file_result.error()->message()));
 	}
 	return std::move(file_result.get());
 }

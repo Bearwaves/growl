@@ -229,8 +229,9 @@ Result<bool> processDirectory(
 			std::ifstream config_file(path / ASSETS_CONFIG_FILENAME);
 			config = json::parse(config_file);
 		} catch (std::exception& e) {
-			return Error(std::make_unique<AssetsError>(
-				"Failed to parse assets.json: " + std::string(e.what())));
+			return Error(
+				std::make_unique<AssetsError>(
+					"Failed to parse assets.json: " + std::string(e.what())));
 		}
 	}
 	if (auto it = config.find("."); it != config.end()) {
@@ -242,8 +243,9 @@ Result<bool> processDirectory(
 					it->second.atlas.value(), path, dir_resolved_path,
 					assets_map, outfile);
 				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-				return Error(std::make_unique<AssetsError>(
-					"Failed to build atlas: " + err.message()));
+				return Error(
+					std::make_unique<AssetsError>(
+						"Failed to build atlas: " + err.message()));
 			}
 			if (it->second.atlas->recursive) {
 				return false;
@@ -257,8 +259,9 @@ Result<bool> processDirectory(
 					it->second.shader_pack.value(), path, dir_resolved_path,
 					assets_map, outfile);
 				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-				return Error(std::make_unique<AssetsError>(
-					"Failed to build shader pack: " + err.message()));
+				return Error(
+					std::make_unique<AssetsError>(
+						"Failed to build shader pack: " + err.message()));
 			}
 		}
 		return true;
@@ -284,8 +287,9 @@ Result<bool> processDirectory(
 			if (auto err =
 					includeText(file_entry, resolved_path, assets_map, outfile);
 				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-				return Error(std::make_unique<AssetsError>(
-					"Failed to include text file: " + err.message()));
+				return Error(
+					std::make_unique<AssetsError>(
+						"Failed to include text file: " + err.message()));
 			}
 			continue;
 		}
@@ -297,8 +301,9 @@ Result<bool> processDirectory(
 			continue;
 		}
 		if (img_err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-			return Error(std::make_unique<AssetsError>(
-				"Failed to include image: " + img_err.message()));
+			return Error(
+				std::make_unique<AssetsError>(
+					"Failed to include image: " + img_err.message()));
 		}
 
 		FontConfig font_config;
@@ -311,8 +316,9 @@ Result<bool> processDirectory(
 			continue;
 		}
 		if (font_err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-			return Error(std::make_unique<AssetsError>(
-				"Failed to include font: " + font_err.message()));
+			return Error(
+				std::make_unique<AssetsError>(
+					"Failed to include font: " + font_err.message()));
 		}
 
 		auto sound_err =
@@ -321,8 +327,9 @@ Result<bool> processDirectory(
 			continue;
 		}
 		if (sound_err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
-			return Error(std::make_unique<AssetsError>(
-				"Failed to include sound: " + sound_err.message()));
+			return Error(
+				std::make_unique<AssetsError>(
+					"Failed to include sound: " + sound_err.message()));
 		}
 	}
 	return true;

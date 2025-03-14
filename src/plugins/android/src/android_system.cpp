@@ -132,13 +132,16 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 
 			case AINPUT_SOURCE_CLASS_POINTER:
 				static_cast<AndroidSystemAPI&>(api->system())
-					.onTouch(InputTouchEvent{
-						getPointerEventType(event->action),
-						static_cast<int>(GameActivityPointerAxes_getAxisValue(
-							&event->pointers[0], AMOTION_EVENT_AXIS_X)),
-						static_cast<int>(GameActivityPointerAxes_getAxisValue(
-							&event->pointers[0], AMOTION_EVENT_AXIS_Y)),
-					});
+					.onTouch(
+						InputTouchEvent{
+							getPointerEventType(event->action),
+							static_cast<int>(
+								GameActivityPointerAxes_getAxisValue(
+									&event->pointers[0], AMOTION_EVENT_AXIS_X)),
+							static_cast<int>(
+								GameActivityPointerAxes_getAxisValue(
+									&event->pointers[0], AMOTION_EVENT_AXIS_Y)),
+						});
 				break;
 			}
 		}
@@ -154,10 +157,11 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 				continue;
 			}
 			static_cast<AndroidSystemAPI&>(api->system())
-				.onControllerEvent(InputControllerEvent{
-					getControllerEventType(event->action),
-					button,
-				});
+				.onControllerEvent(
+					InputControllerEvent{
+						getControllerEventType(event->action),
+						button,
+					});
 		}
 		android_app_clear_key_events(ib);
 	}

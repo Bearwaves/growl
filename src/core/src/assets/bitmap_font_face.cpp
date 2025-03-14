@@ -25,8 +25,9 @@ Result<FontFace>
 createBitmapFontFace(FTFontData font_data, int size, std::string characters) {
 	if (auto end_it = utf8::find_invalid(characters.begin(), characters.end());
 		end_it != characters.end()) {
-		return Error(std::make_unique<AssetsError>(
-			"Font atlas charset not a valid UTF-8 string"));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Font atlas charset not a valid UTF-8 string"));
 	}
 	if (auto err = Growl::Internal::setFontFacePixelSize(font_data, size);
 		err) {
@@ -45,9 +46,12 @@ createBitmapFontFace(FTFontData font_data, int size, std::string characters) {
 			auto& metrics = font_data.face->glyph->metrics;
 			// Glyph sizes are represented in 26.6 fractional format, so we
 			// shift them to get the pixel sizes.
-			glyph_rects.push_back(stbrp_rect{
-				i, static_cast<stbrp_coord>(metrics.width >> 6) + SPACING * 2,
-				static_cast<stbrp_coord>(metrics.height >> 6) + SPACING * 2});
+			glyph_rects.push_back(
+				stbrp_rect{
+					i,
+					static_cast<stbrp_coord>(metrics.width >> 6) + SPACING * 2,
+					static_cast<stbrp_coord>(metrics.height >> 6) +
+						SPACING * 2});
 		}
 	} else {
 		// If characters is specified, use a Harfbuzz buffer to work
@@ -76,10 +80,12 @@ createBitmapFontFace(FTFontData font_data, int size, std::string characters) {
 			auto& metrics = font_data.face->glyph->metrics;
 			// Glyph sizes are represented in 26.6 fractional format, so we
 			// shift them to get the pixel sizes.
-			glyph_rects.push_back(stbrp_rect{
-				static_cast<int>(glyph),
-				static_cast<stbrp_coord>(metrics.width >> 6) + SPACING * 2,
-				static_cast<stbrp_coord>(metrics.height >> 6) + SPACING * 2});
+			glyph_rects.push_back(
+				stbrp_rect{
+					static_cast<int>(glyph),
+					static_cast<stbrp_coord>(metrics.width >> 6) + SPACING * 2,
+					static_cast<stbrp_coord>(metrics.height >> 6) +
+						SPACING * 2});
 		}
 		hb_font_destroy(face);
 		hb_buffer_destroy(buffer);
@@ -91,8 +97,9 @@ createBitmapFontFace(FTFontData font_data, int size, std::string characters) {
 			Growl::Internal::nextPowerOfTwo(
 				std::max(glyph_rects[0].w, glyph_rects[0].h)),
 			&width, &height)) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to pack font in texture; too large"));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to pack font in texture; too large"));
 	}
 
 	std::unordered_map<int, AtlasRegion> glyphs;
@@ -107,8 +114,9 @@ createBitmapFontFace(FTFontData font_data, int size, std::string characters) {
 	for (auto& rect : glyph_rects) {
 		if (auto err = FT_Load_Glyph(font_data.face, rect.id, load_params);
 			err) {
-			return Error(std::make_unique<FontError>(
-				"Failed to load glyph bitmap", err));
+			return Error(
+				std::make_unique<FontError>(
+					"Failed to load glyph bitmap", err));
 		}
 		auto& bitmap = font_data.face->glyph->bitmap;
 		int bytes_per_pixel = has_color ? 4 : 1;

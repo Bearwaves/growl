@@ -249,12 +249,14 @@ Result<std::unique_ptr<Shader>>
 OpenGLGraphicsAPI::createShader(const ShaderPack& shader_pack) {
 	auto source = shader_pack.getSources().find(ShaderType::GLSL);
 	if (source == shader_pack.getSources().end()) {
-		return Error(std::make_unique<OpenGLError>(
-			"No GLSL sources found in shader pack"));
+		return Error(
+			std::make_unique<OpenGLError>(
+				"No GLSL sources found in shader pack"));
 	}
 	if (!source->second.fragment_src.has_value()) {
-		return Error(std::make_unique<OpenGLError>(
-			"No fragment source found in shader pack"));
+		return Error(
+			std::make_unique<OpenGLError>(
+				"No fragment source found in shader pack"));
 	}
 	return createShader(
 		source->second.uniforms_src.has_value()

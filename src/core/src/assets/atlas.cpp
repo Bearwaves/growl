@@ -35,8 +35,9 @@ Result<AtlasRegion> Atlas::getRegion(const std::string& name) noexcept {
 	if (auto it = mappings.find(name); it != mappings.end()) {
 		return it->second;
 	}
-	return Error(std::make_unique<AssetsError>(
-		"Failed to load atlas region " + name + "; not found in atlas."));
+	return Error(
+		std::make_unique<AssetsError>(
+			"Failed to load atlas region " + name + "; not found in atlas."));
 }
 
 Result<Atlas> Growl::packAtlasFromFiles(
@@ -46,8 +47,9 @@ Result<Atlas> Growl::packAtlasFromFiles(
 	std::vector<stbrp_rect> rects;
 	int i = 0;
 	for (auto& image : images) {
-		rects.push_back(stbrp_rect{
-			i++, image.width + padding * 2, image.height + padding * 2});
+		rects.push_back(
+			stbrp_rect{
+				i++, image.width + padding * 2, image.height + padding * 2});
 	}
 	int width = nextPowerOfTwo(std::max(images[0].width, images[0].height));
 	int height = width;
@@ -70,8 +72,9 @@ Result<Atlas> Growl::packAtlasFromFiles(
 	}
 
 	if (!did_pack) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to pack atlas assets within max size texture"));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to pack atlas assets within max size texture"));
 	}
 
 	std::vector<unsigned char> texture_data(width * height * sizeof(uint32_t));
@@ -87,14 +90,16 @@ Result<Atlas> Growl::packAtlasFromFiles(
 			image.path.string().c_str(), &img_width, &img_height, &img_channels,
 			4);
 		if (!img_data) {
-			return Error(std::make_unique<AssetsError>(
-				"Failed to load atlas image data"));
+			return Error(
+				std::make_unique<AssetsError>(
+					"Failed to load atlas image data"));
 		}
 		Image img(img_width, img_height, img_channels, img_data);
 		if (img_width != rect.w - padding * 2 ||
 			img_height != rect.h - padding * 2) {
-			return Error(std::make_unique<AssetsError>(
-				"Failed to parse image data: wrong dimensions"));
+			return Error(
+				std::make_unique<AssetsError>(
+					"Failed to parse image data: wrong dimensions"));
 		}
 
 		mappings[std::filesystem::relative(image.path, from).string()] =

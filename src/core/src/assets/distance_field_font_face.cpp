@@ -26,9 +26,10 @@ constexpr int FT_LOAD_PARAMS = FT_LOAD_RENDER;
 Result<FontFace> createDistanceFieldFontFace(
 	FTFontData font_data, int size, std::string characters) {
 	if (FT_HAS_COLOR(font_data.face)) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to create distance field font atlas: cannot create from "
-			"coloured font."));
+		return Error(
+			std::make_unique<AssetsError>("Failed to create distance field "
+										  "font atlas: cannot create from "
+										  "coloured font."));
 	}
 	if (auto err = Growl::Internal::setFontFacePixelSize(font_data, size);
 		err) {
@@ -43,15 +44,17 @@ Result<FontFace> createDistanceFieldFontFace(
 		for (int i = 0; i < font_data.face->num_glyphs; i++) {
 			if (auto err = FT_Load_Glyph(font_data.face, i, FT_LOAD_PARAMS);
 				err) {
-				return Error(std::make_unique<FontError>(
-					"Failed to load glyph bitmap", err));
+				return Error(
+					std::make_unique<FontError>(
+						"Failed to load glyph bitmap", err));
 			}
-			glyph_rects.push_back(stbrp_rect{
-				i,
-				static_cast<stbrp_coord>(
-					font_data.face->glyph->bitmap.width + 2 * BORDER),
-				static_cast<stbrp_coord>(
-					font_data.face->glyph->bitmap.rows + 2 * BORDER)});
+			glyph_rects.push_back(
+				stbrp_rect{
+					i,
+					static_cast<stbrp_coord>(
+						font_data.face->glyph->bitmap.width + 2 * BORDER),
+					static_cast<stbrp_coord>(
+						font_data.face->glyph->bitmap.rows + 2 * BORDER)});
 		}
 	} else {
 		// If characters is specified, use a Harfbuzz buffer to work
@@ -74,15 +77,17 @@ Result<FontFace> createDistanceFieldFontFace(
 
 			if (auto err = FT_Load_Glyph(font_data.face, glyph, FT_LOAD_PARAMS);
 				err) {
-				return Error(std::make_unique<FontError>(
-					"Failed to load glyph bitmap", err));
+				return Error(
+					std::make_unique<FontError>(
+						"Failed to load glyph bitmap", err));
 			}
-			glyph_rects.push_back(stbrp_rect{
-				static_cast<int>(glyph),
-				static_cast<stbrp_coord>(
-					font_data.face->glyph->bitmap.width + 2 * BORDER),
-				static_cast<stbrp_coord>(
-					font_data.face->glyph->bitmap.rows + 2 * BORDER)});
+			glyph_rects.push_back(
+				stbrp_rect{
+					static_cast<int>(glyph),
+					static_cast<stbrp_coord>(
+						font_data.face->glyph->bitmap.width + 2 * BORDER),
+					static_cast<stbrp_coord>(
+						font_data.face->glyph->bitmap.rows + 2 * BORDER)});
 		}
 		hb_font_destroy(face);
 		hb_buffer_destroy(buffer);
@@ -94,8 +99,9 @@ Result<FontFace> createDistanceFieldFontFace(
 			Growl::Internal::nextPowerOfTwo(
 				std::max(glyph_rects[0].w, glyph_rects[0].h)),
 			&width, &height)) {
-		return Error(std::make_unique<AssetsError>(
-			"Failed to pack font in texture; too large"));
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to pack font in texture; too large"));
 	}
 	const float inv_tex_width = 1.0f / width;
 	const float inv_tex_height = 1.0f / height;
@@ -116,8 +122,9 @@ Result<FontFace> createDistanceFieldFontFace(
 			int load_params = FT_LOAD_RENDER;
 			if (auto err = FT_Load_Glyph(font_data.face, rect.id, load_params);
 				err) {
-				return Error(std::make_unique<FontError>(
-					"Failed to load glyph bitmap", err));
+				return Error(
+					std::make_unique<FontError>(
+						"Failed to load glyph bitmap", err));
 			}
 
 			float bl =

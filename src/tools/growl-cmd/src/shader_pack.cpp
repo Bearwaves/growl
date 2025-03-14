@@ -27,8 +27,9 @@ Result<std::string> readSource(const std::filesystem::directory_entry& entry) {
 	std::ifstream file;
 	file.open(entry.path(), std::ios::in);
 	if (file.fail()) {
-		return Growl::Error(std::make_unique<AssetsIncludeError>(
-			"Failed to open file " + entry.path().generic_string()));
+		return Growl::Error(
+			std::make_unique<AssetsIncludeError>(
+				"Failed to open file " + entry.path().generic_string()));
 	}
 	std::ostringstream stream;
 	stream << file.rdbuf();
