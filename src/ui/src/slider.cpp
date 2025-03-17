@@ -2,10 +2,14 @@
 
 using Growl::Slider;
 
-Slider::Slider(std::string&& name, Value handle_width, Value handle_height)
+Slider::Slider(
+	std::string&& name, Value handle_width, Value handle_height,
+	float initial_value, std::function<void(float)> on_value_changed)
 	: Widget{std::move(name)}
 	, handle_width{handle_width}
-	, handle_height{handle_height} {}
+	, handle_height{handle_height}
+	, value{initial_value}
+	, on_value_changed{on_value_changed} {}
 
 void Slider::layout() {
 	handle_w = handle_width.evaluate(this);
@@ -17,6 +21,7 @@ void Slider::layout() {
 float Slider::setValue(float value) {
 	this->value = std::fmin(1, std::fmax(0, value));
 	handle_x = (this->value * (getWidth() - handle_w));
+	on_value_changed(this->value);
 	return this->value;
 }
 

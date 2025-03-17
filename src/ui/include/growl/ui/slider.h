@@ -7,7 +7,11 @@ class Value;
 
 class Slider : public Widget {
 public:
-	Slider(std::string&& name, Value handle_width, Value handle_height);
+	Slider(
+		std::string&& name, Value handle_width, Value handle_height,
+		float initial_value,
+		std::function<void(float)> on_value_changed = [](float value) -> void {
+		});
 
 	virtual void layout() override;
 
@@ -18,6 +22,10 @@ public:
 		return value;
 	}
 	float setValue(float value);
+
+	bool isPointerDown() {
+		return pointer_down;
+	}
 
 protected:
 	float getHandleX() {
@@ -36,10 +44,6 @@ protected:
 		return handle_h;
 	}
 
-	bool isPointerDown() {
-		return pointer_down;
-	}
-
 private:
 	Value handle_width;
 	Value handle_height;
@@ -47,8 +51,9 @@ private:
 	float handle_h = 0.f;
 	float handle_x = 0.f;
 	float handle_y = 0.f;
-	float value = 0.f;
+	float value;
 	bool pointer_down = false;
+	std::function<void(float)> on_value_changed;
 };
 
 } // namespace Growl
