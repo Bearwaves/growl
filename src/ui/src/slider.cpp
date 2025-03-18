@@ -31,7 +31,7 @@ bool Slider::onMouseEvent(const InputMouseEvent& event) {
 	switch (event.type) {
 	case PointerEventType::Up:
 		pointer_down = false;
-		return true;
+		return false;
 	case PointerEventType::Down:
 		if (!hit(internal_coordinates)) {
 			return false;
