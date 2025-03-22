@@ -15,7 +15,7 @@ class SoLoudAudioAPI : public AudioAPIInternal {
 public:
 	explicit SoLoudAudioAPI(SystemAPI& system)
 		: system{system} {}
-	Error init() override;
+	Error init(const Config& config) override;
 	void dispose() override;
 
 	const std::vector<AudioDevice>& getDevices() override {

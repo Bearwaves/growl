@@ -5,8 +5,10 @@
 namespace Growl {
 
 struct Config {
-	std::string name = "Growl";
+	std::string app_name = "Example";
+	std::string org_name = "Bearwaves";
 
+	std::string window_title = "Growl";
 	int window_width = 1000;
 	int window_height = 1000;
 	bool window_centered = true;

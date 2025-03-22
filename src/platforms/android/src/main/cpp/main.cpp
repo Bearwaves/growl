@@ -34,27 +34,34 @@ void android_main(struct android_app* state) {
 	initSoLoudPlugin(*api);
 	initLuaPlugin(*api);
 
-	if (auto err = static_cast<SystemAPIInternal&>(api->system()).init()) {
+	auto game = createGame();
+	game->setAPI(api.get());
+
+	if (auto err = static_cast<SystemAPIInternal&>(api->system())
+					   .init(game->getConfig())) {
 		__android_log_print(
 			ANDROID_LOG_FATAL, "android_main", "Failed to init system API: %s",
 			err.get()->message().c_str());
 		exit(1);
 	}
 
-	if (auto err = static_cast<GraphicsAPIInternal&>(api->graphics()).init();
+	if (auto err = static_cast<GraphicsAPIInternal&>(api->graphics())
+					   .init(game->getConfig());
 		err) {
 		api->system().log(
 			LogLevel::Fatal, "android_main", "Failed to init graphics API: {}",
 			err.get()->message());
 		exit(2);
 	}
-	if (auto err = static_cast<AudioAPIInternal&>(api->audio()).init()) {
+	if (auto err = static_cast<AudioAPIInternal&>(api->audio())
+					   .init(game->getConfig())) {
 		api->system().log(
 			LogLevel::Fatal, "android_main", "Failed to init audio API: {}",
 			err.get()->message());
 		exit(3);
 	}
-	if (auto err = static_cast<ScriptingAPIInternal&>(api->scripting()).init();
+	if (auto err = static_cast<ScriptingAPIInternal&>(api->scripting())
+					   .init(game->getConfig());
 		err) {
 		api->system().log(
 			LogLevel::Fatal, "android_main", "Failed to init scripting API: {}",
@@ -70,9 +77,6 @@ void android_main(struct android_app* state) {
 	}
 
 	api->system().log("android_main", "Android adapter created");
-
-	auto game = createGame();
-	game->setAPI(api.get());
 
 	api->system().log("android_main", "Game created");
 

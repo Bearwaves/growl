@@ -1,5 +1,6 @@
 #pragma once
 
+#include "growl/core/config.h"
 #include "growl/core/error.h"
 
 namespace Growl {
@@ -9,7 +10,8 @@ class API;
 class Game {
 
 public:
-	explicit Game() = default;
+	explicit Game(Config config)
+		: config{config} {}
 	virtual ~Game() = default;
 
 	virtual Error init() = 0;
@@ -23,12 +25,17 @@ public:
 
 	API& getAPI();
 
+	const Config& getConfig() {
+		return config;
+	}
+
 	void setAPI(API* api) {
 		m_api = api;
 	}
 
 private:
 	API* m_api;
+	Config config;
 };
 
 } // namespace Growl

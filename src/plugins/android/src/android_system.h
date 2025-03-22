@@ -14,7 +14,7 @@ public:
 	explicit AndroidSystemAPI(API& api, android_app* android_state)
 		: api{api}
 		, android_state{android_state} {}
-	Error init() override;
+	Error init(const Config& config) override;
 	void tick() override;
 	void dispose() override;
 	void onTouch(InputTouchEvent) override;

@@ -32,7 +32,7 @@ constexpr int BUFFER_MAX_SIZE = 2 << 22; // 8MB
 MetalGraphicsAPI::MetalGraphicsAPI(API& api)
 	: api{api} {}
 
-Error MetalGraphicsAPI::init() {
+Error MetalGraphicsAPI::init(const Config& config) {
 	last_render = high_resolution_clock::now();
 
 	api.system().log("MetalGraphicsAPI", "Initialised Metal graphics");

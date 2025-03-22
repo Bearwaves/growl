@@ -16,7 +16,7 @@ public:
 	explicit LuaScriptingAPI(API& api)
 		: api{api} {}
 
-	Error init() override;
+	Error init(const Config& config) override;
 	void dispose() override;
 
 	Result<std::unique_ptr<Script>>

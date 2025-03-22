@@ -11,15 +11,25 @@
 #include "game.h"
 #include <memory>
 
+using Growl::Config;
+
+Config createConfig() {
+	Config config;
+	config.app_name = "GrowlUIExample";
+	config.window_title = "Growl UI Example";
+	config.window_width = 1280;
+	config.window_height = 800;
+	return config;
+}
+
 std::unique_ptr<Growl::Game> createGame() {
-	return std::make_unique<UIExample::Game>();
+	return std::make_unique<UIExample::Game>(createConfig());
 }
 
 int main(int argc, char** argv) {
 #ifdef GROWL_DESKTOP
-	auto adapter = Growl::GameAdapter{
-		std::make_unique<UIExample::Game>(),
-		Growl::Config{"Growl UI Example", 1280, 800, true}};
+	auto adapter =
+		Growl::GameAdapter{std::make_unique<UIExample::Game>(createConfig())};
 	adapter.run();
 #elif GROWL_IOS
 	NSString* appDelegateClassName;
@@ -32,9 +42,8 @@ int main(int argc, char** argv) {
 		}
 	}
 #elif GROWL_WEB
-	auto adapter = Growl::GameAdapter{
-		std::make_unique<UIExample::Game>(),
-		Growl::Config{"Growl UI Example", 1280, 800, true}};
+	auto adapter =
+		Growl::GameAdapter{std::make_unique<UIExample::Game>(createConfig())};
 	adapter.run();
 #endif
 }

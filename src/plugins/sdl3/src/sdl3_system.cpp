@@ -24,7 +24,7 @@ using Growl::Result;
 using Growl::SDL3SystemAPI;
 using Growl::Window;
 
-Error SDL3SystemAPI::init() {
+Error SDL3SystemAPI::init(const Config& config) {
 	if (SDL_WasInit(SDL_INIT_VIDEO) != 0) {
 		return std::make_unique<SDL3Error>(SDL_GetError());
 	}
@@ -51,7 +51,8 @@ Result<std::unique_ptr<Window>>
 SDL3SystemAPI::createWindow(const Config& config) {
 	SDL_PropertiesID props = SDL_CreateProperties();
 	SDL_SetStringProperty(
-		props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, config.name.c_str());
+		props, SDL_PROP_WINDOW_CREATE_TITLE_STRING,
+		config.window_title.c_str());
 	SDL_SetNumberProperty(
 		props, SDL_PROP_WINDOW_CREATE_X_NUMBER,
 		config.window_centered ? SDL_WINDOWPOS_CENTERED : 0);

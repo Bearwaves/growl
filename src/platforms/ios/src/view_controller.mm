@@ -42,7 +42,7 @@ std::unique_ptr<Growl::Game> createGame();
 	auto& scriptingInternal =
 		static_cast<Growl::ScriptingAPIInternal&>(api->scripting());
 
-	if (auto err = systemInternal.init()) {
+	if (auto err = systemInternal.init(game->getConfig())) {
 		std::cout << "Failed to init system API: " << err.get()->message()
 				  << std::endl;
 		exit(1);
@@ -51,19 +51,19 @@ std::unique_ptr<Growl::Game> createGame();
 	systemInternal.setDarkMode(
 		self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
 
-	if (auto err = graphicsInternal.init()) {
+	if (auto err = graphicsInternal.init(game->getConfig())) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "ViewController",
 			"Failed to init graphics API: {}", err.get()->message());
 		exit(2);
 	}
-	if (auto err = audioInternal.init()) {
+	if (auto err = audioInternal.init(game->getConfig())) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "ViewController",
 			"Failed to init audio API: {}", err.get()->message());
 		exit(3);
 	}
-	if (auto err = scriptingInternal.init()) {
+	if (auto err = scriptingInternal.init(game->getConfig())) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "ViewController",
 			"Failed to init scripting API: {}", err.get()->message());

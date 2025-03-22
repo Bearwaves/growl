@@ -41,7 +41,7 @@ class SDL3SystemAPI : public SystemAPIInternal {
 public:
 	explicit SDL3SystemAPI(API& api)
 		: api{api} {}
-	Error init() override;
+	Error init(const Config& config) override;
 	void tick() override;
 	void dispose() override;
 	bool isRunning() override {
