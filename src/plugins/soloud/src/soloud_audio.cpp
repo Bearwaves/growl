@@ -24,7 +24,7 @@ using Growl::SoLoudAudioClip;
 using Growl::SoLoudAudioStream;
 using Growl::SystemAPI;
 
-Error SoLoudAudioAPI::init() {
+Error SoLoudAudioAPI::init(const Config& config) {
 	soloud = std::make_unique<SoLoud::Soloud>();
 
 	if (auto res = soloud->init(); res != SoLoud::SO_NO_ERROR) {

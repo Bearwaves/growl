@@ -143,7 +143,7 @@ luaPullArgs(lua_State* state, ScriptingSigLua* signature) {
 	return args;
 }
 
-Error LuaScriptingAPI::init() {
+Error LuaScriptingAPI::init(const Config& config) {
 	this->state = luaL_newstate();
 	luaL_openlibs(state);
 

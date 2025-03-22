@@ -22,8 +22,7 @@ void initLuaPlugin(API& api);
 std::unique_ptr<API> g_api;
 std::unique_ptr<Game> g_game;
 
-GameAdapter::GameAdapter(std::unique_ptr<Game> game, Config config)
-	: config{config} {
+GameAdapter::GameAdapter(std::unique_ptr<Game> game) {
 	g_api = std::make_unique<API>();
 	g_game = std::move(game);
 	initSDL3Plugin(*g_api);
@@ -32,27 +31,30 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, Config config)
 	initLuaPlugin(*g_api);
 	g_game->setAPI(g_api.get());
 
-	if (auto err = static_cast<SystemAPIInternal&>(g_api->system()).init();
+	if (auto err = static_cast<SystemAPIInternal&>(g_api->system())
+					   .init(g_game->getConfig());
 		err) {
 		std::cout << "Failed to init system API: " << err.get()->message()
 				  << std::endl;
 		exit(1);
 	}
-	if (auto err = static_cast<GraphicsAPIInternal&>(g_api->graphics()).init();
+	if (auto err = static_cast<GraphicsAPIInternal&>(g_api->graphics())
+					   .init(g_game->getConfig());
 		err) {
 		g_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to init graphics API: {}",
 			err.get()->message());
 		exit(2);
 	}
-	if (auto err = static_cast<AudioAPIInternal&>(g_api->audio()).init()) {
+	if (auto err = static_cast<AudioAPIInternal&>(g_api->audio())
+					   .init(g_game->getConfig())) {
 		g_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to init audio API: {}",
 			err.get()->message());
 		exit(3);
 	}
-	if (auto err =
-			static_cast<ScriptingAPIInternal&>(g_api->scripting()).init();
+	if (auto err = static_cast<ScriptingAPIInternal&>(g_api->scripting())
+					   .init(g_game->getConfig());
 		err) {
 		g_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to init scripting API: {}",
@@ -97,7 +99,7 @@ void GameAdapter::doLoopIteration() {
 
 void GameAdapter::run() {
 	if (auto err = static_cast<GraphicsAPIInternal&>(g_api->graphics())
-					   .setWindow(config);
+					   .setWindow(g_game->getConfig());
 		err) {
 		g_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to create window: {}",

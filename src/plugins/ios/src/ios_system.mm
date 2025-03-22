@@ -6,6 +6,7 @@
 #include "ios_window.h"
 #include <os/log.h>
 
+using Growl::Config;
 using Growl::ControllerButton;
 using Growl::ControllerEventType;
 using Growl::Error;
@@ -18,7 +19,7 @@ using Growl::LocalFile;
 using Growl::Result;
 using Growl::Window;
 
-Error IOSSystemAPI::init() {
+Error IOSSystemAPI::init(const Config& config) {
 	for (GCController* controller in [GCController controllers]) {
 		this->controller = controller;
 		break; // Just get the first one, for now.

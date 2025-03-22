@@ -19,7 +19,7 @@ namespace Growl {
 class MetalGraphicsAPI : public GraphicsAPIInternal {
 public:
 	explicit MetalGraphicsAPI(API& api);
-	Error init() override;
+	Error init(const Config& config) override;
 	void dispose() override;
 	void begin() override;
 	void end() override;

@@ -12,16 +12,24 @@
 #include "test_app_game.h"
 #include <memory>
 
+using Growl::Config;
+
+Config createConfig() {
+	Config config;
+	config.app_name = "GrowlTestApp";
+	config.window_title = "Growl Test App";
+	return config;
+}
+
 std::unique_ptr<Growl::Game> createGame() {
-	return std::make_unique<Growl::TestAppGame>();
+	return std::make_unique<Growl::TestAppGame>(createConfig());
 }
 
 int main(int argc, char** argv) {
+	auto config = createConfig();
 #ifdef GROWL_DESKTOP
-	auto adapter = Growl::GameAdapter{
-		std::make_unique<Growl::TestAppGame>(),
-		Growl::Config{
-			"Growl Test App", 1000, 1000, true, Growl::Key::FunctionF12}};
+	auto adapter =
+		Growl::GameAdapter{std::make_unique<Growl::TestAppGame>(config)};
 	adapter.run();
 #elif GROWL_IOS
 	NSString* appDelegateClassName;
@@ -34,9 +42,8 @@ int main(int argc, char** argv) {
 		}
 	}
 #elif GROWL_WEB
-	auto adapter = Growl::GameAdapter{
-		std::make_unique<Growl::TestAppGame>(),
-		Growl::Config{"Growl Test App", 1000, 1000, true}};
+	auto adapter =
+		Growl::GameAdapter{std::make_unique<Growl::TestAppGame>(config)};
 	adapter.run();
 #endif
 }

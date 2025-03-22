@@ -10,7 +10,7 @@ class IOSSystemAPI : public SystemAPIInternal {
 public:
 	explicit IOSSystemAPI(API& api)
 		: api{api} {}
-	Error init() override;
+	Error init(const Config& config) override;
 	void tick() override;
 	void dispose() override;
 	void onTouch(InputTouchEvent) override;

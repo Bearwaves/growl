@@ -32,7 +32,7 @@ using std::chrono::seconds;
 OpenGLGraphicsAPI::OpenGLGraphicsAPI(API& api)
 	: api{api} {}
 
-Error OpenGLGraphicsAPI::init() {
+Error OpenGLGraphicsAPI::init(const Config& config) {
 	last_render = high_resolution_clock::now();
 	return nullptr;
 }

@@ -18,10 +18,9 @@ void initMetalPlugin(API& api);
 void initOpenGLPlugin(API& api);
 void initLuaPlugin(API& api);
 
-GameAdapter::GameAdapter(std::unique_ptr<Game> game, Config config)
+GameAdapter::GameAdapter(std::unique_ptr<Game> game)
 	: m_api(std::make_unique<API>())
-	, m_game(std::move(game))
-	, m_config(std::move(config)) {
+	, m_game(std::move(game)) {
 
 	initSDL3Plugin(*m_api);
 	initSoLoudPlugin(*m_api);
@@ -34,27 +33,30 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game, Config config)
 	m_game->setAPI(m_api.get());
 	m_api->setFrameTimer(std::make_unique<FrameTimer>());
 
-	if (auto err = static_cast<SystemAPIInternal&>(m_api->system()).init();
+	if (auto err = static_cast<SystemAPIInternal&>(m_api->system())
+					   .init(m_game->getConfig());
 		err) {
 		std::cout << "Failed to init system API: " << err.get()->message()
 				  << std::endl;
 		exit(1);
 	}
-	if (auto err = static_cast<GraphicsAPIInternal&>(m_api->graphics()).init();
+	if (auto err = static_cast<GraphicsAPIInternal&>(m_api->graphics())
+					   .init(m_game->getConfig());
 		err) {
 		m_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to init graphics API: {}",
 			err.get()->message());
 		exit(2);
 	}
-	if (auto err = static_cast<AudioAPIInternal&>(m_api->audio()).init()) {
+	if (auto err = static_cast<AudioAPIInternal&>(m_api->audio())
+					   .init(m_game->getConfig())) {
 		m_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to init audio API: {}",
 			err.get()->message());
 		exit(3);
 	}
-	if (auto err =
-			static_cast<ScriptingAPIInternal&>(m_api->scripting()).init();
+	if (auto err = static_cast<ScriptingAPIInternal&>(m_api->scripting())
+					   .init(m_game->getConfig());
 		err) {
 		m_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to init scripting API: {}",
@@ -89,7 +91,7 @@ GameAdapter::~GameAdapter() {
 
 void GameAdapter::run() {
 	if (auto err = static_cast<GraphicsAPIInternal&>(m_api->graphics())
-					   .setWindow(m_config);
+					   .setWindow(m_game->getConfig());
 		err) {
 		m_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to create window: {}",

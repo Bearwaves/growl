@@ -20,7 +20,8 @@ constexpr int FPS_SAMPLE_SECONDS = 1;
 
 class TestAppGame : public Game {
 public:
-	explicit TestAppGame() = default;
+	explicit TestAppGame(Config config)
+		: Game{config} {}
 	Error init() override;
 	Error dispose() override;
 	void tick(double delta_time) override;

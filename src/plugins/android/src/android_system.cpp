@@ -24,7 +24,7 @@ using Growl::PointerEventType;
 using Growl::Result;
 using Growl::Window;
 
-Error AndroidSystemAPI::init() {
+Error AndroidSystemAPI::init(const Config& config) {
 	android_state->onAppCmd = handleAppCmd;
 	android_state->userData = &api;
 	// Leave key event filter as default to allow volume keys to propagate

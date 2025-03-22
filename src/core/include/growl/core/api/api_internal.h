@@ -17,7 +17,7 @@ class APIInternal {
 public:
 	virtual ~APIInternal() {}
 
-	virtual Error init() = 0;
+	virtual Error init(const Config& config) = 0;
 	virtual void dispose() = 0;
 #ifdef GROWL_IMGUI
 	virtual void populateDebugMenu() {}
