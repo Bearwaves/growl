@@ -3,7 +3,7 @@
 | Package         | Version          | URL                                     |
 |-----------------|------------------|-----------------------------------------|
 | Dear ImGui      | `1.91.7-docking` | https://github.com/ocornut/imgui        |
-| {fmt}           | `11.0.2`         | https://github.com/fmtlib/fmt           |
+| {fmt}           | `11.1.4`         | https://github.com/fmtlib/fmt           |
 | fpng            | `b5267e5`        | https://github.com/richgel999/fpng      |
 | FreeType        | `2.13.3`         | https://freetype.org/                   |
 | glm             | `2993560`        | https://github.com/g-truc/glm           |
