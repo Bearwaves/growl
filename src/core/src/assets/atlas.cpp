@@ -102,7 +102,7 @@ Result<Atlas> Growl::packAtlasFromFiles(
 					"Failed to parse image data: wrong dimensions"));
 		}
 
-		mappings[std::filesystem::relative(image.path, from).string()] =
+		mappings[std::filesystem::relative(image.path, from).generic_string()] =
 			AtlasRegion{
 				img_width,
 				img_height,
