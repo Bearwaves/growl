@@ -4,6 +4,7 @@
 #include "growl/core/system/preferences.h"
 #include "sdl3_error.h"
 #include "sdl3_system.h"
+#include <chrono>
 #include <fstream>
 #include <thread>
 
@@ -16,22 +17,36 @@ SDL3Preferences::SDL3Preferences(
 	nlohmann::json&& j)
 	: Preferences{shared, std::move(j)}
 	, api{api}
-	, prefs_file{prefs_file} {}
+	, prefs_file{prefs_file} {
+	writer = std::thread([&]() {
+		while (!stop) {
+			if (dirty) {
+				if (auto err = doStore()) {
+					api.log(
+						LogLevel::Error, "SDL3Preferences",
+						"Failed to write preferences file: {}", err->message());
+				}
+				api.log(
+					LogLevel::Debug, "SDL3Preferences",
+					"Wrote preferences to file {}", this->prefs_file.string());
+				dirty = false;
+			} else {
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			}
+		}
+	});
+}
 
 SDL3Preferences::~SDL3Preferences() {
-	store();
-	writer.join();
+	dirty = true;
+	stop = true;
+	if (writer.joinable()) {
+		writer.join();
+	}
 }
 
 void SDL3Preferences::store() {
-	writer = std::thread([&]() {
-		std::lock_guard<std::mutex> lock{mutex};
-		if (auto err = doStore()) {
-			api.log(
-				LogLevel::Error, "SDL3Preferences",
-				"Failed to write preferences file: {}", err->message());
-		}
-	});
+	dirty = true;
 }
 
 Error SDL3Preferences::doStore() {

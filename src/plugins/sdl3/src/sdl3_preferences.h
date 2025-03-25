@@ -2,8 +2,9 @@
 
 #include "growl/core/error.h"
 #include "growl/core/system/preferences.h"
-#include <mutex>
+#include <atomic>
 #include <thread>
+
 namespace Growl {
 
 class SDL3SystemAPI;
@@ -20,7 +21,8 @@ private:
 	SDL3SystemAPI& api;
 	std::filesystem::path prefs_file;
 	std::thread writer;
-	std::mutex mutex;
+	std::atomic<bool> dirty = false;
+	std::atomic<bool> stop = false;
 
 	Error doStore();
 };
