@@ -9,6 +9,7 @@ set(SOURCES
 	"src/android_system.cpp"
 	"src/android_file.cpp"
 	"src/android_window.cpp"
+	"src/android_preferences.cpp"
 	)
 
 set(HEADERS
@@ -16,6 +17,7 @@ set(HEADERS
 	"src/android_file.h"
 	"src/android_window.h"
 	"src/android_error.h"
+	"src/android_preferences.h"
 	)
 
 add_library(growl-plugin-android ${SOURCES} ${HEADERS})

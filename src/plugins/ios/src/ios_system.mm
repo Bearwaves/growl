@@ -53,6 +53,39 @@ Error IOSSystemAPI::init(const Config& config) {
 						  }
 						}];
 
+	auto local_defaults = [NSUserDefaults standardUserDefaults];
+	auto local_prefs_string = [local_defaults stringForKey:@"preferences"];
+	if (!local_prefs_string) {
+		local_prefs_string = @"{}";
+	}
+	json j_local = json::parse([local_prefs_string UTF8String], nullptr, false);
+	if (!j_local.is_object()) {
+		j_local = {};
+	}
+	this->local_preferences =
+		std::make_unique<IOSPreferences>(*this, false, std::move(j_local));
+
+	if ([[NSUbiquitousKeyValueStore defaultStore] synchronize]) {
+
+		auto shared_defaults = [NSUbiquitousKeyValueStore defaultStore];
+		auto shared_prefs_string =
+			[shared_defaults stringForKey:@"preferences"];
+		if (!shared_prefs_string) {
+			shared_prefs_string = @"{}";
+		}
+		json j_shared =
+			json::parse([shared_prefs_string UTF8String], nullptr, false);
+		if (!j_shared.is_object()) {
+			j_shared = {};
+		}
+		this->shared_preferences =
+			std::make_unique<IOSPreferences>(*this, true, std::move(j_shared));
+		this->has_shared_preferences = true;
+	} else {
+		this->log(
+			"IOSSystemAPI", "Unable to get initialise shared preferences.");
+	}
+
 	this->log("IOSSystemAPI", "Initialised iOS system");
 	return nullptr;
 }

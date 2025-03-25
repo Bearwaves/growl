@@ -14,6 +14,7 @@ namespace Growl {
 struct Config;
 class File;
 class Window;
+class Preferences;
 
 class SystemAPI {
 	friend class SystemAPIInternal;
@@ -56,6 +57,10 @@ public:
 
 	virtual Result<std::unique_ptr<File>>
 	openFile(std::string path, size_t start = 0, size_t end = 0) = 0;
+
+	virtual Preferences& getLocalPreferences() = 0;
+	virtual Preferences& getSharedPreferences() = 0;
+	virtual bool hasSharedPreferences() = 0;
 
 protected:
 	virtual void

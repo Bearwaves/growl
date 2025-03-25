@@ -1,5 +1,6 @@
 #pragma once
 
+#include "android_preferences.h"
 #include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
 #include "growl/core/input/controller.h"
@@ -29,6 +30,18 @@ public:
 	Result<std::unique_ptr<File>>
 	openFile(std::string path, size_t start, size_t end) override;
 
+	Preferences& getLocalPreferences() override {
+		return *preferences;
+	}
+
+	Preferences& getSharedPreferences() override {
+		return *preferences;
+	}
+
+	bool hasSharedPreferences() override {
+		return false;
+	}
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
@@ -46,6 +59,7 @@ private:
 	android_app* android_state;
 	int resize_width = 0;
 	int resize_height = 0;
+	std::unique_ptr<AndroidPreferences> preferences;
 };
 
 } // namespace Growl

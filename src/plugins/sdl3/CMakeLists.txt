@@ -19,6 +19,7 @@ set(SOURCES
 	"src/sdl3_controller.cpp"
 	"src/sdl3_window.cpp"
 	"src/sdl3_file.cpp"
+	"src/sdl3_preferences.cpp"
 	)
 
 set(HEADERS

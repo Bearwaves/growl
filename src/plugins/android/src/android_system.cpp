@@ -30,6 +30,15 @@ Error AndroidSystemAPI::init(const Config& config) {
 	// Leave key event filter as default to allow volume keys to propagate
 	// back up to system. Clear motion filter so controller events get through.
 	android_app_set_motion_event_filter(android_state, nullptr);
+
+	json j = json::parse(
+		AndroidPreferences::getPreferencesJSON(android_state), nullptr, false);
+	if (!j.is_object()) {
+		j = {};
+	}
+	this->preferences =
+		std::make_unique<AndroidPreferences>(android_state, std::move(j));
+
 	this->log("AndroidSystemAPI", "Initialised Android system");
 	return nullptr;
 }
@@ -65,8 +74,8 @@ void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 		auto& graphics_internal =
 			static_cast<GraphicsAPIInternal&>(api->graphics());
 		if (!graphics_internal.getWindow()) {
-			if (auto err =
-					graphics_internal.setWindow(Config{"", 0, 0, false})) {
+			Config config;
+			if (auto err = graphics_internal.setWindow(config)) {
 				api->system().log(
 					LogLevel::Fatal, "android_main",
 					"Failed to create window: {}", err.get()->message());

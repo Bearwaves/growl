@@ -4,6 +4,7 @@
 #include "SDL3/SDL_gamepad.h"
 #include "SDL3/SDL_log.h"
 #include "growl/core/api/api_internal.h"
+#include "sdl3_preferences.h"
 #include <memory>
 
 struct ImGuiIO;
@@ -56,6 +57,12 @@ public:
 	Result<std::unique_ptr<File>>
 	openFile(std::string path, size_t start, size_t end) override;
 
+	Preferences& getLocalPreferences() override;
+	Preferences& getSharedPreferences() override;
+	bool hasSharedPreferences() override {
+		return true;
+	}
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
@@ -73,12 +80,16 @@ private:
 	ControllerButton getButton(SDL_Event& event);
 	void openGameController(int id);
 
+	Error initPreferences(const Config& config);
+
 	API& api;
 	bool running;
 	std::unique_ptr<SDL3Controller> controller;
 	int resize_width = 0;
 	int resize_height = 0;
 	SDL_Scancode debug_mode_key;
+	std::unique_ptr<SDL3Preferences> local_preferences;
+	std::unique_ptr<SDL3Preferences> shared_preferences;
 
 #ifdef GROWL_IMGUI
 	ImGuiIO* imgui_io;
