@@ -29,5 +29,10 @@ void SystemAPIInternal::populateDebugMenu() {
 	if (ImGui::Checkbox("Dark mode", &dark_mode)) {
 		setDarkMode(dark_mode);
 	}
+
+	bool mouse_as_touch = isMouseEmitsTouchEvents();
+	if (ImGui::Checkbox("Mouse emits touch events", &mouse_as_touch)) {
+		setMouseEmitsTouchEvents(mouse_as_touch);
+	}
 }
 #endif

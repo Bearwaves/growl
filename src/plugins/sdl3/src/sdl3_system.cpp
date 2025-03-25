@@ -281,6 +281,11 @@ void SDL3SystemAPI::handleMouseEvent(SDL_Event& event) {
 			InputEventType::Mouse,
 			InputMouseEvent{
 				event_type, mouse_button, x, y, scroll_x, scroll_y});
+		if (isMouseEmitsTouchEvents() &&
+			event_type != PointerEventType::Scroll) {
+			e = InputEvent(
+				InputEventType::Touch, InputTouchEvent{event_type, x, y, 0});
+		}
 		inputProcessor->onEvent(e);
 	}
 }

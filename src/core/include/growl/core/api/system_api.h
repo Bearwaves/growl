@@ -65,6 +65,7 @@ protected:
 private:
 	bool dark_mode = false;
 	bool paused = false;
+	bool mouse_emits_touch_events = false;
 };
 
 } // namespace Growl

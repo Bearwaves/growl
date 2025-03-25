@@ -35,6 +35,12 @@ public:
 	virtual void setPaused(bool paused) {
 		this->paused = paused;
 	}
+	virtual bool isMouseEmitsTouchEvents() {
+		return this->mouse_emits_touch_events;
+	}
+	virtual void setMouseEmitsTouchEvents(bool mouse_as_touch) {
+		this->mouse_emits_touch_events = mouse_as_touch;
+	}
 #ifdef GROWL_IMGUI
 	virtual void populateDebugMenu() override;
 #endif
