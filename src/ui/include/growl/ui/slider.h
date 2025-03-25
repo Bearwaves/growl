@@ -44,6 +44,9 @@ protected:
 		return handle_h;
 	}
 
+	virtual bool onPointerEvent(
+		PointerEventType event_type, glm::vec4& internal_coordinates);
+
 private:
 	Value handle_width;
 	Value handle_height;

@@ -1,5 +1,7 @@
 #include "growl/ui/slider.h"
+#include "growl/core/input/event.h"
 
+using Growl::PointerEventType;
 using Growl::Slider;
 
 Slider::Slider(
@@ -28,7 +30,18 @@ float Slider::setValue(float value) {
 bool Slider::onMouseEvent(const InputMouseEvent& event) {
 	glm::vec4 internal_coordinates =
 		worldToLocalCoordinates(event.mouseX, event.mouseY);
-	switch (event.type) {
+	return onPointerEvent(event.type, internal_coordinates);
+}
+
+bool Slider::onTouchEvent(const InputTouchEvent& event) {
+	glm::vec4 internal_coordinates =
+		worldToLocalCoordinates(event.touchX, event.touchY);
+	return onPointerEvent(event.type, internal_coordinates);
+}
+
+bool Slider::onPointerEvent(
+	PointerEventType event_type, glm::vec4& internal_coordinates) {
+	switch (event_type) {
 	case PointerEventType::Up:
 		pointer_down = false;
 		return false;
@@ -44,18 +57,6 @@ bool Slider::onMouseEvent(const InputMouseEvent& event) {
 		setValue(
 			(internal_coordinates.x - handle_w / 2) / (getWidth() - handle_w));
 		return true;
-	default:
-		break;
-	}
-	return false;
-}
-
-bool Slider::onTouchEvent(const InputTouchEvent& event) {
-	switch (event.type) {
-	case PointerEventType::Up:
-	case PointerEventType::Down:
-	case PointerEventType::Move:
-		break;
 	default:
 		break;
 	}
