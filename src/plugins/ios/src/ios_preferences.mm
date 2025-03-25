@@ -18,10 +18,10 @@ void IOSPreferences::store() {
 	NSString* json_ns_string =
 		[NSString stringWithUTF8String:json_string.c_str()];
 	if (isShared()) {
-		[[NSUserDefaults standardUserDefaults] setValue:json_ns_string
-												 forKey:@"preferences"];
-	} else {
 		[[NSUbiquitousKeyValueStore defaultStore] setString:json_ns_string
 													 forKey:@"preferences"];
+	} else {
+		[[NSUserDefaults standardUserDefaults] setValue:json_ns_string
+												 forKey:@"preferences"];
 	}
 }
