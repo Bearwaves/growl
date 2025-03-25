@@ -2,6 +2,7 @@
 
 #include "growl/core/error.h"
 #include "growl/core/system/preferences.h"
+#include <mutex>
 #include <thread>
 namespace Growl {
 
