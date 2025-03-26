@@ -31,11 +31,11 @@ public:
 	openFile(std::string path, size_t start, size_t end) override;
 
 	Preferences& getLocalPreferences() override {
-		return *preferences;
+		return *preferences_local;
 	}
 
 	Preferences& getSharedPreferences() override {
-		return *preferences;
+		return *preferences_shared;
 	}
 
 	bool hasSharedPreferences() override {
@@ -59,7 +59,8 @@ private:
 	android_app* android_state;
 	int resize_width = 0;
 	int resize_height = 0;
-	std::unique_ptr<AndroidPreferences> preferences;
+	std::unique_ptr<AndroidPreferences> preferences_local;
+	std::unique_ptr<AndroidPreferences> preferences_shared;
 };
 
 } // namespace Growl

@@ -4,10 +4,9 @@
 using Growl::IOSPreferences;
 using Growl::Preferences;
 
-IOSPreferences::IOSPreferences(
-	IOSSystemAPI& api, bool shared, nlohmann::json&& j)
+IOSPreferences::IOSPreferences(bool ubiquitous, bool shared, nlohmann::json&& j)
 	: Preferences{shared, std::move(j)}
-	, api{api} {}
+	, ubiquitous(ubiquitous) {}
 
 IOSPreferences::~IOSPreferences() {
 	store();
@@ -15,13 +14,14 @@ IOSPreferences::~IOSPreferences() {
 
 void IOSPreferences::store() {
 	auto json_string = data().dump();
+	auto key = isShared() ? @"preferences_shared" : @"preferences_local";
 	NSString* json_ns_string =
 		[NSString stringWithUTF8String:json_string.c_str()];
-	if (isShared()) {
+	if (ubiquitous) {
 		[[NSUbiquitousKeyValueStore defaultStore] setString:json_ns_string
-													 forKey:@"preferences"];
+													 forKey:key];
 	} else {
 		[[NSUserDefaults standardUserDefaults] setValue:json_ns_string
-												 forKey:@"preferences"];
+												 forKey:key];
 	}
 }

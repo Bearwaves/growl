@@ -6,15 +6,15 @@ namespace Growl {
 
 class AndroidPreferences : public Preferences {
 public:
-	AndroidPreferences(android_app* app, nlohmann::json&& j);
+	AndroidPreferences(android_app* app, bool shared, nlohmann::json&& j);
 	~AndroidPreferences();
 	void store() override;
-	static std::string getPreferencesJSON(android_app* app);
+	static std::string getPreferencesJSON(android_app* app, bool shared);
 
 private:
 	android_app* app;
-	static void
-	setPreferencesJSON(android_app* app, std::string preferences_json);
+	static void setPreferencesJSON(
+		android_app* app, bool shared, std::string preferences_json);
 };
 
 } // namespace Growl

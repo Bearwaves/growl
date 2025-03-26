@@ -31,13 +31,23 @@ Error AndroidSystemAPI::init(const Config& config) {
 	// back up to system. Clear motion filter so controller events get through.
 	android_app_set_motion_event_filter(android_state, nullptr);
 
-	json j = json::parse(
-		AndroidPreferences::getPreferencesJSON(android_state), nullptr, false);
-	if (!j.is_object()) {
-		j = {};
+	json j_local = json::parse(
+		AndroidPreferences::getPreferencesJSON(android_state, false), nullptr,
+		false);
+	if (!j_local.is_object()) {
+		j_local = {};
 	}
-	this->preferences =
-		std::make_unique<AndroidPreferences>(android_state, std::move(j));
+	this->preferences_local = std::make_unique<AndroidPreferences>(
+		android_state, false, std::move(j_local));
+
+	json j_shared = json::parse(
+		AndroidPreferences::getPreferencesJSON(android_state, true), nullptr,
+		false);
+	if (!j_shared.is_object()) {
+		j_shared = {};
+	}
+	this->preferences_shared = std::make_unique<AndroidPreferences>(
+		android_state, false, std::move(j_shared));
 
 	this->log("AndroidSystemAPI", "Initialised Android system");
 	return nullptr;

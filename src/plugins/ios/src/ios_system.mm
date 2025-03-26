@@ -53,8 +53,8 @@ Error IOSSystemAPI::init(const Config& config) {
 						  }
 						}];
 
-	auto local_defaults = [NSUserDefaults standardUserDefaults];
-	auto local_prefs_string = [local_defaults stringForKey:@"preferences"];
+	auto local_prefs_string = [[NSUserDefaults standardUserDefaults]
+		stringForKey:@"preferences_local"];
 	if (!local_prefs_string) {
 		local_prefs_string = @"{}";
 	}
@@ -63,28 +63,32 @@ Error IOSSystemAPI::init(const Config& config) {
 		j_local = {};
 	}
 	this->local_preferences =
-		std::make_unique<IOSPreferences>(*this, false, std::move(j_local));
+		std::make_unique<IOSPreferences>(false, false, std::move(j_local));
 
+	NSString* shared_prefs_string;
+	bool ubiquitous = false;
 	if ([[NSUbiquitousKeyValueStore defaultStore] synchronize]) {
-
-		auto shared_defaults = [NSUbiquitousKeyValueStore defaultStore];
-		auto shared_prefs_string =
-			[shared_defaults stringForKey:@"preferences"];
-		if (!shared_prefs_string) {
-			shared_prefs_string = @"{}";
-		}
-		json j_shared =
-			json::parse([shared_prefs_string UTF8String], nullptr, false);
-		if (!j_shared.is_object()) {
-			j_shared = {};
-		}
-		this->shared_preferences =
-			std::make_unique<IOSPreferences>(*this, true, std::move(j_shared));
-		this->has_shared_preferences = true;
+		ubiquitous = true;
+		shared_prefs_string = [[NSUbiquitousKeyValueStore defaultStore]
+			stringForKey:@"shared_preferences"];
 	} else {
 		this->log(
-			"IOSSystemAPI", "Unable to get initialise shared preferences.");
+			"IOSSystemAPI", "Unable to get initialise shared preferences; "
+							"falling back to local storage.");
+		shared_prefs_string = [[NSUserDefaults standardUserDefaults]
+			stringForKey:@"preferences_shared"];
 	}
+	if (!shared_prefs_string) {
+		shared_prefs_string = @"{}";
+	}
+	json j_shared =
+		json::parse([shared_prefs_string UTF8String], nullptr, false);
+	if (!j_shared.is_object()) {
+		j_shared = {};
+	}
+	this->shared_preferences =
+		std::make_unique<IOSPreferences>(ubiquitous, true, std::move(j_shared));
+	this->has_shared_preferences = ubiquitous;
 
 	this->log("IOSSystemAPI", "Initialised iOS system");
 	return nullptr;

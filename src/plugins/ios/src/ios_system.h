@@ -30,10 +30,7 @@ public:
 	}
 
 	Preferences& getSharedPreferences() override {
-		if (has_shared_preferences) {
-			return *shared_preferences;
-		}
-		return *local_preferences;
+		return *shared_preferences;
 	}
 
 	bool hasSharedPreferences() override {
