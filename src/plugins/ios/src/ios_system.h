@@ -2,6 +2,7 @@
 
 #include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
+#include "ios_preferences.h"
 #include <GameController/GameController.h>
 
 namespace Growl {
@@ -24,6 +25,18 @@ public:
 	Result<std::unique_ptr<File>>
 	openFile(std::string path, size_t start = 0, size_t end = 0) override;
 
+	Preferences& getLocalPreferences() override {
+		return *local_preferences;
+	}
+
+	Preferences& getSharedPreferences() override {
+		return *shared_preferences;
+	}
+
+	bool hasSharedPreferences() override {
+		return has_shared_preferences;
+	}
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
@@ -40,6 +53,9 @@ private:
 	GCController* controller = nullptr;
 	id game_controller_connect_observer;
 	id game_controller_disconnect_observer;
+	std::unique_ptr<IOSPreferences> local_preferences;
+	std::unique_ptr<IOSPreferences> shared_preferences;
+	bool has_shared_preferences = false;
 };
 
 } // namespace Growl

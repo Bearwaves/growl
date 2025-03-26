@@ -8,12 +8,14 @@ set(SOURCES
 	"src/ios_plugin.mm"
 	"src/ios_system.mm"
 	"src/ios_window.mm"
+	"src/ios_preferences.mm"
 	)
 
 set(HEADERS
 	"src/ios_system.h"
 	"src/ios_window.h"
 	"src/ios_error.h"
+	"src/ios_preferences.h"
 	)
 
 add_library(growl-plugin-ios ${SOURCES} ${HEADERS})

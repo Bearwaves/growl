@@ -1,5 +1,6 @@
 #include "sdl3_system.h"
 #include "SDL3/SDL_events.h"
+#include "SDL3/SDL_filesystem.h"
 #include "SDL3/SDL_init.h"
 #include "SDL3/SDL_video.h"
 #include "growl/core/api/api.h"
@@ -7,19 +8,24 @@
 #include "growl/core/input/event.h"
 #include "growl/core/input/processor.h"
 #include "growl/core/log.h"
+#include "growl/core/system/preferences.h"
 #include "sdl3_file.h"
+#include <filesystem>
+#include <fstream>
 #ifdef GROWL_IMGUI
 #include "growl/core/imgui.h"
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #endif
 #include "sdl3_error.h"
+#include "sdl3_preferences.h"
 #include "sdl3_window.h"
 #include <memory>
 
 using Growl::Error;
 using Growl::File;
 using Growl::InputEvent;
+using Growl::Preferences;
 using Growl::Result;
 using Growl::SDL3SystemAPI;
 using Growl::Window;
@@ -31,6 +37,10 @@ Error SDL3SystemAPI::init(const Config& config) {
 	SDL_SetLogPriority(SDL_LOG_CATEGORY_CUSTOM, SDL_LOG_PRIORITY_INFO);
 	if (!SDL_InitSubSystem(SDL_INIT_GAMEPAD)) {
 		return std::make_unique<SDL3Error>(SDL_GetError());
+	}
+
+	if (auto err = initPreferences(config)) {
+		return err;
 	}
 
 #ifdef GROWL_IMGUI
@@ -195,6 +205,14 @@ SDL3SystemAPI::openFile(std::string path, size_t start, size_t end) {
 	return std::unique_ptr<File>(std::make_unique<SDL3File>(fp, start, end));
 }
 
+Preferences& SDL3SystemAPI::getLocalPreferences() {
+	return *local_preferences;
+}
+
+Preferences& SDL3SystemAPI::getSharedPreferences() {
+	return *shared_preferences;
+}
+
 void SDL3SystemAPI::logInternal(
 	LogLevel log_level, std::string tag, std::string msg) {
 	SDL_LogMessage(
@@ -288,4 +306,39 @@ void SDL3SystemAPI::handleMouseEvent(SDL_Event& event) {
 		}
 		inputProcessor->onEvent(e);
 	}
+}
+
+Error SDL3SystemAPI::initPreferences(const Config& config) {
+	char* pref_path =
+		SDL_GetPrefPath(config.org_name.c_str(), config.app_name.c_str());
+	std::filesystem::path pref_file_local =
+		std::filesystem::path(pref_path) / "preferences_local.json";
+	std::filesystem::path pref_file_shared =
+		std::filesystem::path(pref_path) / "preferences_shared.json";
+	SDL_free(pref_path);
+
+	json j_local = json::object();
+	if (std::filesystem::exists(pref_file_local)) {
+		std::ifstream f(pref_file_local);
+		j_local = json::parse(f, nullptr, false);
+		if (!j_local.is_object()) {
+			j_local = json::object();
+		}
+	}
+
+	json j_shared = json::object();
+	if (std::filesystem::exists(pref_file_shared)) {
+		std::ifstream f(pref_file_shared);
+		j_shared = json::parse(f, nullptr, false);
+		if (!j_shared.is_object()) {
+			j_shared = json::object();
+		}
+	}
+
+	this->local_preferences = std::make_unique<SDL3Preferences>(
+		*this, pref_file_local, false, std::move(j_local));
+	this->shared_preferences = std::make_unique<SDL3Preferences>(
+		*this, pref_file_shared, true, std::move(j_shared));
+
+	return nullptr;
 }
