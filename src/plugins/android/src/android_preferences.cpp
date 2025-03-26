@@ -40,7 +40,7 @@ void AndroidPreferences::setPreferencesJSON(
 	jclass activity_class =
 		env->GetObjectClass(app->activity->javaGameActivity);
 	jmethodID method = env->GetMethodID(
-		activity_class, "setPreferencesJSON", "(Z;Ljava/lang/String;)");
-	env->CallObjectMethod(
+		activity_class, "setPreferencesJSON", "(ZLjava/lang/String;)V");
+	env->CallVoidMethod(
 		app->activity->javaGameActivity, method, shared, json_string);
 }
