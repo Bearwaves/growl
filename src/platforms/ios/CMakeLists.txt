@@ -10,7 +10,13 @@ set(SOURCES
 	"src/metal_view.mm"
 	)
 
-add_library(growl-platform-ios ${SOURCES})
+set (HEADERS
+	"include/growl/platforms/ios/app_delegate.h"
+	"include/growl/platforms/ios/metal_view.h"
+	"include/growl/platforms/ios/view_controller.h"
+	)
+
+add_library(growl-platform-ios ${SOURCES} ${HEADERS})
 
 set(GROWL_METAL ON)
 set(GROWL_METAL ON PARENT_SCOPE)

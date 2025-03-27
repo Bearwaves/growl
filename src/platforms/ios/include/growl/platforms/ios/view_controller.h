@@ -2,4 +2,6 @@
 
 @interface GrowlViewController : UIViewController
 
+- (void)dispose;
+
 @end

@@ -171,4 +171,19 @@ std::unique_ptr<Growl::Game> createGame();
 		newCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
 }
 
+- (void)dispose {
+	if (auto err = game->dispose()) {
+		api->system().log(
+			Growl::LogLevel::Fatal, "ViewController",
+			"Failed to dispose game: {}", err.get()->message());
+		exit(4);
+	}
+	game.reset();
+	api->system().log("ViewController", "Shutting down ViewController");
+	static_cast<Growl::ScriptingAPIInternal&>(api->scripting()).dispose();
+	static_cast<Growl::AudioAPIInternal&>(api->audio()).dispose();
+	static_cast<Growl::GraphicsAPIInternal&>(api->graphics()).dispose();
+	static_cast<Growl::SystemAPIInternal&>(api->system()).dispose();
+}
+
 @end

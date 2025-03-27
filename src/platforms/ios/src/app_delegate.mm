@@ -27,4 +27,8 @@
 - (void)applicationDidBecomeActive:(UIApplication*)application {
 }
 
+- (void)applicationWillTerminate:(UIApplication*)application {
+	[static_cast<GrowlViewController*>(self.window.rootViewController) dispose];
+}
+
 @end
