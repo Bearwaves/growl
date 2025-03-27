@@ -10,8 +10,8 @@ public:
 	Slider(
 		std::string&& name, Value handle_width, Value handle_height,
 		float initial_value,
-		std::function<void(float)> on_value_changed = [](float value) -> void {
-		});
+		std::function<void(float, bool)> on_value_changed =
+			[](float value, bool debounced) -> void {});
 
 	virtual void layout() override;
 
@@ -21,7 +21,7 @@ public:
 	float getValue() {
 		return value;
 	}
-	float setValue(float value);
+	float setValue(float value, bool debounced = false);
 
 	bool isPointerDown() {
 		return pointer_down;
@@ -56,7 +56,7 @@ private:
 	float handle_y = 0.f;
 	float value;
 	bool pointer_down = false;
-	std::function<void(float)> on_value_changed;
+	std::function<void(float, bool)> on_value_changed;
 };
 
 } // namespace Growl

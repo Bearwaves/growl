@@ -6,7 +6,7 @@ using Growl::Slider;
 
 Slider::Slider(
 	std::string&& name, Value handle_width, Value handle_height,
-	float initial_value, std::function<void(float)> on_value_changed)
+	float initial_value, std::function<void(float, bool)> on_value_changed)
 	: Widget{std::move(name)}
 	, handle_width{handle_width}
 	, handle_height{handle_height}
@@ -20,10 +20,10 @@ void Slider::layout() {
 	setValue(this->value);
 }
 
-float Slider::setValue(float value) {
+float Slider::setValue(float value, bool debounced) {
 	this->value = std::fmin(1, std::fmax(0, value));
 	handle_x = (this->value * (getWidth() - handle_w));
-	on_value_changed(this->value);
+	on_value_changed(this->value, debounced);
 	return this->value;
 }
 
@@ -44,6 +44,7 @@ bool Slider::onPointerEvent(
 	switch (event_type) {
 	case PointerEventType::Up:
 		pointer_down = false;
+		on_value_changed(this->value, true);
 		return false;
 	case PointerEventType::Down:
 		if (!hit(internal_coordinates)) {
