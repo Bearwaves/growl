@@ -61,6 +61,7 @@ private:
 	int resize_height = 0;
 	std::unique_ptr<AndroidPreferences> preferences_local;
 	std::unique_ptr<AndroidPreferences> preferences_shared;
+	int dpad_state = 0;
 };
 
 } // namespace Growl

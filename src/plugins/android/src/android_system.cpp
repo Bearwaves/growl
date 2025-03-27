@@ -24,12 +24,23 @@ using Growl::PointerEventType;
 using Growl::Result;
 using Growl::Window;
 
+constexpr int DPAD_UP_MASK = (1 << static_cast<int>(ControllerButton::DpadUp));
+constexpr int DPAD_DOWN_MASK =
+	(1 << static_cast<int>(ControllerButton::DpadDown));
+constexpr int DPAD_LEFT_MASK =
+	(1 << static_cast<int>(ControllerButton::DpadLeft));
+constexpr int DPAD_RIGHT_MASK =
+	(1 << static_cast<int>(ControllerButton::DpadRight));
+
 Error AndroidSystemAPI::init(const Config& config) {
 	android_state->onAppCmd = handleAppCmd;
 	android_state->userData = &api;
 	// Leave key event filter as default to allow volume keys to propagate
 	// back up to system. Clear motion filter so controller events get through.
 	android_app_set_motion_event_filter(android_state, nullptr);
+
+	GameActivityPointerAxes_enableAxis(AMOTION_EVENT_AXIS_HAT_X);
+	GameActivityPointerAxes_enableAxis(AMOTION_EVENT_AXIS_HAT_Y);
 
 	json j_local = json::parse(
 		AndroidPreferences::getPreferencesJSON(android_state, false), nullptr,
@@ -142,6 +153,7 @@ void AndroidSystemAPI::onResizeEvent(int width, int height) {
 
 void AndroidSystemAPI::handleInput(android_app* app) {
 	API* api = (API*)app->userData;
+	auto& this_api = static_cast<AndroidSystemAPI&>(api->system());
 	auto ib = android_app_swap_input_buffers(app);
 
 	if (ib && ib->motionEventsCount) {
@@ -150,18 +162,75 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 			switch (event->source & AINPUT_SOURCE_CLASS_MASK) {
 
 			case AINPUT_SOURCE_CLASS_POINTER:
-				static_cast<AndroidSystemAPI&>(api->system())
-					.onTouch(
-						InputTouchEvent{
-							getPointerEventType(event->action),
-							static_cast<int>(
-								GameActivityPointerAxes_getAxisValue(
-									&event->pointers[0], AMOTION_EVENT_AXIS_X)),
-							static_cast<int>(
-								GameActivityPointerAxes_getAxisValue(
-									&event->pointers[0], AMOTION_EVENT_AXIS_Y)),
-						});
+				this_api.onTouch(
+					InputTouchEvent{
+						getPointerEventType(event->action),
+						static_cast<int>(GameActivityPointerAxes_getAxisValue(
+							&event->pointers[0], AMOTION_EVENT_AXIS_X)),
+						static_cast<int>(GameActivityPointerAxes_getAxisValue(
+							&event->pointers[0], AMOTION_EVENT_AXIS_Y)),
+					});
 				break;
+
+			case AINPUT_SOURCE_CLASS_JOYSTICK: {
+				int dpad_state = 0;
+				float x = GameActivityPointerAxes_getAxisValue(
+					&event->pointers[0], AMOTION_EVENT_AXIS_HAT_X);
+				float y = GameActivityPointerAxes_getAxisValue(
+					&event->pointers[0], AMOTION_EVENT_AXIS_HAT_Y);
+				if (x < 0) {
+					dpad_state |= DPAD_LEFT_MASK;
+				} else if (x > 0) {
+					dpad_state |= DPAD_RIGHT_MASK;
+				}
+				if (y < 0) {
+					dpad_state |= DPAD_UP_MASK;
+				} else if (y > 0) {
+					dpad_state |= DPAD_DOWN_MASK;
+				}
+
+				int dpad_delta = (dpad_state ^ this_api.dpad_state);
+				if (dpad_delta) {
+					this_api.dpad_state = dpad_state;
+					if (dpad_delta & DPAD_UP_MASK) {
+						bool down = ((dpad_state & DPAD_UP_MASK) != 0);
+						this_api.onControllerEvent(
+							InputControllerEvent{
+								down ? ControllerEventType::ButtonDown
+									 : ControllerEventType::ButtonUp,
+								ControllerButton::DpadUp,
+							});
+					}
+					if (dpad_delta & DPAD_DOWN_MASK) {
+						bool down = ((dpad_state & DPAD_DOWN_MASK) != 0);
+						this_api.onControllerEvent(
+							InputControllerEvent{
+								down ? ControllerEventType::ButtonDown
+									 : ControllerEventType::ButtonUp,
+								ControllerButton::DpadDown,
+							});
+					}
+					if (dpad_delta & DPAD_LEFT_MASK) {
+						bool down = ((dpad_state & DPAD_LEFT_MASK) != 0);
+						this_api.onControllerEvent(
+							InputControllerEvent{
+								down ? ControllerEventType::ButtonDown
+									 : ControllerEventType::ButtonUp,
+								ControllerButton::DpadLeft,
+							});
+					}
+					if (dpad_delta & DPAD_RIGHT_MASK) {
+						bool down = ((dpad_state & DPAD_RIGHT_MASK) != 0);
+						this_api.onControllerEvent(
+							InputControllerEvent{
+								down ? ControllerEventType::ButtonDown
+									 : ControllerEventType::ButtonUp,
+								ControllerButton::DpadRight,
+							});
+					}
+				}
+				break;
+			}
 			}
 		}
 		android_app_clear_motion_events(ib);
@@ -175,12 +244,11 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 				// Avoid capturing back button etc. for now.
 				continue;
 			}
-			static_cast<AndroidSystemAPI&>(api->system())
-				.onControllerEvent(
-					InputControllerEvent{
-						getControllerEventType(event->action),
-						button,
-					});
+			this_api.onControllerEvent(
+				InputControllerEvent{
+					getControllerEventType(event->action),
+					button,
+				});
 		}
 		android_app_clear_key_events(ib);
 	}
