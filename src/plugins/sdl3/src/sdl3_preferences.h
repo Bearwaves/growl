@@ -18,7 +18,6 @@ public:
 	void store() override;
 
 private:
-	SDL3SystemAPI& api;
 	std::filesystem::path prefs_file;
 	std::thread writer;
 	std::atomic<bool> dirty = false;

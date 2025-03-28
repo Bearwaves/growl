@@ -16,7 +16,6 @@ SDL3Preferences::SDL3Preferences(
 	SDL3SystemAPI& api, std::filesystem::path prefs_file, bool shared,
 	nlohmann::json&& j)
 	: Preferences{shared, std::move(j)}
-	, api{api}
 	, prefs_file{prefs_file} {
 	writer = std::thread([&]() {
 		while (!stop) {
