@@ -70,7 +70,7 @@ Error IOSSystemAPI::init(const Config& config) {
 	if ([[NSUbiquitousKeyValueStore defaultStore] synchronize]) {
 		ubiquitous = true;
 		shared_prefs_string = [[NSUbiquitousKeyValueStore defaultStore]
-			stringForKey:@"shared_preferences"];
+			stringForKey:@"preferences_shared"];
 	} else {
 		this->log(
 			"IOSSystemAPI", "Unable to get initialise shared preferences; "
