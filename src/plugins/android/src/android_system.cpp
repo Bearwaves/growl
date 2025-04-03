@@ -58,7 +58,7 @@ Error AndroidSystemAPI::init(const Config& config) {
 		j_shared = {};
 	}
 	this->preferences_shared = std::make_unique<AndroidPreferences>(
-		android_state, false, std::move(j_shared));
+		android_state, true, std::move(j_shared));
 
 	this->log("AndroidSystemAPI", "Initialised Android system");
 	return nullptr;
