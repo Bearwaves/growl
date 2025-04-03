@@ -52,8 +52,6 @@ void ScrollPane::layout() {
 	}
 }
 
-void ScrollPane::onTick(double delta_time) {}
-
 void ScrollPane::onDraw(
 	Batch& batch, float parent_alpha, glm::mat4x4 transform) {
 	batch.setScissor(0, 0, getWidth(), getHeight(), transform);

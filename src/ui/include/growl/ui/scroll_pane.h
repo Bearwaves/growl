@@ -9,7 +9,6 @@ public:
 		: Widget{std::move(name)} {}
 
 	void layout() override;
-	void onTick(double delta_time) override;
 	void
 	onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) override;
 
