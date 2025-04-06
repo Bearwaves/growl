@@ -1,12 +1,9 @@
 #include "sdl3_preferences.h"
+#include "SDL3/SDL_asyncio.h"
 #include "growl/core/error.h"
 #include "growl/core/log.h"
 #include "growl/core/system/preferences.h"
-#include "sdl3_error.h"
 #include "sdl3_system.h"
-#include <chrono>
-#include <fstream>
-#include <thread>
 
 using Growl::Error;
 using Growl::SDL3Preferences;
@@ -16,45 +13,40 @@ SDL3Preferences::SDL3Preferences(
 	SDL3SystemAPI& api, std::filesystem::path prefs_file, bool shared,
 	nlohmann::json&& j)
 	: Preferences{shared, std::move(j)}
+	, api{api}
 	, prefs_file{prefs_file} {
-	writer = std::thread([&]() {
-		while (!stop) {
-			if (dirty) {
-				if (auto err = doStore()) {
-					api.log(
-						LogLevel::Error, "SDL3Preferences",
-						"Failed to write preferences file: {}", err->message());
-				}
-				api.log(
-					LogLevel::Debug, "SDL3Preferences",
-					"Wrote preferences to file {}", this->prefs_file.string());
-				dirty = false;
-			} else {
-				std::this_thread::sleep_for(std::chrono::milliseconds(100));
-			}
-		}
-	});
+	queue = SDL_CreateAsyncIOQueue();
+	file = SDL_AsyncIOFromFile(prefs_file.c_str(), "w");
 }
 
 SDL3Preferences::~SDL3Preferences() {
-	dirty = true;
-	stop = true;
-	if (writer.joinable()) {
-		writer.join();
+	store();
+	if (!SDL_CloseAsyncIO(file, true, queue, nullptr)) {
+		api.log(
+			LogLevel::Error, "SDL3Preferences",
+			"Failed to close preferences: {}", SDL_GetError());
+		return;
 	}
+	SDL_DestroyAsyncIOQueue(queue);
 }
 
 void SDL3Preferences::store() {
-	dirty = true;
+	// Let's clear any previous results
+	processResults();
+	writes++;
+	strings[writes] = data().dump();
+	if (!(SDL_WriteAsyncIO(
+			file, strings[writes].data(), 0, strings[writes].size(), queue,
+			reinterpret_cast<void*>(writes)))) {
+		api.log(
+			LogLevel::Error, "SDL3Preferences",
+			"Failed to write preferences: {}", SDL_GetError());
+	}
 }
 
-Error SDL3Preferences::doStore() {
-	std::ofstream f(prefs_file);
-	f << data() << std::endl;
-	f.close();
-	if (f.fail()) {
-		return std::make_unique<SDL3Error>(
-			"Writing preferences to file " + prefs_file.string() + " failed.");
+void SDL3Preferences::processResults() {
+	SDL_AsyncIOOutcome outcome;
+	while (SDL_GetAsyncIOResult(queue, &outcome)) {
+		strings.erase(reinterpret_cast<uint64_t>(outcome.userdata));
 	}
-	return nullptr;
 }

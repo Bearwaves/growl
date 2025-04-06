@@ -172,6 +172,8 @@ void SDL3SystemAPI::stop() {
 
 void SDL3SystemAPI::dispose() {
 	controller = nullptr;
+	local_preferences = nullptr;
+	shared_preferences = nullptr;
 	SDL_Quit();
 #ifdef GROWL_IMGUI
 	ImGui_ImplSDL3_Shutdown();

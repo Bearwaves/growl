@@ -1,9 +1,8 @@
 #pragma once
 
-#include "growl/core/error.h"
+#include "SDL3/SDL_asyncio.h"
 #include "growl/core/system/preferences.h"
-#include <atomic>
-#include <thread>
+#include <unordered_map>
 
 namespace Growl {
 
@@ -18,12 +17,14 @@ public:
 	void store() override;
 
 private:
+	SDL3SystemAPI& api;
 	std::filesystem::path prefs_file;
-	std::thread writer;
-	std::atomic<bool> dirty = false;
-	std::atomic<bool> stop = false;
+	SDL_AsyncIOQueue* queue;
+	SDL_AsyncIO* file;
+	uint64_t writes = 0;
+	std::unordered_map<uint64_t, std::string> strings;
 
-	Error doStore();
+	void processResults();
 };
 
 } // namespace Growl
