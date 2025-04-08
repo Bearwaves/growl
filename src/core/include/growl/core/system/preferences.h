@@ -7,8 +7,9 @@ namespace Growl {
 class Preferences {
 public:
 	Preferences(bool shared, nlohmann::json&& j)
-		: shared{shared}
-		, j{std::move(j)} {}
+		: shared{shared} {
+		this->j = std::move(j);
+	}
 	virtual ~Preferences() = default;
 	virtual void store() = 0;
 
