@@ -174,7 +174,9 @@ void OpenGLBatch::setScissor(
 	float x, float y, float w, float h, glm::mat4x4 transform) {
 	flush();
 	auto world_coordinates = transform * glm::vec4{x, y, 0, 1};
-	glScissor(world_coordinates.x, world_coordinates.y, w, h);
+	float world_y = fbo ? world_coordinates.y
+						: getTargetHeight() - (world_coordinates.y + h);
+	glScissor(world_coordinates.x, world_y, w, h);
 	glEnable(GL_SCISSOR_TEST);
 }
 
