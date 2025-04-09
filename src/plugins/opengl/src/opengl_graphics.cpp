@@ -283,6 +283,18 @@ void OpenGLGraphicsAPI::setupDebugCallback() {
 #ifdef GROWL_OPENGL_4_5
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	// Notification off, everything else on.
+	glDebugMessageControl(
+		GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr,
+		GL_FALSE);
+	glDebugMessageControl(
+		GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_HIGH, 0, nullptr,
+		GL_TRUE);
+	glDebugMessageControl(
+		GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_MEDIUM, 0, nullptr,
+		GL_TRUE);
+	glDebugMessageControl(
+		GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_LOW, 0, nullptr, GL_TRUE);
 	glDebugMessageCallback(
 		[](GLenum source, GLenum type, GLuint id, GLenum severity,
 		   GLsizei length, const GLchar* message, const void* user_param) {
