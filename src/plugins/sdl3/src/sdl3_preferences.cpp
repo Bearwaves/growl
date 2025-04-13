@@ -16,7 +16,7 @@ SDL3Preferences::SDL3Preferences(
 	, api{api}
 	, prefs_file{prefs_file} {
 	queue = SDL_CreateAsyncIOQueue();
-	file = SDL_AsyncIOFromFile(prefs_file.generic_u8string().c_str(), "r+");
+	file = SDL_AsyncIOFromFile(prefs_file.generic_u8string().c_str(), "w");
 }
 
 SDL3Preferences::~SDL3Preferences() {
