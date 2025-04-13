@@ -92,6 +92,9 @@ SDL3SystemAPI::createWindow(const Config& config) {
 }
 
 void SDL3SystemAPI::tick() {
+	local_preferences->tick();
+	shared_preferences->tick();
+
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 		bool scene_focused = true;

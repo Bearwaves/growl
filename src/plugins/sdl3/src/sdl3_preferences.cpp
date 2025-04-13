@@ -16,35 +16,44 @@ SDL3Preferences::SDL3Preferences(
 	, api{api}
 	, prefs_file{prefs_file} {
 	queue = SDL_CreateAsyncIOQueue();
-	file = SDL_AsyncIOFromFile(prefs_file.generic_u8string().c_str(), "w");
 }
 
 SDL3Preferences::~SDL3Preferences() {
 	store();
-	if (!SDL_CloseAsyncIO(file, true, queue, nullptr)) {
-		api.log(
-			LogLevel::Error, "SDL3Preferences",
-			"Failed to close preferences: {}", SDL_GetError());
-		return;
-	}
+	tick();
 	SDL_DestroyAsyncIOQueue(queue);
 }
 
 void SDL3Preferences::store() {
-	// Let's clear any previous results
-	processResults();
+	auto file = SDL_AsyncIOFromFile(prefs_file.generic_u8string().c_str(), "w");
+	if (!file) {
+		api.log(
+			LogLevel::Error, "SDL3Preferences", "Failed to open file at {}: {}",
+			prefs_file.generic_u8string(), SDL_GetError());
+		return;
+	}
+
 	writes++;
 	strings[writes] = data().dump();
+
 	if (!(SDL_WriteAsyncIO(
 			file, strings[writes].data(), 0, strings[writes].size(), queue,
 			reinterpret_cast<void*>(writes)))) {
 		api.log(
 			LogLevel::Error, "SDL3Preferences",
 			"Failed to write preferences: {}", SDL_GetError());
+		strings.erase(writes);
+		return;
+	}
+
+	if (!SDL_CloseAsyncIO(file, true, queue, nullptr)) {
+		api.log(
+			LogLevel::Error, "SDL3Preferences",
+			"Failed to close preferences: {}", SDL_GetError());
 	}
 }
 
-void SDL3Preferences::processResults() {
+void SDL3Preferences::tick() {
 	SDL_AsyncIOOutcome outcome;
 	while (SDL_GetAsyncIOResult(queue, &outcome)) {
 		strings.erase(reinterpret_cast<uint64_t>(outcome.userdata));

@@ -15,16 +15,14 @@ public:
 		nlohmann::json&& j);
 	~SDL3Preferences();
 	void store() override;
+	void tick();
 
 private:
 	SDL3SystemAPI& api;
 	std::filesystem::path prefs_file;
 	SDL_AsyncIOQueue* queue;
-	SDL_AsyncIO* file;
 	uint64_t writes = 0;
 	std::unordered_map<uint64_t, std::string> strings;
-
-	void processResults();
 };
 
 } // namespace Growl
