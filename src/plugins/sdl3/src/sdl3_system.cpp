@@ -5,6 +5,7 @@
 #include "SDL3/SDL_video.h"
 #include "growl/core/api/api.h"
 #include "growl/core/assets/file.h"
+#include "growl/core/haptics.h"
 #include "growl/core/input/event.h"
 #include "growl/core/input/processor.h"
 #include "growl/core/log.h"
@@ -24,6 +25,7 @@
 
 using Growl::Error;
 using Growl::File;
+using Growl::HapticsDevice;
 using Growl::InputEvent;
 using Growl::Preferences;
 using Growl::Result;
@@ -216,6 +218,13 @@ Preferences& SDL3SystemAPI::getLocalPreferences() {
 
 Preferences& SDL3SystemAPI::getSharedPreferences() {
 	return *shared_preferences;
+}
+
+HapticsDevice* SDL3SystemAPI::getHaptics() {
+	if (!controller) {
+		return nullptr;
+	}
+	return controller->getHaptics();
 }
 
 void SDL3SystemAPI::logInternal(

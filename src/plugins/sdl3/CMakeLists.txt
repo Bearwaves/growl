@@ -20,6 +20,7 @@ set(SOURCES
 	"src/sdl3_window.cpp"
 	"src/sdl3_file.cpp"
 	"src/sdl3_preferences.cpp"
+	"src/sdl3_haptics.cpp"
 	)
 
 set(HEADERS
@@ -27,6 +28,8 @@ set(HEADERS
 	"src/sdl3_system.h"
 	"src/sdl3_window.h"
 	"src/sdl3_file.h"
+	"src/sdl3_preferences.h"
+	"src/sdl3_haptics.h"
 	)
 
 add_library(growl-plugin-sdl3 ${SOURCES} ${HEADERS})

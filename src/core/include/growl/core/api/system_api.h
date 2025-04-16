@@ -15,6 +15,7 @@ struct Config;
 class File;
 class Window;
 class Preferences;
+class HapticsDevice;
 
 class SystemAPI {
 	friend class SystemAPIInternal;
@@ -61,6 +62,10 @@ public:
 	virtual Preferences& getLocalPreferences() = 0;
 	virtual Preferences& getSharedPreferences() = 0;
 	virtual bool hasSharedPreferences() = 0;
+
+	virtual HapticsDevice* getHaptics() {
+		return nullptr;
+	}
 
 protected:
 	virtual void

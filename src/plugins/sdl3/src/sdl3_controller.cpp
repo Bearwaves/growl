@@ -1,11 +1,15 @@
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_gamepad.h"
+#include "growl/core/haptics.h"
 #include "growl/core/input/controller.h"
 #include "growl/core/input/event.h"
+#include "sdl3_haptics.h"
 #include "sdl3_system.h"
 
 using Growl::ControllerButton;
 using Growl::ControllerEventType;
+using Growl::HapticsDevice;
+using Growl::SDL3Controller;
 using Growl::SDL3SystemAPI;
 
 void SDL3SystemAPI::openGameController(int id) {
@@ -20,6 +24,22 @@ void SDL3SystemAPI::handleControllerEvent(SDL_Event& event) {
 		InputEventType::Controller,
 		InputControllerEvent{getControllerEventType(event), getButton(event)}};
 	inputProcessor->onEvent(e);
+}
+
+SDL3Controller::SDL3Controller(SystemAPI* system, SDL_Gamepad* controller)
+	: system{system}
+	, controller{controller}
+	, haptics{std::make_unique<SDL3HapticsDevice>(system, controller)} {}
+
+SDL3Controller::~SDL3Controller() {
+	system->log(
+		"SDL3Controller", "Closed controller: {}",
+		SDL_GetGamepadName(controller));
+	SDL_CloseGamepad(controller);
+}
+
+HapticsDevice* SDL3Controller::getHaptics() {
+	return haptics.get();
 }
 
 ControllerEventType SDL3SystemAPI::getControllerEventType(SDL_Event& event) {

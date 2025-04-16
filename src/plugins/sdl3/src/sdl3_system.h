@@ -4,6 +4,7 @@
 #include "SDL3/SDL_gamepad.h"
 #include "SDL3/SDL_log.h"
 #include "growl/core/api/api_internal.h"
+#include "sdl3_haptics.h"
 #include "sdl3_preferences.h"
 #include <memory>
 
@@ -23,19 +24,14 @@ enum class LogLevel;
 
 class SDL3Controller {
 public:
-	SDL3Controller(SystemAPI* system, SDL_Gamepad* controller)
-		: system{system}
-		, controller{controller} {}
-	~SDL3Controller() {
-		system->log(
-			"SDL3Controller", "Closed controller: {}",
-			SDL_GetGamepadName(controller));
-		SDL_CloseGamepad(controller);
-	}
+	SDL3Controller(SystemAPI* system, SDL_Gamepad* controller);
+	~SDL3Controller();
+	HapticsDevice* getHaptics();
 
 private:
 	SystemAPI* system;
 	SDL_Gamepad* controller;
+	std::unique_ptr<SDL3HapticsDevice> haptics;
 };
 
 class SDL3SystemAPI : public SystemAPIInternal {
@@ -62,6 +58,8 @@ public:
 	bool hasSharedPreferences() override {
 		return true;
 	}
+
+	HapticsDevice* getHaptics() override;
 
 private:
 	void
