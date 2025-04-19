@@ -2,6 +2,7 @@
 
 #include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
+#include "ios_haptics.h"
 #include "ios_preferences.h"
 #include <GameController/GameController.h>
 
@@ -37,6 +38,8 @@ public:
 		return has_shared_preferences;
 	}
 
+	HapticsDevice* getHaptics() override;
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
@@ -55,6 +58,8 @@ private:
 	id game_controller_disconnect_observer;
 	std::unique_ptr<IOSPreferences> local_preferences;
 	std::unique_ptr<IOSPreferences> shared_preferences;
+	std::unique_ptr<IOSHapticsDevice> controller_haptics = nullptr;
+	std::unique_ptr<IOSHapticsDevice> device_haptics;
 	bool has_shared_preferences = false;
 };
 

@@ -11,6 +11,7 @@ using Growl::ControllerButton;
 using Growl::ControllerEventType;
 using Growl::Error;
 using Growl::File;
+using Growl::HapticsDevice;
 using Growl::InputEvent;
 using Growl::InputEventType;
 using Growl::InputTouchEvent;
@@ -26,7 +27,10 @@ Error IOSSystemAPI::init(const Config& config) {
 	}
 	if (this->controller) {
 		openGameController(this->controller);
+		this->controller_haptics =
+			std::make_unique<IOSHapticsDevice>(*this, this->controller);
 	}
+	this->device_haptics = std::make_unique<IOSHapticsDevice>(*this);
 
 	NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
 	game_controller_connect_observer =
@@ -38,6 +42,14 @@ Error IOSSystemAPI::init(const Config& config) {
 						  if (!this->controller) {
 							  this->controller = controller;
 							  openGameController(this->controller);
+							  if (this->controller_haptics) {
+								  this->controller_haptics->setGameController(
+									  this->controller);
+							  } else {
+								  this->controller_haptics =
+									  std::make_unique<IOSHapticsDevice>(
+										  *this, this->controller);
+							  }
 						  }
 						}];
 
@@ -50,6 +62,7 @@ Error IOSSystemAPI::init(const Config& config) {
 						  if (controller == this->controller) {
 							  closeGameController(this->controller);
 							  this->controller = nullptr;
+							  this->controller_haptics.reset();
 						  }
 						}];
 
@@ -124,6 +137,13 @@ IOSSystemAPI::createWindow(const Config& config) {
 }
 
 void IOSSystemAPI::setLogLevel(LogLevel log_level) {}
+
+HapticsDevice* IOSSystemAPI::getHaptics() {
+	if (this->controller_haptics) {
+		return this->controller_haptics.get();
+	}
+	return this->device_haptics.get();
+}
 
 void IOSSystemAPI::logInternal(
 	LogLevel log_level, std::string tag, std::string msg) {
