@@ -8,6 +8,7 @@ plugins {
 dependencies {
     implementation libs.appcompat
     implementation libs.games.activity
+    implementation libs.games.controller
     implementation libs.androidx.activity
 }
 
@@ -51,6 +52,12 @@ android {
 
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a"
+        }
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_shared"
+            }
         }
     }
 

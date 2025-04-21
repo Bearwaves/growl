@@ -1,4 +1,5 @@
 #include "android_system.h"
+#include "android_error.h"
 #include "android_file.h"
 #include "android_window.h"
 #include "growl/core/assets/error.h"
@@ -11,13 +12,16 @@
 #include <android/input.h>
 #include <android/log.h>
 #include <game-activity/native_app_glue/android_native_app_glue.h>
+#include <paddleboat/paddleboat.h>
 
+using Growl::AndroidError;
 using Growl::AndroidFile;
 using Growl::AndroidSystemAPI;
 using Growl::ControllerButton;
 using Growl::ControllerEventType;
 using Growl::Error;
 using Growl::File;
+using Growl::HapticsDevice;
 using Growl::InputControllerEvent;
 using Growl::LogLevel;
 using Growl::PointerEventType;
@@ -42,6 +46,17 @@ Error AndroidSystemAPI::init(const Config& config) {
 	GameActivityPointerAxes_enableAxis(AMOTION_EVENT_AXIS_HAT_X);
 	GameActivityPointerAxes_enableAxis(AMOTION_EVENT_AXIS_HAT_Y);
 
+	if (auto err = Paddleboat_init(
+			getJNIEnv(), android_state->activity->javaGameActivity);
+		err != PADDLEBOAT_NO_ERROR) {
+		return std::make_unique<AndroidError>(
+			"Failed to init GameController library. Error code: " +
+			std::to_string(err));
+	}
+	Paddleboat_setControllerStatusCallback(controllerStatusCallback, this);
+
+	this->device_haptics = std::make_unique<AndroidHaptics>(android_state);
+
 	json j_local = json::parse(
 		AndroidPreferences::getPreferencesJSON(android_state, false), nullptr,
 		false);
@@ -65,6 +80,7 @@ Error AndroidSystemAPI::init(const Config& config) {
 }
 
 void AndroidSystemAPI::tick() {
+	Paddleboat_update(getJNIEnv());
 	int events;
 	struct android_poll_source* source;
 	while ((ALooper_pollOnce(0, nullptr, &events, (void**)&source)) >= 0) {
@@ -143,6 +159,18 @@ void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 	case APP_CMD_RESUME:
 		api->audio().setMuted(false);
 		break;
+	case APP_CMD_START: {
+		JNIEnv* env;
+		app->activity->vm->AttachCurrentThread(&env, nullptr);
+		Paddleboat_onStart(env);
+		break;
+	}
+	case APP_CMD_STOP: {
+		JNIEnv* env;
+		app->activity->vm->AttachCurrentThread(&env, nullptr);
+		Paddleboat_onStop(env);
+		break;
+	}
 	}
 }
 
@@ -316,7 +344,9 @@ ControllerEventType AndroidSystemAPI::getControllerEventType(int32_t action) {
 	return ControllerEventType::Unknown;
 }
 
-void AndroidSystemAPI::dispose() {}
+void AndroidSystemAPI::dispose() {
+	Paddleboat_destroy(getJNIEnv());
+}
 
 void AndroidSystemAPI::onTouch(InputTouchEvent event) {
 	if (!inputProcessor || event.type == PointerEventType::Unknown) {
@@ -342,6 +372,13 @@ AndroidSystemAPI::createWindow(const Config& config) {
 }
 
 void AndroidSystemAPI::setLogLevel(LogLevel log_level) {}
+
+HapticsDevice* AndroidSystemAPI::getHaptics() {
+	if (controller_haptics) {
+		return controller_haptics.get();
+	}
+	return device_haptics.get();
+}
 
 void AndroidSystemAPI::logInternal(
 	LogLevel log_level, std::string tag, std::string msg) {
@@ -382,11 +419,53 @@ int AndroidSystemAPI::logPriorityForLevel(LogLevel level) {
 
 bool AndroidSystemAPI::getDarkMode(android_app* app) {
 	JNIEnv* env{};
-	app->activity->vm->AttachCurrentThread(&env, NULL);
+	app->activity->vm->AttachCurrentThread(&env, nullptr);
 	jclass activity_class =
 		env->GetObjectClass(app->activity->javaGameActivity);
 	jmethodID method = env->GetMethodID(activity_class, "getDarkMode", "()Z");
 	jboolean dark_mode =
 		env->CallBooleanMethod(app->activity->javaGameActivity, method);
 	return dark_mode == JNI_TRUE;
+}
+
+void AndroidSystemAPI::controllerStatusCallback(
+	const int32_t controller_index,
+	const Paddleboat_ControllerStatus controller_status, void* userdata) {
+	AndroidSystemAPI* api = static_cast<AndroidSystemAPI*>(userdata);
+	if (controller_index > 0) {
+		// We don't support multiple controllers yet.
+		return;
+	}
+	switch (controller_status) {
+	case PADDLEBOAT_CONTROLLER_JUST_CONNECTED: {
+		Paddleboat_Controller_Info info;
+		auto err = Paddleboat_getControllerInfo(controller_index, &info);
+		if (err) {
+			api->log(
+				LogLevel::Error, "AndroidSystemAPI",
+				"Error getting controller info: {}", static_cast<int>(err));
+			break;
+		}
+		api->controller_haptics =
+			std::make_unique<AndroidHaptics>(api->android_state, &info);
+		api->log(
+			"AndroidSystemAPI", "Connected new controller with device ID {}",
+			info.deviceId);
+		break;
+	}
+	case PADDLEBOAT_CONTROLLER_JUST_DISCONNECTED:
+		api->controller_haptics.reset();
+		api->log(
+			"AndroidSystemAPI", "Controller {} disconnected", controller_index);
+		break;
+	default:
+		break;
+	}
+}
+
+JNIEnv* AndroidSystemAPI::getJNIEnv() {
+	if (!app_jni_env) {
+		android_state->activity->vm->AttachCurrentThread(&app_jni_env, nullptr);
+	}
+	return app_jni_env;
 }
