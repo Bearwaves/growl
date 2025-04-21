@@ -16,6 +16,22 @@ IOSHapticsDevice::IOSHapticsDevice(SystemAPI& system, GCController* controller)
 	: system{system} {
 	if (controller) {
 		setGameController(controller);
+	} else if (CHHapticEngine.capabilitiesForHardware.supportsHaptics) {
+		// System haptics
+		NSError* error;
+		this->device =
+			[[[CHHapticEngine alloc] initAndReturnError:&error] retain];
+		[this->device setResetHandler:^{
+		  NSError* error;
+		  [this->device startAndReturnError:&error];
+		  if (error) {
+			  system.log(
+				  LogLevel::Error, "IOSHapticsDevice",
+				  "Failed to start device engine: {}",
+				  std::string([error.description UTF8String]));
+		  }
+		}];
+		[this->device resetHandler]();
 	}
 }
 
@@ -31,14 +47,14 @@ bool IOSHapticsDevice::supportsEventType(HapticsEventType type) {
 	case HapticsEventType::TriggerRumble:
 		return left_trigger;
 	case HapticsEventType::Pattern:
-		return false;
+		return device;
 	default:
 		break;
 	}
 	return false;
 }
 
-Error IOSHapticsDevice::triggerEvent(HapticsEvent event) {
+Error IOSHapticsDevice::playEvent(HapticsEvent event) {
 	if (!supportsEventType(event.type)) {
 		return nullptr;
 	}
@@ -65,10 +81,70 @@ Error IOSHapticsDevice::triggerEvent(HapticsEvent event) {
 	return nullptr;
 }
 
+Error IOSHapticsDevice::playPattern(std::vector<HapticsEvent> pattern) {
+	if (!supportsEventType(HapticsEventType::Pattern)) {
+		return nullptr;
+	}
+
+	NSMutableArray* events = [NSMutableArray array];
+	for (auto& event : pattern) {
+		[events addObject:@{
+			CHHapticPatternKeyEvent : @{
+				CHHapticPatternKeyEventType : event.duration
+					? CHHapticEventTypeHapticContinuous
+					: CHHapticEventTypeHapticTransient,
+				CHHapticPatternKeyTime : @(event.offset),
+				CHHapticPatternKeyEventDuration : @(event.duration),
+				CHHapticPatternKeyEventParameters : @[
+					@{
+						CHHapticPatternKeyParameterID :
+							CHHapticEventParameterIDHapticIntensity,
+						CHHapticPatternKeyParameterValue : @(event.intensity[0])
+					},
+					@{
+						CHHapticPatternKeyParameterID :
+							CHHapticEventParameterIDHapticSharpness,
+						CHHapticPatternKeyParameterValue : @(event.intensity[1])
+					}
+				]
+			}
+		}];
+	}
+
+	NSDictionary* haptic_dict = @{CHHapticPatternKeyPattern : events};
+
+	NSError* error = nil;
+	CHHapticPattern* haptic_pattern =
+		[[CHHapticPattern alloc] initWithDictionary:haptic_dict error:&error];
+	if (error) {
+		return Error(
+			std::make_unique<IOSError>(
+				"Failed to create pattern: " +
+				std::string([error.description UTF8String])));
+	}
+	id<CHHapticPatternPlayer> player =
+		[device createPlayerWithPattern:haptic_pattern error:&error];
+	if (error) {
+		return Error(
+			std::make_unique<IOSError>(
+				"Failed to create pattern player: " +
+				std::string([error.description UTF8String])));
+	}
+
+	[player startAtTime:0 error:&error];
+	if (error) {
+		return Error(
+			std::make_unique<IOSError>(
+				"Failed to play pattern: " +
+				std::string([error.description UTF8String])));
+	}
+
+	return nullptr;
+}
+
 void IOSHapticsDevice::setGameController(GCController* controller) {
 	this->controller = controller;
 	stopAllEngines();
-	NSError* error = nil;
 
 	if (this->controller && this->controller.haptics) {
 		auto localities = this->controller.haptics.supportedLocalities;
@@ -138,6 +214,21 @@ void IOSHapticsDevice::setGameController(GCController* controller) {
 
 void IOSHapticsDevice::stopAllEngines() {
 	dispatch_group_t group = dispatch_group_create();
+
+	if (this->device) {
+		dispatch_group_enter(group);
+		[this->device stopWithCompletionHandler:^(NSError* _Nullable error) {
+		  if (error) {
+			  system.log(
+				  LogLevel::Warn, "IOSHapticsDevice",
+				  "Failed to stop device haptics engine: {}",
+				  std::string([error.description UTF8String]));
+		  }
+		  [this->device release];
+		  this->device = nil;
+		  dispatch_group_leave(group);
+		}];
+	}
 
 	if (this->left_handle) {
 		dispatch_group_enter(group);

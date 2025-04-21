@@ -16,7 +16,8 @@ public:
 
 	bool supportsEventType(HapticsEventType type) override;
 
-	Error triggerEvent(HapticsEvent event) override;
+	Error playEvent(HapticsEvent event) override;
+	Error playPattern(std::vector<HapticsEvent> pattern) override;
 
 	void setGameController(GCController* controller);
 
@@ -27,6 +28,7 @@ private:
 	CHHapticEngine* right_handle = nullptr;
 	CHHapticEngine* left_trigger = nullptr;
 	CHHapticEngine* right_trigger = nullptr;
+	CHHapticEngine* device = nullptr;
 
 	void stopAllEngines();
 	Error doRumbleEvent(

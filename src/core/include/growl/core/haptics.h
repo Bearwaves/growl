@@ -1,6 +1,7 @@
 #pragma once
 
 #include "growl/core/error.h"
+#include <vector>
 
 namespace Growl {
 
@@ -13,7 +14,11 @@ enum class HapticsEventType {
 struct HapticsEvent {
 	HapticsEventType type = HapticsEventType::Rumble;
 	double duration = 0.f;
+	// For rumble this corresponds to left and right; in a pattern
+	// it is intensity and sharpness.
 	float intensity[2] = {0.f, 0.f};
+	// Only used in patterns.
+	float offset = 0.f;
 };
 
 class HapticsDevice {
@@ -22,7 +27,9 @@ public:
 
 	virtual bool supportsEventType(HapticsEventType type) = 0;
 
-	virtual Error triggerEvent(HapticsEvent event) = 0;
+	virtual Error playEvent(HapticsEvent event) = 0;
+
+	virtual Error playPattern(std::vector<HapticsEvent> pattern) = 0;
 };
 
 } // namespace Growl

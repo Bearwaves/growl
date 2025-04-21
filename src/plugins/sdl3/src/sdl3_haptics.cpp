@@ -39,7 +39,7 @@ bool SDL3HapticsDevice::supportsEventType(HapticsEventType type) {
 	return false;
 }
 
-Error SDL3HapticsDevice::triggerEvent(HapticsEvent event) {
+Error SDL3HapticsDevice::playEvent(HapticsEvent event) {
 	switch (event.type) {
 	case HapticsEventType::Rumble:
 		if (!(SDL_RumbleGamepad(
@@ -63,5 +63,10 @@ Error SDL3HapticsDevice::triggerEvent(HapticsEvent event) {
 	case HapticsEventType::Pattern:
 		break;
 	}
+	return nullptr;
+}
+
+Error SDL3HapticsDevice::playPattern(std::vector<HapticsEvent> pattern) {
+	// Haptic patterns not supported on SDL3.
 	return nullptr;
 }
