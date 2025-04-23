@@ -87,13 +87,15 @@ Error IOSHapticsDevice::playPattern(std::vector<HapticsEvent> pattern) {
 	}
 
 	NSMutableArray* events = [NSMutableArray array];
+	float offset = 0;
 	for (auto& event : pattern) {
+		offset += event.offset;
 		[events addObject:@{
 			CHHapticPatternKeyEvent : @{
 				CHHapticPatternKeyEventType : event.duration
 					? CHHapticEventTypeHapticContinuous
 					: CHHapticEventTypeHapticTransient,
-				CHHapticPatternKeyTime : @(event.offset),
+				CHHapticPatternKeyTime : @(offset),
 				CHHapticPatternKeyEventDuration : @(event.duration),
 				CHHapticPatternKeyEventParameters : @[
 					@{
@@ -109,6 +111,7 @@ Error IOSHapticsDevice::playPattern(std::vector<HapticsEvent> pattern) {
 				]
 			}
 		}];
+		offset += event.duration;
 	}
 
 	NSDictionary* haptic_dict = @{CHHapticPatternKeyPattern : events};

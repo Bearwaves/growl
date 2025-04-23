@@ -17,7 +17,8 @@ struct HapticsEvent {
 	// For rumble this corresponds to left and right; in a pattern
 	// it is intensity and sharpness.
 	float intensity[2] = {0.f, 0.f};
-	// Only used in patterns.
+	// Only used in patterns. Offset from end of previous event;
+	// overlapping events are not supported.
 	float offset = 0.f;
 };
 
