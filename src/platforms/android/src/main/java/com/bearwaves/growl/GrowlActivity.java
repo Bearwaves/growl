@@ -5,14 +5,20 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.os.VibratorManager;
 import android.view.WindowInsets;
+
 import androidx.activity.EdgeToEdge;
+
 import com.google.androidgamesdk.GameActivity;
 
 public class GrowlActivity extends GameActivity {
 
     private static final String GROWL_PREFERENCES_KEY_LOCAL = "growl.preferences-local";
     private static final String GROWL_PREFERENCES_KEY_SHARED = "growl.preferences-shared";
+    private static final int TAP_VIBRATION_MS = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,5 +55,43 @@ public class GrowlActivity extends GameActivity {
         preferences.edit().putString(
                 shared ? GROWL_PREFERENCES_KEY_SHARED : GROWL_PREFERENCES_KEY_LOCAL, preferencesJSON
         ).apply();
+    }
+
+    public boolean supportsHaptics() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return false;
+        }
+        Vibrator vibrator = getVibrator();
+        return vibrator != null && vibrator.hasVibrator() && vibrator.hasAmplitudeControl();
+    }
+
+    public void playVibrationPattern(HapticsEffect... pattern) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return;
+        }
+        // We can't properly use sharpness until Android 16.
+        int[] intensities = new int[pattern.length * 2];
+        long[] timings = new long[pattern.length * 2];
+        for (int i = 0; i < pattern.length; i++) {
+            HapticsEffect effect = pattern[i];
+            intensities[i * 2] = 0;
+            // We don't have sharpness so just reduce the intensity by up to half.
+            intensities[i * 2 + 1] = (int) (effect.intensity * (0.5f + effect.sharpness / 2) * 255);
+            timings[i * 2] = (int) (effect.delay * 1000);
+            int durationMs = (int) (effect.duration * 1000);
+            if (durationMs == 0) {
+                durationMs = TAP_VIBRATION_MS;
+            }
+            timings[(i * 2) + 1] = durationMs;
+        }
+        VibrationEffect waveform = VibrationEffect.createWaveform(timings, intensities, -1);
+        getVibrator().vibrate(waveform);
+    }
+
+    private Vibrator getVibrator() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return ((VibratorManager) getSystemService(VIBRATOR_MANAGER_SERVICE)).getDefaultVibrator();
+        }
+        return (Vibrator) getSystemService(VIBRATOR_SERVICE);
     }
 }

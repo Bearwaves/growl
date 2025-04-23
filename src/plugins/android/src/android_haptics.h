@@ -19,6 +19,9 @@ private:
 	android_app* app;
 	bool rumble = false;
 	bool pattern = false;
+
+	JNIEnv* getJNIEnv();
+	bool hasSystemHaptics();
 };
 
 } // namespace Growl

@@ -15,6 +15,8 @@ AndroidHaptics::AndroidHaptics(
 	if (controller_info) {
 		this->rumble = controller_info->controllerFlags &
 					   PADDLEBOAT_CONTROLLER_FLAG_VIBRATION_DUAL_MOTOR;
+	} else {
+		this->pattern = hasSystemHaptics();
 	}
 }
 
@@ -42,9 +44,8 @@ Error AndroidHaptics::playEvent(HapticsEvent event) {
 	data.intensityLeft = event.intensity[0];
 	data.intensityRight = event.intensity[1];
 
-	JNIEnv* env;
-	app->activity->vm->AttachCurrentThread(&env, nullptr);
-	if (auto err = Paddleboat_setControllerVibrationData(0, &data, env)) {
+	if (auto err =
+			Paddleboat_setControllerVibrationData(0, &data, getJNIEnv())) {
 		return Error(
 			std::make_unique<AndroidError>(
 				"Failed to set controller rumble; error code " +
@@ -54,6 +55,56 @@ Error AndroidHaptics::playEvent(HapticsEvent event) {
 	return nullptr;
 }
 
-Error AndroidHaptics::playPattern(std::vector<HapticsEvent> event) {
+Error AndroidHaptics::playPattern(std::vector<HapticsEvent> haptic_pattern) {
+	auto env = getJNIEnv();
+
+	jclass activity_class =
+		env->GetObjectClass(app->activity->javaGameActivity);
+	jmethodID get_class_loader_method = env->GetMethodID(
+		activity_class, "getClassLoader", "()Ljava/lang/ClassLoader;");
+	jobject class_loader = env->CallObjectMethod(
+		app->activity->javaGameActivity, get_class_loader_method);
+
+	jclass class_loader_cls = env->FindClass("java/lang/ClassLoader");
+	jmethodID load_class_method = env->GetMethodID(
+		class_loader_cls, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+	jclass haptics_event_cls = (jclass)env->CallObjectMethod(
+		class_loader, load_class_method,
+		env->NewStringUTF("com.bearwaves.growl.HapticsEffect"));
+	jmethodID haptics_event_ctor =
+		env->GetMethodID(haptics_event_cls, "<init>", "(DFFF)V");
+
+	jobjectArray array =
+		env->NewObjectArray(haptic_pattern.size(), haptics_event_cls, nullptr);
+	for (int i = 0; i < haptic_pattern.size(); i++) {
+		auto& event = haptic_pattern.at(i);
+		jobject haptics_event = env->NewObject(
+			haptics_event_cls, haptics_event_ctor, event.duration,
+			event.intensity[0], event.intensity[1], event.offset);
+		env->SetObjectArrayElement(array, i, haptics_event);
+	}
+
+	jmethodID method = env->GetMethodID(
+		activity_class, "playVibrationPattern",
+		"([Lcom/bearwaves/growl/HapticsEffect;)V");
+	env->CallVoidMethod(app->activity->javaGameActivity, method, array);
+
 	return nullptr;
+}
+
+JNIEnv* AndroidHaptics::getJNIEnv() {
+	JNIEnv* env;
+	app->activity->vm->AttachCurrentThread(&env, nullptr);
+	return env;
+}
+
+bool AndroidHaptics::hasSystemHaptics() {
+	auto env = getJNIEnv();
+	jclass activity_class =
+		env->GetObjectClass(app->activity->javaGameActivity);
+	jmethodID method =
+		env->GetMethodID(activity_class, "supportsHaptics", "()Z");
+	jboolean supports_haptics =
+		env->CallBooleanMethod(app->activity->javaGameActivity, method);
+	return supports_haptics == JNI_TRUE;
 }
