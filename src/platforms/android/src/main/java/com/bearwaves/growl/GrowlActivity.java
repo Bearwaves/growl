@@ -19,6 +19,8 @@ public class GrowlActivity extends GameActivity {
     private static final String GROWL_PREFERENCES_KEY_LOCAL = "growl.preferences-local";
     private static final String GROWL_PREFERENCES_KEY_SHARED = "growl.preferences-shared";
     private static final int TAP_VIBRATION_MS = 20;
+    private static final float VIBRATION_INTENSITY_SCALAR = 0.5f;
+    private static final float VIBRATION_SOFTNESS_SCALAR = 0.25f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +78,9 @@ public class GrowlActivity extends GameActivity {
             HapticsEffect effect = pattern[i];
             intensities[i * 2] = 0;
             // We don't have sharpness so just reduce the intensity by up to half.
-            intensities[i * 2 + 1] = (int) (effect.intensity * (0.5f + effect.sharpness / 2) * 255);
+            intensities[i * 2 + 1] = (int) (effect.intensity * VIBRATION_INTENSITY_SCALAR *
+                    (VIBRATION_SOFTNESS_SCALAR + effect.sharpness * (1 - VIBRATION_SOFTNESS_SCALAR))
+                    * 255);
             timings[i * 2] = (int) (effect.delay * 1000);
             int durationMs = (int) (effect.duration * 1000);
             if (durationMs == 0) {
