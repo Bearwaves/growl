@@ -20,7 +20,7 @@ public class GrowlActivity extends GameActivity {
     private static final String GROWL_PREFERENCES_KEY_SHARED = "growl.preferences-shared";
     private static final int TAP_VIBRATION_MS = 20;
     private static final float VIBRATION_INTENSITY_SCALAR = 0.5f;
-    private static final float VIBRATION_SOFTNESS_SCALAR = 0.25f;
+    private static final float VIBRATION_SOFTNESS_SCALAR = 0.5f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
