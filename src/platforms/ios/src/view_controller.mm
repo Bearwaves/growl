@@ -19,6 +19,9 @@ std::unique_ptr<Growl::Game> createGame();
 	CADisplayLink* displayLink;
 	std::unique_ptr<Growl::API> api;
 	std::unique_ptr<Growl::Game> game;
+
+	id _pausedObserver;
+	id _resumedObserver;
 }
 
 - (void)viewDidLoad {
@@ -50,6 +53,24 @@ std::unique_ptr<Growl::Game> createGame();
 
 	systemInternal.setDarkMode(
 		self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+
+	_resumedObserver = [[[NSNotificationCenter defaultCenter]
+		addObserverForName:UIApplicationDidBecomeActiveNotification
+					object:nil
+					 queue:[NSOperationQueue currentQueue]
+				usingBlock:^(NSNotification* _Nonnull notification) {
+				  systemInternal.log("ViewController", "Resume");
+				  systemInternal.resume();
+				}] retain];
+
+	_pausedObserver = [[[NSNotificationCenter defaultCenter]
+		addObserverForName:UIApplicationDidEnterBackgroundNotification
+					object:nil
+					 queue:[NSOperationQueue currentQueue]
+				usingBlock:^(NSNotification* _Nonnull notification) {
+				  systemInternal.log("ViewController", "Pause");
+				  systemInternal.pause();
+				}] retain];
 
 	if (auto err = graphicsInternal.init(game->getConfig())) {
 		api->system().log(
@@ -140,6 +161,9 @@ std::unique_ptr<Growl::Game> createGame();
 - (void)render {
 	double delta_time = api->frameTimer().frame();
 	api->system().tick();
+	if (api->system().isPaused()) {
+		return;
+	}
 	game->tick(delta_time);
 	static_cast<Growl::GraphicsAPIInternal&>(api->graphics()).begin();
 	game->render(delta_time);
@@ -172,6 +196,14 @@ std::unique_ptr<Growl::Game> createGame();
 }
 
 - (void)dispose {
+	if (_resumedObserver) {
+		[[NSNotificationCenter defaultCenter] removeObserver:_resumedObserver];
+		[_resumedObserver release];
+	}
+	if (_pausedObserver) {
+		[[NSNotificationCenter defaultCenter] removeObserver:_pausedObserver];
+		[_pausedObserver release];
+	}
 	if (auto err = game->dispose()) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "ViewController",

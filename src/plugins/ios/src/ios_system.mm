@@ -109,6 +109,14 @@ Error IOSSystemAPI::init(const Config& config) {
 
 void IOSSystemAPI::tick() {}
 
+void IOSSystemAPI::resume() {
+	device_haptics->restart();
+	if (controller_haptics) {
+		controller_haptics->restart();
+	}
+	SystemAPIInternal::resume();
+}
+
 void IOSSystemAPI::dispose() {
 	NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
 	if (game_controller_connect_observer) {

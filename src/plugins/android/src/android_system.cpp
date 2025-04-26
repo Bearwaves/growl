@@ -127,12 +127,10 @@ void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 				"Failed to init surface " + err->message());
 			break;
 		}
-		static_cast<SystemAPIInternal&>(api->system()).setPaused(false);
 		break;
 	}
 	case APP_CMD_TERM_WINDOW:
 		api->system().log("AndroidSystemAPI", "Window needs termination");
-		static_cast<SystemAPIInternal&>(api->system()).setPaused(true);
 		if (auto err = static_cast<AndroidWindow*>(
 						   static_cast<GraphicsAPIInternal&>(api->graphics())
 							   .getWindow())
@@ -155,9 +153,11 @@ void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 	}
 	case APP_CMD_PAUSE:
 		api->audio().setMuted(true);
+		static_cast<SystemAPIInternal&>(api->system()).pause();
 		break;
 	case APP_CMD_RESUME:
 		api->audio().setMuted(false);
+		static_cast<SystemAPIInternal&>(api->system()).resume();
 		break;
 	case APP_CMD_START: {
 		JNIEnv* env;

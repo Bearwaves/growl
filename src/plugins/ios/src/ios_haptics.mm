@@ -373,3 +373,21 @@ IOSHapticsDevice::createRumblePattern(HapticsEvent& event, int loc) {
 	}
 	return pattern;
 }
+
+void IOSHapticsDevice::restart() {
+	if (device) {
+		[device resetHandler]();
+	}
+	if (left_handle) {
+		[left_handle resetHandler]();
+	}
+	if (right_handle) {
+		[right_handle resetHandler]();
+	}
+	if (left_trigger) {
+		[left_trigger resetHandler]();
+	}
+	if (right_trigger) {
+		[right_trigger resetHandler]();
+	}
+}

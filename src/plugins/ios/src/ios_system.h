@@ -15,6 +15,7 @@ public:
 	Error init(const Config& config) override;
 	void tick() override;
 	void dispose() override;
+	void resume() override;
 	void onTouch(InputTouchEvent) override;
 	bool isRunning() override {
 		return running;

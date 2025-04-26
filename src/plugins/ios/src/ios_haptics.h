@@ -21,6 +21,8 @@ public:
 
 	void setGameController(GCController* controller);
 
+	void restart();
+
 private:
 	SystemAPI& system;
 	GCController* controller = nullptr;

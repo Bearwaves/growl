@@ -32,8 +32,11 @@ public:
 	virtual void setDarkMode(bool dark_mode) {
 		this->dark_mode = dark_mode;
 	}
-	virtual void setPaused(bool paused) {
-		this->paused = paused;
+	virtual void pause() {
+		this->paused = true;
+	}
+	virtual void resume() {
+		this->paused = false;
 	}
 	virtual bool isMouseEmitsTouchEvents() {
 		return this->mouse_emits_touch_events;
