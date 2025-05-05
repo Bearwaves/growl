@@ -20,6 +20,7 @@ set(SOURCES
 	"src/text/glyph_layout.cpp"
 	"src/scripting/scripting_api.cpp"
 	"src/util/timer.cpp"
+	"src/util/uuid.cpp"
 	"src/interpolation.cpp"
 	)
 
