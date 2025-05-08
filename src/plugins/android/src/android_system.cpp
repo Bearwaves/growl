@@ -28,6 +28,12 @@ using Growl::PointerEventType;
 using Growl::Result;
 using Growl::Window;
 
+// Globals, to be used in game code if needed.
+namespace Growl {
+jobject ANDROID_ACTIVITY;
+JavaVM* ANDROID_JVM;
+} // namespace Growl
+
 constexpr int DPAD_UP_MASK = (1 << static_cast<int>(ControllerButton::DpadUp));
 constexpr int DPAD_DOWN_MASK =
 	(1 << static_cast<int>(ControllerButton::DpadDown));
@@ -37,6 +43,9 @@ constexpr int DPAD_RIGHT_MASK =
 	(1 << static_cast<int>(ControllerButton::DpadRight));
 
 Error AndroidSystemAPI::init(const Config& config) {
+	ANDROID_ACTIVITY = android_state->activity->javaGameActivity;
+	ANDROID_JVM = android_state->activity->vm;
+
 	android_state->onAppCmd = handleAppCmd;
 	android_state->userData = &api;
 	// Leave key event filter as default to allow volume keys to propagate

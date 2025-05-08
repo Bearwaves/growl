@@ -6,9 +6,11 @@ appcompat = "1.7.0"
 games-activity = "4.0.0"
 games-controller = "2.0.2"
 androidx-activity = "1.9.3"
+play-games-services = "17.0.0-beta1"
 
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 games-activity = { module = "androidx.games:games-activity", version.ref = "games-activity" }
 games-controller = { module = "androidx.games:games-controller", version.ref = "games-controller" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
+play-games-services = { module = "com.google.android.gms:play-services-games-v2-native-c", version.ref = "play-games-services" }

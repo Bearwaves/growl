@@ -5,18 +5,6 @@ plugins {
     id 'com.android.library' version '8.7.0' apply false
 }
 
-dependencies {
-    implementation libs.appcompat
-    implementation libs.games.activity
-    implementation libs.games.controller
-    implementation libs.androidx.activity
-}
-
-// Prevent Kotlin library collisions.
-configurations.implementation {
-    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
-}
-
 // Load user's Growl properties if provided
 def growlProperties = new Properties()
 String growlProjectPath = ""
@@ -37,6 +25,21 @@ if (growlProperties['keystore']) {
         throw new GradleException("Keystore properties file not found at: ${growlProperties['keystore']}")
     }
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile as File))
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.games.activity
+    implementation libs.games.controller
+    implementation libs.androidx.activity
+    if (growlProperties['playServicesAppId']) {
+        implementation libs.play.games.services
+    }
+}
+
+// Prevent Kotlin library collisions.
+configurations.implementation {
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
 }
 
 android {
