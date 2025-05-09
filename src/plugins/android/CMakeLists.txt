@@ -5,7 +5,6 @@ project(growl-plugin-android)
 message(STATUS "[Growl] Enabled Android plugin.")
 
 set(SOURCES
-	"src/android_plugin.cpp"
 	"src/android_system.cpp"
 	"src/android_file.cpp"
 	"src/android_window.cpp"

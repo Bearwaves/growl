@@ -29,8 +29,6 @@ else ()
 endif ()
 
 set(SOURCES
-	"src/opengl_plugin.cpp"
-
 	"src/opengl_graphics.cpp"
 	"src/opengl_batch.cpp"
 	"src/opengl_texture.cpp"

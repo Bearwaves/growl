@@ -15,20 +15,13 @@ using Growl::Config;
 using Growl::Game;
 using Growl::GameAdapter;
 
-void initSDL3Plugin(API& api);
-void initSoLoudPlugin(API& api);
-void initOpenGLPlugin(API& api);
-void initLuaPlugin(API& api);
 std::unique_ptr<API> g_api;
 std::unique_ptr<Game> g_game;
 
 GameAdapter::GameAdapter(std::unique_ptr<Game> game) {
 	g_api = std::make_unique<API>();
 	g_game = std::move(game);
-	initSDL3Plugin(*g_api);
-	initSoLoudPlugin(*g_api);
-	initOpenGLPlugin(*g_api);
-	initLuaPlugin(*g_api);
+	g_api->init();
 	g_game->setAPI(g_api.get());
 
 	if (auto err = static_cast<SystemAPIInternal&>(g_api->system())

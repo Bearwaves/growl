@@ -26,6 +26,7 @@ using Growl::InputControllerEvent;
 using Growl::LogLevel;
 using Growl::PointerEventType;
 using Growl::Result;
+using Growl::SystemAPIInternal;
 using Growl::Window;
 
 // Globals, to be used in game code if needed.
@@ -41,6 +42,12 @@ constexpr int DPAD_LEFT_MASK =
 	(1 << static_cast<int>(ControllerButton::DpadLeft));
 constexpr int DPAD_RIGHT_MASK =
 	(1 << static_cast<int>(ControllerButton::DpadRight));
+
+std::unique_ptr<SystemAPIInternal>
+Growl::createSystemAPI(API& api, void* user) {
+	return std::make_unique<AndroidSystemAPI>(
+		api, static_cast<android_app*>(user));
+}
 
 Error AndroidSystemAPI::init(const Config& config) {
 	ANDROID_ACTIVITY = android_state->activity->javaGameActivity;

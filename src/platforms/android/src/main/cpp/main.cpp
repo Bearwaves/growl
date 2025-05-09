@@ -18,10 +18,6 @@ using Growl::LogLevel;
 using Growl::ScriptingAPIInternal;
 using Growl::SystemAPIInternal;
 
-void initAndroidPlugin(API& api, android_app* state);
-void initSoLoudPlugin(API& api);
-void initOpenGLPlugin(API& api);
-void initLuaPlugin(API& api);
 std::unique_ptr<Growl::Game> createGame();
 
 // NOLINTNEXTLINE defined name for Android native entry point.
@@ -29,10 +25,8 @@ void android_main(struct android_app* state) {
 	auto api = std::make_unique<API>();
 	api->setFrameTimer(std::make_unique<FrameTimer>());
 
-	initAndroidPlugin(*api, state);
-	initOpenGLPlugin(*api);
-	initSoLoudPlugin(*api);
-	initLuaPlugin(*api);
+	api->setSystemAPI(Growl::createSystemAPI(*api, state));
+	api->init();
 
 	auto game = createGame();
 	game->setAPI(api.get());

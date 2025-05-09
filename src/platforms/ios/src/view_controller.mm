@@ -30,10 +30,7 @@ std::unique_ptr<Growl::Game> createGame();
 	api = std::make_unique<Growl::API>();
 	game = createGame();
 
-	initIOSPlugin(*api);
-	initSoLoudPlugin(*api);
-	initMetalPlugin(*api);
-	initLuaPlugin(*api);
+	api->init();
 	game->setAPI(api.get());
 	api->setFrameTimer(std::make_unique<Growl::FrameTimer>());
 

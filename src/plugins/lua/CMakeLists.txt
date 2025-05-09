@@ -5,8 +5,6 @@ project(growl-plugin-lua)
 message(STATUS "[Growl] Enabled Lua plugin.")
 
 set(SOURCES
-	"src/lua_plugin.cpp"
-
 	"src/lua_scripting.cpp"
 	)
 

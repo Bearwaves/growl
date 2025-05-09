@@ -9,30 +9,27 @@ namespace Growl {
 
 class API {
 public:
+	void init();
+
 	SystemAPI& system() {
-		return *systemInternal;
+		return *system_internal;
 	}
 
 	GraphicsAPI& graphics() {
-		return *graphicsInternal;
+		return *graphics_internal;
 	}
 
 	AudioAPI& audio() {
-		return *audioInternal;
+		return *audio_internal;
 	}
 
 	ScriptingAPI& scripting() {
-		return *scriptingInternal;
+		return *scripting_internal;
 	}
 
 	FrameTimer& frameTimer() {
 		return *frame_timer;
 	}
-
-	void addSystemAPI(std::unique_ptr<SystemAPIInternal> internal);
-	void addGraphicsAPI(std::unique_ptr<GraphicsAPIInternal> internal);
-	void addAudioAPI(std::unique_ptr<AudioAPIInternal> internal);
-	void addScriptingAPI(std::unique_ptr<ScriptingAPIInternal> internal);
 
 	bool imguiVisible() const {
 		return imgui_visible;
@@ -43,19 +40,19 @@ public:
 	}
 
 	void setSystemAPI(std::unique_ptr<SystemAPIInternal> system) {
-		systemInternal = std::move(system);
+		system_internal = std::move(system);
 	}
 
 	void setGraphicsAPI(std::unique_ptr<GraphicsAPIInternal> graphics) {
-		graphicsInternal = std::move(graphics);
+		graphics_internal = std::move(graphics);
 	}
 
 	void setAudioAPI(std::unique_ptr<AudioAPIInternal> audio) {
-		audioInternal = std::move(audio);
+		audio_internal = std::move(audio);
 	}
 
 	void setScriptingAPI(std::unique_ptr<ScriptingAPIInternal> scripting) {
-		scriptingInternal = std::move(scripting);
+		scripting_internal = std::move(scripting);
 	}
 
 	void setFrameTimer(std::unique_ptr<FrameTimer> frame_timer) {
@@ -63,10 +60,10 @@ public:
 	}
 
 private:
-	std::unique_ptr<SystemAPIInternal> systemInternal;
-	std::unique_ptr<GraphicsAPIInternal> graphicsInternal;
-	std::unique_ptr<AudioAPIInternal> audioInternal;
-	std::unique_ptr<ScriptingAPIInternal> scriptingInternal;
+	std::unique_ptr<SystemAPIInternal> system_internal;
+	std::unique_ptr<GraphicsAPIInternal> graphics_internal;
+	std::unique_ptr<AudioAPIInternal> audio_internal;
+	std::unique_ptr<ScriptingAPIInternal> scripting_internal;
 	std::unique_ptr<FrameTimer> frame_timer;
 	bool imgui_visible = false;
 };

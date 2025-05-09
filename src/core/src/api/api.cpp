@@ -7,20 +7,19 @@
 using Growl::API;
 using Growl::SystemAPIInternal;
 
-void API::addSystemAPI(std::unique_ptr<SystemAPIInternal> internal) {
-	systemInternal = std::move(internal);
-}
-
-void API::addGraphicsAPI(std::unique_ptr<GraphicsAPIInternal> internal) {
-	graphicsInternal = std::move(internal);
-}
-
-void API::addAudioAPI(std::unique_ptr<AudioAPIInternal> internal) {
-	audioInternal = std::move(internal);
-}
-
-void API::addScriptingAPI(std::unique_ptr<ScriptingAPIInternal> internal) {
-	scriptingInternal = std::move(internal);
+void API::init() {
+	if (!this->system_internal) {
+		this->system_internal = createSystemAPI(*this);
+	}
+	if (!this->graphics_internal) {
+		this->graphics_internal = createGraphicsAPI(*this);
+	}
+	if (!this->audio_internal) {
+		this->audio_internal = createAudioAPI(*this);
+	}
+	if (!this->scripting_internal) {
+		this->scripting_internal = createScriptingAPI(*this);
+	}
 }
 
 #ifdef GROWL_IMGUI

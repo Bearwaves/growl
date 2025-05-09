@@ -1,6 +1,7 @@
 #include "growl/platforms/desktop/game_adapter.h"
 #include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
+#include "growl/core/api/system_api.h"
 #include "growl/core/frame_timer.h"
 #include "growl/core/game/game.h"
 #include "growl/core/graphics/window.h"
@@ -12,7 +13,6 @@ using Growl::API;
 using Growl::Game;
 using Growl::GameAdapter;
 
-void initSDL3Plugin(API& api);
 void initSoLoudPlugin(API& api);
 void initMetalPlugin(API& api);
 void initOpenGLPlugin(API& api);
@@ -22,14 +22,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game)
 	: m_api(std::make_unique<API>())
 	, m_game(std::move(game)) {
 
-	initSDL3Plugin(*m_api);
-	initSoLoudPlugin(*m_api);
-	initLuaPlugin(*m_api);
-#ifdef GROWL_METAL
-	initMetalPlugin(*m_api);
-#else
-	initOpenGLPlugin(*m_api);
-#endif
+	m_api->init();
 	m_game->setAPI(m_api.get());
 	m_api->setFrameTimer(std::make_unique<FrameTimer>());
 

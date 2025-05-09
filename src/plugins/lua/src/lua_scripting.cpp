@@ -1,4 +1,5 @@
 #include "lua_scripting.h"
+#include "growl/core/api/api_internal.h"
 #include "growl/core/api/scripting_api.h"
 #include "growl/core/api/system_api.h"
 #include "growl/core/error.h"
@@ -27,10 +28,16 @@ using Growl::LuaSelf;
 using Growl::Result;
 using Growl::Script;
 using Growl::ScriptingAPI;
+using Growl::ScriptingAPIInternal;
 using Growl::ScriptingParam;
 using Growl::ScriptingSignature;
 using Growl::ScriptingType;
 using Growl::SystemAPI;
+
+std::unique_ptr<ScriptingAPIInternal>
+Growl::createScriptingAPI(API& api, void* user) {
+	return std::make_unique<LuaScriptingAPI>(api);
+}
 
 struct LuaStack {
 	int stack_count;

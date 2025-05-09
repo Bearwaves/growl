@@ -3,7 +3,6 @@ cmake_minimum_required (VERSION 3.19)
 project(growl-plugin-soloud)
 
 set(SOURCES
-	"src/soloud_plugin.cpp"
 	"src/soloud_audio.cpp"
 	"src/bundle_file.cpp"
 	"src/soloud_clip.cpp"

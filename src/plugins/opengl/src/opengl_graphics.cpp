@@ -1,5 +1,6 @@
 #include "opengl_graphics.h"
 #include "growl/core/api/api.h"
+#include "growl/core/api/api_internal.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/assets/shader_pack.h"
 #include "growl/core/error.h"
@@ -20,6 +21,7 @@ using Growl::Atlas;
 using Growl::Batch;
 using Growl::Error;
 using Growl::FontTextureAtlas;
+using Growl::GraphicsAPIInternal;
 using Growl::OpenGLGraphicsAPI;
 using Growl::Result;
 using Growl::Shader;
@@ -28,6 +30,11 @@ using Growl::TextureAtlas;
 using Growl::TextureOptions;
 using std::chrono::duration;
 using std::chrono::seconds;
+
+std::unique_ptr<GraphicsAPIInternal>
+Growl::createGraphicsAPI(API& api, void* user) {
+	return std::make_unique<OpenGLGraphicsAPI>(api);
+}
 
 OpenGLGraphicsAPI::OpenGLGraphicsAPI(API& api)
 	: api{api} {}

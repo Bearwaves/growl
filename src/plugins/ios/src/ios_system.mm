@@ -18,7 +18,13 @@ using Growl::InputTouchEvent;
 using Growl::IOSSystemAPI;
 using Growl::LocalFile;
 using Growl::Result;
+using Growl::SystemAPIInternal;
 using Growl::Window;
+
+std::unique_ptr<SystemAPIInternal>
+Growl::createSystemAPI(API& api, void* user) {
+	return std::make_unique<IOSSystemAPI>(api);
+}
 
 Error IOSSystemAPI::init(const Config& config) {
 	for (GCController* controller in [GCController controllers]) {

@@ -12,8 +12,6 @@ if ("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 endif ()
 
 set(SOURCES
-	"src/sdl3_plugin.cpp"
-
 	"src/sdl3_system.cpp"
 	"src/sdl3_keyboard.cpp"
 	"src/sdl3_controller.cpp"

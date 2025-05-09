@@ -1,5 +1,7 @@
 #include "soloud_audio.h"
 #include "bundle_file.h"
+#include "growl/core/api/api.h"
+#include "growl/core/api/api_internal.h"
 #include "growl/core/api/system_api.h"
 #include "growl/core/assets/audio.h"
 #include "growl/core/assets/bundle.h"
@@ -14,7 +16,9 @@
 #include <string>
 #include <vector>
 
+using Growl::API;
 using Growl::AssetsBundle;
+using Growl::AudioAPIInternal;
 using Growl::AudioClip;
 using Growl::AudioStream;
 using Growl::Error;
@@ -23,6 +27,10 @@ using Growl::SoLoudAudioAPI;
 using Growl::SoLoudAudioClip;
 using Growl::SoLoudAudioStream;
 using Growl::SystemAPI;
+
+std::unique_ptr<AudioAPIInternal> Growl::createAudioAPI(API& api, void* user) {
+	return std::make_unique<SoLoudAudioAPI>(api.system());
+}
 
 Error SoLoudAudioAPI::init(const Config& config) {
 	soloud = std::make_unique<SoLoud::Soloud>();

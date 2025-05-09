@@ -5,7 +5,6 @@ project(growl-plugin-ios LANGUAGES OBJCXX)
 message(STATUS "[Growl] Enabled iOS plugin.")
 
 set(SOURCES
-	"src/ios_plugin.mm"
 	"src/ios_system.mm"
 	"src/ios_window.mm"
 	"src/ios_preferences.mm"

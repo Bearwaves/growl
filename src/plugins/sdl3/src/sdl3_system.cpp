@@ -4,6 +4,7 @@
 #include "SDL3/SDL_init.h"
 #include "SDL3/SDL_video.h"
 #include "growl/core/api/api.h"
+#include "growl/core/api/api_internal.h"
 #include "growl/core/assets/file.h"
 #include "growl/core/haptics.h"
 #include "growl/core/input/event.h"
@@ -30,7 +31,13 @@ using Growl::InputEvent;
 using Growl::Preferences;
 using Growl::Result;
 using Growl::SDL3SystemAPI;
+using Growl::SystemAPIInternal;
 using Growl::Window;
+
+std::unique_ptr<SystemAPIInternal>
+Growl::createSystemAPI(API& api, void* user) {
+	return std::make_unique<SDL3SystemAPI>(api);
+}
 
 Error SDL3SystemAPI::init(const Config& config) {
 	if (SDL_WasInit(SDL_INIT_VIDEO) != 0) {

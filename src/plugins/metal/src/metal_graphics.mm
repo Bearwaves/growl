@@ -1,4 +1,5 @@
 #include "metal_graphics.h"
+#include "growl/core/api/api_internal.h"
 #include "growl/core/assets/font_face.h"
 #include "growl/core/assets/shader_pack.h"
 #include "growl/core/error.h"
@@ -18,6 +19,7 @@
 using Growl::Batch;
 using Growl::Error;
 using Growl::FontTextureAtlas;
+using Growl::GraphicsAPIInternal;
 using Growl::MetalError;
 using Growl::MetalGraphicsAPI;
 using Growl::Result;
@@ -28,6 +30,11 @@ using Growl::TextureAtlas;
 using Growl::TextureOptions;
 
 constexpr int BUFFER_MAX_SIZE = 2 << 22; // 8MB
+
+std::unique_ptr<GraphicsAPIInternal>
+Growl::createGraphicsAPI(API& api, void* user) {
+	return std::make_unique<MetalGraphicsAPI>(api);
+}
 
 MetalGraphicsAPI::MetalGraphicsAPI(API& api)
 	: api{api} {}

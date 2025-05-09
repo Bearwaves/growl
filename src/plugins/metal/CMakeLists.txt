@@ -5,7 +5,6 @@ project(growl-plugin-metal LANGUAGES OBJCXX)
 message(STATUS "[Growl] Enabled Metal plugin.")
 
 set(SOURCES
-	"src/metal_plugin.mm"
 	"src/metal_graphics.mm"
 	"src/metal_texture.mm"
 	"src/metal_batch.mm"

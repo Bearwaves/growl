@@ -69,4 +69,13 @@ public:
 	virtual ~ScriptingAPIInternal() {}
 };
 
+std::unique_ptr<SystemAPIInternal>
+createSystemAPI(API& api, void* user = nullptr);
+std::unique_ptr<GraphicsAPIInternal>
+createGraphicsAPI(API& api, void* user = nullptr);
+std::unique_ptr<AudioAPIInternal>
+createAudioAPI(API& api, void* user = nullptr);
+std::unique_ptr<ScriptingAPIInternal>
+createScriptingAPI(API& api, void* user = nullptr);
+
 } // namespace Growl
