@@ -61,11 +61,20 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game) {
 		exit(4);
 	}
 
+	if (auto err = static_cast<NetworkAPIInternal&>(g_api->network())
+					   .init(g_game->getConfig());
+		err) {
+		g_api->system().log(
+			LogLevel::Fatal, "GameAdapter", "Failed to init network API: {}",
+			err.get()->message());
+		exit(5);
+	}
+
 	if (auto err = Growl::initSceneGraph(*g_api)) {
 		g_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to init scene graph: {}",
 			err.get()->message());
-		exit(5);
+		exit(6);
 	}
 	g_api->setFrameTimer(std::make_unique<FrameTimer>());
 
@@ -81,6 +90,7 @@ GameAdapter::~GameAdapter() {
 	}
 	g_game.reset();
 	g_api->system().log("GameAdapter", "Web adapter destroying");
+	static_cast<NetworkAPIInternal&>(g_api->network()).dispose();
 	static_cast<ScriptingAPIInternal&>(g_api->scripting()).dispose();
 	static_cast<AudioAPIInternal&>(g_api->audio()).dispose();
 	static_cast<GraphicsAPIInternal&>(g_api->graphics()).dispose();

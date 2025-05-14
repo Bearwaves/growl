@@ -57,11 +57,20 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game)
 		exit(4);
 	}
 
+	if (auto err = static_cast<NetworkAPIInternal&>(m_api->network())
+					   .init(m_game->getConfig());
+		err) {
+		m_api->system().log(
+			LogLevel::Fatal, "GameAdapter", "Failed to init network API: {}",
+			err.get()->message());
+		exit(5);
+	}
+
 	if (auto err = Growl::initSceneGraph(*m_api)) {
 		m_api->system().log(
 			LogLevel::Fatal, "GameAdapter", "Failed to init scene graph: {}",
 			err.get()->message());
-		exit(5);
+		exit(6);
 	}
 
 	m_api->system().log("GameAdapter", "Desktop adapter created");
@@ -76,6 +85,7 @@ GameAdapter::~GameAdapter() {
 	}
 	m_game.reset();
 	m_api->system().log("GameAdapter", "Desktop adapter destroying");
+	static_cast<NetworkAPIInternal&>(m_api->network()).dispose();
 	static_cast<ScriptingAPIInternal&>(m_api->scripting()).dispose();
 	static_cast<AudioAPIInternal&>(m_api->audio()).dispose();
 	static_cast<GraphicsAPIInternal&>(m_api->graphics()).dispose();
