@@ -1,4 +1,5 @@
 #include "ios_network.h"
+#include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
 #include "growl/core/network/future.h"
 #include "ios_error.h"
@@ -19,10 +20,11 @@ using Growl::Result;
 
 std::unique_ptr<NetworkAPIInternal>
 Growl::createNetworkAPI(API& api, void* user) {
-	return std::make_unique<IOSNetworkAPI>();
+	return std::make_unique<IOSNetworkAPI>(api);
 }
 
 Error IOSNetworkAPI::init(const Config& config) {
+	api.system().log("IOSNetworkAPI", "Initialised iOS network API");
 	return nullptr;
 }
 

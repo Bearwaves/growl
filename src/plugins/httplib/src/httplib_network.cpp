@@ -1,4 +1,5 @@
 #include "httplib_network.h"
+#include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
 #include "growl/core/network/future.h"
 #include "httplib.h"
@@ -20,10 +21,11 @@ using Growl::Result;
 
 std::unique_ptr<NetworkAPIInternal>
 Growl::createNetworkAPI(API& api, void* user) {
-	return std::make_unique<HttplibNetworkAPI>();
+	return std::make_unique<HttplibNetworkAPI>(api);
 }
 
 Error HttplibNetworkAPI::init(const Config& config) {
+	api.system().log("HttplibNetworkAPI", "Initialised httplib network API");
 	return nullptr;
 }
 

@@ -6,9 +6,9 @@ namespace Growl {
 
 class API;
 
-class IOSNetworkAPI : public NetworkAPIInternal {
+class AndroidNetworkAPI : public NetworkAPIInternal {
 public:
-	explicit IOSNetworkAPI(API& api)
+	explicit AndroidNetworkAPI(API& api)
 		: api{api} {}
 
 	Error init(const Config& config) override;

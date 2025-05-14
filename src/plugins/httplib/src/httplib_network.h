@@ -8,7 +8,8 @@ class API;
 
 class HttplibNetworkAPI : public NetworkAPIInternal {
 public:
-	explicit HttplibNetworkAPI() {}
+	explicit HttplibNetworkAPI(API& api)
+		: api{api} {}
 
 	Error init(const Config& config) override;
 	void dispose() override;
@@ -16,6 +17,9 @@ public:
 	std::unique_ptr<HttpRequestBuilder> httpRequestBuilder() override;
 	Future<HttpResponse>
 	doHttpRequest(std::unique_ptr<HttpRequest> request) override;
+
+private:
+	API& api;
 };
 
 } // namespace Growl

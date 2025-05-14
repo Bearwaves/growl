@@ -15,6 +15,7 @@ using Growl::Config;
 using Growl::FrameTimer;
 using Growl::GraphicsAPIInternal;
 using Growl::LogLevel;
+using Growl::NetworkAPIInternal;
 using Growl::ScriptingAPIInternal;
 using Growl::SystemAPIInternal;
 
@@ -25,10 +26,11 @@ void android_main(struct android_app* state) {
 	auto api = std::make_unique<API>();
 	api->setFrameTimer(std::make_unique<FrameTimer>());
 
-	api->setSystemAPI(Growl::createSystemAPI(*api, state));
+	api->setSystemAPI(createSystemAPI(*api, state));
 	api->setGraphicsAPI(createGraphicsAPI(*api));
 	api->setAudioAPI(createAudioAPI(*api));
 	api->setScriptingAPI(createScriptingAPI(*api));
+	api->setNetworkAPI(createNetworkAPI(*api));
 
 	auto game = createGame();
 	game->setAPI(api.get());
@@ -65,11 +67,20 @@ void android_main(struct android_app* state) {
 		exit(4);
 	}
 
+	if (auto err = static_cast<NetworkAPIInternal&>(api->network())
+					   .init(game->getConfig());
+		err) {
+		api->system().log(
+			LogLevel::Fatal, "android_main", "Failed to init network API: {}",
+			err.get()->message());
+		exit(5);
+	}
+
 	if (auto err = Growl::initSceneGraph(*api)) {
 		api->system().log(
 			LogLevel::Fatal, "android_main", "Failed to init scene graph: {}",
 			err.get()->message());
-		exit(5);
+		exit(6);
 	}
 
 	api->system().log("android_main", "Android adapter created");
@@ -115,6 +126,7 @@ void android_main(struct android_app* state) {
 	}
 	game.reset();
 	api->system().log("android_main", "Android adapter destroying");
+	static_cast<NetworkAPIInternal&>(api->network()).dispose();
 	static_cast<ScriptingAPIInternal&>(api->scripting()).dispose();
 	static_cast<AudioAPIInternal&>(api->audio()).dispose();
 	static_cast<GraphicsAPIInternal&>(api->graphics()).dispose();
