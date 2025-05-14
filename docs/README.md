@@ -42,9 +42,16 @@ Visual Studio generators, but others should work just fine.
 
 ## Dependencies
 
-Growl uses vendored dependencies, so you shouldn't need any libraries other
+Growl mostly uses vendored dependencies, so you shouldn't need any libraries other
 than the ones necessary for your specific platform (e.g. Android NDK,
-Emscripten). 
+Emscripten).
+
+The exception to this is OpenSSL - if you want to build a game with networking
+capabilities that talks to TLS endpoints (which is to say, these days,
+the web) - then you will need to have OpenSSL installed on your machine.
+
+OpenSSL is optional; Growl will build fine without it. However, HTTPS requests
+will break at runtime, so be careful.
 
 ## Getting started
 
