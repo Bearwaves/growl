@@ -26,6 +26,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game) {
 	g_api->setGraphicsAPI(createGraphicsAPI(*g_api));
 	g_api->setAudioAPI(createAudioAPI(*g_api));
 	g_api->setScriptingAPI(createScriptingAPI(*g_api));
+	g_api->setNetworkAPI(createNetworkAPI(*g_api));
 
 	g_game->setAPI(g_api.get());
 

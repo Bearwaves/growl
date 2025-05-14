@@ -30,6 +30,7 @@ std::unique_ptr<Growl::Game> createGame();
 	api->setGraphicsAPI(createGraphicsAPI(*api));
 	api->setAudioAPI(createAudioAPI(*api));
 	api->setScriptingAPI(createScriptingAPI(*api));
+	api->setNetworkAPI(createNetworkAPI(*api));
 
 	game->setAPI(api.get());
 	api->setFrameTimer(std::make_unique<Growl::FrameTimer>());

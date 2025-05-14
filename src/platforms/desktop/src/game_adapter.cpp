@@ -21,6 +21,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game)
 	m_api->setGraphicsAPI(createGraphicsAPI(*m_api));
 	m_api->setAudioAPI(createAudioAPI(*m_api));
 	m_api->setScriptingAPI(createScriptingAPI(*m_api));
+	m_api->setNetworkAPI(createNetworkAPI(*m_api));
 
 	m_game->setAPI(m_api.get());
 	m_api->setFrameTimer(std::make_unique<FrameTimer>());

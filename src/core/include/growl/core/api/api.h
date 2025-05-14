@@ -57,6 +57,10 @@ public:
 		scripting_internal = std::move(scripting);
 	}
 
+	void setNetworkAPI(std::unique_ptr<NetworkAPIInternal> network) {
+		network_internal = std::move(network);
+	}
+
 	void setFrameTimer(std::unique_ptr<FrameTimer> frame_timer) {
 		this->frame_timer = std::move(frame_timer);
 	}
