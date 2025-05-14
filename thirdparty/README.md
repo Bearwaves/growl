@@ -2,6 +2,7 @@
 
 | Package         | Version          | URL                                     |
 |-----------------|------------------|-----------------------------------------|
+| cpp-httplib     | `v0.20.1`        | https://github.com/yhirose/cpp-httplib  |
 | Dear ImGui      | `1.91.7-docking` | https://github.com/ocornut/imgui        |
 | {fmt}           | `11.1.4`         | https://github.com/fmtlib/fmt           |
 | fpng            | `b5267e5`        | https://github.com/richgel999/fpng      |

@@ -42,6 +42,7 @@ target_link_libraries(growl-platform-desktop
 	growl-plugin-sdl3
 	growl-plugin-soloud
 	growl-plugin-lua
+	growl-plugin-httplib
 	${GROWL_DESKTOP_LIBS}
 	)
 target_include_directories(growl-platform-desktop PUBLIC "include")

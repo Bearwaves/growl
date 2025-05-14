@@ -32,8 +32,9 @@ std::unique_ptr<HttpRequestBuilder> IOSNetworkAPI::httpRequestBuilder() {
 	return std::make_unique<IOSHttpRequestBuilder>();
 }
 
-Future<HttpResponse> IOSNetworkAPI::doHttpRequest(HttpRequest& request) {
-	auto ios_request = static_cast<IOSHttpRequest&>(request);
+Future<HttpResponse>
+IOSNetworkAPI::doHttpRequest(std::unique_ptr<HttpRequest> request) {
+	auto ios_request = static_cast<IOSHttpRequest&>(*request);
 	__block auto promise = std::promise<Result<HttpResponse>>();
 	[[[NSURLSession sharedSession]
 		dataTaskWithRequest:ios_request.getNative()
