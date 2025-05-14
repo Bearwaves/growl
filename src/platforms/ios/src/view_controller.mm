@@ -9,10 +9,6 @@
 #import <memory>
 
 // Forward declarations for the linker.
-void initIOSPlugin(Growl::API& api);
-void initSoLoudPlugin(Growl::API& api);
-void initMetalPlugin(Growl::API& api);
-void initLuaPlugin(Growl::API& api);
 std::unique_ptr<Growl::Game> createGame();
 
 @implementation GrowlViewController {
@@ -30,7 +26,11 @@ std::unique_ptr<Growl::Game> createGame();
 	api = std::make_unique<Growl::API>();
 	game = createGame();
 
-	api->init();
+	api->setSystemAPI(createSystemAPI(*api));
+	api->setGraphicsAPI(createGraphicsAPI(*api));
+	api->setAudioAPI(createAudioAPI(*api));
+	api->setScriptingAPI(createScriptingAPI(*api));
+
 	game->setAPI(api.get());
 	api->setFrameTimer(std::make_unique<Growl::FrameTimer>());
 

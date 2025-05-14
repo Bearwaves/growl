@@ -13,16 +13,15 @@ using Growl::API;
 using Growl::Game;
 using Growl::GameAdapter;
 
-void initSoLoudPlugin(API& api);
-void initMetalPlugin(API& api);
-void initOpenGLPlugin(API& api);
-void initLuaPlugin(API& api);
-
 GameAdapter::GameAdapter(std::unique_ptr<Game> game)
 	: m_api(std::make_unique<API>())
 	, m_game(std::move(game)) {
 
-	m_api->init();
+	m_api->setSystemAPI(createSystemAPI(*m_api));
+	m_api->setGraphicsAPI(createGraphicsAPI(*m_api));
+	m_api->setAudioAPI(createAudioAPI(*m_api));
+	m_api->setScriptingAPI(createScriptingAPI(*m_api));
+
 	m_game->setAPI(m_api.get());
 	m_api->setFrameTimer(std::make_unique<FrameTimer>());
 

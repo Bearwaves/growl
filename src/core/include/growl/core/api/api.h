@@ -9,8 +9,6 @@ namespace Growl {
 
 class API {
 public:
-	void init();
-
 	SystemAPI& system() {
 		return *system_internal;
 	}

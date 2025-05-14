@@ -26,7 +26,9 @@ void android_main(struct android_app* state) {
 	api->setFrameTimer(std::make_unique<FrameTimer>());
 
 	api->setSystemAPI(Growl::createSystemAPI(*api, state));
-	api->init();
+	api->setGraphicsAPI(createGraphicsAPI(*api));
+	api->setAudioAPI(createAudioAPI(*api));
+	api->setScriptingAPI(createScriptingAPI(*api));
 
 	auto game = createGame();
 	game->setAPI(api.get());

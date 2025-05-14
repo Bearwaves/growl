@@ -21,7 +21,12 @@ std::unique_ptr<Game> g_game;
 GameAdapter::GameAdapter(std::unique_ptr<Game> game) {
 	g_api = std::make_unique<API>();
 	g_game = std::move(game);
-	g_api->init();
+
+	g_api->setSystemAPI(createSystemAPI(*g_api));
+	g_api->setGraphicsAPI(createGraphicsAPI(*g_api));
+	g_api->setAudioAPI(createAudioAPI(*g_api));
+	g_api->setScriptingAPI(createScriptingAPI(*g_api));
+
 	g_game->setAPI(g_api.get());
 
 	if (auto err = static_cast<SystemAPIInternal&>(g_api->system())
