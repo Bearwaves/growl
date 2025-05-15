@@ -7,6 +7,7 @@ set(SOURCES
 	"src/game/game.cpp"
 	"src/input/processor.cpp"
 	"src/graphics/font_texture_atlas.cpp"
+	"src/network/http.cpp"
 
 	"src/assets/atlas.cpp"
 	"src/assets/bitmap_font_face.cpp"

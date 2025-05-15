@@ -25,6 +25,10 @@ public:
 		return *scripting_internal;
 	}
 
+	NetworkAPI& network() {
+		return *network_internal;
+	}
+
 	FrameTimer& frameTimer() {
 		return *frame_timer;
 	}
@@ -53,6 +57,10 @@ public:
 		scripting_internal = std::move(scripting);
 	}
 
+	void setNetworkAPI(std::unique_ptr<NetworkAPIInternal> network) {
+		network_internal = std::move(network);
+	}
+
 	void setFrameTimer(std::unique_ptr<FrameTimer> frame_timer) {
 		this->frame_timer = std::move(frame_timer);
 	}
@@ -62,6 +70,7 @@ private:
 	std::unique_ptr<GraphicsAPIInternal> graphics_internal;
 	std::unique_ptr<AudioAPIInternal> audio_internal;
 	std::unique_ptr<ScriptingAPIInternal> scripting_internal;
+	std::unique_ptr<NetworkAPIInternal> network_internal;
 	std::unique_ptr<FrameTimer> frame_timer;
 	bool imgui_visible = false;
 };

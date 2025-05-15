@@ -53,7 +53,7 @@ function(message)
 	endif()
 endfunction()
 
-message(STATUS "[Growl] Third-party stuff, feel free to ignore any messages...")
+message(STATUS "[Growl] --- Third-party")
 set(MESSAGE_QUIET ON)
 
 add_subdirectory(glm)
@@ -116,5 +116,10 @@ if (GROWL_LUA)
 	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::lua)
 endif()
 
+if (GROWL_HTTPLIB)
+	include(cmake/httplib.cmake)
+	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::httplib)
+endif()
+
 unset(MESSAGE_QUIET)
-message(STATUS "[Growl] All done with third-party.")
+message(STATUS "[Growl] --- All done with third-party.")

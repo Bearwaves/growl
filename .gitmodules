@@ -55,3 +55,6 @@
 [submodule "thirdparty/SDL"]
 	path = thirdparty/SDL
 	url = git@github.com:libsdl-org/SDL.git
+[submodule "thirdparty/cpp-httplib"]
+	path = thirdparty/cpp-httplib
+	url = git@github.com:yhirose/cpp-httplib.git

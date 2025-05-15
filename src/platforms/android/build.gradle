@@ -32,6 +32,7 @@ dependencies {
     implementation libs.games.activity
     implementation libs.games.controller
     implementation libs.androidx.activity
+    implementation libs.libcurl
     if (growlProperties['playServicesAppId']) {
         implementation libs.play.games.services
     }

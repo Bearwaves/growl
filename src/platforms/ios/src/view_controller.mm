@@ -30,6 +30,7 @@ std::unique_ptr<Growl::Game> createGame();
 	api->setGraphicsAPI(createGraphicsAPI(*api));
 	api->setAudioAPI(createAudioAPI(*api));
 	api->setScriptingAPI(createScriptingAPI(*api));
+	api->setNetworkAPI(createNetworkAPI(*api));
 
 	game->setAPI(api.get());
 	api->setFrameTimer(std::make_unique<Growl::FrameTimer>());
@@ -41,6 +42,8 @@ std::unique_ptr<Growl::Game> createGame();
 	auto& audioInternal = static_cast<Growl::AudioAPIInternal&>(api->audio());
 	auto& scriptingInternal =
 		static_cast<Growl::ScriptingAPIInternal&>(api->scripting());
+	auto& networkInternal =
+		static_cast<Growl::NetworkAPIInternal&>(api->network());
 
 	if (auto err = systemInternal.init(game->getConfig())) {
 		std::cout << "Failed to init system API: " << err.get()->message()
@@ -87,12 +90,18 @@ std::unique_ptr<Growl::Game> createGame();
 			"Failed to init scripting API: {}", err.get()->message());
 		exit(4);
 	}
+	if (auto err = networkInternal.init(game->getConfig())) {
+		api->system().log(
+			Growl::LogLevel::Fatal, "ViewController",
+			"Failed to init network API: {}", err.get()->message());
+		exit(5);
+	}
 
 	if (auto err = Growl::initSceneGraph(*api)) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "ViewController",
 			"Failed to init scene graph: {}", err.get()->message());
-		exit(5);
+		exit(6);
 	}
 
 	api->system().log("ViewController", "iOS view controller created");
@@ -209,6 +218,7 @@ std::unique_ptr<Growl::Game> createGame();
 	}
 	game.reset();
 	api->system().log("ViewController", "Shutting down ViewController");
+	static_cast<Growl::NetworkAPIInternal&>(api->network()).dispose();
 	static_cast<Growl::ScriptingAPIInternal&>(api->scripting()).dispose();
 	static_cast<Growl::AudioAPIInternal&>(api->audio()).dispose();
 	static_cast<Growl::GraphicsAPIInternal&>(api->graphics()).dispose();

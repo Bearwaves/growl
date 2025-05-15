@@ -5,6 +5,7 @@
 #include "growl/core/config.h"
 #include "growl/core/error.h"
 #include "growl/core/input/event.h"
+#include "network_api.h"
 #include "scripting_api.h"
 #include "system_api.h"
 
@@ -69,13 +70,24 @@ public:
 	virtual ~ScriptingAPIInternal() {}
 };
 
+class NetworkAPIInternal : public NetworkAPI, public APIInternal {
+public:
+	virtual ~NetworkAPIInternal() {}
+};
+
 std::unique_ptr<SystemAPIInternal>
 createSystemAPI(API& api, void* user = nullptr);
+
 std::unique_ptr<GraphicsAPIInternal>
 createGraphicsAPI(API& api, void* user = nullptr);
+
 std::unique_ptr<AudioAPIInternal>
 createAudioAPI(API& api, void* user = nullptr);
+
 std::unique_ptr<ScriptingAPIInternal>
 createScriptingAPI(API& api, void* user = nullptr);
+
+std::unique_ptr<NetworkAPIInternal>
+createNetworkAPI(API& api, void* user = nullptr);
 
 } // namespace Growl
