@@ -50,6 +50,9 @@ public:
 	void setLogLevel(LogLevel log_level) override;
 	bool didResize(int* width, int* height) override;
 
+	std::string getPlatformName() override;
+	std::string getPlatformOSVersion() override;
+
 	Result<std::unique_ptr<File>>
 	openFile(std::string path, size_t start, size_t end) override;
 
