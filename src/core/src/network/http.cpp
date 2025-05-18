@@ -1,6 +1,7 @@
 #include "growl/core/network/http.h"
 #include "growl/core/error.h"
 #include "zlib.h"
+#include <cstring>
 
 using Growl::HttpMethod;
 using Growl::Result;
