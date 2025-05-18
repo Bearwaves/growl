@@ -37,6 +37,11 @@ public:
 		return false;
 	}
 
+	virtual std::string getPlatformName() = 0;
+	virtual std::string getPlatformOSVersion() = 0;
+	virtual std::string getDeviceManufacturer() = 0;
+	virtual std::string getDeviceModel() = 0;
+
 	template <class... Args>
 	void
 	log(LogLevel log_level, std::string tag, std::string_view msg,

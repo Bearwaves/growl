@@ -13,6 +13,7 @@
 #include <android/log.h>
 #include <game-activity/native_app_glue/android_native_app_glue.h>
 #include <paddleboat/paddleboat.h>
+#include <sys/system_properties.h>
 
 using Growl::AndroidError;
 using Growl::AndroidFile;
@@ -113,6 +114,26 @@ bool AndroidSystemAPI::didResize(int* width, int* height) {
 	resize_width = 0;
 	resize_height = 0;
 	return *width || *height;
+}
+
+std::string AndroidSystemAPI::getPlatformName() {
+	return "android";
+}
+
+std::string AndroidSystemAPI::getPlatformOSVersion() {
+	return std::to_string(android_get_device_api_level());
+}
+
+std::string AndroidSystemAPI::getDeviceManufacturer() {
+	char manufacturer[PROP_VALUE_MAX];
+	int len = __system_property_get("ro.product.manufacturer", manufacturer);
+	return std::string(manufacturer, len);
+}
+
+std::string AndroidSystemAPI::getDeviceModel() {
+	char model[PROP_VALUE_MAX];
+	int len = __system_property_get("ro.product.model", model);
+	return std::string(model, len);
 }
 
 void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {

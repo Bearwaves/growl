@@ -201,6 +201,30 @@ bool SDL3SystemAPI::didResize(int* width, int* height) {
 	return *width || *height;
 }
 
+std::string SDL3SystemAPI::getPlatformName() {
+#ifdef SDL_PLATFORM_WINDOWS
+	return "windows";
+#elif defined(SDL_PLATFORM_MACOS)
+	return "macos";
+#elif defined(SDL_PLATFORM_LINUX)
+	return "linux";
+#elif defined(SDL_PLATFORM_EMSCRIPTEN)
+	return "web";
+#else
+	return "";
+#endif
+}
+
+#ifndef SDL_PLATFORM_MACOS
+std::string SDL3SystemAPI::getDeviceManufacturer() {
+	return "";
+}
+
+std::string SDL3SystemAPI::getDeviceModel() {
+	return "";
+}
+#endif
+
 void SDL3SystemAPI::setLogLevel(LogLevel log_level) {
 	SDL_SetLogPriority(SDL_LOG_CATEGORY_CUSTOM, getLogPriority(log_level));
 }
