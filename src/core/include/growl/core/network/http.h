@@ -8,6 +8,7 @@ namespace Growl {
 enum class HttpMethod { GET, POST, PUT, PATCH, OPTIONS, HEAD, CONNECT, TRACE };
 
 std::string httpMethodString(HttpMethod method);
+Result<std::string> gzip(std::string& data);
 
 class HttpRequest {};
 
@@ -22,6 +23,7 @@ public:
 	virtual ~HttpRequestBuilder() {}
 	virtual HttpRequestBuilder& setURL(std::string url) = 0;
 	virtual HttpRequestBuilder& setMethod(HttpMethod method) = 0;
+	virtual HttpRequestBuilder& setBody(std::string& body) = 0;
 	virtual HttpRequestBuilder&
 	setHeader(std::string header, std::string value) = 0;
 	virtual Result<std::unique_ptr<HttpRequest>> build() = 0;

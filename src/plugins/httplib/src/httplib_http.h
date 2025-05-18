@@ -30,6 +30,7 @@ class HttplibHttpRequestBuilder : public HttpRequestBuilder {
 public:
 	HttpRequestBuilder& setURL(std::string url) override;
 	HttpRequestBuilder& setMethod(HttpMethod method) override;
+	HttpRequestBuilder& setBody(std::string& body) override;
 	HttpRequestBuilder&
 	setHeader(std::string header, std::string value) override;
 	Result<std::unique_ptr<HttpRequest>> build() override;
@@ -37,6 +38,7 @@ public:
 private:
 	HttpMethod method = HttpMethod::GET;
 	std::string url = "";
+	std::string body = "";
 	std::unordered_map<std::string, std::string> headers;
 };
 

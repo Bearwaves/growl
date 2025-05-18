@@ -46,12 +46,8 @@ Growl mostly uses vendored dependencies, so you shouldn't need any libraries oth
 than the ones necessary for your specific platform (e.g. Android NDK,
 Emscripten).
 
-The exception to this is OpenSSL - if you want to build a game with networking
-capabilities that talks to TLS endpoints (which is to say, these days,
-the web) - then you will need to have OpenSSL installed on your machine.
-
-OpenSSL is optional; Growl will build fine without it. However, HTTPS requests
-will break at runtime, so be careful.
+The exception to this is OpenSSL, which you will need installed on your machine
+in order to build for desktop targets.
 
 ## Getting started
 

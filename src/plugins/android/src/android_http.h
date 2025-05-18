@@ -29,6 +29,8 @@ public:
 
 	HttpRequestBuilder& setMethod(HttpMethod method) override;
 
+	HttpRequestBuilder& setBody(std::string& body) override;
+
 	HttpRequestBuilder&
 	setHeader(std::string header, std::string value) override;
 
@@ -37,6 +39,7 @@ public:
 private:
 	HttpMethod method = HttpMethod::GET;
 	std::string url = "";
+	std::string body = "";
 	std::unordered_map<std::string, std::string> headers;
 };
 
