@@ -24,6 +24,11 @@ HttpRequestBuilder& HttplibHttpRequestBuilder::setMethod(HttpMethod method) {
 	return *this;
 }
 
+HttpRequestBuilder& HttplibHttpRequestBuilder::setBody(std::string& body) {
+	this->body = body;
+	return *this;
+}
+
 HttpRequestBuilder&
 HttplibHttpRequestBuilder::setHeader(std::string header, std::string value) {
 	this->headers[header] = value;
@@ -47,6 +52,7 @@ Result<std::unique_ptr<HttpRequest>> HttplibHttpRequestBuilder::build() {
 
 	request.method = Growl::httpMethodString(method);
 	request.headers.insert(headers.begin(), headers.end());
+	request.body = this->body;
 	return std::unique_ptr<HttpRequest>(
 		std::make_unique<HttplibHttpRequest>(url_base, std::move(request)));
 }

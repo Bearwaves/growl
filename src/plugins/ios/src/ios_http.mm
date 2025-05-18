@@ -29,6 +29,11 @@ HttpRequestBuilder& IOSHttpRequestBuilder::setMethod(HttpMethod method) {
 	return *this;
 }
 
+HttpRequestBuilder& IOSHttpRequestBuilder::setBody(std::string& body) {
+	this->body = body;
+	return *this;
+}
+
 HttpRequestBuilder&
 IOSHttpRequestBuilder::setHeader(std::string header, std::string value) {
 	this->headers[header] = value;
@@ -49,6 +54,12 @@ Result<std::unique_ptr<HttpRequest>> IOSHttpRequestBuilder::build() {
 		[request setValue:[NSString stringWithUTF8String:v.c_str()]
 			forHTTPHeaderField:[NSString stringWithUTF8String:k.c_str()]];
 	}
+	if (!body.empty()) {
+		NSData* body_data = [NSData dataWithBytes:body.c_str()
+										   length:body.size()];
+		[request setHTTPBody:body_data];
+	}
+
 	return std::unique_ptr<HttpRequest>(
 		std::make_unique<IOSHttpRequest>(request));
 }

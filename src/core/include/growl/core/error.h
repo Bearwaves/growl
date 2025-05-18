@@ -11,6 +11,18 @@ struct BaseError {
 	virtual std::string message() = 0;
 };
 
+class GenericError : public BaseError {
+public:
+	explicit GenericError(std::string message)
+		: message_str{message} {}
+	std::string message() override {
+		return message_str;
+	}
+
+private:
+	std::string message_str;
+};
+
 using Error = std::unique_ptr<BaseError>;
 
 template <typename T>

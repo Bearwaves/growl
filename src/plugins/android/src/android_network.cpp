@@ -5,6 +5,8 @@
 #include "growl/core/api/api_internal.h"
 #include "growl/core/network/future.h"
 #include <future>
+#include <openssl/evp.h>
+#include <openssl/hmac.h>
 
 using Growl::AndroidError;
 using Growl::AndroidNetworkAPI;
@@ -86,4 +88,26 @@ AndroidNetworkAPI::doHttpRequest(std::unique_ptr<HttpRequest> request) {
 			}
 			return response;
 		});
+}
+
+std::vector<unsigned char>
+AndroidNetworkAPI::hmac256(std::string& body, std::string& key) {
+	unsigned char buf[EVP_MAX_MD_SIZE];
+	unsigned int size;
+	if (!HMAC(
+			EVP_sha256(), key.data(), key.size(),
+			reinterpret_cast<const unsigned char*>(body.data()), body.size(),
+			buf, &size)) {
+		return std::vector<unsigned char>();
+	}
+	return std::vector<unsigned char>(buf, buf + size);
+}
+
+std::string AndroidNetworkAPI::base64enc(const unsigned char* data, int len) {
+	int b64_len = 4 * ((len + 2) / 3);
+	unsigned char* b64_data = (unsigned char*)calloc(b64_len + 1, 1);
+	EVP_EncodeBlock(b64_data, data, len);
+	auto res = std::string(reinterpret_cast<char*>(b64_data));
+	free(b64_data);
+	return res;
 }

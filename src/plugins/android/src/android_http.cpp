@@ -32,6 +32,11 @@ HttpRequestBuilder& AndroidHttpRequestBuilder::setMethod(HttpMethod method) {
 	return *this;
 }
 
+HttpRequestBuilder& AndroidHttpRequestBuilder::setBody(std::string& body) {
+	this->body = body;
+	return *this;
+}
+
 HttpRequestBuilder&
 AndroidHttpRequestBuilder::setHeader(std::string header, std::string value) {
 	this->headers[header] = value;
@@ -61,9 +66,26 @@ Result<std::unique_ptr<HttpRequest>> AndroidHttpRequestBuilder::build() {
 			std::make_unique<AndroidError>("Failed to set CURL follow", err));
 	}
 
+	if (!body.empty()) {
+		if (auto err =
+				curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.size());
+			err != CURLE_OK) {
+			return Error(
+				std::make_unique<AndroidError>(
+					"Failed to set CURL body size", err));
+		}
+		if (auto err =
+				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, body.data());
+			err != CURLE_OK) {
+			return Error(
+				std::make_unique<AndroidError>("Failed to set CURL body", err));
+		}
+	}
+
 	curl_slist* headers_list = nullptr;
 	for (auto& [k, v] : headers) {
-		curl_slist_append(headers_list, std::string(k + ": " + v).c_str());
+		headers_list =
+			curl_slist_append(headers_list, std::string(k + ": " + v).c_str());
 	}
 	if (auto err = curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers_list);
 		err != CURLE_OK) {
