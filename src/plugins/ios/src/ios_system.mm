@@ -5,6 +5,7 @@
 #include "ios_error.h"
 #include "ios_window.h"
 #include <os/log.h>
+#include <sys/utsname.h>
 
 using Growl::Config;
 using Growl::ControllerButton;
@@ -148,6 +149,24 @@ Result<std::unique_ptr<Window>>
 IOSSystemAPI::createWindow(const Config& config) {
 	UIWindow* w = [[[UIApplication sharedApplication] delegate] window];
 	return std::unique_ptr<Window>(std::make_unique<IOSWindow>(w));
+}
+
+std::string IOSSystemAPI::getPlatformName() {
+	return "ios";
+}
+
+std::string IOSSystemAPI::getPlatformOSVersion() {
+	return [[UIDevice currentDevice].systemVersion UTF8String];
+}
+
+std::string IOSSystemAPI::getDeviceManufacturer() {
+	return "Apple";
+}
+
+std::string IOSSystemAPI::getDeviceModel() {
+	utsname info;
+	uname(&info);
+	return std::string(info.machine);
 }
 
 void IOSSystemAPI::setLogLevel(LogLevel log_level) {}

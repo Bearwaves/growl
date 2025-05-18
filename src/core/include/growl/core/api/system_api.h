@@ -39,6 +39,8 @@ public:
 
 	virtual std::string getPlatformName() = 0;
 	virtual std::string getPlatformOSVersion() = 0;
+	virtual std::string getDeviceManufacturer() = 0;
+	virtual std::string getDeviceModel() = 0;
 
 	template <class... Args>
 	void

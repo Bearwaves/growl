@@ -27,6 +27,11 @@ public:
 	Result<std::unique_ptr<File>>
 	openFile(std::string path, size_t start = 0, size_t end = 0) override;
 
+	std::string getPlatformName() override;
+	std::string getPlatformOSVersion() override;
+	std::string getDeviceManufacturer() override;
+	std::string getDeviceModel() override;
+
 	Preferences& getLocalPreferences() override {
 		return *local_preferences;
 	}
