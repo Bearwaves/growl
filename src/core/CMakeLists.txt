@@ -23,24 +23,24 @@ set(SOURCES
 	"src/util/timer.cpp"
 	"src/util/uuid.cpp"
 	"src/interpolation.cpp"
-	)
+)
 
 set(INTERFACE_LIBS
 	growl-thirdparty::json
 	growl-thirdparty::fmt
 	growl-thirdparty::glm
-	)
+)
 
 if(GROWL_IMGUI)
 	set(SOURCES
 		${SOURCES}
 		"src/imgui.cpp"
-		)
+	)
 
 	set(INTERFACE_LIBS
 		${INTERFACE_LIBS}
 		growl-thirdparty::imgui
-		)
+	)
 endif()
 
 add_library(growl-core ${SOURCES})
@@ -51,4 +51,4 @@ target_link_libraries(growl-core
 	${INTERFACE_LIBS}
 	PRIVATE
 	growl-thirdparty
-	)
+)

@@ -9,14 +9,14 @@ set(SOURCES
 	"src/metal_texture.mm"
 	"src/metal_batch.mm"
 	"src/metal_shader.mm"
-	)
+)
 
 set(HEADERS
 	"src/metal_graphics.h"
 	"src/metal_texture.h"
 	"src/metal_batch.h"
 	"src/metal_shader.h"
-	)
+)
 
 add_library(growl-plugin-metal ${SOURCES} ${HEADERS})
 target_link_libraries(
@@ -27,5 +27,5 @@ target_link_libraries(
 	"-framework Foundation"
 	"-framework Metal"
 	"-framework QuartzCore"
-	)
+)
 target_compile_definitions(growl-plugin-metal INTERFACE "GROWL_METAL")

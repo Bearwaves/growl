@@ -5,4 +5,4 @@ growl_thirdparty_lib(harfbuzz
 	INCLUDES PUBLIC "${SOURCE_PREFIX}/src"
 	DEFINITIONS HAVE_FREETYPE
 	LINK growl-thirdparty::freetype
-	)
+)

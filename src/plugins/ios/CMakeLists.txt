@@ -12,7 +12,7 @@ set(SOURCES
 
 	"src/ios_network.mm"
 	"src/ios_http.mm"
-	)
+)
 
 set(HEADERS
 	"src/ios_system.h"

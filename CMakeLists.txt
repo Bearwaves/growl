@@ -65,7 +65,7 @@ option(GROWL_HTTPLIB "Whether to build the cpp-httplib library" ${GROWL_DEFAULT_
 
 # Deal with third-party stuff that's in submodules
 find_package(Git QUIET)
-if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+if (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 	option(GROWL_GIT_SUBMODULES "Check submodules during build" ON)
 	if(GROWL_GIT_SUBMODULES)
 		message(STATUS "[Growl] Fetching submodules")
@@ -78,7 +78,7 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 	endif()
 endif()
 
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/thirdparty/json/CMakeLists.txt")
+if (NOT EXISTS "${PROJECT_SOURCE_DIR}/thirdparty/json/CMakeLists.txt")
 	message(FATAL_ERROR "[Growl] The submodules were not downloaded! GROWL_GIT_SUBMODULES was turned off or failed. Please update submodules and try again.")
 endif()
 

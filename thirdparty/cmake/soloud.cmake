@@ -21,7 +21,7 @@ set(CORE_SOURCES
 	${CORE_PATH}/soloud_misc.cpp
 	${CORE_PATH}/soloud_queue.cpp
 	${CORE_PATH}/soloud_thread.cpp
-	)
+)
 
 set(AUDIOSOURCES_PATH ${SOURCE_PREFIX}/src/audiosource)
 set(AUDIOSOURCES_SOURCES
@@ -33,7 +33,7 @@ set(AUDIOSOURCES_SOURCES
 	${AUDIOSOURCES_PATH}/wav/soloud_wavstream.cpp
 	${AUDIOSOURCES_PATH}/wav/stb_vorbis.c
 	${AUDIOSOURCES_PATH}/wav/stb_vorbis.h
-	)
+)
 
 set(FILTERS_PATH ${SOURCE_PREFIX}/src/filter)
 set(FILTERS_SOURCES
@@ -47,19 +47,19 @@ set(FILTERS_SOURCES
 	${FILTERS_PATH}/soloud_lofifilter.cpp
 	${FILTERS_PATH}/soloud_robotizefilter.cpp
 	${FILTERS_PATH}/soloud_waveshaperfilter.cpp
-	)
+)
 
 set(BACKENDS_PATH ${SOURCE_PREFIX}/src/backend)
 set(BACKENDS_SOURCES
 	${BACKENDS_PATH}/miniaudio/soloud_miniaudio.cpp
-	)
+)
 
 set(SOURCES
 	${CORE_SOURCES}
 	${AUDIOSOURCES_SOURCES}
 	${FILTERS_SOURCES}
 	${BACKENDS_SOURCES}
-	)
+)
 
 set(LINKS "")
 set(DEFINITIONS "WITH_MINIAUDIO")
@@ -70,11 +70,11 @@ if (APPLE)
 		"-framework AVFAudio"
 		"-framework AudioToolbox"
 		"-framework CoreAudio"
-		)
+	)
 	set(DEFINITIONS
 		${DEFINITIONS}
 		"MA_NO_RUNTIME_LINKING"
-		)
+	)
 endif()
 
 growl_thirdparty_lib(soloud
@@ -82,4 +82,4 @@ growl_thirdparty_lib(soloud
 	INCLUDES PUBLIC "${SOURCE_PREFIX}/include"
 	DEFINITIONS ${DEFINITIONS}
 	LINK ${LINKS}
-	)
+)

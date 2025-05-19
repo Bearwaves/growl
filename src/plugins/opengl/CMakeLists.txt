@@ -18,7 +18,7 @@ else ()
 	set(GROWL_OPENGL_4_5 1)
 	add_definitions(-DGROWL_OPENGL_4_5)
 	message(STATUS "[Growl] Building with OpenGL 4.5")
-endif ()
+endif()
 
 if (ANDROID)
 	find_path(OPENGL_INCLUDE_DIRS GLES3/gl3.h HINTS ${ANDROID_NDK})
@@ -26,14 +26,14 @@ if (ANDROID)
 else ()
 	set(OpenGL_GL_PREFERENCE GLVND)
 	find_package(OpenGL REQUIRED)
-endif ()
+endif()
 
 set(SOURCES
 	"src/opengl_graphics.cpp"
 	"src/opengl_batch.cpp"
 	"src/opengl_texture.cpp"
 	"src/opengl_shader.cpp"
-	)
+)
 
 set(HEADERS
 	"src/opengl.h"
@@ -43,19 +43,19 @@ set(HEADERS
 	"src/opengl_texture.h"
 	"src/opengl_shader.h"
 	"src/opengl_error.h"
-	)
+)
 
 if (GROWL_OPENGL_4_5)
 	set(SOURCES
 		"thirdparty/opengl_4_5.c"
 		${SOURCES}
-		)
+	)
 	set(HEADERS
 		"thirdparty/opengl_4_5.h"
 		"thirdparty/khrplatform.h"
 		${HEADERS}
-		)
-endif ()
+	)
+endif()
 
 add_library(growl-plugin-opengl ${SOURCES} ${HEADERS})
 target_link_libraries(
@@ -64,6 +64,6 @@ target_link_libraries(
 	growl-core
 	growl-thirdparty
 	${OPENGL_LIBRARIES}
-	)
+)
 target_compile_definitions(growl-plugin-opengl INTERFACE "GROWL_OPENGL")
 target_include_directories(growl-plugin-opengl PRIVATE ${OPENGL_INCLUDE_DIRS})

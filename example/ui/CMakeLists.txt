@@ -11,14 +11,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(SOURCES
 	"src/main.cpp"
 	"src/game.cpp"
-	)
+)
 
 if (MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /permissive-")
 else ()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wpedantic")
 	set(CMAKE_OBJCXX_FLAGS "${CMAKE_CXX_FLAGS}")
-endif ()
+endif()
 
 set(GROWL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 add_subdirectory(${GROWL_PATH} ${CMAKE_CURRENT_BINARY_DIR}/growl)
@@ -27,7 +27,7 @@ if (GROWL_ANDROID)
 	add_library(growl-example-ui SHARED ${SOURCES} ${HEADERS})
 else ()
 	add_executable(growl-example-ui ${SOURCES} ${HEADERS})
-endif ()
+endif()
 
 if (GROWL_DESKTOP)
 	target_link_libraries(growl-example-ui PRIVATE growl-platform-desktop)
@@ -44,5 +44,5 @@ elseif (GROWL_WEB)
 	# currently struggles with dollar signs in linker flags.
 	set(CMAKE_EXE_LINKER_FLAGS
 		"${CMAKE_EXE_LINKER_FLAGS} -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=$ccall"
-		)
+	)
 endif()

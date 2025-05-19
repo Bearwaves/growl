@@ -13,7 +13,7 @@ set(SOURCES
 
 	"src/android_network.cpp"
 	"src/android_http.cpp"
-	)
+)
 
 set(HEADERS
 	"src/android_system.h"
@@ -25,7 +25,7 @@ set(HEADERS
 
 	"src/android_network.h"
 	"src/android_http.h"
-	)
+)
 
 add_library(growl-plugin-android ${SOURCES} ${HEADERS})
 
@@ -43,5 +43,5 @@ target_link_libraries(growl-plugin-android
 	growl-core
 	curl::curl_static
 	${EGL_LIBRARY}
-	)
+)
 target_compile_definitions(growl-plugin-android INTERFACE "GROWL_ANDROID")

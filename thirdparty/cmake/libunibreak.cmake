@@ -5,9 +5,9 @@ set(SOURCES
 	"${SOURCE_PREFIX}/src/linebreakdef.c"
 	"${SOURCE_PREFIX}/src/linebreak.c"
 	"${SOURCE_PREFIX}/src/linebreakdata.c"
-	)
+)
 
 growl_thirdparty_lib(libunibreak
 	SOURCES ${SOURCES}
 	INCLUDES PUBLIC "${SOURCE_PREFIX}/src"
-	)
+)

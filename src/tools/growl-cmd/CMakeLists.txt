@@ -9,14 +9,14 @@ set(SOURCES
 	"src/atlas.cpp"
 	"src/shader_pack.cpp"
 	"src/assets_config.cpp"
-	)
+)
 
 set(HEADERS
 	"thirdparty/CLI11.hpp"
 	"thirdparty/rang.hpp"
 	"src/assets_config.h"
 	"src/error.h"
-	)
+)
 
 add_executable(growl-cmd ${SOURCES} ${HEADERS})
 target_link_libraries(growl-cmd
@@ -24,4 +24,4 @@ target_link_libraries(growl-cmd
 	growl-version
 	growl-core
 	growl-thirdparty
-	)
+)

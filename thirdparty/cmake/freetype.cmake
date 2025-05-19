@@ -18,11 +18,11 @@ set(SOURCES
 	"${SOURCE_PREFIX}/src/psnames/psnames.c"
 	"${SOURCE_PREFIX}/src/psaux/psaux.c"
 	"${SOURCE_PREFIX}/src/gzip/ftgzip.c"
-	)
+)
 
 configure_file("${CMAKE_CURRENT_LIST_DIR}/ftmodule.h.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/freetype/include/freetype/config/ftmodule.h"
-	)
+)
 
 set(DEFINITIONS
 	FT2_BUILD_LIBRARY
@@ -30,7 +30,7 @@ set(DEFINITIONS
 	FT_CONFIG_OPTION_USE_PNG
 	FT_CONFIG_OPTION_USE_HARFBUZZ
 	FT_CONFIG_OPTION_SYSTEM_ZLIB
-	)
+)
 
 growl_thirdparty_lib(freetype
 	SOURCES ${SOURCES}
@@ -42,4 +42,4 @@ growl_thirdparty_lib(freetype
 		growl-thirdparty::libpng
 		growl-thirdparty::zlib
 		growl-thirdparty::harfbuzz
-	)
+)

@@ -19,15 +19,15 @@ set(SOURCES
 	"${SOURCE_PREFIX}/core/rasterization.cpp"
 	"${SOURCE_PREFIX}/core/DistanceMapping.cpp"
 	"${SOURCE_PREFIX}/ext/import-font.cpp"
-	)
+)
 
 configure_file("${SOURCE_PREFIX}/cmake/msdfgen-config.h.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/msdfgen/include/msdfgen/msdfgen-config.h"
-	)
+)
 
 growl_thirdparty_lib(msdfgen
 	SOURCES ${SOURCES}
 	INCLUDES
 		PUBLIC ${SOURCE_PREFIX} "${CMAKE_CURRENT_BINARY_DIR}/msdfgen/include"
 	LINK growl-thirdparty::freetype
-	)
+)

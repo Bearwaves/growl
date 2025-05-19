@@ -8,24 +8,24 @@ endif()
 
 if (GROWL_METAL)
 	add_subdirectory(metal)
-endif ()
+endif()
 
 if (GROWL_OPENGL)
 	add_subdirectory(opengl)
-endif ()
+endif()
 
 if (GROWL_IOS)
 	add_subdirectory(ios)
-endif ()
+endif()
 
 if (GROWL_ANDROID)
 	add_subdirectory(android)
-endif ()
+endif()
 
 if (GROWL_LUA)
 	add_subdirectory(lua)
-endif ()
+endif()
 
 if (GROWL_HTTPLIB)
 	add_subdirectory(httplib)
-endif ()
+endif()

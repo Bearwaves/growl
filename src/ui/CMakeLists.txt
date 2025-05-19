@@ -11,7 +11,7 @@ set(SOURCES
 	"src/container.cpp"
 	"src/scroll_pane.cpp"
 	"src/slider.cpp"
-	)
+)
 
 add_library(growl-ui ${SOURCES})
 target_include_directories(growl-ui PUBLIC "include")
@@ -21,4 +21,4 @@ target_link_libraries(growl-ui
 	growl-scene
 	PRIVATE
 	growl-core
-	)
+)

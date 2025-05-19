@@ -13,19 +13,19 @@ set(SOURCES
 	"src/test_app.cpp"
 	"src/test_app_game.cpp"
 	"src/input.cpp"
-	)
+)
 
 set(HEADERS
 	"src/test_app_game.h"
 	"src/input.h"
-	)
+)
 
 if (MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /permissive-")
 else ()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wpedantic")
 	set(CMAKE_OBJCXX_FLAGS "${CMAKE_CXX_FLAGS}")
-endif ()
+endif()
 
 set(GROWL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 add_subdirectory(${GROWL_PATH} ${CMAKE_CURRENT_BINARY_DIR}/growl)
@@ -34,7 +34,7 @@ if (GROWL_ANDROID)
 	add_library(growl-test-app SHARED ${SOURCES} ${HEADERS})
 else ()
 	add_executable(growl-test-app ${SOURCES} ${HEADERS})
-endif ()
+endif()
 
 if (GROWL_DESKTOP)
 	target_link_libraries(growl-test-app PRIVATE growl-platform-desktop)
@@ -52,7 +52,7 @@ elseif (GROWL_IOS)
 		XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "13.0"
 		XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "Icon"
 		RESOURCE "${IOS_ASSETS}"
-		)
+	)
 	target_compile_options(growl-test-app PRIVATE -x objective-c++)
 elseif (GROWL_ANDROID)
 	target_link_libraries(growl-test-app PUBLIC growl-platform-android)
@@ -64,5 +64,5 @@ elseif (GROWL_WEB)
 	# currently struggles with dollar signs in linker flags.
 	set(CMAKE_EXE_LINKER_FLAGS
 		"${CMAKE_EXE_LINKER_FLAGS} -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=$ccall"
-		)
+	)
 endif()

@@ -15,7 +15,7 @@ set(SOURCES
 	"${SOURCE_PREFIX}/pngwrite.c"
 	"${SOURCE_PREFIX}/pngwtran.c"
 	"${SOURCE_PREFIX}/pngwutil.c"
-	)
+)
 
 if (GROWL_IOS OR GROWL_ANDROID OR (APPLE AND CMAKE_SYSTEM_PROCESSOR MATCHES "arm64"))
 	set(SOURCES
@@ -24,20 +24,20 @@ if (GROWL_IOS OR GROWL_ANDROID OR (APPLE AND CMAKE_SYSTEM_PROCESSOR MATCHES "arm
 		"${SOURCE_PREFIX}/arm/filter_neon.S"
 		"${SOURCE_PREFIX}/arm/filter_neon_intrinsics.c"
 		"${SOURCE_PREFIX}/arm/palette_neon_intrinsics.c"
-		)
+	)
 endif ()
 
 configure_file("${SOURCE_PREFIX}/scripts/pnglibconf.h.prebuilt"
 	"${CMAKE_CURRENT_BINARY_DIR}/libpng/pnglibconf.h"
-	)
+)
 
 set(INCLUDES
 	"${CMAKE_CURRENT_BINARY_DIR}/libpng"
 	"${SOURCE_PREFIX}"
-	)
+)
 
 growl_thirdparty_lib(libpng
 	SOURCES ${SOURCES}
 	INCLUDES PUBLIC ${INCLUDES}
 	LINK growl-thirdparty::zlib
-	)
+)

@@ -6,7 +6,7 @@ message(STATUS "[Growl] Enabled Android platform.")
 
 set(SOURCES
 	"src/main/cpp/main.cpp"
-	)
+)
 
 add_library(growl-platform-android ${SOURCES})
 
@@ -27,9 +27,9 @@ target_link_libraries(growl-platform-android
 	android
 	log
 	game-activity::game-activity_static
-	)
+)
 target_compile_definitions(growl-platform-android INTERFACE "GROWL_ANDROID")
 target_link_options(growl-platform-android
 	PUBLIC
 	-u Java_com_google_androidgamesdk_GameActivity_initializeNativeCode
-	)
+)

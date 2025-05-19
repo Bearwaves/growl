@@ -33,22 +33,22 @@ set(SOURCES
 	"${SOURCE_PREFIX}/ltablib.c"
 	"${SOURCE_PREFIX}/lutf8lib.c"
 	"${SOURCE_PREFIX}/linit.c"
-	)
+)
 
 set(INCLUDES
 	"${SOURCE_PREFIX}"
-	)
+)
 
 set(DEFINITIONS "")
 if (${CMAKE_SYSTEM_NAME} MATCHES "iOS")
 	set(DEFINITIONS
 		${DEFINITIONS}
 		"LUA_USE_IOS"
-		)
+	)
 endif()
 
 growl_thirdparty_lib(lua
 	SOURCES	${SOURCES}
 	INCLUDES PUBLIC ${INCLUDES}
 	DEFINITIONS ${DEFINITIONS}
-	)
+)

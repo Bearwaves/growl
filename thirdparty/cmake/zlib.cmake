@@ -11,13 +11,13 @@ set(SOURCES
 	"${SOURCE_PREFIX}/trees.c"
 	"${SOURCE_PREFIX}/uncompr.c"
 	"${SOURCE_PREFIX}/zutil.c"
-	)
+)
 
 set(INCLUDES
 	"${SOURCE_PREFIX}"
-	)
+)
 
 growl_thirdparty_lib(zlib
 	SOURCES	${SOURCES}
 	INCLUDES PUBLIC ${INCLUDES}
-	)
+)

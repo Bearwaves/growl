@@ -20,12 +20,12 @@ function(growl_thirdparty_lib name)
 			add_library(${name} ${THIRDPARTY_PREFIX_SOURCES})
 		else ()
 			add_library(${name} INTERFACE)
-		endif ()
+		endif()
 		target_include_directories(${name}
 			PRIVATE ${THIRDPARTY_PREFIX_PRIVATE}
 			PUBLIC ${THIRDPARTY_PREFIX_PUBLIC}
 			INTERFACE ${THIRDPARTY_PREFIX_INTERFACE}
-			)
+		)
 		target_compile_definitions(${name} PRIVATE ${THIRDPARTY_PREFIX_DEFINITIONS})
 		target_link_libraries(${name} PRIVATE ${THIRDPARTY_PREFIX_LINK})
 		set_property(TARGET ${name} PROPERTY FOLDER "growl-thirdparty")
@@ -40,11 +40,11 @@ elseif (IOS)
 	set(CMAKE_CXX_FLAGS "-x objective-c++")
 else ()
 	add_compile_options(-w)
-endif ()
+endif()
 
 if (GROWL_DESKTOP AND NOT MSVC)
 	add_compile_options(-msse4.1 -mpclmul)
-endif ()
+endif()
 
 # Get third-party stuff not to log
 function(message)
@@ -90,7 +90,7 @@ target_link_libraries(growl-thirdparty
 	growl-thirdparty::libunibreak
 	growl-thirdparty::fpng
 	growl-thirdparty::stb
-	)
+)
 
 if (GROWL_SDL3)
 	set(SDL_TEST_LIBRARY OFF)
