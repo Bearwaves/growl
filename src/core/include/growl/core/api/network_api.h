@@ -3,6 +3,7 @@
 #include "growl/core/network/future.h"
 #include "growl/core/network/http.h"
 #include <memory>
+#include <vector>
 
 namespace Growl {
 
