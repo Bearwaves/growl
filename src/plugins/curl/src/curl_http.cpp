@@ -1,17 +1,17 @@
-#include "android_http.h"
-#include "android_error.h"
+#include "curl_http.h"
+#include "curl_error.h"
 #include "growl/core/error.h"
 #include "growl/core/network/http.h"
 
-using Growl::AndroidError;
-using Growl::AndroidHttpRequest;
-using Growl::AndroidHttpRequestBuilder;
+using Growl::CurlError;
+using Growl::CurlHttpRequest;
+using Growl::CurlHttpRequestBuilder;
 using Growl::Error;
 using Growl::HttpRequest;
 using Growl::HttpRequestBuilder;
 using Growl::Result;
 
-AndroidHttpRequest::~AndroidHttpRequest() {
+CurlHttpRequest::~CurlHttpRequest() {
 	if (this->headers) {
 		curl_slist_free_all(headers);
 		headers = nullptr;
@@ -22,48 +22,48 @@ AndroidHttpRequest::~AndroidHttpRequest() {
 	}
 }
 
-HttpRequestBuilder& AndroidHttpRequestBuilder::setURL(std::string url) {
+HttpRequestBuilder& CurlHttpRequestBuilder::setURL(std::string url) {
 	this->url = url;
 	return *this;
 }
 
-HttpRequestBuilder& AndroidHttpRequestBuilder::setMethod(HttpMethod method) {
+HttpRequestBuilder& CurlHttpRequestBuilder::setMethod(HttpMethod method) {
 	this->method = method;
 	return *this;
 }
 
-HttpRequestBuilder& AndroidHttpRequestBuilder::setBody(std::string& body) {
+HttpRequestBuilder& CurlHttpRequestBuilder::setBody(std::string& body) {
 	this->body = body;
 	return *this;
 }
 
 HttpRequestBuilder&
-AndroidHttpRequestBuilder::setHeader(std::string header, std::string value) {
+CurlHttpRequestBuilder::setHeader(std::string header, std::string value) {
 	this->headers[header] = value;
 	return *this;
 }
 
-Result<std::unique_ptr<HttpRequest>> AndroidHttpRequestBuilder::build() {
+Result<std::unique_ptr<HttpRequest>> CurlHttpRequestBuilder::build() {
 	CURL* curl = curl_easy_init();
 	if (!curl) {
 		return Error(
-			std::make_unique<AndroidError>("Failed to create CURL request"));
+			std::make_unique<CurlError>("Failed to create CURL request"));
 	}
 	if (auto err = curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 		err != CURLE_OK) {
 		return Error(
-			std::make_unique<AndroidError>("Failed to set CURL URL", err));
+			std::make_unique<CurlError>("Failed to set CURL URL", err));
 	}
 	if (auto err = curl_easy_setopt(
 			curl, CURLOPT_CUSTOMREQUEST, httpMethodString(method).c_str());
 		err != CURLE_OK) {
 		return Error(
-			std::make_unique<AndroidError>("Failed to set CURL method", err));
+			std::make_unique<CurlError>("Failed to set CURL method", err));
 	}
 	if (auto err = curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 		err != CURLE_OK) {
 		return Error(
-			std::make_unique<AndroidError>("Failed to set CURL follow", err));
+			std::make_unique<CurlError>("Failed to set CURL follow", err));
 	}
 
 	if (!body.empty()) {
@@ -71,14 +71,14 @@ Result<std::unique_ptr<HttpRequest>> AndroidHttpRequestBuilder::build() {
 				curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.size());
 			err != CURLE_OK) {
 			return Error(
-				std::make_unique<AndroidError>(
+				std::make_unique<CurlError>(
 					"Failed to set CURL body size", err));
 		}
 		if (auto err =
 				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, body.data());
 			err != CURLE_OK) {
 			return Error(
-				std::make_unique<AndroidError>("Failed to set CURL body", err));
+				std::make_unique<CurlError>("Failed to set CURL body", err));
 		}
 	}
 
@@ -90,9 +90,9 @@ Result<std::unique_ptr<HttpRequest>> AndroidHttpRequestBuilder::build() {
 	if (auto err = curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers_list);
 		err != CURLE_OK) {
 		return Error(
-			std::make_unique<AndroidError>("Failed to set CURL headers", err));
+			std::make_unique<CurlError>("Failed to set CURL headers", err));
 	}
 
 	return std::unique_ptr<HttpRequest>(
-		std::make_unique<AndroidHttpRequest>(curl, headers_list));
+		std::make_unique<CurlHttpRequest>(curl, headers_list));
 }

@@ -1,15 +1,14 @@
-#include "android_network.h"
-#include "android_error.h"
-#include "android_http.h"
+#include "curl_network.h"
+#include "curl_error.h"
+#include "curl_http.h"
 #include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
 #include "growl/core/network/future.h"
-#include <future>
 
-using Growl::AndroidError;
-using Growl::AndroidNetworkAPI;
 using Growl::API;
 using Growl::Config;
+using Growl::CurlError;
+using Growl::CurlNetworkAPI;
 using Growl::Error;
 using Growl::Future;
 using Growl::HttpRequestBuilder;
@@ -19,26 +18,25 @@ using Growl::Result;
 
 std::unique_ptr<NetworkAPIInternal>
 Growl::createNetworkAPI(API& api, void* user) {
-	return std::make_unique<AndroidNetworkAPI>(api);
+	return std::make_unique<CurlNetworkAPI>(api);
 }
 
-Error AndroidNetworkAPI::init(const Config& config) {
+Error CurlNetworkAPI::init(const Config& config) {
 	auto err = curl_global_init(CURL_GLOBAL_DEFAULT);
 	if (err != CURLE_OK) {
-		return std::make_unique<AndroidError>(
+		return std::make_unique<CurlError>(
 			"Failed to init curl, got error", err);
 	}
-	api.system().log(
-		"AndroidNetworkAPI", "Initialised Android [libcurl] networking");
-	return initCrypto();
+	api.system().log("CurlNetworkAPI", "Initialised Curl networking");
+	return nullptr;
 }
 
-void AndroidNetworkAPI::dispose() {
+void CurlNetworkAPI::dispose() {
 	curl_global_cleanup();
 }
 
-std::unique_ptr<HttpRequestBuilder> AndroidNetworkAPI::httpRequestBuilder() {
-	return std::make_unique<AndroidHttpRequestBuilder>();
+std::unique_ptr<HttpRequestBuilder> CurlNetworkAPI::httpRequestBuilder() {
+	return std::make_unique<CurlHttpRequestBuilder>();
 }
 
 size_t writeToString(void* contents, size_t size, size_t n, void* user) {
@@ -49,39 +47,37 @@ size_t writeToString(void* contents, size_t size, size_t n, void* user) {
 }
 
 Future<HttpResponse>
-AndroidNetworkAPI::doHttpRequest(std::unique_ptr<HttpRequest> request) {
+CurlNetworkAPI::doHttpRequest(std::unique_ptr<HttpRequest> request) {
 	return std::async(
 		std::launch::async,
 		[req = std::move(request)]() -> Result<HttpResponse> {
-			CURL* c = static_cast<AndroidHttpRequest*>(req.get())->getRequest();
+			CURL* c = static_cast<CurlHttpRequest*>(req.get())->getRequest();
 			HttpResponse response;
-			curl_easy_setopt(c, CURLOPT_VERBOSE, 1L);
 
 			if (auto err =
 					curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, writeToString);
 				err != CURLE_OK) {
 				return Error(
-					std::make_unique<AndroidError>(
+					std::make_unique<CurlError>(
 						"Failed to set response write function", err));
 			}
 			if (auto err =
 					curl_easy_setopt(c, CURLOPT_WRITEDATA, &(response.content));
 				err != CURLE_OK) {
 				return Error(
-					std::make_unique<AndroidError>(
+					std::make_unique<CurlError>(
 						"Failed to set response write pointer", err));
 			}
 
 			if (auto err = curl_easy_perform(c); err != CURLE_OK) {
 				return Error(
-					std::make_unique<AndroidError>(
-						"Failed to make request", err));
+					std::make_unique<CurlError>("Failed to make request", err));
 			}
 			if (auto err = curl_easy_getinfo(
 					c, CURLINFO_RESPONSE_CODE, &(response.status_code));
 				err != CURLE_OK) {
 				return Error(
-					std::make_unique<AndroidError>(
+					std::make_unique<CurlError>(
 						"Failed to read response status code", err));
 			}
 			return response;
