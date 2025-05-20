@@ -4,7 +4,6 @@
 #include "growl/core/network/future.h"
 #include "ios_error.h"
 #include "ios_http.h"
-#include <CommonCrypto/CommonHMAC.h>
 #include <thread>
 
 using Growl::API;
