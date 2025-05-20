@@ -75,11 +75,11 @@ include(cmake/msdfgen.cmake)
 include(cmake/fpng.cmake)
 include(cmake/stb.cmake)
 include(cmake/date.cmake)
+include(cmake/libsodium.cmake)
 
 add_library(growl-thirdparty INTERFACE)
 target_link_libraries(growl-thirdparty
 	INTERFACE
-	${THIRDPARTY_LINK_LIBRARIES}
 	growl-thirdparty::glm
 	growl-thirdparty::fmt
 	growl-thirdparty::json
@@ -88,8 +88,11 @@ target_link_libraries(growl-thirdparty
 	growl-thirdparty::harfbuzz
 	growl-thirdparty::msdfgen
 	growl-thirdparty::libunibreak
+	growl-thirdparty::zlib
 	growl-thirdparty::fpng
 	growl-thirdparty::stb
+	growl-thirdparty::date
+	growl-thirdparty::sodium
 )
 
 if (GROWL_SDL3)
@@ -119,6 +122,11 @@ endif()
 if (GROWL_HTTPLIB)
 	include(cmake/httplib.cmake)
 	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::httplib)
+endif()
+
+if (GROWL_CURL)
+	include(cmake/curl.cmake)
+	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::curl)
 endif()
 
 unset(MESSAGE_QUIET)
