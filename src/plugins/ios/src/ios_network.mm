@@ -26,7 +26,7 @@ Growl::createNetworkAPI(API& api, void* user) {
 
 Error IOSNetworkAPI::init(const Config& config) {
 	api.system().log("IOSNetworkAPI", "Initialised iOS network API");
-	return nullptr;
+	return initCrypto();
 }
 
 void IOSNetworkAPI::dispose() {}
@@ -58,24 +58,4 @@ IOSNetworkAPI::doHttpRequest(std::unique_ptr<HttpRequest> request) {
 			promise.set_value(std::move(resp));
 		  }] resume];
 	return promise.get_future();
-}
-
-std::vector<unsigned char>
-IOSNetworkAPI::hmac256(std::string& body, std::string& key) {
-	auto body_bytes = [NSData dataWithBytes:body.c_str() length:body.size()];
-	auto key_bytes = [NSData dataWithBytes:key.c_str() length:key.size()];
-
-	NSMutableData* hash =
-		[NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
-	CCHmac(
-		kCCHmacAlgSHA256, key_bytes.bytes, key_bytes.length, body_bytes.bytes,
-		body_bytes.length, hash.mutableBytes);
-	auto start = reinterpret_cast<const unsigned char*>(hash.bytes);
-
-	return std::vector<unsigned char>(start, start + hash.length);
-}
-
-std::string IOSNetworkAPI::base64enc(const unsigned char* data, int len) {
-	auto ns_data = [NSData dataWithBytes:data length:len];
-	return [[ns_data base64EncodedStringWithOptions:0] UTF8String];
 }

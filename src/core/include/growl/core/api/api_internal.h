@@ -73,6 +73,7 @@ public:
 class NetworkAPIInternal : public NetworkAPI, public APIInternal {
 public:
 	virtual ~NetworkAPIInternal() {}
+	virtual Error initCrypto();
 };
 
 std::unique_ptr<SystemAPIInternal>

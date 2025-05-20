@@ -7,7 +7,9 @@ set(SOURCES
 	"src/game/game.cpp"
 	"src/input/processor.cpp"
 	"src/graphics/font_texture_atlas.cpp"
+	"src/scripting/scripting_api.cpp"
 	"src/network/http.cpp"
+	"src/network/network_api.cpp"
 
 	"src/assets/atlas.cpp"
 	"src/assets/bitmap_font_face.cpp"
@@ -19,7 +21,6 @@ set(SOURCES
 	"src/assets/local_file.cpp"
 
 	"src/text/glyph_layout.cpp"
-	"src/scripting/scripting_api.cpp"
 	"src/util/timer.cpp"
 	"src/util/uuid.cpp"
 	"src/interpolation.cpp"

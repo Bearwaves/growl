@@ -18,10 +18,6 @@ public:
 	Future<HttpResponse>
 	doHttpRequest(std::unique_ptr<HttpRequest> request) override;
 
-	std::vector<unsigned char>
-	hmac256(std::string& body, std::string& key) override;
-	std::string base64enc(const unsigned char* data, int len) override;
-
 private:
 	API& api;
 };
