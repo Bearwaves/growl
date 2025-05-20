@@ -8,7 +8,6 @@ namespace Growl {
 enum class HttpMethod { GET, POST, PUT, PATCH, OPTIONS, HEAD, CONNECT, TRACE };
 
 std::string httpMethodString(HttpMethod method);
-Result<std::string> gzip(std::string& data);
 
 class HttpRequest {};
 

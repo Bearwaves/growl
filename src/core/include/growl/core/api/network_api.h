@@ -3,6 +3,7 @@
 #include "growl/core/network/future.h"
 #include "growl/core/network/http.h"
 #include <memory>
+#include <vector>
 
 namespace Growl {
 
@@ -15,8 +16,9 @@ public:
 	doHttpRequest(std::unique_ptr<HttpRequest> request) = 0;
 
 	virtual std::vector<unsigned char>
-	hmac256(std::string& body, std::string& key) = 0;
-	virtual std::string base64enc(const unsigned char* data, int len) = 0;
+	hmac256(std::string& body, std::string& key);
+	virtual std::string base64enc(const unsigned char* data, int len);
+	virtual Result<std::string> gzip(std::string& data);
 };
 
 } // namespace Growl
