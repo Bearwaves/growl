@@ -58,3 +58,9 @@
 [submodule "thirdparty/cpp-httplib"]
 	path = thirdparty/cpp-httplib
 	url = git@github.com:yhirose/cpp-httplib.git
+[submodule "thirdparty/libsodium-cmake"]
+	path = thirdparty/libsodium-cmake
+	url = git@github.com:robinlinden/libsodium-cmake.git
+[submodule "thirdparty/curl"]
+	path = thirdparty/curl
+	url = git@github.com:curl/curl.git

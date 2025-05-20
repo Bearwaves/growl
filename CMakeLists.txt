@@ -18,6 +18,7 @@ set(GROWL_DEFAULT_WEB OFF)
 set(GROWL_DEFAULT_TOOLS ON)
 set(GROWL_DEFAULT_SDL3 ON)
 set(GROWL_DEFAULT_HTTPLIB ON)
+set(GROWL_DEFAULT_CURL ON)
 
 if (IOS)
 	set(GROWL_DEFAULT_IMGUI OFF)
@@ -26,6 +27,7 @@ if (IOS)
 	set(GROWL_DEFAULT_TOOLS OFF)
 	set(GROWL_DEFAULT_SDL3 OFF)
 	set(GROWL_DEFAULT_HTTPLIB OFF)
+	set(GROWL_DEFAULT_CURL OFF)
 endif()
 
 if (ANDROID)
@@ -62,6 +64,7 @@ option(GROWL_TOOLS "Whether to build the tools, e.g. growl-cmd" ${GROWL_DEFAULT_
 option(GROWL_IMGUI "Whether to include Dear ImGui for debug UIs" ${GROWL_DEFAULT_IMGUI})
 option(GROWL_LUA "Whether to include Lua for scripting" ON)
 option(GROWL_HTTPLIB "Whether to build the cpp-httplib library" ${GROWL_DEFAULT_HTTPLIB})
+option(GROWL_CURL "Whether to build the curl library" ${GROWL_DEFAULT_CURL})
 
 # Deal with third-party stuff that's in submodules
 find_package(Git QUIET)

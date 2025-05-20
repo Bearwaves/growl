@@ -3,6 +3,7 @@
 | Package         | Version          | URL                                     |
 |-----------------|------------------|-----------------------------------------|
 | cpp-httplib     | `v0.20.1`        | https://github.com/yhirose/cpp-httplib  |
+| curl            | `curl-8_13_0`    | https://github.com/curl/curl            |
 | Dear ImGui      | `1.91.7-docking` | https://github.com/ocornut/imgui        |
 | {fmt}           | `11.1.4`         | https://github.com/fmtlib/fmt           |
 | fpng            | `b5267e5`        | https://github.com/richgel999/fpng      |
@@ -11,6 +12,7 @@
 | HarfBuzz        | `3377ddf`        | https://github.com/harfbuzz/harfbuzz    |
 | json            | `3.11.3`         | https://github.com/nlohmann/json        |
 | libpng          | `1.6.37`         | http://libpng.org/pub/png/libpng.html   |
+| libsodium       | `1.0.20-RELEASE` | https://github.com/jedisct1/libsodium   |
 | libunibreak     | `5.0`            | https://github.com/adah1972/libunibreak |
 | lua             | `v5.4.6`         | https://github.com/lua/lua              |
 | msdfgen         | `v1.12`          | https://github.com/Chlumsky/msdfgen/    |
