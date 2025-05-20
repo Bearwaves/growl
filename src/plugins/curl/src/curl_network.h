@@ -6,9 +6,9 @@ namespace Growl {
 
 class API;
 
-class HttplibNetworkAPI : public NetworkAPIInternal {
+class CurlNetworkAPI : public NetworkAPIInternal {
 public:
-	explicit HttplibNetworkAPI(API& api)
+	explicit CurlNetworkAPI(API& api)
 		: api{api} {}
 
 	Error init(const Config& config) override;

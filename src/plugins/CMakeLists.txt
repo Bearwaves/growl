@@ -26,6 +26,6 @@ if (GROWL_LUA)
 	add_subdirectory(lua)
 endif()
 
-if (GROWL_HTTPLIB)
-	add_subdirectory(httplib)
+if (GROWL_CURL)
+	add_subdirectory(curl)
 endif()

@@ -1,6 +1,7 @@
 if (GROWL_ANDROID)
 	find_package(curl REQUIRED CONFIG)
-	add_library(growl-thirdparty::curl ALIAS curl::curl_static)
+	add_library(libcurl_static INTERFACE)
+	target_link_libraries(libcurl_static INTERFACE curl::curl_static)
 else()
 	set(SOURCE_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/curl)
 
@@ -26,5 +27,5 @@ else()
 	endif()
 
 	add_subdirectory(${SOURCE_PREFIX})
-	add_library(growl-thirdparty::curl ALIAS libcurl_static)
 endif()
+	add_library(growl-thirdparty::curl ALIAS libcurl_static)

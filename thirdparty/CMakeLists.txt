@@ -119,11 +119,6 @@ if (GROWL_LUA)
 	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::lua)
 endif()
 
-if (GROWL_HTTPLIB)
-	include(cmake/httplib.cmake)
-	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::httplib)
-endif()
-
 if (GROWL_CURL)
 	include(cmake/curl.cmake)
 	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::curl)

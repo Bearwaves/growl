@@ -24,6 +24,7 @@ target_link_libraries(growl-platform-android
 	growl-plugin-opengl
 	growl-plugin-soloud
 	growl-plugin-lua
+	growl-plugin-curl
 	android
 	log
 	game-activity::game-activity_static

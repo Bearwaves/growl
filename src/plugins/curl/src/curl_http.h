@@ -7,12 +7,12 @@
 
 namespace Growl {
 
-class AndroidHttpRequest : public HttpRequest {
+class CurlHttpRequest : public HttpRequest {
 public:
-	explicit AndroidHttpRequest(CURL* request, curl_slist* headers)
+	explicit CurlHttpRequest(CURL* request, curl_slist* headers)
 		: request{request}
 		, headers{headers} {}
-	~AndroidHttpRequest();
+	~CurlHttpRequest();
 
 	CURL* getRequest() {
 		return this->request;
@@ -23,7 +23,7 @@ private:
 	curl_slist* headers;
 };
 
-class AndroidHttpRequestBuilder : public HttpRequestBuilder {
+class CurlHttpRequestBuilder : public HttpRequestBuilder {
 public:
 	HttpRequestBuilder& setURL(std::string url) override;
 

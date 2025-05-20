@@ -47,7 +47,7 @@ than the ones necessary for your specific platform (e.g. Android NDK,
 Emscripten).
 
 The exception to this is OpenSSL, which you will need installed on your machine
-in order to build for desktop targets.
+in order to build for macOS or Linux targets.
 
 ## Getting started
 

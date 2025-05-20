@@ -2,7 +2,6 @@
 
 | Package         | Version          | URL                                     |
 |-----------------|------------------|-----------------------------------------|
-| cpp-httplib     | `v0.20.1`        | https://github.com/yhirose/cpp-httplib  |
 | curl            | `curl-8_13_0`    | https://github.com/curl/curl            |
 | Dear ImGui      | `1.91.7-docking` | https://github.com/ocornut/imgui        |
 | {fmt}           | `11.1.4`         | https://github.com/fmtlib/fmt           |
