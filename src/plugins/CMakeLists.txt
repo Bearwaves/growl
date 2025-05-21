@@ -29,3 +29,7 @@ endif()
 if (GROWL_CURL)
 	add_subdirectory(curl)
 endif()
+
+if (GROWL_WEB)
+	add_subdirectory(web)
+endif()

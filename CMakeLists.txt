@@ -47,6 +47,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	set(GROWL_DEFAULT_DESKTOP OFF)
 	set(GROWL_DEFAULT_TOOLS OFF)
 	set(GROWL_DEFAULT_WEB ON)
+	set(GROWL_DEFAULT_CURL OFF)
 endif()
 
 # Note that the platforms turn on plugins according to their own logic.
