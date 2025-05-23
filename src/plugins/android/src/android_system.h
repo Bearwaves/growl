@@ -12,11 +12,14 @@
 
 namespace Growl {
 
+class Game;
+
 class AndroidSystemAPI : public SystemAPIInternal {
 public:
-	explicit AndroidSystemAPI(API& api, android_app* android_state)
+	explicit AndroidSystemAPI(API& api, android_app* android_state, Game* game)
 		: api{api}
-		, android_state{android_state} {}
+		, android_state{android_state}
+		, game{game} {}
 	Error init(const Config& config) override;
 	void tick() override;
 	void dispose() override;
@@ -70,6 +73,8 @@ private:
 
 	API& api;
 	android_app* android_state;
+	Game* game; // Don't love system knowing about this. Move app_cmd handler to
+				// platform?
 	JNIEnv* app_jni_env = nullptr;
 	int resize_width = 0;
 	int resize_height = 0;

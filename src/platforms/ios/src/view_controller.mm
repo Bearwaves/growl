@@ -61,6 +61,7 @@ std::unique_ptr<Growl::Game> createGame();
 				usingBlock:^(NSNotification* _Nonnull notification) {
 				  systemInternal.log("ViewController", "Resume");
 				  systemInternal.resume();
+				  game->resume();
 				}] retain];
 
 	_pausedObserver = [[[NSNotificationCenter defaultCenter]
@@ -69,6 +70,7 @@ std::unique_ptr<Growl::Game> createGame();
 					 queue:[NSOperationQueue currentQueue]
 				usingBlock:^(NSNotification* _Nonnull notification) {
 				  systemInternal.log("ViewController", "Pause");
+				  game->pause();
 				  systemInternal.pause();
 				}] retain];
 

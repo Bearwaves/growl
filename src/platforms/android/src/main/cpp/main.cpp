@@ -26,13 +26,19 @@ void android_main(struct android_app* state) {
 	auto api = std::make_unique<API>();
 	api->setFrameTimer(std::make_unique<FrameTimer>());
 
-	api->setSystemAPI(createSystemAPI(*api, state));
+	auto game = createGame();
+
+	struct Params {
+		android_app* app;
+		Growl::Game* game;
+	} params{state, game.get()};
+
+	api->setSystemAPI(createSystemAPI(*api, &params));
 	api->setGraphicsAPI(createGraphicsAPI(*api));
 	api->setAudioAPI(createAudioAPI(*api));
 	api->setScriptingAPI(createScriptingAPI(*api));
 	api->setNetworkAPI(createNetworkAPI(*api));
 
-	auto game = createGame();
 	game->setAPI(api.get());
 
 	if (auto err = static_cast<SystemAPIInternal&>(api->system())

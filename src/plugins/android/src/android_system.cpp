@@ -5,6 +5,7 @@
 #include "growl/core/assets/error.h"
 #include "growl/core/assets/file.h"
 #include "growl/core/error.h"
+#include "growl/core/game/game.h"
 #include "growl/core/input/controller.h"
 #include "growl/core/input/event.h"
 #include "growl/core/log.h"
@@ -22,6 +23,7 @@ using Growl::ControllerButton;
 using Growl::ControllerEventType;
 using Growl::Error;
 using Growl::File;
+using Growl::Game;
 using Growl::HapticsDevice;
 using Growl::InputControllerEvent;
 using Growl::LogLevel;
@@ -36,6 +38,11 @@ jobject ANDROID_ACTIVITY;
 JavaVM* ANDROID_JVM;
 } // namespace Growl
 
+struct Params {
+	android_app* app;
+	Growl::Game* game;
+};
+
 constexpr int DPAD_UP_MASK = (1 << static_cast<int>(ControllerButton::DpadUp));
 constexpr int DPAD_DOWN_MASK =
 	(1 << static_cast<int>(ControllerButton::DpadDown));
@@ -46,8 +53,8 @@ constexpr int DPAD_RIGHT_MASK =
 
 std::unique_ptr<SystemAPIInternal>
 Growl::createSystemAPI(API& api, void* user) {
-	return std::make_unique<AndroidSystemAPI>(
-		api, static_cast<android_app*>(user));
+	Params* p = static_cast<Params*>(user);
+	return std::make_unique<AndroidSystemAPI>(api, p->app, p->game);
 }
 
 Error AndroidSystemAPI::init(const Config& config) {
@@ -138,6 +145,7 @@ std::string AndroidSystemAPI::getDeviceModel() {
 
 void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 	API* api = (API*)app->userData;
+	auto& system_internal = static_cast<AndroidSystemAPI&>(api->system());
 	switch (cmd) {
 	case APP_CMD_INIT_WINDOW: {
 		api->system().log("AndroidSystemAPI", "Window is ready for creation");
@@ -179,7 +187,6 @@ void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 		break;
 	case APP_CMD_WINDOW_RESIZED:
 	case APP_CMD_CONFIG_CHANGED: {
-		auto& system_internal = static_cast<AndroidSystemAPI&>(api->system());
 		if (app->window) {
 			system_internal.onResizeEvent(
 				ANativeWindow_getWidth(app->window),
@@ -188,13 +195,16 @@ void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 		system_internal.setDarkMode(getDarkMode(app));
 		break;
 	}
-	case APP_CMD_PAUSE:
+	case APP_CMD_PAUSE: {
+		system_internal.game->pause();
 		api->audio().setMuted(true);
-		static_cast<SystemAPIInternal&>(api->system()).pause();
+		system_internal.pause();
 		break;
+	}
 	case APP_CMD_RESUME:
+		system_internal.resume();
 		api->audio().setMuted(false);
-		static_cast<SystemAPIInternal&>(api->system()).resume();
+		system_internal.game->resume();
 		break;
 	case APP_CMD_START: {
 		JNIEnv* env;
