@@ -79,3 +79,10 @@ Result<std::string> NetworkAPI::gzip(std::string& data) {
 
 	return outstring;
 }
+
+std::string NetworkAPI::sha256(std::string& data) {
+	unsigned char out[crypto_hash_sha256_BYTES];
+	crypto_hash_sha256(
+		out, reinterpret_cast<const unsigned char*>(data.data()), data.size());
+	return std::string(out, out + crypto_hash_sha256_BYTES);
+}

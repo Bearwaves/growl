@@ -19,6 +19,7 @@ public:
 	hmac256(std::string& body, std::string& key);
 	virtual std::string base64enc(const unsigned char* data, int len);
 	virtual Result<std::string> gzip(std::string& data);
+	virtual std::string sha256(std::string& data);
 };
 
 } // namespace Growl
