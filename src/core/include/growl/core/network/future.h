@@ -11,6 +11,17 @@ struct Future : public std::future<Result<T>> {
 	Future() noexcept
 		: std::future<Result<T>>() {}
 
+	~Future() {
+		if (this->valid() && !isReady()) {
+			cancel();
+		}
+	}
+
+	Future(const Future&) = delete;
+	Future& operator=(const Future&) = delete;
+	Future(Future&&) = default;
+	Future& operator=(Future&&) = default;
+
 	Future(
 		std::future<Result<T>> f,
 		std::shared_ptr<std::atomic<bool>> cancellation_token =
