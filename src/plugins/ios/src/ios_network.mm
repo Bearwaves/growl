@@ -38,7 +38,7 @@ Future<HttpResponse>
 IOSNetworkAPI::doHttpRequest(std::unique_ptr<HttpRequest> request) {
 	auto ios_request = static_cast<IOSHttpRequest&>(*request);
 	__block auto promise = std::promise<Result<HttpResponse>>();
-	[[[NSURLSession sharedSession]
+	auto task = [[[NSURLSession sharedSession]
 		dataTaskWithRequest:ios_request.getNative()
 		  completionHandler:^(
 			  NSData* data, NSURLResponse* response, NSError* error) {
@@ -55,6 +55,13 @@ IOSNetworkAPI::doHttpRequest(std::unique_ptr<HttpRequest> request) {
 				resp.status_code = static_cast<int>([http_response statusCode]);
 			}
 			promise.set_value(std::move(resp));
-		  }] resume];
-	return promise.get_future();
+		  }] retain];
+	[task resume];
+
+	auto cancellation_lambda = [task]() {
+		[task cancel];
+		[task release];
+	};
+
+	return Future(promise.get_future(), std::move(cancellation_lambda));
 }
