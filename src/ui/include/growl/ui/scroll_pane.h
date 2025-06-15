@@ -19,6 +19,11 @@ public:
 	bool onMouseEventPost(const InputMouseEvent& event, bool child_handled);
 	bool onTouchEventPost(const InputTouchEvent& event, bool child_handled);
 
+	float getScrollX();
+	float getScrollY();
+	void setScrollX(float x);
+	void setScrollY(float y);
+
 private:
 	bool panning = false;
 	float last_pointer_x = 0;

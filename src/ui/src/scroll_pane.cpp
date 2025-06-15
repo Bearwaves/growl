@@ -147,6 +147,32 @@ bool ScrollPane::onTouchEventPost(
 	return child_handled;
 }
 
+float ScrollPane::getScrollX() {
+	for (auto& child : getChildren()) {
+		return child->getX();
+	}
+	return 0;
+}
+
+float ScrollPane::getScrollY() {
+	for (auto& child : getChildren()) {
+		return -child->getY();
+	}
+	return 0;
+}
+
+void ScrollPane::setScrollX(float x) {
+	for (auto& child : getChildren()) {
+		child->setX(clampX(x));
+	}
+}
+
+void ScrollPane::setScrollY(float y) {
+	for (auto& child : getChildren()) {
+		child->setY(clampY(-y));
+	}
+}
+
 void ScrollPane::pan(float x, float y) {
 	if (panning) {
 		float diff_x = x - last_pointer_x;
