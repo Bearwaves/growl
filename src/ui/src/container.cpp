@@ -7,7 +7,7 @@ using Growl::Container;
 void Container::layout() {
 	int i = 0;
 	for (auto& pack : pack_info) {
-		auto node = getChildren().at(i++).get();
+		auto node = getChildren().at(i++);
 		auto widget = Growl::nodeAsWidget(node);
 
 		pack.prefWidthResult = pack.prefWidth.evaluate(node);

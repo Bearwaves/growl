@@ -11,7 +11,7 @@ using Growl::ScrollPane;
 void ScrollPane::layout() {
 	int i = 0;
 	for (auto& pack : pack_info) {
-		auto node = getChildren().at(i++).get();
+		auto node = getChildren().at(i++);
 		auto widget = nodeAsWidget(node);
 
 		pack.prefWidthResult = pack.prefWidth.evaluate(node);
@@ -96,7 +96,7 @@ bool ScrollPane::onMouseEventPost(
 	switch (event.type) {
 	case PointerEventType::Scroll:
 		if (!panning) {
-			for (auto& child : getChildren()) {
+			for (auto child : getChildren()) {
 				child->setX(clampX(child->getX() + 20 * event.scrollX));
 				child->setY(clampY(child->getY() + 20 * event.scrollY));
 			}
@@ -148,27 +148,27 @@ bool ScrollPane::onTouchEventPost(
 }
 
 float ScrollPane::getScrollX() {
-	for (auto& child : getChildren()) {
+	for (auto child : getChildren()) {
 		return child->getX();
 	}
 	return 0;
 }
 
 float ScrollPane::getScrollY() {
-	for (auto& child : getChildren()) {
+	for (auto child : getChildren()) {
 		return -child->getY();
 	}
 	return 0;
 }
 
 void ScrollPane::setScrollX(float x) {
-	for (auto& child : getChildren()) {
+	for (auto child : getChildren()) {
 		child->setX(clampX(x));
 	}
 }
 
 void ScrollPane::setScrollY(float y) {
-	for (auto& child : getChildren()) {
+	for (auto child : getChildren()) {
 		child->setY(clampY(-y));
 	}
 }
@@ -179,7 +179,7 @@ void ScrollPane::pan(float x, float y) {
 		float diff_y = y - last_pointer_y;
 		last_pointer_x = x;
 		last_pointer_y = y;
-		for (auto& child : getChildren()) {
+		for (auto child : getChildren()) {
 			child->setX(clampX(child->getX() + diff_x));
 			child->setY(clampY(child->getY() + diff_y));
 		}

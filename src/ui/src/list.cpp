@@ -15,7 +15,7 @@ void List::layout() {
 	// Resolve any nodes that already have a height or width (e.g. text labels).
 	int i = 0;
 	for (auto& pack : pack_info) {
-		auto node = getChildren().at(i++).get();
+		auto node = getChildren().at(i++);
 		auto widget = nodeAsWidget(node);
 		pack.prefWidthResult = pack.prefWidth.evaluate(node);
 		if (pack.maxWidth) {
@@ -53,7 +53,7 @@ void List::layout() {
 	float position = 0;
 	i = 0;
 	for (auto& pack : pack_info) {
-		auto node = getChildren().at(i++).get();
+		auto node = getChildren().at(i++);
 
 		float margin_top = pack.marginTop.evaluate(node);
 		float margin_bottom = pack.marginBottom.evaluate(node);

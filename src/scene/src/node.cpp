@@ -38,24 +38,34 @@ std::string& Node::getLabel() {
 
 Node* Node::addChild(std::unique_ptr<Node> node) {
 	node->parent = this;
-	children.emplace_back(std::move(node));
-	Node* n = children.back().get();
+	Node* n = node.get();
+	owned_children.emplace(n, std::move(node));
 	n->setDepth(depth + 1);
+	children.emplace_back(n);
 	children_z_order.emplace_back(n);
 	return n;
+}
+
+Node* Node::addChild(Node* node) {
+	node->parent = this;
+	node->setDepth(depth + 1);
+	children.emplace_back(node);
+	children_z_order.emplace_back(node);
+	return node;
 }
 
 void Node::removeChild(int i) {
 	children.erase(std::next(children.begin(), i));
 	children_z_order.clear();
 	for (auto& child : children) {
-		children_z_order.emplace_back(child.get());
+		children_z_order.emplace_back(child);
 	}
 	reorderZ();
 }
 
 void Node::clear() {
 	children.clear();
+	owned_children.clear();
 	children_z_order.clear();
 }
 

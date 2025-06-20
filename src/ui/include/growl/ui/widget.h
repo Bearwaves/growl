@@ -10,6 +10,7 @@ public:
 	Widget(std::string&& name);
 
 	virtual Node* addChild(std::unique_ptr<Node> node) override;
+	virtual Node* addChild(Node* node) override;
 
 	template <class T, class... Args>
 	typename std::enable_if<std::is_base_of<Node, T>::value, Packer<T>>::type
@@ -23,6 +24,14 @@ public:
 	typename std::enable_if<std::is_base_of<Node, T>::value, Packer<T>>::type
 	addWithLayout(std::unique_ptr<T> child) {
 		Node* n = addChild(std::move(child));
+		return Packer{
+			static_cast<T*>(n), &(pack_info.at(pack_info.size() - 1))};
+	}
+
+	template <class T>
+	typename std::enable_if<std::is_base_of<Node, T>::value, Packer<T>>::type
+	addWithLayout(T* child) {
+		Node* n = addChild(child);
 		return Packer{
 			static_cast<T*>(n), &(pack_info.at(pack_info.size() - 1))};
 	}

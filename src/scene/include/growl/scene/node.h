@@ -10,6 +10,7 @@
 #include "growl/scene/debug.h"
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace Growl {
@@ -35,17 +36,26 @@ public:
 	GROWL_SCRIPT_VAR(float, Rotation, rotation);
 
 	virtual Node* addChild(std::unique_ptr<Node> node);
+	virtual Node* addChild(Node* node);
 
 	template <class T>
 	typename std::enable_if<
 		std::is_base_of<Node, T>::value, std::unique_ptr<T>>::type
 	removeNode(T* search) {
 		for (int i = 0; i < children.size(); i++) {
-			if (children.at(i).get() == search) {
-				std::unique_ptr<Node> removed = std::move(children.at(i));
+			if (children.at(i) == search) {
+				std::unique_ptr<Node> removed = nullptr;
+				if (auto found = owned_children.find(search);
+					found != owned_children.end()) {
+					removed = std::move(found->second);
+					owned_children.erase(found);
+				}
 				removeChild(i);
-				return std::unique_ptr<T>(static_cast<T*>(removed.release()));
-				;
+				if (removed) {
+					return std::unique_ptr<T>(
+						static_cast<T*>(removed.release()));
+				}
+				return nullptr;
 			}
 			if (auto removed = children.at(i)->removeNode(search)) {
 				return removed;
@@ -90,7 +100,7 @@ protected:
 	Node* getParent() {
 		return parent;
 	}
-	std::vector<std::unique_ptr<Node>>& getChildren() {
+	std::vector<Node*>& getChildren() {
 		return children;
 	}
 	virtual void removeChild(int i);
@@ -131,7 +141,8 @@ private:
 	float rotation = 0;
 	float z = 0;
 	bool should_receive_parent_events = true;
-	std::vector<std::unique_ptr<Node>> children;
+	std::vector<Node*> children;
+	std::unordered_map<Node*, std::unique_ptr<Node>> owned_children;
 	std::vector<Node*> children_z_order;
 	glm::mat4x4 local_transform;
 	std::unique_ptr<ScriptingRef> bound_script_obj = nullptr;

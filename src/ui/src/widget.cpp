@@ -20,6 +20,11 @@ Node* Widget::addChild(std::unique_ptr<Node> node) {
 	return Node::addChild(std::move(node));
 }
 
+Node* Widget::addChild(Node* node) {
+	pack_info.push_back(PackInfo{});
+	return Node::addChild(node);
+}
+
 void Widget::clear() {
 	Node::clear();
 	pack_info.clear();
