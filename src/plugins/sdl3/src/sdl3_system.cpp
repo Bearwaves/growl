@@ -229,18 +229,14 @@ void SDL3SystemAPI::setLogLevel(LogLevel log_level) {
 	SDL_SetLogPriority(SDL_LOG_CATEGORY_CUSTOM, getLogPriority(log_level));
 }
 
-Result<std::unique_ptr<File>>
-SDL3SystemAPI::openFile(std::string path, size_t start, size_t end) {
+Result<std::unique_ptr<File>> SDL3SystemAPI::openFile(std::string path) {
 	auto fp = SDL_IOFromFile(path.c_str(), "rb");
 	if (!fp) {
 		return Error(std::make_unique<SDL3Error>(SDL_GetError()));
 	}
 
-	if (end == 0) {
-		end = SDL_GetIOSize(fp);
-	}
-
-	return std::unique_ptr<File>(std::make_unique<SDL3File>(fp, start, end));
+	return std::unique_ptr<File>(
+		std::make_unique<SDL3File>(path, fp, 0, SDL_GetIOSize(fp)));
 }
 
 Preferences& SDL3SystemAPI::getLocalPreferences() {

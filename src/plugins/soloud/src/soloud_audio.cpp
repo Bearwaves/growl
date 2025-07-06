@@ -90,7 +90,7 @@ SoLoudAudioAPI::loadClipFromBundle(AssetsBundle& bundle, std::string path) {
 Result<std::unique_ptr<AudioStream>>
 SoLoudAudioAPI::createStreamFromBundle(AssetsBundle& bundle, std::string name) {
 	Result<std::unique_ptr<SoLoudBundleFile>> bundle_file_result =
-		openFileFromBundle(system, bundle, name);
+		openFileFromBundle(bundle, name);
 	if (bundle_file_result.hasError()) {
 		return Error(
 			std::make_unique<AssetsError>(

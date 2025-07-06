@@ -5,8 +5,10 @@ using Growl::File;
 using Growl::LocalFile;
 using Growl::Result;
 
-LocalFile::LocalFile(std::ifstream fp, size_t start, size_t end)
-	: fp{std::move(fp)}
+LocalFile::LocalFile(
+	std::string path, std::ifstream fp, size_t start, size_t end)
+	: path{path}
+	, fp{std::move(fp)}
 	, start{start}
 	, end{end}
 	, ptr{start} {
@@ -44,4 +46,21 @@ void LocalFile::seek(int offset) {
 
 size_t LocalFile::pos() {
 	return ptr - start;
+}
+
+Result<std::unique_ptr<File>>
+LocalFile::getRegionAsFile(size_t start, size_t length) {
+	std::ifstream file;
+	file.open(path, std::ios::binary | std::ios::in);
+	if (file.fail()) {
+		return Error(
+			std::make_unique<GenericError>("Failed to open file " + path));
+	}
+	file.seekg(start, file.beg);
+	auto ptr = file.tellg();
+	file.seekg(start + length, file.beg);
+	auto end = file.tellg();
+	file.seekg(ptr);
+	return std::unique_ptr<File>(
+		std::make_unique<LocalFile>(path, std::move(file), start, end));
 }

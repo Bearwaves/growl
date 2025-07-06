@@ -402,7 +402,7 @@ Result<std::unique_ptr<File>> openLocalFile(std::string path) {
 	auto end = file.tellg();
 	file.seekg(ptr);
 	return std::unique_ptr<File>(
-		std::make_unique<LocalFile>(std::move(file), 0, end));
+		std::make_unique<LocalFile>(path, std::move(file), 0, end));
 }
 
 void listAssets(std::string assets_bundle) {

@@ -2,7 +2,6 @@
 #include "growl/core/assets/bundle.h"
 #include "growl/core/assets/file.h"
 #include "growl/core/error.h"
-#include <fstream>
 
 namespace Growl {
 class AssetsError;
@@ -36,10 +35,9 @@ unsigned int SoLoudBundleFile::pos() {
 	return static_cast<unsigned int>(file->pos());
 }
 
-Result<std::unique_ptr<SoLoudBundleFile>> Growl::openFileFromBundle(
-	SystemAPI& system, AssetsBundle& bundle, std::string name) noexcept {
-	Result<std::unique_ptr<File>> file_result =
-		bundle.getAssetAsFile(system, name);
+Result<std::unique_ptr<SoLoudBundleFile>>
+Growl::openFileFromBundle(AssetsBundle& bundle, std::string name) noexcept {
+	Result<std::unique_ptr<File>> file_result = bundle.getAssetAsFile(name);
 	if (file_result.hasError()) {
 		return std::move(file_result.error());
 	}

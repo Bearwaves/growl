@@ -433,8 +433,7 @@ void AndroidSystemAPI::logInternal(
 		logPriorityForLevel(log_level), tag.c_str(), "%s", msg.c_str());
 }
 
-Result<std::unique_ptr<File>>
-AndroidSystemAPI::openFile(std::string path, size_t start, size_t end) {
+Result<std::unique_ptr<File>> AndroidSystemAPI::openFile(std::string path) {
 	AAsset* asset = AAssetManager_open(
 		android_state->activity->assetManager, path.c_str(),
 		AASSET_MODE_RANDOM);
@@ -442,11 +441,15 @@ AndroidSystemAPI::openFile(std::string path, size_t start, size_t end) {
 		return Error(
 			std::make_unique<AssetsError>("Failed to load asset " + path));
 	}
-	if (end == 0) {
-		end = AAsset_getLength(asset);
+
+	off_t asset_start, asset_length;
+	int fd = AAsset_openFileDescriptor(asset, &asset_start, &asset_length);
+	if (fd < 0) {
+		return Error(
+			std::make_unique<AssetsError>("Failed to load file descriptor"));
 	}
 	return std::unique_ptr<File>(
-		std::make_unique<AndroidFile>(asset, start, end));
+		std::make_unique<AndroidFile>(asset, fd, asset_start, asset_length));
 }
 
 int AndroidSystemAPI::logPriorityForLevel(LogLevel level) {

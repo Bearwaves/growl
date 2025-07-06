@@ -61,8 +61,7 @@ public:
 		return dark_mode;
 	}
 
-	virtual Result<std::unique_ptr<File>>
-	openFile(std::string path, size_t start = 0, size_t end = 0) = 0;
+	virtual Result<std::unique_ptr<File>> openFile(std::string path) = 0;
 
 	virtual Preferences& getLocalPreferences() = 0;
 	virtual Preferences& getSharedPreferences() = 0;

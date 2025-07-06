@@ -33,7 +33,7 @@ private:
 	std::unique_ptr<Growl::File> file;
 };
 
-Result<std::unique_ptr<SoLoudBundleFile>> openFileFromBundle(
-	SystemAPI& system, AssetsBundle& bundle, std::string name) noexcept;
+Result<std::unique_ptr<SoLoudBundleFile>>
+openFileFromBundle(AssetsBundle& bundle, std::string name) noexcept;
 
 } // namespace Growl

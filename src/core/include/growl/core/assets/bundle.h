@@ -115,8 +115,7 @@ public:
 	Result<std::vector<unsigned char>> getRawData(std::string name) noexcept;
 
 	// Returns a File pointer to a specific asset.
-	Result<std::unique_ptr<File>>
-	getAssetAsFile(SystemAPI& system, std::string name) noexcept;
+	Result<std::unique_ptr<File>> getAssetAsFile(std::string name) noexcept;
 
 private:
 	std::unique_ptr<File> file;

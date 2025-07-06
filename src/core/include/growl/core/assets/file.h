@@ -1,5 +1,7 @@
 #pragma once
+#include "growl/core/error.h"
 #include <cstddef>
+#include <memory>
 
 namespace Growl {
 
@@ -18,6 +20,8 @@ public:
 	virtual size_t length() = 0;
 	virtual void seek(int offset) = 0;
 	virtual size_t pos() = 0;
+	virtual Result<std::unique_ptr<File>>
+	getRegionAsFile(size_t pos, size_t length) = 0;
 };
 
 } // namespace Growl

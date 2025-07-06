@@ -1,10 +1,17 @@
 #include "sdl3_file.h"
-#include <cstdio>
+#include "SDL3/SDL_iostream.h"
+#include "growl/core/assets/file.h"
+#include "growl/core/error.h"
+#include "sdl3_error.h"
 
+using Growl::File;
+using Growl::Result;
+using Growl::SDL3Error;
 using Growl::SDL3File;
 
-SDL3File::SDL3File(SDL_IOStream* fp, size_t start, size_t end)
-	: fp{fp}
+SDL3File::SDL3File(std::string path, SDL_IOStream* fp, size_t start, size_t end)
+	: path{path}
+	, fp{fp}
 	, ptr{start}
 	, start{start}
 	, end{end} {}
@@ -46,4 +53,17 @@ void SDL3File::seek(int offset) {
 
 size_t SDL3File::pos() {
 	return ptr - start;
+}
+
+Result<std::unique_ptr<File>>
+SDL3File::getRegionAsFile(size_t start, size_t length) {
+	// We just open the file again, it's fine, probably
+	auto new_fp = SDL_IOFromFile(path.c_str(), "rb");
+
+	if (!new_fp) {
+		return Error(std::make_unique<SDL3Error>(SDL_GetError()));
+	}
+
+	return std::unique_ptr<File>(
+		std::make_unique<SDL3File>(path, new_fp, start, start + length));
 }

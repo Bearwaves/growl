@@ -387,7 +387,7 @@ AssetsBundle::getRawData(std::string name) noexcept {
 }
 
 Result<std::unique_ptr<File>>
-AssetsBundle::getAssetAsFile(SystemAPI& system, std::string name) noexcept {
+AssetsBundle::getAssetAsFile(std::string name) noexcept {
 	auto info_find = assetsMap.find(name);
 	if (info_find == assetsMap.end()) {
 		return Error(
@@ -397,12 +397,11 @@ AssetsBundle::getAssetAsFile(SystemAPI& system, std::string name) noexcept {
 	}
 	auto& info = info_find->second;
 
-	auto file_result =
-		system.openFile(path, info.position, info.position + info.size);
+	auto file_result = file->getRegionAsFile(info.position, info.size);
 	if (file_result.hasError()) {
 		return Error(
 			std::make_unique<AssetsError>(
-				"Failed to open file " + path + ": " +
+				"Failed to open file region " + path + ": " +
 				file_result.error()->message()));
 	}
 	return std::move(file_result.get());
