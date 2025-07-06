@@ -65,6 +65,10 @@ android {
         }
     }
 
+    androidResources {
+        noCompress += "assets.growl"
+    }
+
     sourceSets {
         main {
             java.srcDirs += ['../../plugins/android']
