@@ -77,6 +77,17 @@ if (APPLE)
 	)
 endif()
 
+if (GROWL_ANDROID)
+	set(LINKS
+		"-lOpenSLES"
+	)
+	set(DEFINITIONS
+		${DEFINITIONS}
+		"MA_NO_RUNTIME_LINKING"
+		"MA_NO_AAUDIO"
+	)
+endif()
+
 growl_thirdparty_lib(soloud
 	SOURCES ${SOURCES}
 	INCLUDES PUBLIC "${SOURCE_PREFIX}/include"
