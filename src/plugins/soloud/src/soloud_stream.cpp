@@ -18,6 +18,7 @@ void SoLoudAudioStream::play(bool loop) {
 void SoLoudAudioStream::stop() {
 	if (handle) {
 		api.getSoloud()->stop(handle);
+		handle = 0;
 	} else {
 		stream->stop();
 	}
