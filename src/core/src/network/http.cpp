@@ -21,4 +21,5 @@ std::string Growl::httpMethodString(HttpMethod method) {
 	case HttpMethod::TRACE:
 		return "TRACE";
 	}
+	return "";
 }

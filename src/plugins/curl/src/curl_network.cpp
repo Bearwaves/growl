@@ -117,5 +117,5 @@ CurlNetworkAPI::doHttpRequest(std::unique_ptr<HttpRequest> request) {
 				}
 				return response;
 			}),
-		std::move(cancellation_token));
+		cancellation_token);
 }

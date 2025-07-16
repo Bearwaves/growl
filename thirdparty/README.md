@@ -15,7 +15,7 @@
 | libunibreak     | `5.0`            | https://github.com/adah1972/libunibreak |
 | lua             | `v5.4.6`         | https://github.com/lua/lua              |
 | msdfgen         | `v1.12`          | https://github.com/Chlumsky/msdfgen/    |
-| SDL             | `release-3.2.0`  | https://github.com/libsdl-org/SDL       |
+| SDL             | `release-3.2.18` | https://github.com/libsdl-org/SDL       |
 | SoLoud          | `8d9c832`        | https://github.com/Bearwaves/soloud     |
 | stb_image       | `v2.27`          | https://github.com/nothings/stb         |
 | stb_image_write | `v1.16`          | https://github.com/nothings/stb         |
