@@ -50,8 +50,7 @@ void Label::layout() {
 	}
 
 	// TODO should expose line height
-	float height =
-		wrap ? glyph_layout->getHeight() : glyph_layout->getOriginOffset();
+	float height = glyph_layout->getHeight();
 	if (height != pref_height) {
 		pref_height = height;
 		should_invalidate = true;
