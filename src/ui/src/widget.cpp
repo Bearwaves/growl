@@ -52,12 +52,15 @@ void Widget::validate() {
 	invalidated = false;
 	layout();
 
-	if (invalidated) {
-		if (getParent() && nodeAsWidget(getParent())) {
-			// We can rely on the root to call validate again.
-			return;
-		}
+	if (!invalidated) {
+		return;
 	}
+
+	if (getParent() && nodeAsWidget(getParent())) {
+		// We can rely on the root to call validate again.
+		return;
+	}
+
 	for (int i = 0; i < VALIDATION_MAX_PASSES; i++) {
 		invalidated = false;
 		layout();
