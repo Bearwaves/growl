@@ -78,6 +78,7 @@ public:
 	bool hit(float x, float y);
 	bool hit(glm::vec4& local_coords);
 	glm::vec4 worldToLocalCoordinates(float x, float y);
+	glm::vec4 localToWorldCoordinates(float x, float y);
 
 	void setShouldReceiveParentEvents(bool should_receive) {
 		this->should_receive_parent_events = should_receive;

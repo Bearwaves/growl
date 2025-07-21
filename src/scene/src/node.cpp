@@ -234,6 +234,10 @@ glm::vec4 Node::worldToLocalCoordinates(float x, float y) {
 	return glm::inverse(local_transform) * glm::vec4(x, y, 0, 1);
 }
 
+glm::vec4 Node::localToWorldCoordinates(float x, float y) {
+	return local_transform * glm::vec4{x, y, 0, 1};
+}
+
 bool Node::hit(float x, float y) {
 	glm::vec4 internal_coordinates = worldToLocalCoordinates(x, y);
 	return hit(internal_coordinates);
