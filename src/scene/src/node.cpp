@@ -43,6 +43,7 @@ Node* Node::addChild(std::unique_ptr<Node> node) {
 	n->setDepth(depth + 1);
 	children.emplace_back(n);
 	children_z_order.emplace_back(n);
+	z_ordered = false;
 	return n;
 }
 
@@ -51,6 +52,7 @@ Node* Node::addChild(Node* node) {
 	node->setDepth(depth + 1);
 	children.emplace_back(node);
 	children_z_order.emplace_back(node);
+	z_ordered = false;
 	return node;
 }
 
@@ -60,13 +62,14 @@ void Node::removeChild(int i) {
 	for (auto& child : children) {
 		children_z_order.emplace_back(child);
 	}
-	reorderZ();
+	z_ordered = false;
 }
 
 void Node::clear() {
 	children.clear();
 	owned_children.clear();
 	children_z_order.clear();
+	z_ordered = true;
 }
 
 void Node::setDepth(int depth) {
@@ -164,6 +167,10 @@ void Node::onTick(double delta_time) {
 }
 
 void Node::draw(Batch& batch, float parent_alpha) {
+	if (!z_ordered) {
+		reorderZ();
+		z_ordered = true;
+	}
 	computeLocalTransform();
 	if (!parent) {
 		populateDebugUI(batch);
@@ -197,7 +204,7 @@ void Node::setClickListener(std::function<bool(float, float)> listener) {
 void Node::setZPriority(float z) {
 	this->z = z;
 	if (this->parent) {
-		this->parent->reorderZ();
+		this->parent->z_ordered = false;
 	}
 }
 

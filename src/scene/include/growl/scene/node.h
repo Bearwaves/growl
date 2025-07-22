@@ -141,6 +141,7 @@ private:
 	float h = 0;
 	float rotation = 0;
 	float z = 0;
+	bool z_ordered = true;
 	bool should_receive_parent_events = true;
 	std::vector<Node*> children;
 	std::unordered_map<Node*, std::unique_ptr<Node>> owned_children;
