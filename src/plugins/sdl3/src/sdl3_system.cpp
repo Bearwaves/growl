@@ -179,7 +179,7 @@ void SDL3SystemAPI::tick() {
 }
 
 void SDL3SystemAPI::stop() {
-	SDL_Quit();
+	running = false;
 }
 
 void SDL3SystemAPI::dispose() {
