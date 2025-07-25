@@ -2,6 +2,7 @@
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_filesystem.h"
 #include "SDL3/SDL_init.h"
+#include "SDL3/SDL_misc.h"
 #include "SDL3/SDL_video.h"
 #include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
@@ -382,4 +383,10 @@ Error SDL3SystemAPI::initPreferences(const Config& config) {
 		*this, pref_file_shared, true, std::move(j_shared));
 
 	return nullptr;
+}
+
+void SDL3SystemAPI::openURL(std::string url) {
+	if (!SDL_OpenURL(url.c_str())) {
+		log(LogLevel::Error, "SDL3SystemAPI", "Failed to open url {}", url);
+	}
 }

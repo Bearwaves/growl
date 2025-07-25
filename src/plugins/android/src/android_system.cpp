@@ -427,6 +427,18 @@ HapticsDevice* AndroidSystemAPI::getHaptics() {
 	return device_haptics.get();
 }
 
+void AndroidSystemAPI::openURL(std::string url) {
+	JNIEnv* env{};
+	android_state->activity->vm->AttachCurrentThread(&env, nullptr);
+	jclass activity_class =
+		env->GetObjectClass(android_state->activity->javaGameActivity);
+	jmethodID method =
+		env->GetMethodID(activity_class, "openURL", "(Ljava/lang/String;)V");
+	jstring url_string = env->NewStringUTF(url.c_str());
+	env->CallVoidMethod(
+		android_state->activity->javaGameActivity, method, url_string);
+}
+
 void AndroidSystemAPI::logInternal(
 	LogLevel log_level, std::string tag, std::string msg) {
 	__android_log_print(

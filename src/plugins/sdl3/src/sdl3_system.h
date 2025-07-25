@@ -65,6 +65,8 @@ public:
 
 	HapticsDevice* getHaptics() override;
 
+	virtual void openURL(std::string url) override;
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;

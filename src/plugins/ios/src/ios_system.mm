@@ -178,6 +178,19 @@ HapticsDevice* IOSSystemAPI::getHaptics() {
 	return this->device_haptics.get();
 }
 
+void IOSSystemAPI::openURL(std::string url) {
+	[[UIApplication sharedApplication]
+		openURL:[NSURL
+					URLWithString:[NSString stringWithUTF8String:url.c_str()]]
+		options:@{}
+		completionHandler:^(BOOL success) {
+		  if (!success) {
+			  log(LogLevel::Error, "IOSSystemAPI", "Failed to open URL {}",
+				  url);
+		  }
+		}];
+}
+
 void IOSSystemAPI::logInternal(
 	LogLevel log_level, std::string tag, std::string msg) {
 	os_log_with_type(

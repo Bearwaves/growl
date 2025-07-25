@@ -1,8 +1,10 @@
 package com.bearwaves.growl;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -65,6 +67,10 @@ public class GrowlActivity extends GameActivity {
         }
         Vibrator vibrator = getVibrator();
         return vibrator != null && vibrator.hasVibrator() && vibrator.hasAmplitudeControl();
+    }
+
+    public void openURL(String url) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     public void playVibrationPattern(HapticsEffect... pattern) {

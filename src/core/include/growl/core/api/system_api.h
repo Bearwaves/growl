@@ -71,6 +71,8 @@ public:
 		return nullptr;
 	}
 
+	virtual void openURL(std::string url) = 0;
+
 protected:
 	virtual void
 	logInternal(LogLevel log_level, std::string tag, std::string formatted) = 0;
