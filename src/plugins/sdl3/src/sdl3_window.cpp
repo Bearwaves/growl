@@ -1,7 +1,9 @@
 #include "sdl3_window.h"
+#include "SDL3/SDL_error.h"
 #include "SDL3/SDL_hints.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_video.h"
+#include "growl/core/api/system_api.h"
 #include "growl/core/error.h"
 #ifdef GROWL_IMGUI
 #include "imgui.h"
@@ -11,8 +13,9 @@
 using Growl::Error;
 using Growl::SDL3Window;
 
-SDL3Window::SDL3Window(SDL_Window* window)
-	: native{window} {}
+SDL3Window::SDL3Window(SDL_Window* window, SystemAPI& system)
+	: native{window}
+	, system{system} {}
 
 SDL3Window::~SDL3Window() {
 	if (gl_context) {
@@ -56,6 +59,42 @@ Error SDL3Window::createGLContext(
 
 void* (*SDL3Window::glLibraryLoaderFunc(void))(const char*) {
 	return SDL_GL_GetProcAddress;
+}
+
+void SDL3Window::setFullscreen(bool fullscreen) {
+	if (!SDL_SetWindowFullscreen(native, fullscreen)) {
+		system.log(
+			LogLevel::Error, "SDL3Window", "Failed to set fullscreen: {}",
+			SDL_GetError());
+	}
+}
+
+bool SDL3Window::getFullscreen() {
+	return SDL_GetWindowFlags(native) & SDL_WINDOW_FULLSCREEN;
+}
+
+void SDL3Window::setVSync(bool vsync) {
+	if (!gl_context) {
+		return;
+	}
+	if (!SDL_GL_SetSwapInterval(vsync ? 1 : 0)) {
+		system.log(
+			LogLevel::Error, "SDL3Window", "Failed to set VSync: {}",
+			SDL_GetError());
+	}
+}
+
+bool SDL3Window::getVSync() {
+	if (!gl_context) {
+		return false;
+	}
+	int vsync = 0;
+	if (!SDL_GL_GetSwapInterval(&vsync)) {
+		system.log(
+			LogLevel::Error, "SDL3Window", "Failed to get VSync: {}",
+			SDL_GetError());
+	}
+	return vsync != SDL_WINDOW_SURFACE_VSYNC_DISABLED;
 }
 
 #ifdef GROWL_IMGUI

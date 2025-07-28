@@ -60,6 +60,15 @@ public:
 		return getWindow()->getSafeAreaInsets();
 	}
 
+	virtual void setFullscreen(bool fullscreen) override {
+		return getWindow()->setFullscreen(fullscreen);
+	}
+	virtual bool getFullscreen() override {
+		return getWindow()->getFullscreen();
+	};
+	virtual void setVSync(bool vsync) override;
+	virtual bool getVSync() override;
+
 	id<MTLCommandBuffer> getCommandBuffer() {
 		return command_buffer;
 	}

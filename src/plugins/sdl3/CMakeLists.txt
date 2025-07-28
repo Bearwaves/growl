@@ -48,6 +48,10 @@ elseif (APPLE)
 		"src/sdl3_system_macos.mm"
 	)
 	enable_language(OBJCXX)
+	set(SDL_LINK_LIBS
+		${SDL_LINK_LIBS}
+		"-framework Foundation"
+	)
 else ()
 	set(SOURCES
 		${SOURCES}

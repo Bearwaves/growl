@@ -321,6 +321,14 @@ MetalGraphicsAPI::createShader(const ShaderPack& shader_pack) {
 		source->second.fragment_src.value());
 }
 
+void MetalGraphicsAPI::setVSync(bool vsync) {
+	[swap_chain setDisplaySyncEnabled:vsync];
+}
+
+bool MetalGraphicsAPI::getVSync() {
+	return [swap_chain displaySyncEnabled];
+}
+
 const std::vector<unsigned char>
 MetalGraphicsAPI::convertRGBAToBGRA(const Image& rgba) {
 	const unsigned char* src = rgba.getRaw();

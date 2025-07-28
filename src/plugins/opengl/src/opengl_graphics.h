@@ -61,6 +61,19 @@ public:
 		return getWindow()->getSafeAreaInsets();
 	}
 
+	virtual void setFullscreen(bool fullscreen) override {
+		return getWindow()->setFullscreen(fullscreen);
+	}
+	virtual bool getFullscreen() override {
+		return getWindow()->getFullscreen();
+	};
+	virtual void setVSync(bool vsync) override {
+		return getWindow()->setVSync(vsync);
+	}
+	virtual bool getVSync() override {
+		return getWindow()->getVSync();
+	}
+
 	Window* getWindow() override {
 		return window.get();
 	}

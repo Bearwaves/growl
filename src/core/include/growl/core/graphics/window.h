@@ -29,6 +29,16 @@ public:
 	virtual void* (*glLibraryLoaderFunc(void))(const char*) {
 		return nullptr;
 	}
+
+	virtual void setFullscreen(bool fullscreen) {}
+	virtual bool getFullscreen() {
+		return true;
+	}
+	virtual void setVSync(bool vsync) {}
+	virtual bool getVSync() {
+		return true;
+	}
+
 #ifdef GROWL_IMGUI
 	virtual void initImgui() {}
 	virtual void newImguiFrame() {}

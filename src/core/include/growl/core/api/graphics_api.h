@@ -50,6 +50,11 @@ public:
 	createShader(const ShaderPack& shader_pack) = 0;
 
 	virtual WindowSafeAreaInsets getSafeAreaInsets() = 0;
+
+	virtual void setFullscreen(bool fullscreen) = 0;
+	virtual bool getFullscreen() = 0;
+	virtual void setVSync(bool vsync) = 0;
+	virtual bool getVSync() = 0;
 };
 
 } // namespace Growl

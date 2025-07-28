@@ -98,7 +98,7 @@ SDL3SystemAPI::createWindow(const Config& config) {
 	debug_mode_key = getScancode(config.debug_mode_key);
 	setDarkMode(SDL_GetSystemTheme() == SDL_SYSTEM_THEME_DARK);
 
-	return std::unique_ptr<Window>(std::make_unique<SDL3Window>(win));
+	return std::unique_ptr<Window>(std::make_unique<SDL3Window>(win, *this));
 }
 
 void SDL3SystemAPI::tick() {
