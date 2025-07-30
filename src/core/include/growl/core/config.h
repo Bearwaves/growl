@@ -2,6 +2,7 @@
 
 #include "growl/core/input/keyboard.h"
 #include <string>
+
 namespace Growl {
 
 struct Config {
@@ -12,6 +13,8 @@ struct Config {
 	int window_width = 1000;
 	int window_height = 1000;
 	bool window_centered = true;
+	bool fullscreen = false;
+	bool vsync = true;
 
 	Key debug_mode_key = Key::FunctionF12;
 };

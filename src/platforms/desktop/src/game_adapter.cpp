@@ -93,6 +93,12 @@ GameAdapter::~GameAdapter() {
 }
 
 void GameAdapter::run() {
+	if (auto err = m_game->configure(m_game->getConfig())) {
+		m_api->system().log(
+			LogLevel::Fatal, "GameAdapter", "Failed to configure game: {}",
+			err.get()->message());
+		return;
+	}
 	if (auto err = static_cast<GraphicsAPIInternal&>(m_api->graphics())
 					   .setWindow(m_game->getConfig());
 		err) {

@@ -14,6 +14,9 @@ public:
 		: config{config} {}
 	virtual ~Game() = default;
 
+	virtual Error configure(Config& config) {
+		return nullptr;
+	}
 	virtual Error init() = 0;
 	virtual Error dispose() = 0;
 	virtual void pause() {}
@@ -27,7 +30,7 @@ public:
 
 	API& getAPI();
 
-	const Config& getConfig() {
+	Config& getConfig() {
 		return config;
 	}
 

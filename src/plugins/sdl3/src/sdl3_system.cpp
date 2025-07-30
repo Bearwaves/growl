@@ -90,6 +90,8 @@ SDL3SystemAPI::createWindow(const Config& config) {
 	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
 	SDL_SetBooleanProperty(
 		props, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true);
+	SDL_SetBooleanProperty(
+		props, SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN, config.fullscreen);
 	SDL_Window* win = SDL_CreateWindowWithProperties(props);
 	if (!win) {
 		return Error(std::make_unique<SDL3Error>(SDL_GetError()));
