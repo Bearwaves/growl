@@ -42,7 +42,7 @@ else ()
 	add_compile_options(-w)
 endif()
 
-if (GROWL_DESKTOP AND NOT MSVC)
+if (GROWL_DESKTOP AND NOT MSVC AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
 	add_compile_options(-msse4.1 -mpclmul)
 endif()
 

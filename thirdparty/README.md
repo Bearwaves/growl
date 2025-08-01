@@ -10,7 +10,7 @@
 | glm             | `2993560`        | https://github.com/g-truc/glm           |
 | HarfBuzz        | `3377ddf`        | https://github.com/harfbuzz/harfbuzz    |
 | json            | `3.11.3`         | https://github.com/nlohmann/json        |
-| libpng          | `1.6.37`         | http://libpng.org/pub/png/libpng.html   |
+| libpng          | `v1.6.50`        | http://libpng.org/pub/png/libpng.html   |
 | libsodium       | `1.0.20-RELEASE` | https://github.com/jedisct1/libsodium   |
 | libunibreak     | `5.0`            | https://github.com/adah1972/libunibreak |
 | lua             | `v5.4.6`         | https://github.com/lua/lua              |
