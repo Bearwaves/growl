@@ -21,7 +21,7 @@
 | stb_image_write | `v1.16`          | https://github.com/nothings/stb         |
 | stb_rect_pack   | `v1.0.1`         | https://github.com/nothings/stb         |
 | UTF8-CPP        | `4.0.4`          | https://github.com/nemtrif/utfcpp       |
-| zlib            | `1.2.12`         | https://www.zlib.net/                   |
+| zlib            | `v1.3.1`         | https://www.zlib.net/                   |
 
 Dependencies are submodules, except in cases where that doesn't make sense.
 The Growl root CMakeLists.txt ensures a submodule fetch happens at configure
