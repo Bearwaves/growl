@@ -28,9 +28,10 @@ public:
 
 	virtual bool supportsEventType(HapticsEventType type) = 0;
 
-	virtual Error playEvent(HapticsEvent event) = 0;
+	virtual Error playEvent(HapticsEvent event, float intensity = 1.f) = 0;
 
-	virtual Error playPattern(std::vector<HapticsEvent> pattern) = 0;
+	virtual Error
+	playPattern(std::vector<HapticsEvent> pattern, float intensity = 1.f) = 0;
 };
 
 } // namespace Growl

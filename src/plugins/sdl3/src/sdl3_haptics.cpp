@@ -39,12 +39,13 @@ bool SDL3HapticsDevice::supportsEventType(HapticsEventType type) {
 	return false;
 }
 
-Error SDL3HapticsDevice::playEvent(HapticsEvent event) {
+Error SDL3HapticsDevice::playEvent(HapticsEvent event, float intensity) {
 	switch (event.type) {
 	case HapticsEventType::Rumble:
 		if (!(SDL_RumbleGamepad(
-				gamepad, 0xFFFF * event.intensity[0],
-				0xFFFF * event.intensity[1], event.duration * 1000))) {
+				gamepad, 0xFFFF * intensity * event.intensity[0],
+				0xFFFF * intensity * event.intensity[1],
+				event.duration * 1000))) {
 			return Error(
 				std::make_unique<SDL3Error>(
 					std::string("Failed to rumble: ") + SDL_GetError()));
@@ -52,8 +53,9 @@ Error SDL3HapticsDevice::playEvent(HapticsEvent event) {
 		return nullptr;
 	case HapticsEventType::TriggerRumble:
 		if (!(SDL_RumbleGamepadTriggers(
-				gamepad, 0xFFFF * event.intensity[0],
-				0xFFFF * event.intensity[1], event.duration * 1000))) {
+				gamepad, 0xFFFF * intensity * event.intensity[0],
+				0xFFFF * intensity * event.intensity[1],
+				event.duration * 1000))) {
 			return Error(
 				std::make_unique<SDL3Error>(
 					std::string("Failed to rumble triggers: ") +
@@ -66,7 +68,8 @@ Error SDL3HapticsDevice::playEvent(HapticsEvent event) {
 	return nullptr;
 }
 
-Error SDL3HapticsDevice::playPattern(std::vector<HapticsEvent> pattern) {
+Error SDL3HapticsDevice::playPattern(
+	std::vector<HapticsEvent> pattern, float intensity) {
 	// Haptic patterns not supported on SDL3.
 	return nullptr;
 }

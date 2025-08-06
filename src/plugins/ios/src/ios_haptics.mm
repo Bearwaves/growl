@@ -54,22 +54,22 @@ bool IOSHapticsDevice::supportsEventType(HapticsEventType type) {
 	return false;
 }
 
-Error IOSHapticsDevice::playEvent(HapticsEvent event) {
+Error IOSHapticsDevice::playEvent(HapticsEvent event, float intensity) {
 	if (!supportsEventType(event.type)) {
 		return nullptr;
 	}
 	switch (event.type) {
 	case HapticsEventType::Rumble:
-		if (auto err =
-				doRumbleEvent(event, this->left_handle, this->right_handle)) {
+		if (auto err = doRumbleEvent(
+				event, this->left_handle, this->right_handle, intensity)) {
 			return Error(
 				std::make_unique<IOSError>(
 					"Failed to play rumble event: " + err->message()));
 		}
 		return nullptr;
 	case HapticsEventType::TriggerRumble:
-		if (auto err =
-				doRumbleEvent(event, this->left_trigger, this->right_trigger)) {
+		if (auto err = doRumbleEvent(
+				event, this->left_trigger, this->right_trigger, intensity)) {
 			return Error(
 				std::make_unique<IOSError>(
 					"Failed to play trigger rumble event: " + err->message()));
@@ -81,7 +81,8 @@ Error IOSHapticsDevice::playEvent(HapticsEvent event) {
 	return nullptr;
 }
 
-Error IOSHapticsDevice::playPattern(std::vector<HapticsEvent> pattern) {
+Error IOSHapticsDevice::playPattern(
+	std::vector<HapticsEvent> pattern, float intensity) {
 	if (!supportsEventType(HapticsEventType::Pattern)) {
 		return nullptr;
 	}
@@ -101,12 +102,14 @@ Error IOSHapticsDevice::playPattern(std::vector<HapticsEvent> pattern) {
 					@{
 						CHHapticPatternKeyParameterID :
 							CHHapticEventParameterIDHapticIntensity,
-						CHHapticPatternKeyParameterValue : @(event.intensity[0])
+						CHHapticPatternKeyParameterValue :
+							@(event.intensity[0] * intensity)
 					},
 					@{
 						CHHapticPatternKeyParameterID :
 							CHHapticEventParameterIDHapticSharpness,
-						CHHapticPatternKeyParameterValue : @(event.intensity[1])
+						CHHapticPatternKeyParameterValue :
+							@(event.intensity[1] * intensity)
 					}
 				]
 			}
@@ -301,15 +304,16 @@ void IOSHapticsDevice::stopAllEngines() {
 }
 
 Error IOSHapticsDevice::doRumbleEvent(
-	HapticsEvent& event, CHHapticEngine* left, CHHapticEngine* right) {
-	auto left_pattern_res = createRumblePattern(event, 0);
+	HapticsEvent& event, CHHapticEngine* left, CHHapticEngine* right,
+	float intensity) {
+	auto left_pattern_res = createRumblePattern(event, 0, intensity);
 	if (!left_pattern_res) {
 		return Error(
 			std::make_unique<IOSError>(
 				"Failed to create left rumble pattern: " +
 				left_pattern_res.error()->message()));
 	}
-	auto right_pattern_res = createRumblePattern(event, 1);
+	auto right_pattern_res = createRumblePattern(event, 1, intensity);
 	if (!right_pattern_res) {
 		return Error(
 			std::make_unique<IOSError>(
@@ -350,8 +354,8 @@ Error IOSHapticsDevice::doRumbleEvent(
 	return nullptr;
 }
 
-Result<CHHapticPattern*>
-IOSHapticsDevice::createRumblePattern(HapticsEvent& event, int loc) {
+Result<CHHapticPattern*> IOSHapticsDevice::createRumblePattern(
+	HapticsEvent& event, int loc, float intensity) {
 	NSError* error = nil;
 	auto pattern = [[CHHapticPattern alloc] initWithEvents:@[
 		[[CHHapticEvent alloc]
@@ -359,7 +363,8 @@ IOSHapticsDevice::createRumblePattern(HapticsEvent& event, int loc) {
 				   parameters:@[ [[CHHapticEventParameter alloc]
 								  initWithParameterID:
 									  CHHapticEventParameterIDHapticIntensity
-												value:event.intensity[loc]] ]
+												value:event.intensity[loc] *
+													  intensity] ]
 				 relativeTime:0
 					 duration:event.duration]
 	]

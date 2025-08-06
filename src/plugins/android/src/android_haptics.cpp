@@ -34,15 +34,15 @@ bool AndroidHaptics::supportsEventType(HapticsEventType type) {
 	return false;
 }
 
-Error AndroidHaptics::playEvent(HapticsEvent event) {
+Error AndroidHaptics::playEvent(HapticsEvent event, float intensity) {
 	if (!supportsEventType(event.type)) {
 		return nullptr;
 	}
 	Paddleboat_Vibration_Data data;
 	data.durationLeft = event.duration * 1000;
 	data.durationRight = event.duration * 1000;
-	data.intensityLeft = event.intensity[0];
-	data.intensityRight = event.intensity[1];
+	data.intensityLeft = event.intensity[0] * intensity;
+	data.intensityRight = event.intensity[1] * intensity;
 
 	if (auto err =
 			Paddleboat_setControllerVibrationData(0, &data, getJNIEnv())) {
@@ -55,7 +55,8 @@ Error AndroidHaptics::playEvent(HapticsEvent event) {
 	return nullptr;
 }
 
-Error AndroidHaptics::playPattern(std::vector<HapticsEvent> haptic_pattern) {
+Error AndroidHaptics::playPattern(
+	std::vector<HapticsEvent> haptic_pattern, float intensity) {
 	auto env = getJNIEnv();
 
 	jclass activity_class =
@@ -80,7 +81,8 @@ Error AndroidHaptics::playPattern(std::vector<HapticsEvent> haptic_pattern) {
 		auto& event = haptic_pattern.at(i);
 		jobject haptics_event = env->NewObject(
 			haptics_event_cls, haptics_event_ctor, event.duration,
-			event.intensity[0], event.intensity[1], event.offset);
+			event.intensity[0] * intensity, event.intensity[1] * intensity,
+			event.offset);
 		env->SetObjectArrayElement(array, i, haptics_event);
 	}
 

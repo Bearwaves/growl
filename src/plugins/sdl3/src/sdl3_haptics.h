@@ -12,8 +12,9 @@ public:
 	explicit SDL3HapticsDevice(SystemAPI* system, SDL_Gamepad* gamepad);
 
 	bool supportsEventType(HapticsEventType type) override;
-	Error playEvent(HapticsEvent event) override;
-	Error playPattern(std::vector<HapticsEvent> pattern) override;
+	Error playEvent(HapticsEvent event, float intensity) override;
+	Error
+	playPattern(std::vector<HapticsEvent> pattern, float intensity) override;
 
 private:
 	SDL_Gamepad* gamepad;

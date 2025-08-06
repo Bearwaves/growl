@@ -12,8 +12,9 @@ public:
 		android_app* app, Paddleboat_Controller_Info* info = nullptr);
 
 	bool supportsEventType(HapticsEventType type) override;
-	Error playEvent(HapticsEvent event) override;
-	Error playPattern(std::vector<HapticsEvent> pattern) override;
+	Error playEvent(HapticsEvent event, float intensity) override;
+	Error
+	playPattern(std::vector<HapticsEvent> pattern, float intensity) override;
 
 private:
 	android_app* app;

@@ -16,8 +16,9 @@ public:
 
 	bool supportsEventType(HapticsEventType type) override;
 
-	Error playEvent(HapticsEvent event) override;
-	Error playPattern(std::vector<HapticsEvent> pattern) override;
+	Error playEvent(HapticsEvent event, float intensity) override;
+	Error
+	playPattern(std::vector<HapticsEvent> pattern, float intensity) override;
 
 	void setGameController(GCController* controller);
 
@@ -34,8 +35,10 @@ private:
 
 	void stopAllEngines();
 	Error doRumbleEvent(
-		HapticsEvent& event, CHHapticEngine* left, CHHapticEngine* right);
-	Result<CHHapticPattern*> createRumblePattern(HapticsEvent& event, int loc);
+		HapticsEvent& event, CHHapticEngine* left, CHHapticEngine* right,
+		float intensity);
+	Result<CHHapticPattern*>
+	createRumblePattern(HapticsEvent& event, int loc, float intensity);
 };
 
 } // namespace Growl
