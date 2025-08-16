@@ -5,6 +5,9 @@ set(SOURCES
 	"${SOURCE_PREFIX}/src/linebreakdef.c"
 	"${SOURCE_PREFIX}/src/linebreak.c"
 	"${SOURCE_PREFIX}/src/linebreakdata.c"
+	"${SOURCE_PREFIX}/src/graphemebreak.c"
+	"${SOURCE_PREFIX}/src/graphemebreakdata.c"
+	"${SOURCE_PREFIX}/src/emojidef.c"
 )
 
 growl_thirdparty_lib(libunibreak

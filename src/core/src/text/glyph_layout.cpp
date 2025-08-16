@@ -1,6 +1,7 @@
 #include "growl/core/text/glyph_layout.h"
 #include "../assets/font_internal.h"
 #include "freetype/freetype.h"
+#include "graphemebreak.h"
 #include "growl/core/assets/font_face.h"
 #include "hb-ft.h"
 #include "linebreak.h"
@@ -61,6 +62,7 @@ void GlyphLayout::layout() noexcept {
 	int w = 0;
 	int w_break = 0;
 	std::vector<std::string> lines;
+	this->graphemes.clear();
 	for (unsigned int i = 0; i < len_paragraph; i++) {
 		int j = rtl ? len_paragraph - (i + 1) : i;
 		// On which char does this unicode cluster end? That's where the break
@@ -69,8 +71,8 @@ void GlyphLayout::layout() noexcept {
 			i == len_paragraph - 1
 				? text.size() - 1
 				: info_paragraph[rtl ? j - 1 : j + 1].cluster - 1;
-		bool must_break = breaks.at(cluster_end) == LINEBREAK_MUSTBREAK;
-		bool allow_break = breaks.at(cluster_end) == LINEBREAK_ALLOWBREAK;
+		bool must_break = line_breaks.at(cluster_end) == LINEBREAK_MUSTBREAK;
+		bool allow_break = line_breaks.at(cluster_end) == LINEBREAK_ALLOWBREAK;
 		if (must_break) {
 			lines.push_back(
 				text.substr(remaining_index, cluster_end - remaining_index));
@@ -105,6 +107,7 @@ void GlyphLayout::layout() noexcept {
 	int bearing_up = 0;
 	int bearing_down = 0;
 	int max_width = 0;
+	int char_idx = 0;
 	GlyphLayoutAlignment alignment = align;
 	if (alignment == GlyphLayoutAlignment::Auto) {
 		alignment =
@@ -114,6 +117,9 @@ void GlyphLayout::layout() noexcept {
 	std::vector<std::pair<int, unsigned int>> line_length_info;
 
 	for (auto& line : lines) {
+		if (line.empty()) {
+			continue;
+		}
 		hb_buffer_reset(hb_data->buffer_line);
 		hb_buffer_add_utf8(hb_data->buffer_line, line.c_str(), -1, 0, -1);
 		hb_buffer_guess_segment_properties(hb_data->buffer_line);
@@ -124,6 +130,11 @@ void GlyphLayout::layout() noexcept {
 			hb_buffer_get_glyph_infos(hb_data->buffer_line, 0);
 		hb_glyph_position_t* pos =
 			hb_buffer_get_glyph_positions(hb_data->buffer_line, 0);
+
+		std::vector<char> grapheme_breaks(line.size());
+		set_graphemebreaks_utf8(
+			reinterpret_cast<const uint8_t*>(line.c_str()), line.size(),
+			lang.c_str(), grapheme_breaks.data());
 
 		int glyphs_added = 0;
 		for (unsigned int i = 0; i < len; i++) {
@@ -159,6 +170,18 @@ void GlyphLayout::layout() noexcept {
 			}
 			cursor_x += (pos[i].x_advance >> 6);
 			cursor_y += (pos[i].y_advance >> 6);
+
+			// Grapheme break
+			int j = rtl ? len - (i + 1) : i;
+			int cluster_end = i == len - 1
+								  ? line.size() - 1
+								  : info[rtl ? j - 1 : j + 1].cluster - 1;
+			if (grapheme_breaks.at(cluster_end) == GRAPHEMEBREAK_BREAK) {
+				graphemes.push_back(
+					GraphemeInfo{
+						cursor_x, static_cast<int>(line_length_info.size()),
+						static_cast<int>(char_idx + cluster_end)});
+			}
 		}
 
 		if (cursor_x > max_width) {
@@ -170,6 +193,7 @@ void GlyphLayout::layout() noexcept {
 
 		cursor_x = 0;
 		cursor_y += (face->size->metrics.height >> 6);
+		char_idx += line.size();
 	}
 
 	bearing_up >>= 6;
@@ -210,7 +234,7 @@ void GlyphLayout::setText(std::string text) {
 	set_linebreaks_utf8(
 		reinterpret_cast<const uint8_t*>(text.c_str()), text.size(),
 		lang.c_str(), new_breaks.data());
-	breaks = std::move(new_breaks);
+	line_breaks = std::move(new_breaks);
 	layout();
 }
 

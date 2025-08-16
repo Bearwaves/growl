@@ -18,6 +18,12 @@ struct LayoutInfo {
 	int h;
 };
 
+struct GraphemeInfo {
+	int x; // Right side of grapheme extent
+	int line;
+	int char_idx;
+};
+
 enum class GlyphLayoutAlignment { Auto, Left, Right, Center };
 
 class GlyphLayout {
@@ -38,6 +44,10 @@ public:
 	void layout() noexcept;
 
 	void setText(std::string text);
+
+	std::string getText() {
+		return text;
+	}
 
 	void setWidth(int width);
 
@@ -68,6 +78,14 @@ public:
 		return size;
 	}
 
+	int getGraphemeCount() {
+		return graphemes.size();
+	}
+
+	const std::vector<GraphemeInfo>& getGraphemes() const {
+		return graphemes;
+	}
+
 private:
 	std::string text;
 	std::string lang;
@@ -81,7 +99,8 @@ private:
 	FontFace& font_face;
 	std::unique_ptr<HBData> hb_data;
 	std::vector<LayoutInfo> layout_info;
-	std::vector<char> breaks;
+	std::vector<char> line_breaks;
+	std::vector<GraphemeInfo> graphemes;
 };
 
 } // namespace Growl
