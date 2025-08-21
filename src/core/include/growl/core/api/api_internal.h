@@ -28,8 +28,8 @@ public:
 class SystemAPIInternal : public SystemAPI, public APIInternal {
 public:
 	virtual ~SystemAPIInternal() {}
-	// Used in push-style touch input e.g. on iOS.
-	virtual void onTouch(InputTouchEvent touch) {}
+	// Used in push-style input e.g. on iOS.
+	virtual void onEvent(const InputEvent& event) {}
 	virtual void setDarkMode(bool dark_mode) {
 		this->dark_mode = dark_mode;
 	}

@@ -32,6 +32,7 @@ target_link_libraries(growl-platform-ios
 	growl-plugin-ios
 	"-framework UIKit"
 	"-framework Foundation"
+	"-framework CoreGraphics"
 )
 target_include_directories(growl-platform-ios PUBLIC "include")
 target_compile_definitions(growl-platform-ios INTERFACE "GROWL_IOS")

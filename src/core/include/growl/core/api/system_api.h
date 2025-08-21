@@ -73,6 +73,11 @@ public:
 
 	virtual void openURL(std::string url) = 0;
 
+	virtual void startTextInput(std::string current_text) = 0;
+	virtual void updateTextInput(
+		std::string text, int x, int y, int w, int h, int cursor_x) = 0;
+	virtual void stopTextInput() = 0;
+
 protected:
 	virtual void
 	logInternal(LogLevel log_level, std::string tag, std::string formatted) = 0;

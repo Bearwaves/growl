@@ -4,6 +4,7 @@
 #include "growl/core/input/event.h"
 #include "ios_error.h"
 #include "ios_window.h"
+#include <UIKit/UIKit.h>
 #include <os/log.h>
 #include <sys/utsname.h>
 
@@ -15,7 +16,6 @@ using Growl::File;
 using Growl::HapticsDevice;
 using Growl::InputEvent;
 using Growl::InputEventType;
-using Growl::InputTouchEvent;
 using Growl::IOSSystemAPI;
 using Growl::LocalFile;
 using Growl::Result;
@@ -24,7 +24,7 @@ using Growl::Window;
 
 std::unique_ptr<SystemAPIInternal>
 Growl::createSystemAPI(API& api, void* user) {
-	return std::make_unique<IOSSystemAPI>(api);
+	return std::make_unique<IOSSystemAPI>(api, static_cast<UITextField*>(user));
 }
 
 Error IOSSystemAPI::init(const Config& config) {
@@ -138,10 +138,9 @@ void IOSSystemAPI::dispose() {
 	}
 }
 
-void IOSSystemAPI::onTouch(InputTouchEvent event) {
+void IOSSystemAPI::onEvent(const InputEvent& event) {
 	if (inputProcessor) {
-		InputEvent e{InputEventType::Touch, event};
-		inputProcessor->onEvent(e);
+		inputProcessor->onEvent(event);
 	}
 }
 
@@ -189,6 +188,23 @@ void IOSSystemAPI::openURL(std::string url) {
 				  url);
 		  }
 		}];
+}
+
+void IOSSystemAPI::startTextInput(std::string current_text) {
+	text_field.text = [NSString stringWithUTF8String:current_text.c_str()];
+	[text_field becomeFirstResponder];
+}
+
+void IOSSystemAPI::updateTextInput(
+	std::string text, int x, int y, int w, int h, int cursor_x) {
+	text_field.text = [NSString stringWithUTF8String:text.c_str()];
+	float scale = [UIScreen mainScreen].nativeScale;
+	[text_field
+		setFrame:CGRectMake(x / scale, y / scale, w / scale, h / scale)];
+}
+
+void IOSSystemAPI::stopTextInput() {
+	[text_field resignFirstResponder];
 }
 
 void IOSSystemAPI::logInternal(

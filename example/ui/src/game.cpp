@@ -6,6 +6,7 @@
 #include "growl/ui/label.h"
 #include "growl/ui/list.h"
 #include "growl/ui/pack.h"
+#include "growl/ui/text_input.h"
 #include "growl/ui/widget.h"
 
 using Growl::Align;
@@ -19,6 +20,7 @@ using Growl::List;
 using Growl::Node;
 using Growl::Rectangle;
 using Growl::Result;
+using Growl::TextInput;
 using Growl::Value;
 using Growl::Widget;
 using UIExample::Game;
@@ -62,6 +64,16 @@ Error Game::init() {
 				.width(Value::percentWidth(1.f, col))
 				.expand()
 				.getNode();
+
+	input =
+		col->addWithLayout<TextInput>(
+			   "Input", getAPI().system(), *font_atlas, *font,
+			   Value::percentHeight(0.05f, col), Value::percentWidth(1.f, col))
+			.width(Value::percentWidth(1.f, col))
+			.height(Value::percentHeight(0.1f, col))
+			.expand()
+			.getNode();
+
 	root->setDebugRendering(DebugRendering::ON);
 
 	return nullptr;

@@ -7,11 +7,11 @@
 #include <vector>
 
 #define GROWL_SCRIPT_VAR(type, name, var) \
-	type get##name##Raw() { \
+	virtual type get##name##Raw() { \
 		return var; \
 	} \
 \
-	type get##name() { \
+	virtual type get##name() { \
 		if (bound_script_obj) { \
 			std::vector<ScriptingParam> v; \
 			auto res = api->scripting().executeMethod<type>( \
@@ -27,11 +27,11 @@
 		return get##name##Raw(); \
 	} \
 \
-	void set##name##Raw(type var) { \
+	virtual void set##name##Raw(type var) { \
 		this->var = var; \
 	} \
 \
-	void set##name(type var) { \
+	virtual void set##name(type var) { \
 		if (bound_script_obj) { \
 			std::vector<ScriptingParam> v; \
 			v.push_back(var); \

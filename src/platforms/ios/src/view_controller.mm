@@ -15,6 +15,8 @@ std::unique_ptr<Growl::Game> createGame();
 	CADisplayLink* displayLink;
 	std::unique_ptr<Growl::API> api;
 	std::unique_ptr<Growl::Game> game;
+	UITextField* textField;
+	NSString* previousText;
 
 	id _pausedObserver;
 	id _resumedObserver;
@@ -23,10 +25,27 @@ std::unique_ptr<Growl::Game> createGame();
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
+	textField = [[UITextField alloc] initWithFrame:CGRectZero];
+	textField.hidden = true;
+	textField.delegate = self;
+	textField.keyboardType = UIKeyboardTypeASCIICapable;
+	textField.textContentType = UITextContentTypeUsername;
+	textField.autocapitalizationType =
+		UITextAutocapitalizationTypeAllCharacters;
+	textField.autocorrectionType = UITextAutocorrectionTypeNo;
+	textField.spellCheckingType = UITextSpellCheckingTypeNo;
+	previousText = nil;
+	[self.view addSubview:textField];
+	[[NSNotificationCenter defaultCenter]
+		addObserver:self
+		   selector:@selector(observeTextChange:)
+			   name:UITextFieldTextDidChangeNotification
+			 object:textField];
+
 	api = std::make_unique<Growl::API>();
 	game = createGame();
 
-	api->setSystemAPI(createSystemAPI(*api));
+	api->setSystemAPI(createSystemAPI(*api, textField));
 	api->setGraphicsAPI(createGraphicsAPI(*api));
 	api->setAudioAPI(createAudioAPI(*api));
 	api->setScriptingAPI(createScriptingAPI(*api));
@@ -212,6 +231,8 @@ std::unique_ptr<Growl::Game> createGame();
 		[[NSNotificationCenter defaultCenter] removeObserver:_pausedObserver];
 		[_pausedObserver release];
 	}
+	textField.delegate = nil;
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	if (auto err = game->dispose()) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "ViewController",
@@ -225,6 +246,58 @@ std::unique_ptr<Growl::Game> createGame();
 	static_cast<Growl::AudioAPIInternal&>(api->audio()).dispose();
 	static_cast<Growl::GraphicsAPIInternal&>(api->graphics()).dispose();
 	static_cast<Growl::SystemAPIInternal&>(api->system()).dispose();
+}
+
+- (BOOL)textField:(UITextField*)textField
+	shouldChangeCharactersInRange:(NSRange)range
+				replacementString:(NSString*)string {
+	if (textField.markedTextRange == nil) {
+		if ([string length] == 0) {
+			// Backspace; send that key.
+			auto& systemInternal =
+				static_cast<Growl::SystemAPIInternal&>(api->system());
+			Growl::InputEvent event{
+				Growl::InputEventType::Keyboard,
+				Growl::InputKeyboardEvent{
+					Growl::KeyEventType::KeyDown, Growl::Key::Backspace}};
+			systemInternal.onEvent(event);
+			event = Growl::InputEvent{
+				Growl::InputEventType::Keyboard,
+				Growl::InputKeyboardEvent{
+					Growl::KeyEventType::KeyUp, Growl::Key::Backspace}};
+			systemInternal.onEvent(event);
+			return false;
+		}
+		previousText = [textField.text copy];
+	}
+	return true;
+}
+
+- (void)observeTextChange:(NSNotification*)notification {
+	if (notification.object != textField) {
+		return;
+	}
+	if (textField.markedTextRange != nil) {
+		return;
+	}
+	auto compareLength = std::min(textField.text.length, previousText.length);
+	NSInteger matchLength;
+	for (matchLength = 0; matchLength < compareLength; ++matchLength) {
+		if ([textField.text characterAtIndex:matchLength] !=
+			[previousText characterAtIndex:matchLength]) {
+			break;
+		}
+	}
+
+	if (matchLength < textField.text.length) {
+		Growl::InputEvent event{
+			Growl::InputEventType::Keyboard,
+			Growl::InputKeyboardEvent{
+				Growl::KeyEventType::TextInput, Growl::Key::Unknown,
+				std::string([[textField.text substringFromIndex:matchLength]
+					UTF8String])}};
+		static_cast<Growl::SystemAPIInternal&>(api->system()).onEvent(event);
+	}
 }
 
 @end

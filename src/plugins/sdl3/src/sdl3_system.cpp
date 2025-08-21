@@ -132,6 +132,7 @@ void SDL3SystemAPI::tick() {
 			break;
 		case SDL_EVENT_KEY_DOWN:
 		case SDL_EVENT_KEY_UP:
+		case SDL_EVENT_TEXT_INPUT:
 			if (scene_focused || event.key.scancode == debug_mode_key) {
 				handleKeyboardEvent(event);
 			}
@@ -282,10 +283,9 @@ SDL_LogPriority SDL3SystemAPI::getLogPriority(LogLevel log_level) {
 
 void SDL3SystemAPI::handleMouseEvent(SDL_Event& event) {
 	if (inputProcessor) {
-		int display_w, display_h, window_w, window_h;
 		SDL_Window* window = SDL_GetWindowFromID(event.motion.windowID);
-		SDL_GetWindowSize(window, &window_w, &window_h);
-		SDL_GetWindowSizeInPixels(window, &display_w, &display_h);
+		float scaling_x, scaling_y;
+		getWindowScalingFactor(window, &scaling_x, &scaling_y);
 
 		int x = event.motion.x;
 		int y = event.motion.y;
@@ -297,8 +297,8 @@ void SDL3SystemAPI::handleMouseEvent(SDL_Event& event) {
 			scroll_x = -event.wheel.x;
 			scroll_y = event.wheel.y;
 		}
-		x *= display_w / (float)window_w;
-		y *= display_h / (float)window_h;
+		x *= scaling_x;
+		y *= scaling_y;
 
 #ifdef GROWL_IMGUI
 		if (api.imguiVisible()) {
@@ -391,4 +391,19 @@ void SDL3SystemAPI::openURL(std::string url) {
 	if (!SDL_OpenURL(url.c_str())) {
 		log(LogLevel::Error, "SDL3SystemAPI", "Failed to open url {}", url);
 	}
+}
+
+SDL_Window* SDL3SystemAPI::getNativeWindow() {
+	return static_cast<SDL3Window*>(
+			   static_cast<GraphicsAPIInternal&>(api.graphics()).getWindow())
+		->getNative();
+}
+
+void SDL3SystemAPI::getWindowScalingFactor(
+	SDL_Window* window, float* x, float* y) {
+	int display_w, display_h, window_w, window_h;
+	SDL_GetWindowSize(window, &window_w, &window_h);
+	SDL_GetWindowSizeInPixels(window, &display_w, &display_h);
+	*x = display_w / static_cast<float>(window_w);
+	*y = display_h / static_cast<float>(window_h);
 }

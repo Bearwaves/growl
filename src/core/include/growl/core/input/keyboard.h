@@ -1,12 +1,15 @@
 #pragma once
 
+#include <string>
+
 namespace Growl {
 
 enum class KeyEventType {
 	Unknown,
 
 	KeyDown,
-	KeyUp
+	KeyUp,
+	TextInput
 };
 
 enum class Key {
@@ -83,11 +86,13 @@ enum class Key {
 	Return,
 	Space,
 	Escape,
+	Backspace,
 };
 
 struct InputKeyboardEvent {
 	KeyEventType type;
 	Key key;
+	std::string text = "";
 };
 
 } // namespace Growl

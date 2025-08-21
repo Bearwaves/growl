@@ -10,13 +10,14 @@ namespace Growl {
 
 class IOSSystemAPI : public SystemAPIInternal {
 public:
-	explicit IOSSystemAPI(API& api)
-		: api{api} {}
+	explicit IOSSystemAPI(API& api, UITextField* text_field)
+		: api{api}
+		, text_field{text_field} {}
 	Error init(const Config& config) override;
 	void tick() override;
 	void dispose() override;
 	void resume() override;
-	void onTouch(InputTouchEvent) override;
+	void onEvent(const InputEvent&) override;
 	bool isRunning() override {
 		return running;
 	}
@@ -48,6 +49,11 @@ public:
 
 	virtual void openURL(std::string url) override;
 
+	virtual void startTextInput(std::string current_text) override;
+	virtual void updateTextInput(
+		std::string text, int x, int y, int w, int h, int cursor_x) override;
+	virtual void stopTextInput() override;
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
@@ -60,6 +66,7 @@ private:
 	ControllerEventType controllerEventTypeForButtonPressed(bool pressed);
 
 	API& api;
+	UITextField* text_field;
 	bool running;
 	GCController* controller = nullptr;
 	id game_controller_connect_observer;

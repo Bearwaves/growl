@@ -3,6 +3,7 @@
 #include "growl/core/game/game.h"
 #include "growl/core/graphics/batch.h"
 #include "growl/ui/label.h"
+#include "growl/ui/text_input.h"
 #include "growl/ui/widget.h"
 
 namespace UIExample {
@@ -25,6 +26,7 @@ private:
 	Growl::Label* label;
 	std::string text = "Hello this is some example text in Growl.\n\nIt's got "
 					   "newlines and everything.";
+	Growl::TextInput* input;
 };
 
 } // namespace UIExample

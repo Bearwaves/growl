@@ -26,6 +26,8 @@ using Growl::File;
 using Growl::Game;
 using Growl::HapticsDevice;
 using Growl::InputControllerEvent;
+using Growl::Key;
+using Growl::KeyEventType;
 using Growl::LogLevel;
 using Growl::PointerEventType;
 using Growl::Result;
@@ -236,16 +238,23 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 			auto* event = &ib->motionEvents[i];
 			switch (event->source & AINPUT_SOURCE_CLASS_MASK) {
 
-			case AINPUT_SOURCE_CLASS_POINTER:
-				this_api.onTouch(
+			case AINPUT_SOURCE_CLASS_POINTER: {
+				auto event_type = getPointerEventType(event->action);
+				if (event_type == PointerEventType::Unknown) {
+					break;
+				}
+				InputEvent e{
+					InputEventType::Touch,
 					InputTouchEvent{
 						getPointerEventType(event->action),
 						static_cast<int>(GameActivityPointerAxes_getAxisValue(
 							&event->pointers[0], AMOTION_EVENT_AXIS_X)),
 						static_cast<int>(GameActivityPointerAxes_getAxisValue(
 							&event->pointers[0], AMOTION_EVENT_AXIS_Y)),
-					});
+					}};
+				this_api.onEvent(e);
 				break;
+			}
 
 			case AINPUT_SOURCE_CLASS_JOYSTICK: {
 				int dpad_state = 0;
@@ -269,39 +278,47 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 					this_api.dpad_state = dpad_state;
 					if (dpad_delta & DPAD_UP_MASK) {
 						bool down = ((dpad_state & DPAD_UP_MASK) != 0);
-						this_api.onControllerEvent(
+						InputEvent e{
+							InputEventType::Controller,
 							InputControllerEvent{
 								down ? ControllerEventType::ButtonDown
 									 : ControllerEventType::ButtonUp,
 								ControllerButton::DpadUp,
-							});
+							}};
+						this_api.onEvent(e);
 					}
 					if (dpad_delta & DPAD_DOWN_MASK) {
 						bool down = ((dpad_state & DPAD_DOWN_MASK) != 0);
-						this_api.onControllerEvent(
+						InputEvent e{
+							InputEventType::Controller,
 							InputControllerEvent{
 								down ? ControllerEventType::ButtonDown
 									 : ControllerEventType::ButtonUp,
 								ControllerButton::DpadDown,
-							});
+							}};
+						this_api.onEvent(e);
 					}
 					if (dpad_delta & DPAD_LEFT_MASK) {
 						bool down = ((dpad_state & DPAD_LEFT_MASK) != 0);
-						this_api.onControllerEvent(
+						InputEvent e{
+							InputEventType::Controller,
 							InputControllerEvent{
 								down ? ControllerEventType::ButtonDown
 									 : ControllerEventType::ButtonUp,
 								ControllerButton::DpadLeft,
-							});
+							}};
+						this_api.onEvent(e);
 					}
 					if (dpad_delta & DPAD_RIGHT_MASK) {
 						bool down = ((dpad_state & DPAD_RIGHT_MASK) != 0);
-						this_api.onControllerEvent(
+						InputEvent e{
+							InputEventType::Controller,
 							InputControllerEvent{
 								down ? ControllerEventType::ButtonDown
 									 : ControllerEventType::ButtonUp,
 								ControllerButton::DpadRight,
-							});
+							}};
+						this_api.onEvent(e);
 					}
 				}
 				break;
@@ -315,17 +332,75 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 		for (int i = 0; i < ib->keyEventsCount; i++) {
 			auto* event = &ib->keyEvents[i];
 			auto button = getControllerButton(event->keyCode);
-			if (button == ControllerButton::Unknown) {
-				// Avoid capturing back button etc. for now.
+			if (button != ControllerButton::Unknown) {
+				auto type = getControllerEventType(event->action);
+				if (type != ControllerEventType::ButtonDown &&
+					type != ControllerEventType::ButtonUp) {
+					continue;
+				}
+				InputEvent e{
+					InputEventType::Controller,
+					InputControllerEvent{type, button}};
+				this_api.onEvent(e);
 				continue;
 			}
-			this_api.onControllerEvent(
-				InputControllerEvent{
-					getControllerEventType(event->action),
-					button,
-				});
+			auto key = getKey(event->keyCode);
+			if (key != Key::Unknown) {
+				auto type = getKeyEventType(event->action);
+				if (type != KeyEventType::KeyDown &&
+					type != KeyEventType::KeyUp) {
+					continue;
+				}
+				InputEvent e{
+					InputEventType::Keyboard, InputKeyboardEvent{type, key}};
+				this_api.onEvent(e);
+				continue;
+			}
 		}
 		android_app_clear_key_events(ib);
+	}
+
+	if (app->textInputState) {
+		GameActivity_getTextInputState(
+			app->activity,
+			[](void* ctx, const struct GameTextInputState* state) {
+				AndroidSystemAPI* system = static_cast<AndroidSystemAPI*>(ctx);
+				std::string new_text(state->text_UTF8);
+				int diff = system->text_input_current_text.length() -
+						   new_text.length();
+				for (int i = 0; i < diff; i++) {
+					InputEvent e_down{
+						InputEventType::Keyboard,
+						InputKeyboardEvent{
+							KeyEventType::KeyDown, Key::Backspace}};
+					InputEvent e_up{
+						InputEventType::Keyboard,
+						InputKeyboardEvent{
+							KeyEventType::KeyUp, Key::Backspace}};
+					system->onEvent(e_down);
+					system->onEvent(e_up);
+				}
+				auto compare_length = std::min(
+					system->text_input_current_text.length(),
+					new_text.length());
+				int match_end;
+				for (match_end = 0; match_end < compare_length; match_end++) {
+					if (new_text.at(match_end) !=
+						system->text_input_current_text.at(match_end)) {
+						break;
+					}
+				}
+				if (match_end < new_text.length()) {
+					InputEvent e{
+						InputEventType::Keyboard,
+						InputKeyboardEvent{
+							KeyEventType::TextInput, Key::Unknown,
+							new_text.substr(match_end)}};
+					system->onEvent(e);
+				}
+			},
+			static_cast<AndroidSystemAPI*>(&this_api));
+		app->textInputState = 0;
 	}
 }
 
@@ -391,25 +466,32 @@ ControllerEventType AndroidSystemAPI::getControllerEventType(int32_t action) {
 	return ControllerEventType::Unknown;
 }
 
+Key AndroidSystemAPI::getKey(int32_t key_code) {
+	switch (key_code) {
+	case AKEYCODE_DEL:
+		return Key::Backspace;
+	}
+	return Key::Unknown;
+}
+
+KeyEventType AndroidSystemAPI::getKeyEventType(int32_t action) {
+	switch (action) {
+	case AKEY_EVENT_ACTION_DOWN:
+		return KeyEventType::KeyDown;
+	case AKEY_EVENT_ACTION_UP:
+		return KeyEventType::KeyUp;
+	}
+	return KeyEventType::Unknown;
+}
+
 void AndroidSystemAPI::dispose() {
 	Paddleboat_destroy(getJNIEnv());
 }
 
-void AndroidSystemAPI::onTouch(InputTouchEvent event) {
-	if (!inputProcessor || event.type == PointerEventType::Unknown) {
-		return;
+void AndroidSystemAPI::onEvent(const InputEvent& event) {
+	if (inputProcessor) {
+		inputProcessor->onEvent(event);
 	}
-	InputEvent e{InputEventType::Touch, event};
-	inputProcessor->onEvent(e);
-}
-
-void AndroidSystemAPI::onControllerEvent(InputControllerEvent event) {
-	if (!inputProcessor || event.type == ControllerEventType::Unknown ||
-		event.button == ControllerButton::Unknown) {
-		return;
-	}
-	InputEvent e{InputEventType::Controller, event};
-	inputProcessor->onEvent(e);
 }
 
 Result<std::unique_ptr<Window>>
@@ -437,6 +519,40 @@ void AndroidSystemAPI::openURL(std::string url) {
 	jstring url_string = env->NewStringUTF(url.c_str());
 	env->CallVoidMethod(
 		android_state->activity->javaGameActivity, method, url_string);
+}
+
+void AndroidSystemAPI::startTextInput(std::string text) {
+	text_input_current_text = text;
+	text_input_state.text_UTF8 = text_input_current_text.c_str();
+	text_input_state.text_length = text_input_current_text.length();
+	text_input_state.selection = {
+		static_cast<int32_t>(text_input_current_text.length()),
+		static_cast<int32_t>(text_input_current_text.length())};
+	GameActivity_setTextInputState(android_state->activity, &text_input_state);
+	GameActivity_setImeEditorInfo(
+		android_state->activity,
+		static_cast<GameTextInputType>(
+			TYPE_CLASS_TEXT | TYPE_TEXT_VARIATION_NORMAL |
+			TYPE_TEXT_FLAG_CAP_CHARACTERS | TYPE_TEXT_FLAG_NO_SUGGESTIONS),
+		IME_ACTION_DONE,
+		static_cast<GameTextInputImeOptions>(
+			IME_FLAG_NO_PERSONALIZED_LEARNING | IME_FLAG_FORCE_ASCII));
+	GameActivity_showSoftInput(android_state->activity, 0);
+}
+
+void AndroidSystemAPI::updateTextInput(
+	std::string text, int x, int y, int w, int h, int cursor_x) {
+	text_input_current_text = text;
+	text_input_state.text_UTF8 = text_input_current_text.c_str();
+	text_input_state.text_length = text_input_current_text.length();
+	text_input_state.selection = {
+		static_cast<int32_t>(text_input_current_text.length()),
+		static_cast<int32_t>(text_input_current_text.length())};
+	GameActivity_setTextInputState(android_state->activity, &text_input_state);
+}
+
+void AndroidSystemAPI::stopTextInput() {
+	GameActivity_hideSoftInput(android_state->activity, 0);
 }
 
 void AndroidSystemAPI::logInternal(

@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@interface GrowlViewController : UIViewController
+@interface GrowlViewController : UIViewController <UITextFieldDelegate>
 
 - (void)dispose;
 

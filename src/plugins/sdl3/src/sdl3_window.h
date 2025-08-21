@@ -25,6 +25,10 @@ public:
 	void setVSync(bool vsync) override;
 	bool getVSync() override;
 
+	SDL_Window* getNative() {
+		return native;
+	}
+
 #ifdef GROWL_IMGUI
 	void initImgui() override;
 	void newImguiFrame() override;

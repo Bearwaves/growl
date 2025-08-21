@@ -67,6 +67,11 @@ public:
 
 	virtual void openURL(std::string url) override;
 
+	virtual void startTextInput(std::string current_text) override;
+	virtual void updateTextInput(
+		std::string text, int x, int y, int w, int h, int cursor_x) override;
+	virtual void stopTextInput() override;
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
@@ -85,6 +90,9 @@ private:
 	void openGameController(int id);
 
 	Error initPreferences(const Config& config);
+
+	SDL_Window* getNativeWindow();
+	void getWindowScalingFactor(SDL_Window* window, float* x, float* y);
 
 	API& api;
 	bool running;

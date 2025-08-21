@@ -1,20 +1,29 @@
 #include "SDL3/SDL_events.h"
+#include "SDL3/SDL_keyboard.h"
 #include "SDL3/SDL_scancode.h"
 #include "growl/core/api/api.h"
 #include "growl/core/input/event.h"
 #include "growl/core/input/keyboard.h"
 #include "growl/core/input/processor.h"
 #include "sdl3_system.h"
+#include "sdl3_window.h"
 
 using Growl::Key;
 using Growl::KeyEventType;
 using Growl::SDL3SystemAPI;
+using Growl::SDL3Window;
 
 void SDL3SystemAPI::handleKeyboardEvent(SDL_Event& event) {
 	if (inputProcessor) {
 		InputEvent e(
 			InputEventType::Keyboard,
-			InputKeyboardEvent{getKeyEventType(event.key), getKey(event.key)});
+			InputKeyboardEvent{
+				event.type == SDL_EVENT_TEXT_INPUT ? KeyEventType::TextInput
+												   : getKeyEventType(event.key),
+				getKey(event.key),
+				event.type == SDL_EVENT_TEXT_INPUT
+					? std::string(event.text.text)
+					: ""});
 		inputProcessor->onEvent(e);
 	}
 #ifdef GROWL_IMGUI
@@ -24,6 +33,27 @@ void SDL3SystemAPI::handleKeyboardEvent(SDL_Event& event) {
 		imgui_resize_window = event.window.windowID;
 	}
 #endif
+}
+
+void SDL3SystemAPI::startTextInput(std::string current_text) {
+	SDL_StartTextInput(getNativeWindow());
+}
+
+void SDL3SystemAPI::updateTextInput(
+	std::string text, int x, int y, int w, int h, int cursor_x) {
+	SDL_Window* native = getNativeWindow();
+	float scaling_x, scaling_y;
+	getWindowScalingFactor(native, &scaling_x, &scaling_y);
+	auto input_area = SDL_Rect{
+		static_cast<int>(x / scaling_x), static_cast<int>(y / scaling_y),
+		static_cast<int>(w / scaling_x), static_cast<int>(h / scaling_y)};
+	SDL_SetTextInputArea(getNativeWindow(), &input_area, cursor_x / scaling_x);
+}
+
+void SDL3SystemAPI::stopTextInput() {
+	SDL_Window* native = getNativeWindow();
+	SDL_SetTextInputArea(native, nullptr, 0);
+	SDL_StopTextInput(native);
 }
 
 KeyEventType SDL3SystemAPI::getKeyEventType(SDL_KeyboardEvent& event) {
@@ -179,6 +209,8 @@ Key SDL3SystemAPI::getKey(SDL_KeyboardEvent& event) {
 		return Key::Space;
 	case SDL_SCANCODE_ESCAPE:
 		return Key::Escape;
+	case SDL_SCANCODE_BACKSPACE:
+		return Key::Backspace;
 
 	default:
 		return Key::Unknown;

@@ -23,7 +23,7 @@ public:
 	Error init(const Config& config) override;
 	void tick() override;
 	void dispose() override;
-	void onTouch(InputTouchEvent) override;
+	void onEvent(const InputEvent&) override;
 	bool isRunning() override {
 		return android_state->destroyRequested == 0;
 	}
@@ -55,11 +55,15 @@ public:
 
 	void openURL(std::string url) override;
 
+	void startTextInput(std::string text) override;
+	void updateTextInput(
+		std::string text, int x, int y, int w, int h, int cursor_x) override;
+	void stopTextInput() override;
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
 	int logPriorityForLevel(LogLevel log_level);
-	void onControllerEvent(InputControllerEvent event);
 	void onResizeEvent(int width, int height);
 	JNIEnv* getJNIEnv();
 	static void handleAppCmd(android_app* app, int32_t cmd);
@@ -67,6 +71,8 @@ private:
 	static PointerEventType getPointerEventType(int32_t action);
 	static ControllerButton getControllerButton(int32_t key_code);
 	static ControllerEventType getControllerEventType(int32_t action);
+	static Key getKey(int32_t key_code);
+	static KeyEventType getKeyEventType(int32_t action);
 	static bool getDarkMode(android_app* app);
 	static void controllerStatusCallback(
 		const int32_t controller_index,
@@ -84,6 +90,8 @@ private:
 	int dpad_state = 0;
 	std::unique_ptr<AndroidHaptics> controller_haptics = nullptr;
 	std::unique_ptr<AndroidHaptics> device_haptics;
+	GameTextInputState text_input_state;
+	std::string text_input_current_text;
 };
 
 } // namespace Growl
