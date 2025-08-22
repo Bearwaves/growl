@@ -226,6 +226,8 @@ void GlyphLayout::layout() noexcept {
 	origin_offset = bearing_up;
 	layout_info = std::move(new_layout);
 	descender = face->size->metrics.descender >> 6;
+	line_height =
+		(face->size->metrics.ascender - face->size->metrics.descender) >> 6;
 }
 
 void GlyphLayout::setText(std::string text) {

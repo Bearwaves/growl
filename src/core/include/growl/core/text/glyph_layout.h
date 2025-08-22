@@ -78,8 +78,12 @@ public:
 		return size;
 	}
 
-	int getDescender() {
+	const int getDescender() const {
 		return descender;
+	}
+
+	const int getLineHeight() const {
+		return line_height;
 	}
 
 	int getGraphemeCount() {
@@ -100,6 +104,7 @@ private:
 	int height;
 	int origin_offset;
 	int descender;
+	int line_height;
 	bool overflowed;
 	FontFace& font_face;
 	std::unique_ptr<HBData> hb_data;
