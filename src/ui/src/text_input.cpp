@@ -2,8 +2,10 @@
 #include "growl/core/graphics/batch.h"
 #include "growl/core/input/event.h"
 #include "growl/core/input/keyboard.h"
+#include "growl/ui/pack.h"
 #include "growl/ui/widget.h"
 
+using Growl::Align;
 using Growl::Batch;
 using Growl::Key;
 using Growl::KeyEventType;
@@ -12,13 +14,16 @@ using Growl::Widget;
 
 TextInput::TextInput(
 	std::string&& name, SystemAPI& system, FontTextureAtlas& font_tex,
-	FontFace& font, Value font_size, Value max_width)
+	FontFace& font, Value font_size, Value max_width, Align align_h,
+	Align align_v)
 	: Widget{std::move(name)}
 	, system{system}
 	, font_tex{font_tex}
 	, glyph_layout{std::make_unique<GlyphLayout>(font, "", 0, 0)}
 	, font_size{font_size}
-	, max_width{max_width} {
+	, max_width{max_width}
+	, align_h{align_h}
+	, align_v{align_v} {
 	cursor = glyph_layout->getGraphemeCount();
 }
 
@@ -50,6 +55,43 @@ void TextInput::layout() {
 		should_invalidate = true;
 	}
 
+	switch (align_h) {
+	case Align::LEFT:
+	case Align::TOP:
+		layout_x = 0;
+		break;
+	case Align::MIDDLE:
+		layout_x = (getWidth() - glyph_layout->getWidth()) / 2;
+		break;
+	case Align::RIGHT:
+	case Align::BOTTOM:
+		layout_x = getWidth() - glyph_layout->getWidth();
+		break;
+	}
+
+	float y_top = glyph_layout->getFontSize() - glyph_layout->getOriginOffset();
+	float y_bottom = getHeight() - (glyph_layout->getOriginOffset() -
+									glyph_layout->getDescender());
+	float y_middle = y_top + (y_bottom - y_top) / 2;
+
+	switch (align_v) {
+	case Align::LEFT:
+	case Align::TOP:
+		layout_y = y_top;
+		cursor_y = y_top;
+		break;
+	case Align::MIDDLE:
+		layout_y = y_middle;
+		cursor_y = (getHeight() - glyph_layout->getFontSize()) / 2;
+		break;
+	case Align::RIGHT:
+	case Align::BOTTOM:
+		layout_y = y_bottom;
+		cursor_y = getHeight() - (glyph_layout->getLineHeight() -
+								  glyph_layout->getFontSize() / 2);
+		break;
+	}
+
 	if (should_invalidate) {
 		needs_cursor_update = true;
 		invalidateHierarchy();
@@ -61,24 +103,20 @@ void TextInput::onDraw(
 	Widget::onDraw(batch, parent_alpha, transform);
 	Color c = batch.getColor();
 	batch.setColor(c.multiplyAlpha(parent_alpha));
-	batch.draw(
-		*glyph_layout, font_tex, 0,
-		glyph_layout->getFontSize() - glyph_layout->getOriginOffset(),
-		transform);
+	batch.draw(*glyph_layout, font_tex, layout_x, layout_y, transform);
 
 	if (active) {
 		int cursor_x =
 			cursor == 0 ? 0 : glyph_layout->getGraphemes().at(cursor - 1).x;
 		batch.drawRect(
-			cursor_x,
-			glyph_layout->getFontSize() - glyph_layout->getOriginOffset(), 3,
-			glyph_layout->getFontSize(), transform);
+			layout_x + cursor_x, cursor_y, 3, glyph_layout->getFontSize(),
+			transform);
 
 		if (needs_cursor_update) {
 			auto world_coords = localToWorldCoordinates(0, 0);
 			system.updateTextInput(
 				getText(), world_coords.x, world_coords.y, getWidth(),
-				getHeight(), cursor_x);
+				getHeight(), layout_x + cursor_x);
 			needs_cursor_update = false;
 		}
 	}

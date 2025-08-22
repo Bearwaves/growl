@@ -11,7 +11,8 @@ class TextInput : public Widget {
 public:
 	TextInput(
 		std::string&& name, SystemAPI& system, FontTextureAtlas& font_tex,
-		FontFace& font, Value font_size, Value max_width = Value());
+		FontFace& font, Value font_size, Value max_width = Value(),
+		Align align_h = Align::LEFT, Align align_v = Align::MIDDLE);
 
 	void layout() override;
 
@@ -25,6 +26,9 @@ public:
 	void setText(std::string text);
 	std::string getText();
 
+	bool isActive() {
+		return active;
+	}
 	void setActive(bool active);
 
 	void setX(float x) override;
@@ -38,12 +42,17 @@ private:
 	std::unique_ptr<GlyphLayout> glyph_layout;
 	Value font_size;
 	Value max_width;
+	Align align_h;
+	Align align_v;
 	float pref_width;
 	float pref_height;
 	float last_font_size;
 	bool active = false;
 	int cursor;
 	bool needs_cursor_update = false;
+	float layout_y = 0;
+	float layout_x = 0;
+	float cursor_y = 0;
 
 	void handlePointer(int x, int y);
 };
