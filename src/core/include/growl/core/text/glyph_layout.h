@@ -78,6 +78,10 @@ public:
 		return size;
 	}
 
+	int getDescender() {
+		return descender;
+	}
+
 	int getGraphemeCount() {
 		return graphemes.size();
 	}
@@ -95,6 +99,7 @@ private:
 	int requested_width;
 	int height;
 	int origin_offset;
+	int descender;
 	bool overflowed;
 	FontFace& font_face;
 	std::unique_ptr<HBData> hb_data;
