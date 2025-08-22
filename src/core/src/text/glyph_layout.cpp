@@ -6,7 +6,6 @@
 #include "hb-ft.h"
 #include "linebreak.h"
 #include <cctype>
-#include <iostream>
 
 using Growl::FontFace;
 using Growl::GlyphLayout;
@@ -37,9 +36,6 @@ GlyphLayout::~GlyphLayout() noexcept {
 
 void GlyphLayout::layout() noexcept {
 	FT_Face face = font_face.getFontData().face;
-	std::cout << (face->size->metrics.descender >> 6) << ", "
-			  << (face->size->metrics.ascender >> 6) << ", "
-			  << (face->size->metrics.height >> 6) << std::endl;
 
 	if (size && font_face.getType() != FontFaceType::Bitmap) {
 		Growl::Internal::setFontFacePixelSize(font_face.getFontData(), size);
