@@ -470,6 +470,8 @@ Key AndroidSystemAPI::getKey(int32_t key_code) {
 	switch (key_code) {
 	case AKEYCODE_DEL:
 		return Key::Backspace;
+	case AKEYCODE_ENTER:
+		return Key::Return;
 	}
 	return Key::Unknown;
 }

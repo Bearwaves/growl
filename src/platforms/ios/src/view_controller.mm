@@ -34,6 +34,7 @@ std::unique_ptr<Growl::Game> createGame();
 		UITextAutocapitalizationTypeAllCharacters;
 	textField.autocorrectionType = UITextAutocorrectionTypeNo;
 	textField.spellCheckingType = UITextSpellCheckingTypeNo;
+	textField.returnKeyType = UIReturnKeyDone;
 	previousText = nil;
 	[self.view addSubview:textField];
 	[[NSNotificationCenter defaultCenter]
@@ -270,6 +271,22 @@ std::unique_ptr<Growl::Game> createGame();
 		}
 		previousText = [textField.text copy];
 	}
+	return true;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField*)textField {
+	auto& systemInternal =
+		static_cast<Growl::SystemAPIInternal&>(api->system());
+	Growl::InputEvent event{
+		Growl::InputEventType::Keyboard,
+		Growl::InputKeyboardEvent{
+			Growl::KeyEventType::KeyDown, Growl::Key::Return}};
+	systemInternal.onEvent(event);
+	event = Growl::InputEvent{
+		Growl::InputEventType::Keyboard,
+		Growl::InputKeyboardEvent{
+			Growl::KeyEventType::KeyUp, Growl::Key::Return}};
+	systemInternal.onEvent(event);
 	return true;
 }
 
