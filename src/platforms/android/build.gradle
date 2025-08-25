@@ -45,12 +45,12 @@ configurations.implementation {
 
 android {
     namespace 'com.bearwaves.growl'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId growlProperties['appId'] as String
         minSdk 21
-        targetSdk 34
+        targetSdk 35
         versionCode Integer.parseInt(growlProperties['versionCode'] as String)
         versionName growlProperties['versionName'] as String
 
