@@ -23,6 +23,8 @@ public:
 	float getScrollY();
 	void setScrollX(float x);
 	void setScrollY(float y);
+	float getMaxX();
+	float getMaxY();
 
 private:
 	bool panning = false;

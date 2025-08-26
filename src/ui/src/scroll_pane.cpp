@@ -173,6 +173,14 @@ void ScrollPane::setScrollY(float y) {
 	}
 }
 
+float ScrollPane::getMaxX() {
+	return max_x;
+}
+
+float ScrollPane::getMaxY() {
+	return -min_y;
+}
+
 void ScrollPane::pan(float x, float y) {
 	if (panning) {
 		float diff_x = x - last_pointer_x;
