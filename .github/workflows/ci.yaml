@@ -123,6 +123,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
       - name: Configure CMake
         run: |
           cmake -DCMAKE_SYSTEM_NAME="iOS" -GXcode \
