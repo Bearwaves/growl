@@ -23,7 +23,7 @@ public:
 	virtual bool onMouseEvent(const InputMouseEvent& event) override;
 	virtual bool onTouchEvent(const InputTouchEvent& event) override;
 
-	void setText(std::string text);
+	virtual void setText(std::string text);
 	std::string getText();
 
 	bool isActive() {
