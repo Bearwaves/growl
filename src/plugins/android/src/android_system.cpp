@@ -580,6 +580,7 @@ Result<std::unique_ptr<File>> AndroidSystemAPI::openFile(std::string path) {
 		return Error(
 			std::make_unique<AssetsError>("Failed to load file descriptor"));
 	}
+	asset_length = AAsset_getLength(asset);
 	return std::unique_ptr<File>(
 		std::make_unique<AndroidFile>(asset, fd, asset_start, asset_length));
 }
