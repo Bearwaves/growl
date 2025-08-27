@@ -48,7 +48,7 @@ size_t AndroidFile::pos() {
 
 Result<std::unique_ptr<File>>
 AndroidFile::getRegionAsFile(size_t pos, size_t length) {
-	if (pos < start || length > len || pos + length > start + len) {
+	if (pos > len || pos + length > len) {
 		return Error(
 			std::make_unique<AndroidError>("Region out of range of file"));
 	}
