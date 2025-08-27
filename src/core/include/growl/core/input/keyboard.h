@@ -87,6 +87,9 @@ enum class Key {
 	Space,
 	Escape,
 	Backspace,
+
+	// Platform-specific
+	Back, // Android
 };
 
 struct InputKeyboardEvent {
