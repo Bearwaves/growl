@@ -62,6 +62,9 @@ void Label::layout() {
 }
 
 void Label::setText(std::string text) {
+	if (text == glyph_layout->getText()) {
+		return;
+	}
 	glyph_layout->setText(text);
 	invalidateHierarchy();
 }
