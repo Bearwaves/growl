@@ -27,6 +27,7 @@ public:
 	bool isRunning() override {
 		return android_state->destroyRequested == 0;
 	}
+	void stop() override;
 	virtual Result<std::unique_ptr<Window>>
 	createWindow(const Config& config) override;
 	void setLogLevel(LogLevel log_level) override;

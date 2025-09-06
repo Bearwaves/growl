@@ -117,6 +117,10 @@ void AndroidSystemAPI::tick() {
 	handleInput(android_state);
 }
 
+void AndroidSystemAPI::stop() {
+	GameActivity_finish(android_state->activity);
+}
+
 bool AndroidSystemAPI::didResize(int* width, int* height) {
 	*width = resize_width;
 	*height = resize_height;
