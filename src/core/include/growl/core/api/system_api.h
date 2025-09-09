@@ -61,6 +61,9 @@ public:
 		return dark_mode;
 	}
 
+	// path is relative to the base path.
+	// This is usually the directory where the exeutable is located, though
+	// in an Apple app bundle it is relative to the Resources directory.
 	virtual Result<std::unique_ptr<File>> openFile(std::string path) = 0;
 
 	virtual Preferences& getLocalPreferences() = 0;
