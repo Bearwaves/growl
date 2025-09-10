@@ -46,9 +46,6 @@ Growl mostly uses vendored dependencies, so you shouldn't need any libraries oth
 than the ones necessary for your specific platform (e.g. Android NDK,
 Emscripten).
 
-The exception to this is OpenSSL, which you will need installed on your machine
-in order to build for macOS or Linux targets.
-
 ## Getting started
 
 The first thing to do is build the included test app, so you can check

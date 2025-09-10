@@ -61,3 +61,6 @@
 [submodule "thirdparty/curl"]
 	path = thirdparty/curl
 	url = git@github.com:curl/curl.git
+[submodule "mbedtls"]
+	path = thirdparty/mbedtls
+	url = git@github.com:Mbed-TLS/mbedtls.git

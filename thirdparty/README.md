@@ -14,6 +14,7 @@
 | libsodium       | `1.0.20-RELEASE` | https://github.com/jedisct1/libsodium   |
 | libunibreak     | `5.0`            | https://github.com/adah1972/libunibreak |
 | lua             | `v5.4.6`         | https://github.com/lua/lua              |
+| mbedtls         | `mbedtls-3.6.4`  | https://github.com/Mbed-TLS/mbedtls     |
 | msdfgen         | `v1.12`          | https://github.com/Chlumsky/msdfgen/    |
 | SDL             | `release-3.2.18` | https://github.com/libsdl-org/SDL       |
 | SoLoud          | `8d9c832`        | https://github.com/Bearwaves/soloud     |
