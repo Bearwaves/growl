@@ -235,7 +235,7 @@ void SDL3SystemAPI::setLogLevel(LogLevel log_level) {
 
 Result<std::unique_ptr<File>> SDL3SystemAPI::openFile(std::string path) {
 	auto base_path = std::filesystem::path(SDL_GetBasePath()) / path;
-	auto fp = SDL_IOFromFile(base_path.c_str(), "rb");
+	auto fp = SDL_IOFromFile(base_path.string().c_str(), "rb");
 	if (!fp) {
 		return Error(std::make_unique<SDL3Error>(SDL_GetError()));
 	}
