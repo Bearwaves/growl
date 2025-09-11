@@ -38,8 +38,8 @@ target_link_libraries(growl-platform-desktop
 	PUBLIC
 	growl-core
 	growl-ui
-	PRIVATE
 	growl-plugin-sdl3
+	PRIVATE
 	growl-plugin-soloud
 	growl-plugin-lua
 	growl-plugin-curl

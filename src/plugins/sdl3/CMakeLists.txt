@@ -2,8 +2,6 @@ project(growl-plugin-sdl3)
 
 message(STATUS "[Growl] Enabled SDL3 plugin.")
 
-set(SDL_LINK_LIBS growl-thirdparty::sdl)
-
 set(SOURCES
 	"src/sdl3_system.cpp"
 	"src/sdl3_keyboard.cpp"
@@ -61,6 +59,8 @@ endif()
 
 add_library(growl-plugin-sdl3 ${SOURCES} ${HEADERS})
 target_link_libraries(growl-plugin-sdl3
+	PUBLIC
+	growl-thirdparty::sdl
 	PRIVATE
 	growl-core
 	${SDL_LINK_LIBS}
