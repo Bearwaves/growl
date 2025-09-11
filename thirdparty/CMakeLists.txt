@@ -63,6 +63,10 @@ if (NOT GROWL_THIRDPARTY_LOGGING)
 	set(MESSAGE_QUIET ON)
 endif()
 
+if (APPLE)
+	set(CMAKE_C_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+endif()
+
 message(STATUS "[Growl] --- glm")
 add_subdirectory(glm)
 message(STATUS "[Growl] --- json")
