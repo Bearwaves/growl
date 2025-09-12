@@ -20,10 +20,13 @@ void SDL3SystemAPI::openGameController(int id) {
 }
 
 void SDL3SystemAPI::handleControllerEvent(SDL_Event& event) {
-	InputEvent e{
-		InputEventType::Controller,
-		InputControllerEvent{getControllerEventType(event), getButton(event)}};
-	inputProcessor->onEvent(e);
+	if (inputProcessor) {
+		InputEvent e{
+			InputEventType::Controller,
+			InputControllerEvent{
+				getControllerEventType(event), getButton(event)}};
+		inputProcessor->onEvent(e);
+	}
 }
 
 SDL3Controller::SDL3Controller(SystemAPI* system, SDL_Gamepad* controller)

@@ -240,8 +240,8 @@ Result<std::unique_ptr<File>> SDL3SystemAPI::openFile(std::string path) {
 		return Error(std::make_unique<SDL3Error>(SDL_GetError()));
 	}
 
-	return std::unique_ptr<File>(
-		std::make_unique<SDL3File>(base_path.string(), fp, 0, SDL_GetIOSize(fp)));
+	return std::unique_ptr<File>(std::make_unique<SDL3File>(
+		base_path.string(), fp, 0, SDL_GetIOSize(fp)));
 }
 
 Preferences& SDL3SystemAPI::getLocalPreferences() {
