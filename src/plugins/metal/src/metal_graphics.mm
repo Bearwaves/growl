@@ -322,13 +322,13 @@ MetalGraphicsAPI::createShader(const ShaderPack& shader_pack) {
 }
 
 void MetalGraphicsAPI::setVSync(bool vsync) {
-#ifdef TARGET_OS_MAC
+#ifdef TARGET_OS_OSX
 	[swap_chain setDisplaySyncEnabled:vsync];
 #endif
 }
 
 bool MetalGraphicsAPI::getVSync() {
-#ifdef TARGET_OS_MAC
+#ifdef TARGET_OS_OSX
 	return [swap_chain displaySyncEnabled];
 #else
 	return true;
