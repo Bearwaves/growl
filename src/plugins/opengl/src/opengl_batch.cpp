@@ -65,7 +65,7 @@ OpenGLBatch::OpenGLBatch(
 		glGenTextures(1, &im_tex);
 		glBindTexture(GL_TEXTURE_2D, im_tex);
 		glTexImage2D(
-			GL_TEXTURE_2D, 0, GL_RGB, im_w, im_h, 0, GL_RGB, GL_UNSIGNED_BYTE,
+			GL_TEXTURE_2D, 0, GL_RGBA, im_w, im_h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
 			NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -119,7 +119,7 @@ void OpenGLBatch::begin() {
 			im_h = new_h;
 			glBindTexture(GL_TEXTURE_2D, im_tex);
 			glTexImage2D(
-				GL_TEXTURE_2D, 0, GL_RGB, im_w, im_h, 0, GL_RGB,
+				GL_TEXTURE_2D, 0, GL_RGBA, im_w, im_h, 0, GL_RGBA,
 				GL_UNSIGNED_BYTE, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -434,7 +434,8 @@ void OpenGLBatch::flush() {
 		return;
 	}
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFuncSeparate(
+		GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);

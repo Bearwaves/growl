@@ -58,7 +58,7 @@ void MetalShader::bind(
 		descriptor.colorAttachments[0].sourceRGBBlendFactor =
 			MTLBlendFactorSourceAlpha;
 		descriptor.colorAttachments[0].sourceAlphaBlendFactor =
-			MTLBlendFactorSourceAlpha;
+			MTLBlendFactorOne;
 		descriptor.colorAttachments[0].destinationRGBBlendFactor =
 			MTLBlendFactorOneMinusSourceAlpha;
 		descriptor.colorAttachments[0].destinationAlphaBlendFactor =
