@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef GROWL_IMGUI
+typedef unsigned long long ImTextureID;
+#endif
+
 namespace Growl {
 
 struct TextureOptions {
@@ -12,6 +16,7 @@ public:
 	Texture(int width, int height)
 		: width{width}
 		, height{height} {}
+	virtual ~Texture() = default;
 
 	// Texture is move-only
 	Texture(const Texture&) = delete;
@@ -26,6 +31,10 @@ public:
 	int getHeight() const {
 		return height;
 	}
+
+#ifdef GROWL_IMGUI
+	virtual ImTextureID getImguiTextureID() = 0;
+#endif
 
 protected:
 	int width;

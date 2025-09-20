@@ -18,6 +18,10 @@ public:
 		return id;
 	}
 
+	ImTextureID getImguiTextureID() {
+		return id;
+	};
+
 private:
 	GLuint id;
 };

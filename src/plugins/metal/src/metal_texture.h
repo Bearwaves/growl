@@ -20,6 +20,10 @@ public:
 		return metal_texture;
 	}
 
+#ifdef GROWL_IMGUI
+	ImTextureID getImguiTextureID() override;
+#endif
+
 private:
 	id<MTLTexture> metal_texture;
 	id<MTLSamplerState> sampler;
