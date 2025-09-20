@@ -322,11 +322,17 @@ MetalGraphicsAPI::createShader(const ShaderPack& shader_pack) {
 }
 
 void MetalGraphicsAPI::setVSync(bool vsync) {
+#ifndef GROWL_IOS
 	[swap_chain setDisplaySyncEnabled:vsync];
+#endif
 }
 
 bool MetalGraphicsAPI::getVSync() {
+#ifndef GROWL_IOS
 	return [swap_chain displaySyncEnabled];
+#else
+	return true;
+#endif
 }
 
 const std::vector<unsigned char>
