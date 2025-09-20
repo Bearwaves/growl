@@ -18,9 +18,11 @@ public:
 		return id;
 	}
 
+#ifdef GROWL_IMGUI
 	ImTextureID getImguiTextureID() {
 		return id;
 	};
+#endif
 
 private:
 	GLuint id;
