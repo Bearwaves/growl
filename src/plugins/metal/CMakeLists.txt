@@ -28,4 +28,8 @@ target_link_libraries(
 	"-framework Metal"
 	"-framework QuartzCore"
 )
+
 target_compile_definitions(growl-plugin-metal INTERFACE "GROWL_METAL")
+if (GROWL_IOS)
+	target_compile_definitions(growl-plugin-metal PRIVATE "GROWL_IOS")
+endif()
