@@ -25,6 +25,12 @@ struct ConstantBlock {
 	float deltaTime;
 };
 
+struct MetalBatch::Vertex {
+	float x, y;
+	float tex_x, tex_y;
+	float r, g, b, a;
+};
+
 MetalBatch::MetalBatch(
 	API& api, MetalGraphicsAPI& metal_graphics, MetalShader* default_shader,
 	MetalShader* rect_shader, MetalShader* sdf_shader,
@@ -142,16 +148,14 @@ void MetalBatch::draw(
 
 	float right = std::round(x + width);
 	float bottom = std::round(y + height);
-	std::vector<float> vertices;
-	addVertex(vertices, right, bottom, 1.f, 1.f);
-	addVertex(vertices, x, bottom, 0.f, 1.f);
-	addVertex(vertices, x, y, 0.f, 0.f);
-	addVertex(vertices, right, bottom, 1.f, 1.f);
-	addVertex(vertices, x, y, 0.f, 0.f);
-	addVertex(vertices, right, y, 1.f, 0.f);
-	[encoder setVertexBytes:vertices.data()
-					 length:vertices.size() * sizeof(float)
-					atIndex:1];
+	Vertex vertices[6];
+	setVertex(vertices[0], right, bottom, 1.f, 1.f);
+	setVertex(vertices[1], x, bottom, 0.f, 1.f);
+	setVertex(vertices[2], x, y, 0.f, 0.f);
+	setVertex(vertices[3], right, bottom, 1.f, 1.f);
+	setVertex(vertices[4], x, y, 0.f, 0.f);
+	setVertex(vertices[5], right, y, 1.f, 0.f);
+	[encoder setVertexBytes:vertices length:6 * sizeof(Vertex) atIndex:1];
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
 				vertexStart:0
 				vertexCount:6];
@@ -169,16 +173,14 @@ void MetalBatch::draw(
 	float bottom = std::round(y + height);
 
 	auto& reg = region.region;
-	std::vector<float> vertices;
-	addVertex(vertices, right, bottom, reg.u1, reg.v1);
-	addVertex(vertices, x, bottom, reg.u0, reg.v1);
-	addVertex(vertices, x, y, reg.u0, reg.v0);
-	addVertex(vertices, right, bottom, reg.u1, reg.v1);
-	addVertex(vertices, x, y, reg.u0, reg.v0);
-	addVertex(vertices, right, y, reg.u1, reg.v0);
-	[encoder setVertexBytes:vertices.data()
-					 length:vertices.size() * sizeof(float)
-					atIndex:1];
+	Vertex vertices[6];
+	setVertex(vertices[0], right, bottom, reg.u1, reg.v1);
+	setVertex(vertices[1], x, bottom, reg.u0, reg.v1);
+	setVertex(vertices[2], x, y, reg.u0, reg.v0);
+	setVertex(vertices[3], right, bottom, reg.u1, reg.v1);
+	setVertex(vertices[4], x, y, reg.u0, reg.v0);
+	setVertex(vertices[5], right, y, reg.u1, reg.v0);
+	[encoder setVertexBytes:vertices length:6 * sizeof(Vertex) atIndex:1];
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
 				vertexStart:0
 				vertexCount:6];
@@ -210,7 +212,8 @@ void MetalBatch::draw(
 		default_shader->bind(surface, encoder);
 	}
 
-	std::vector<float> vertices;
+	std::vector<Vertex> vertices(6 * glyph_layout.getLayout().size());
+	size_t i = 0;
 	for (auto& glyph : glyph_layout.getLayout()) {
 		float gx = std::round(x + glyph.x);
 		float gy = std::round(y + glyph.y);
@@ -225,15 +228,15 @@ void MetalBatch::draw(
 		}
 		auto& reg = region_result.get();
 
-		addVertex(vertices, right, bottom, reg.u1, reg.v1);
-		addVertex(vertices, gx, bottom, reg.u0, reg.v1);
-		addVertex(vertices, gx, gy, reg.u0, reg.v0);
-		addVertex(vertices, right, bottom, reg.u1, reg.v1);
-		addVertex(vertices, gx, gy, reg.u0, reg.v0);
-		addVertex(vertices, right, gy, reg.u1, reg.v0);
+		setVertex(vertices[i++], right, bottom, reg.u1, reg.v1);
+		setVertex(vertices[i++], gx, bottom, reg.u0, reg.v1);
+		setVertex(vertices[i++], gx, gy, reg.u0, reg.v0);
+		setVertex(vertices[i++], right, bottom, reg.u1, reg.v1);
+		setVertex(vertices[i++], gx, gy, reg.u0, reg.v0);
+		setVertex(vertices[i++], right, gy, reg.u1, reg.v0);
 	}
 	vertex_buffer->writeAndBind(
-		encoder, 1, vertices.data(), vertices.size() * sizeof(float));
+		encoder, 1, vertices.data(), i * sizeof(Vertex));
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
 				vertexStart:0
 				vertexCount:glyph_layout.getLayout().size() * 6];
@@ -258,66 +261,63 @@ void MetalBatch::drawRect(
 			encoder, 2, uniforms, uniforms_length, BufferBinding::Fragment);
 	}
 
-	std::vector<float> vertices;
 	x = std::round(x) + 0.5f;
 	y = std::round(y) + 0.5f;
 	float right = x + width;
 	float bottom = y + height;
 	if (border_width == 0) {
-		addVertex(vertices, right, bottom, 1.f, 1.f);
-		addVertex(vertices, x, bottom, 0.f, 1.f);
-		addVertex(vertices, x, y, 0.f, 0.f);
-		addVertex(vertices, right, bottom, 1.f, 1.f);
-		addVertex(vertices, x, y, 0.f, 0.f);
-		addVertex(vertices, right, y, 1.f, 0.f);
-		[encoder setVertexBytes:vertices.data()
-						 length:vertices.size() * sizeof(float)
-						atIndex:1];
+		Vertex vertices[6];
+		setVertex(vertices[0], right, bottom, 1.f, 1.f);
+		setVertex(vertices[1], x, bottom, 0.f, 1.f);
+		setVertex(vertices[2], x, y, 0.f, 0.f);
+		setVertex(vertices[3], right, bottom, 1.f, 1.f);
+		setVertex(vertices[4], x, y, 0.f, 0.f);
+		setVertex(vertices[5], right, y, 1.f, 0.f);
+		[encoder setVertexBytes:vertices length:6 * sizeof(Vertex) atIndex:1];
 		[encoder drawPrimitives:MTLPrimitiveTypeTriangle
 					vertexStart:0
 					vertexCount:6];
 	} else {
 		border_width = std::max(1.0f, std::round(border_width));
-
+		Vertex vertices[24];
+		size_t i = 0;
 		// Top
 		float top_inner = y + border_width;
-		addVertex(vertices, right, top_inner, 1.f, 1.f);
-		addVertex(vertices, x, top_inner, 0.f, 1.f);
-		addVertex(vertices, x, y, 0.f, 0.f);
-		addVertex(vertices, right, top_inner, 1.f, 1.f);
-		addVertex(vertices, x, y, 0.f, 0.f);
-		addVertex(vertices, right, y, 1.f, 0.f);
+		setVertex(vertices[i++], right, top_inner, 1.f, 1.f);
+		setVertex(vertices[i++], x, top_inner, 0.f, 1.f);
+		setVertex(vertices[i++], x, y, 0.f, 0.f);
+		setVertex(vertices[i++], right, top_inner, 1.f, 1.f);
+		setVertex(vertices[i++], x, y, 0.f, 0.f);
+		setVertex(vertices[i++], right, y, 1.f, 0.f);
 
 		// Bottom
 		float bottom_inner = y + height - border_width;
-		addVertex(vertices, right, bottom, 1.f, 1.f);
-		addVertex(vertices, x, bottom, 0.f, 1.f);
-		addVertex(vertices, x, bottom_inner, 0.f, 0.f);
-		addVertex(vertices, right, bottom, 1.f, 1.f);
-		addVertex(vertices, x, bottom_inner, 0.f, 0.f);
-		addVertex(vertices, right, bottom_inner, 1.f, 0.f);
+		setVertex(vertices[i++], right, bottom, 1.f, 1.f);
+		setVertex(vertices[i++], x, bottom, 0.f, 1.f);
+		setVertex(vertices[i++], x, bottom_inner, 0.f, 0.f);
+		setVertex(vertices[i++], right, bottom, 1.f, 1.f);
+		setVertex(vertices[i++], x, bottom_inner, 0.f, 0.f);
+		setVertex(vertices[i++], right, bottom_inner, 1.f, 0.f);
 
 		// Left
 		float left_inner = x + border_width;
-		addVertex(vertices, left_inner, bottom, 1.f, 1.f);
-		addVertex(vertices, x, bottom, 0.f, 1.f);
-		addVertex(vertices, x, y, 0.f, 0.f);
-		addVertex(vertices, left_inner, bottom, 1.f, 1.f);
-		addVertex(vertices, x, y, 0.f, 0.f);
-		addVertex(vertices, left_inner, y, 1.f, 0.f);
+		setVertex(vertices[i++], left_inner, bottom, 1.f, 1.f);
+		setVertex(vertices[i++], x, bottom, 0.f, 1.f);
+		setVertex(vertices[i++], x, y, 0.f, 0.f);
+		setVertex(vertices[i++], left_inner, bottom, 1.f, 1.f);
+		setVertex(vertices[i++], x, y, 0.f, 0.f);
+		setVertex(vertices[i++], left_inner, y, 1.f, 0.f);
 
 		// Right
 		float right_inner = x + width - border_width;
-		addVertex(vertices, right, bottom, 1.f, 1.f);
-		addVertex(vertices, right_inner, bottom, 0.f, 1.f);
-		addVertex(vertices, right_inner, y, 0.f, 0.f);
-		addVertex(vertices, right, bottom, 1.f, 1.f);
-		addVertex(vertices, right_inner, y, 0.f, 0.f);
-		addVertex(vertices, right, y, 1.f, 0.f);
+		setVertex(vertices[i++], right, bottom, 1.f, 1.f);
+		setVertex(vertices[i++], right_inner, bottom, 0.f, 1.f);
+		setVertex(vertices[i++], right_inner, y, 0.f, 0.f);
+		setVertex(vertices[i++], right, bottom, 1.f, 1.f);
+		setVertex(vertices[i++], right_inner, y, 0.f, 0.f);
+		setVertex(vertices[i++], right, y, 1.f, 0.f);
 
-		[encoder setVertexBytes:vertices.data()
-						 length:vertices.size() * sizeof(float)
-						atIndex:1];
+		[encoder setVertexBytes:vertices length:24 * sizeof(Vertex) atIndex:1];
 		[encoder drawPrimitives:MTLPrimitiveTypeTriangle
 					vertexStart:0
 					vertexCount:6 * 4];
@@ -332,20 +332,18 @@ void MetalBatch::drawRect(
 	rect_shader->bind(surface, encoder);
 	constant_buffer->writeAndBind(encoder, 2, &transform, sizeof(transform));
 
-	std::vector<float> vertices;
+	Vertex vertices[6];
 	x = std::round(x) + 0.5f;
 	y = std::round(y) + 0.5f;
 	float right = x + width;
 	float bottom = y + height;
-	addVertex(vertices, right, bottom, 1.f, 1.f, gradient_bottom_right);
-	addVertex(vertices, x, bottom, 0.f, 1.f, gradient_bottom_left);
-	addVertex(vertices, x, y, 0.f, 0.f, gradient_top_left);
-	addVertex(vertices, right, bottom, 1.f, 1.f, gradient_bottom_right);
-	addVertex(vertices, x, y, 0.f, 0.f, gradient_top_left);
-	addVertex(vertices, right, y, 1.f, 0.f, gradient_top_right);
-	[encoder setVertexBytes:vertices.data()
-					 length:vertices.size() * sizeof(float)
-					atIndex:1];
+	setVertex(vertices[0], right, bottom, 1.f, 1.f, gradient_bottom_right);
+	setVertex(vertices[1], x, bottom, 0.f, 1.f, gradient_bottom_left);
+	setVertex(vertices[2], x, y, 0.f, 0.f, gradient_top_left);
+	setVertex(vertices[3], right, bottom, 1.f, 1.f, gradient_bottom_right);
+	setVertex(vertices[4], x, y, 0.f, 0.f, gradient_top_left);
+	setVertex(vertices[5], right, y, 1.f, 0.f, gradient_top_right);
+	[encoder setVertexBytes:vertices length:6 * sizeof(Vertex) atIndex:1];
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle
 				vertexStart:0
 				vertexCount:6];
@@ -383,15 +381,19 @@ MTLRenderPassDescriptor* MetalBatch::renderPassDescriptor() {
 	return pass;
 }
 
-void MetalBatch::addVertex(
-	std::vector<float>& vertices, float x, float y, float tex_x, float tex_y) {
-	addVertex(vertices, x, y, tex_x, tex_y, this->color);
+void MetalBatch::setVertex(
+	Vertex& v, float x, float y, float tex_x, float tex_y) {
+	setVertex(v, x, y, tex_x, tex_y, this->color);
 }
 
-void MetalBatch::addVertex(
-	std::vector<float>& vertices, float x, float y, float tex_x, float tex_y,
-	Color color) {
-	vertices.insert(
-		vertices.end(),
-		{x, y, tex_x, tex_y, color.r, color.g, color.b, color.a});
+void MetalBatch::setVertex(
+	Vertex& v, float x, float y, float tex_x, float tex_y, Color color) {
+	v.x = x;
+	v.y = y;
+	v.tex_x = tex_x;
+	v.tex_y = tex_y;
+	v.r = color.r;
+	v.g = color.g;
+	v.b = color.b;
+	v.a = color.a;
 }

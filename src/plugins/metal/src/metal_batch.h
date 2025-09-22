@@ -87,12 +87,10 @@ private:
 #endif
 
 	MTLRenderPassDescriptor* renderPassDescriptor();
-	void addVertex(
-		std::vector<float>& vertices, float x, float y, float tex_x,
-		float tex_y);
-	void addVertex(
-		std::vector<float>& vertices, float x, float y, float tex_x,
-		float tex_y, Color color);
+	struct Vertex;
+	void setVertex(Vertex& v, float x, float y, float tex_x, float tex_y);
+	void setVertex(
+		Vertex& v, float x, float y, float tex_x, float tex_y, Color color);
 };
 
 } // namespace Growl
