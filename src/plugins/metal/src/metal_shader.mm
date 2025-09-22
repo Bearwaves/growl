@@ -10,8 +10,9 @@ using Growl::MetalShader;
 MetalShader::~MetalShader() {
 	[vertex_func release];
 	[fragment_func release];
-	if (descriptor) {
-		[descriptor release];
+	if (pipeline_state) {
+		[pipeline_state release];
+		pipeline_state = nil;
 	}
 }
 
@@ -35,9 +36,9 @@ Error MetalShader::compile() {
 		[fragment_func release];
 		fragment_func = [lib newFunctionWithName:@"fragment_func"];
 		vertex_func = [lib newFunctionWithName:@"vertex_func"];
-		if (descriptor) {
-			[descriptor release];
-			descriptor = nil;
+		if (pipeline_state) {
+			[pipeline_state release];
+			pipeline_state = nil;
 		}
 	}
 	return nullptr;
@@ -45,8 +46,8 @@ Error MetalShader::compile() {
 
 void MetalShader::bind(
 	id<MTLTexture> dst_texture, id<MTLRenderCommandEncoder> encoder) {
-	if (!descriptor) {
-		descriptor = [[MTLRenderPipelineDescriptor alloc] init];
+	if (!pipeline_state) {
+		auto descriptor = [[MTLRenderPipelineDescriptor alloc] init];
 		descriptor.vertexFunction = vertex_func;
 		descriptor.fragmentFunction = fragment_func;
 		descriptor.label = @"Growl shader";
@@ -68,14 +69,16 @@ void MetalShader::bind(
 
 		vertex_descriptor = [[MTLVertexDescriptor alloc] init];
 		descriptor.vertexDescriptor = vertex_descriptor;
+
+		NSError* error = NULL;
+		pipeline_state = [[encoder.device
+			newRenderPipelineStateWithDescriptor:descriptor
+										   error:&error] retain];
+		assert(!error);
+		[error release];
+		[descriptor release];
 	}
 
-	NSError* error = NULL;
-	id<MTLRenderPipelineState> pipeline_state = [[encoder.device
-		newRenderPipelineStateWithDescriptor:descriptor
-									   error:&error] autorelease];
-	assert(!error);
-	[error release];
 	[encoder setRenderPipelineState:pipeline_state];
 }
 
