@@ -20,6 +20,8 @@ public:
 		return metal_texture;
 	}
 
+	Result<std::unique_ptr<Image>> toImage() override;
+
 #ifdef GROWL_IMGUI
 	ImTextureID getImguiTextureID() override;
 #endif

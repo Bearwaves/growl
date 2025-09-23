@@ -1,10 +1,14 @@
 #pragma once
 
+#include "growl/core/error.h"
+
 #ifdef GROWL_IMGUI
 typedef unsigned long long ImTextureID;
 #endif
 
 namespace Growl {
+
+class Image;
 
 struct TextureOptions {
 	bool filtering = true;
@@ -31,6 +35,10 @@ public:
 	int getHeight() const {
 		return height;
 	}
+
+	// Note: on some platforms like Metal this won't work on the same
+	// frame as the render is done.
+	virtual Result<std::unique_ptr<Image>> toImage() = 0;
 
 #ifdef GROWL_IMGUI
 	virtual ImTextureID getImguiTextureID() = 0;

@@ -5,6 +5,8 @@
 
 namespace Growl {
 
+class Image;
+
 class OpenGLTexture : public Texture {
 public:
 	explicit OpenGLTexture(unsigned int id, int width, int height)
@@ -18,8 +20,10 @@ public:
 		return id;
 	}
 
+	Result<std::unique_ptr<Image>> toImage() override;
+
 #ifdef GROWL_IMGUI
-	ImTextureID getImguiTextureID() {
+	ImTextureID getImguiTextureID() override {
 		return id;
 	};
 #endif
