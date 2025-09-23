@@ -1,9 +1,11 @@
 #include "sdl3_system.h"
+#include "SDL3/SDL_dialog.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_filesystem.h"
 #include "SDL3/SDL_init.h"
 #include "SDL3/SDL_misc.h"
 #include "SDL3/SDL_video.h"
+#include "fpng.h"
 #include "growl/core/api/api.h"
 #include "growl/core/api/api_internal.h"
 #include "growl/core/assets/file.h"
@@ -34,6 +36,10 @@ using Growl::Result;
 using Growl::SDL3SystemAPI;
 using Growl::SystemAPIInternal;
 using Growl::Window;
+
+const SDL_DialogFileFilter SDL3SystemAPI::share_filter[] = {
+	{"PNG images", "png"},
+};
 
 std::unique_ptr<SystemAPIInternal>
 Growl::createSystemAPI(API& api, void* user) {
@@ -392,6 +398,23 @@ void SDL3SystemAPI::openURL(std::string url) {
 	if (!SDL_OpenURL(url.c_str())) {
 		log(LogLevel::Error, "SDL3SystemAPI", "Failed to open url {}", url);
 	}
+}
+
+void SDL3SystemAPI::shareImage(
+	Image& image, std::string title, std::string message, Rect button) {
+
+	std::string filename = title + ".png";
+	SDL_ShowSaveFileDialog(
+		[](void* userdata, const char* const* filelist, int filter) -> void {
+			Image* image = static_cast<Image*>(userdata);
+			if (!filelist || !*filelist) {
+				return;
+			}
+			fpng::fpng_encode_image_to_file(
+				filelist[0], image->getRaw(), image->getWidth(),
+				image->getHeight(), image->getChannels());
+		},
+		&image, getNativeWindow(), share_filter, 1, filename.c_str());
 }
 
 SDL_Window* SDL3SystemAPI::getNativeWindow() {

@@ -3,6 +3,7 @@
 #include "growl/core/error.h"
 #include "growl/core/input/event.h"
 #include "ios_error.h"
+#include "ios_shareable_image.h"
 #include "ios_window.h"
 #include <UIKit/UIKit.h>
 #include <os/log.h>
@@ -14,6 +15,7 @@ using Growl::ControllerEventType;
 using Growl::Error;
 using Growl::File;
 using Growl::HapticsDevice;
+using Growl::Image;
 using Growl::InputEvent;
 using Growl::InputEventType;
 using Growl::IOSSystemAPI;
@@ -205,6 +207,29 @@ void IOSSystemAPI::updateTextInput(
 
 void IOSSystemAPI::stopTextInput() {
 	[text_field resignFirstResponder];
+}
+
+void IOSSystemAPI::shareImage(
+	Image& image, std::string title, std::string message, Rect rect) {
+	auto shareable = [[GrowlShareableImage alloc]
+		initWithImage:image
+				title:[NSString stringWithUTF8String:title.c_str()]];
+
+	auto activity_view =
+		[[UIActivityViewController alloc] initWithActivityItems:@[
+			shareable, [NSString stringWithUTF8String:message.c_str()]
+		]
+										  applicationActivities:nil];
+	auto root_vc = [[[[UIApplication sharedApplication] delegate] window]
+		rootViewController];
+	activity_view.popoverPresentationController.sourceView = [root_vc view];
+	float scale = [UIScreen mainScreen].nativeScale;
+	activity_view.popoverPresentationController.sourceRect = CGRectMake(
+		rect.x / scale, rect.y / scale, rect.w / scale, rect.h / scale);
+
+	[root_vc presentViewController:activity_view animated:true completion:nil];
+	[shareable release];
+	[activity_view release];
 }
 
 void IOSSystemAPI::logInternal(

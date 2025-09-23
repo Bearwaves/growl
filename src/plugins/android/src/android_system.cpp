@@ -2,6 +2,7 @@
 #include "android_error.h"
 #include "android_file.h"
 #include "android_window.h"
+#include "fpng.h"
 #include "growl/core/assets/error.h"
 #include "growl/core/assets/file.h"
 #include "growl/core/error.h"
@@ -561,6 +562,48 @@ void AndroidSystemAPI::updateTextInput(
 
 void AndroidSystemAPI::stopTextInput() {
 	GameActivity_hideSoftInput(android_state->activity, 0);
+}
+
+void AndroidSystemAPI::shareImage(
+	Image& image, std::string title, std::string caption, Rect button) {
+	auto env = getJNIEnv();
+
+	// Get cache path
+	jclass activity_class =
+		env->GetObjectClass(android_state->activity->javaGameActivity);
+	jmethodID get_cache_dir =
+		env->GetMethodID(activity_class, "getCacheDir", "()Ljava/io/File;");
+	jobject file = env->CallObjectMethod(
+		android_state->activity->javaGameActivity, get_cache_dir);
+
+	jclass file_class = env->GetObjectClass(file);
+	jmethodID get_absolute_path =
+		env->GetMethodID(file_class, "getAbsolutePath", "()Ljava/lang/String;");
+	jstring path =
+		static_cast<jstring>(env->CallObjectMethod(file, get_absolute_path));
+
+	auto chars = env->GetStringUTFChars(path, nullptr);
+	std::string cache_path(chars);
+	env->ReleaseStringUTFChars(path, chars);
+
+	if (cache_path.back() != '/') {
+		cache_path += "/";
+	}
+	cache_path += title + ".png";
+
+	fpng::fpng_encode_image_to_file(
+		cache_path.c_str(), image.getRaw(), image.getWidth(), image.getHeight(),
+		image.getChannels());
+
+	jmethodID share_image = env->GetMethodID(
+		activity_class, "shareImage",
+		"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+	jstring jpath = env->NewStringUTF(cache_path.c_str());
+	jstring jtitle = env->NewStringUTF(title.c_str());
+	jstring jcaption = env->NewStringUTF(caption.c_str());
+	env->CallVoidMethod(
+		android_state->activity->javaGameActivity, share_image, jpath, jtitle,
+		jcaption);
 }
 
 void AndroidSystemAPI::logInternal(

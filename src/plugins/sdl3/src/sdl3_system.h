@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SDL3/SDL_dialog.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_gamepad.h"
 #include "SDL3/SDL_log.h"
@@ -72,6 +73,10 @@ public:
 		std::string text, int x, int y, int w, int h, int cursor_x) override;
 	virtual void stopTextInput() override;
 
+	void shareImage(
+		Image& image, std::string title, std::string message,
+		Rect button = Rect{}) override;
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
@@ -102,6 +107,7 @@ private:
 	SDL_Scancode debug_mode_key;
 	std::unique_ptr<SDL3Preferences> local_preferences;
 	std::unique_ptr<SDL3Preferences> shared_preferences;
+	static const SDL_DialogFileFilter share_filter[];
 
 #ifdef GROWL_IMGUI
 	ImGuiIO* imgui_io;

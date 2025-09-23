@@ -63,6 +63,7 @@ target_link_libraries(growl-plugin-sdl3
 	growl-thirdparty::sdl
 	PRIVATE
 	growl-core
+	growl-thirdparty::fpng
 	${SDL_LINK_LIBS}
 )
 target_compile_definitions(growl-plugin-sdl3

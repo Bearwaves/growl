@@ -34,6 +34,7 @@ target_link_libraries(growl-plugin-android
 	game-activity::game-activity_static
 	games-controller::paddleboat_static
 	growl-core
+	growl-thirdparty::fpng
 	${EGL_LIBRARY}
 )
 target_compile_definitions(growl-plugin-android INTERFACE "GROWL_ANDROID")

@@ -1,5 +1,8 @@
 package com.bearwaves.growl;
 
+import static androidx.core.content.FileProvider.getUriForFile;
+
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +18,8 @@ import android.view.WindowInsets;
 import androidx.activity.EdgeToEdge;
 
 import com.google.androidgamesdk.GameActivity;
+
+import java.io.File;
 
 public class GrowlActivity extends GameActivity {
 
@@ -96,6 +101,23 @@ public class GrowlActivity extends GameActivity {
         }
         VibrationEffect waveform = VibrationEffect.createWaveform(timings, intensities, -1);
         getVibrator().vibrate(waveform);
+    }
+
+    public void shareImage(String path, String title, String caption) {
+        File imagePath = new File(path);
+        Uri contentUri = getUriForFile(this, "com.bearwaves.growl.fileprovider", imagePath);
+
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+        shareIntent.putExtra(Intent.EXTRA_TITLE, title);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, caption);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, title);
+        shareIntent.setClipData(ClipData.newRawUri("", contentUri));
+        shareIntent.addFlags(
+                Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        shareIntent.setType("image/png");
+        startActivity(Intent.createChooser(shareIntent, null));
     }
 
     private Vibrator getVibrator() {

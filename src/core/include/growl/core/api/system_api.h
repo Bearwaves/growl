@@ -5,6 +5,7 @@
 #include "fmt/core.h"
 #include "growl/core/error.h"
 #include "growl/core/input/processor.h"
+#include "growl/core/rect.h"
 #include <memory>
 #include <string>
 #include <string_view>
@@ -13,6 +14,7 @@ namespace Growl {
 
 struct Config;
 class File;
+class Image;
 class Window;
 class Preferences;
 class HapticsDevice;
@@ -80,6 +82,10 @@ public:
 	virtual void updateTextInput(
 		std::string text, int x, int y, int w, int h, int cursor_x) = 0;
 	virtual void stopTextInput() = 0;
+
+	virtual void shareImage(
+		Image& image, std::string title, std::string message,
+		Rect button = Rect{}) = 0;
 
 protected:
 	virtual void

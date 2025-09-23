@@ -61,6 +61,10 @@ public:
 		std::string text, int x, int y, int w, int h, int cursor_x) override;
 	void stopTextInput() override;
 
+	void shareImage(
+		Image& image, std::string title, std::string caption,
+		Rect button) override;
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
