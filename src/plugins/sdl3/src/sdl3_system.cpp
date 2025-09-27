@@ -153,7 +153,9 @@ void SDL3SystemAPI::tick() {
 		case SDL_EVENT_SYSTEM_THEME_CHANGED:
 			setDarkMode(SDL_GetSystemTheme() == SDL_SYSTEM_THEME_DARK);
 			break;
-		case SDL_EVENT_WINDOW_RESIZED: {
+		case SDL_EVENT_WINDOW_RESIZED:
+		case SDL_EVENT_WINDOW_DISPLAY_CHANGED:
+		case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED: {
 #ifdef GROWL_IMGUI
 			if (api.imguiVisible()) {
 				break;
