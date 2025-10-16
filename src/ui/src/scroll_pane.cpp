@@ -47,8 +47,8 @@ void ScrollPane::layout() {
 		max_x = margin_left;
 		min_y = getHeight() - (node->getHeight() + margin_bottom);
 		max_y = margin_top;
-		node->setX(clampX(node->getX()));
-		node->setY(clampY(node->getY()));
+		node->setX(clampX(node->getX() + margin_left));
+		node->setY(clampY(node->getY() + margin_top));
 	}
 }
 
