@@ -34,6 +34,7 @@ public:
 	AudioStream(AudioStream&&) = default;
 	AudioStream& operator=(AudioStream&&) = default;
 
+	virtual void prepare() = 0;
 	virtual void play(bool loop) = 0;
 	virtual void stop() = 0;
 	virtual float getVolume() = 0;
