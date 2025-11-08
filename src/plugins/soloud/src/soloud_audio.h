@@ -77,6 +77,7 @@ public:
 		, file{std::move(file)} {}
 	~SoLoudAudioStream();
 
+	void prepare() override;
 	void play(bool loop) override;
 	void stop() override;
 	float getVolume() override;

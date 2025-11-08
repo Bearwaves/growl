@@ -6,8 +6,16 @@ SoLoudAudioStream::~SoLoudAudioStream() {
 	stop();
 }
 
+void SoLoudAudioStream::prepare() {
+	if (!api.getSoloud()->isValidVoiceHandle(handle)) {
+		handle = api.getSoloud()->play(*this->stream, -1.f, 0.f, 1.f);
+	}
+	api.getSoloud()->seek(handle, 0.f);
+}
+
 void SoLoudAudioStream::play(bool loop) {
-	if (handle) {
+	if (api.getSoloud()->isValidVoiceHandle(handle)) {
+		api.getSoloud()->setLooping(handle, loop);
 		api.getSoloud()->setPause(handle, false);
 	} else {
 		handle = api.getSoloud()->play(*stream);
@@ -16,7 +24,7 @@ void SoLoudAudioStream::play(bool loop) {
 }
 
 void SoLoudAudioStream::stop() {
-	if (handle) {
+	if (api.getSoloud()->isValidVoiceHandle(handle)) {
 		api.getSoloud()->stop(handle);
 		handle = 0;
 	} else {
@@ -25,14 +33,14 @@ void SoLoudAudioStream::stop() {
 }
 
 float SoLoudAudioStream::getVolume() {
-	if (handle) {
+	if (api.getSoloud()->isValidVoiceHandle(handle)) {
 		return api.getSoloud()->getVolume(handle);
 	}
 	return stream->mVolume;
 }
 
 void SoLoudAudioStream::setVolume(float volume) {
-	if (handle) {
+	if (api.getSoloud()->isValidVoiceHandle(handle)) {
 		api.getSoloud()->setVolume(handle, volume);
 	} else {
 		stream->setVolume(volume);
