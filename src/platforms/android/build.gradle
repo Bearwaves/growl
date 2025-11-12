@@ -44,7 +44,7 @@ configurations.implementation {
 }
 
 android {
-    namespace 'com.bearwaves.growl'
+    namespace growlProperties['appId'] as String
     compileSdk 35
 
     defaultConfig {
@@ -72,6 +72,9 @@ android {
     sourceSets {
         main {
             java.srcDirs += ['../../plugins/android']
+            if (growlProperties['additionalSrcDir']) {
+                java.srcDirs += Paths.get(growlProjectPath, growlProperties['additionalSrcDir'] as String) as String
+            }
             if (growlProperties['assetsDir']) {
                 assets.srcDirs += Paths.get(growlProjectPath, growlProperties['assetsDir'] as String) as String
             }
