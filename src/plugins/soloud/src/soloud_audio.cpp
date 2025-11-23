@@ -40,7 +40,7 @@ Error SoLoudAudioAPI::init(const Config& config) {
 			"SoLoud error code " + std::to_string(res));
 	}
 	soloud->setGlobalVolume(1.0);
-	soloud->setMaxActiveVoiceCount(64);
+	soloud->setMaxActiveVoiceCount(128);
 
 	this->devices = std::vector<AudioDevice>{
 		{soloud->getBackendString(),
@@ -81,6 +81,7 @@ SoLoudAudioAPI::loadClipFromBundle(AssetsBundle& bundle, std::string path) {
 				"Failed to load clip: got SoLoud error code " +
 				std::to_string(error)));
 	}
+	wav->setInaudibleBehavior(false, true);
 	std::unique_ptr<AudioClip> ret(
 		std::make_unique<SoLoudAudioClip>(
 			path, *this, std::move(wav), std::move(raw)));
@@ -105,6 +106,7 @@ SoLoudAudioAPI::createStreamFromBundle(AssetsBundle& bundle, std::string name) {
 				"Failed to load stream: got SoLoud error code " +
 				std::to_string(error)));
 	}
+	stream->setInaudibleBehavior(true, false);
 	std::unique_ptr<AudioStream> ret(
 		std::make_unique<SoLoudAudioStream>(
 			name, *this, std::move(stream), std::move(file)));
