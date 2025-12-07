@@ -6,5 +6,6 @@
 @interface GrowlShareableImage : NSObject <UIActivityItemSource>
 
 - (id)initWithImage:(Growl::Image&)image title:(NSString*)title;
+- (void)deleteTempFile;
 
 @end

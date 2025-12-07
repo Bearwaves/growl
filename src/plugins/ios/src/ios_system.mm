@@ -217,7 +217,7 @@ void IOSSystemAPI::shareImage(
 
 	auto activity_view =
 		[[UIActivityViewController alloc] initWithActivityItems:@[
-			shareable, [NSString stringWithUTF8String:message.c_str()]
+			[NSString stringWithUTF8String:message.c_str()], shareable
 		]
 										  applicationActivities:nil];
 	auto root_vc = [[[[UIApplication sharedApplication] delegate] window]
@@ -226,6 +226,10 @@ void IOSSystemAPI::shareImage(
 	float scale = [UIScreen mainScreen].nativeScale;
 	activity_view.popoverPresentationController.sourceRect = CGRectMake(
 		rect.x / scale, rect.y / scale, rect.w / scale, rect.h / scale);
+	activity_view.completionWithItemsHandler =
+		^(UIActivityType _Nullable activityType, BOOL completed,
+		  NSArray* _Nullable returnedItems,
+		  NSError* _Nullable activityError) { [shareable deleteTempFile]; };
 
 	[root_vc presentViewController:activity_view animated:true completion:nil];
 	[shareable release];
