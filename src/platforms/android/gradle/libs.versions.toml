@@ -2,11 +2,11 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-appcompat = "1.7.0"
-games-activity = "4.0.0"
-games-controller = "2.0.2"
-androidx-activity = "1.9.3"
-play-games-services = "17.0.0-beta1"
+appcompat = "1.7.1"
+games-activity = "4.4.0-beta01"
+games-controller = "2.3.0-alpha01"
+androidx-activity = "1.10.1"
+play-games-services = "21.0.0"
 libcurl = "8.12.0"
 
 [libraries]
@@ -14,5 +14,5 @@ appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat"
 games-activity = { module = "androidx.games:games-activity", version.ref = "games-activity" }
 games-controller = { module = "androidx.games:games-controller", version.ref = "games-controller" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
-play-games-services = { module = "com.google.android.gms:play-services-games-v2-native-c", version.ref = "play-games-services" }
+play-games-services = { module = "com.google.android.gms:play-services-games-v2", version.ref = "play-games-services" }
 libcurl = { module = "io.github.vvb2060.ndk:curl", version.ref = "libcurl"}
