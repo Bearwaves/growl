@@ -126,4 +126,10 @@ android {
             }
         }
     }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging false
+        }
+    }
 }
