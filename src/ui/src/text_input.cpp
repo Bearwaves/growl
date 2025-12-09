@@ -255,19 +255,20 @@ void TextInput::setHeight(float h) {
 void TextInput::handlePointer(int x, int y) {
 	glm::vec4 local = worldToLocalCoordinates(x, y);
 	int i = -1;
+	float local_x = local.x - layout_x;
 	if (glyph_layout->getGraphemeCount() > 0) {
-		if (local.x < glyph_layout->getGraphemes().at(0).x / 2) {
+		if (local_x < glyph_layout->getGraphemes().at(0).x / 2) {
 			cursor = 0;
 			needs_cursor_update = true;
 			return;
 		}
 		for (i = 0; i < glyph_layout->getGraphemeCount() - 1; i++) {
 			float next_x = glyph_layout->getGraphemes().at(i + 1).x;
-			if (local.x > next_x) {
+			if (local_x > next_x) {
 				continue;
 			}
 			float this_x = glyph_layout->getGraphemes().at(i).x;
-			if (local.x - this_x < next_x - local.x) {
+			if (local_x - this_x < next_x - local_x) {
 				break;
 			}
 		}
