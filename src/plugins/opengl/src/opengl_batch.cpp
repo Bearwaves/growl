@@ -21,7 +21,7 @@ using Growl::OpenGLBatch;
 using Growl::Shader;
 
 // TODO this should not be hardcoded
-constexpr GLsizei MAX_BATCH_SIZE = 1000;
+constexpr GLsizei MAX_BATCH_SIZE = 100;
 constexpr int UNIFORMS_MAX_SIZE_BYTES = 256;
 
 OpenGLBatch::OpenGLBatch(
