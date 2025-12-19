@@ -41,7 +41,7 @@ public:
 	OpenGLBatch(
 		API* api, OpenGLShader* default_shader, OpenGLShader* sdf_shader,
 		OpenGLShader* rect_shader, int width, int height, Window* window,
-		GLuint fbo);
+		GLuint fbo, GLsizei max_batch_size);
 	~OpenGLBatch();
 
 	void clear(float r, float g, float b) override;
@@ -83,6 +83,8 @@ public:
 	int getTargetWidth() override;
 	int getTargetHeight() override;
 
+	static constexpr GLsizei UNIFORMS_MAX_SIZE_BYTES = 256;
+
 private:
 	API* api;
 	OpenGLShader* default_shader;
@@ -99,6 +101,7 @@ private:
 	GLuint ubo_v = 0;
 	GLuint ubo_f = 0;
 	bool should_clear = false;
+	GLsizei max_batch_size = 0;
 
 	unsigned int idx = 0;
 	unsigned int verts = 0;

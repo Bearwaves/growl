@@ -12,8 +12,9 @@ class OpenGLShader : public Shader {
 public:
 	OpenGLShader(
 		const std::string& uniforms_src, const std::string& vertex_src,
-		const std::string& fragment_src)
-		: Shader(uniforms_src, vertex_src, fragment_src) {}
+		const std::string& fragment_src, GLsizei max_batch_size)
+		: Shader(uniforms_src, vertex_src, fragment_src)
+		, max_batch_size{max_batch_size} {}
 	~OpenGLShader();
 
 	Error compile() override;
@@ -32,6 +33,7 @@ private:
 	static const std::string header;
 	static const std::string vertex_block;
 	static const std::string fragment_block;
+	GLsizei max_batch_size;
 
 	Error checkShaderCompileError(unsigned int shader);
 };

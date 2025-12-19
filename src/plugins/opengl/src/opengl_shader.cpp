@@ -46,8 +46,10 @@ void OpenGLShader::bind() {
 }
 
 Error OpenGLShader::compile() {
+	std::string defines =
+		"\n#define MAX_BATCH_SIZE " + std::to_string(max_batch_size) + "\n";
 	GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-	auto vertex_source = header + vertex_block + vertex_src;
+	auto vertex_source = header + defines + vertex_block + vertex_src;
 	const char* vertex_source_c = vertex_source.c_str();
 	glShaderSource(vertex, 1, &vertex_source_c, nullptr);
 	glCompileShader(vertex);
@@ -57,7 +59,7 @@ Error OpenGLShader::compile() {
 
 	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
 	auto fragment_source =
-		header + uniforms_src + fragment_block + fragment_src;
+		header + defines + uniforms_src + fragment_block + fragment_src;
 	const char* fragment_source_c = fragment_source.c_str();
 	glShaderSource(fragment, 1, &fragment_source_c, nullptr);
 	glCompileShader(fragment);
@@ -122,7 +124,7 @@ flat out int Idx;
 
 layout (std140) uniform VertexBlock {
 	mat4 projection;
-	mat4 transforms[100];
+	mat4 transforms[MAX_BATCH_SIZE];
 };
 )";
 
@@ -131,7 +133,7 @@ layout (std140) uniform FragmentBlock {
 	vec2 resolution;
 	float time;
 	float deltaTime;
-	Uniforms uniforms[100];
+	Uniforms uniforms[MAX_BATCH_SIZE];
 };
 )";
 

@@ -87,6 +87,7 @@ private:
 	std::unique_ptr<OpenGLShader> sdf_shader;
 	std::unique_ptr<OpenGLShader> rect_shader;
 	time_point<high_resolution_clock> last_render;
+	GLsizei max_batch_size;
 
 	std::unique_ptr<Texture> setupTexture(
 		unsigned int texture_id, int width, int height,

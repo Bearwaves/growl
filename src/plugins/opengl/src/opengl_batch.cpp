@@ -7,6 +7,7 @@
 #include "growl/core/graphics/shader.h"
 #include "growl/core/graphics/texture_atlas.h"
 #include "growl/core/graphics/window.h"
+#include "opengl.h"
 #include "opengl_shader.h"
 #include "opengl_texture.h"
 #include <cmath>
@@ -20,14 +21,10 @@ using Growl::API;
 using Growl::OpenGLBatch;
 using Growl::Shader;
 
-// TODO this should not be hardcoded
-constexpr GLsizei MAX_BATCH_SIZE = 100;
-constexpr int UNIFORMS_MAX_SIZE_BYTES = 256;
-
 OpenGLBatch::OpenGLBatch(
 	API* api, OpenGLShader* default_shader, OpenGLShader* sdf_shader,
 	OpenGLShader* rect_shader, int width, int height, Window* window,
-	GLuint fbo)
+	GLuint fbo, GLsizei max_batch_size)
 	: api{api}
 	, default_shader{default_shader}
 	, sdf_shader{sdf_shader}
@@ -36,7 +33,8 @@ OpenGLBatch::OpenGLBatch(
 	, height{height}
 	, color{1, 1, 1, 1}
 	, window{window}
-	, fbo{fbo} {
+	, fbo{fbo}
+	, max_batch_size{max_batch_size} {
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);
@@ -44,7 +42,7 @@ OpenGLBatch::OpenGLBatch(
 	glGenBuffers(1, &ubo_v);
 	glBindBuffer(GL_UNIFORM_BUFFER, ubo_v);
 	glBufferData(
-		GL_UNIFORM_BUFFER, (MAX_BATCH_SIZE + 1) * sizeof(glm::mat4), nullptr,
+		GL_UNIFORM_BUFFER, (max_batch_size + 1) * sizeof(glm::mat4), nullptr,
 		GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -52,7 +50,7 @@ OpenGLBatch::OpenGLBatch(
 	glBindBuffer(GL_UNIFORM_BUFFER, ubo_f);
 	glBufferData(
 		GL_UNIFORM_BUFFER,
-		sizeof(FragmentBlock) + MAX_BATCH_SIZE * UNIFORMS_MAX_SIZE_BYTES,
+		sizeof(FragmentBlock) + max_batch_size * UNIFORMS_MAX_SIZE_BYTES,
 		nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -190,7 +188,7 @@ void OpenGLBatch::draw(
 	glm::mat4x4 transform) {
 	auto& tex = static_cast<const OpenGLTexture&>(texture);
 	if (&tex != bound_tex || default_shader != bound_shader ||
-		idx >= MAX_BATCH_SIZE) {
+		idx >= max_batch_size) {
 		flush();
 	}
 	uniforms.insert(uniforms.end(), VertexBlock{transform});
@@ -214,7 +212,7 @@ void OpenGLBatch::draw(
 	float height, glm::mat4x4 transform) {
 	auto& tex = static_cast<const OpenGLTexture&>(region.atlas->getTexture());
 	if (&tex != bound_tex || default_shader != bound_shader ||
-		idx >= MAX_BATCH_SIZE) {
+		idx >= max_batch_size) {
 		flush();
 	}
 	uniforms.insert(uniforms.end(), VertexBlock{transform});
@@ -247,7 +245,7 @@ void OpenGLBatch::draw(
 	auto shader = font_texture_atlas.getType() == FontFaceType::MSDF
 					  ? sdf_shader
 					  : default_shader;
-	if (&tex != bound_tex || shader != bound_shader || idx >= MAX_BATCH_SIZE) {
+	if (&tex != bound_tex || shader != bound_shader || idx >= max_batch_size) {
 		flush();
 	}
 	uniforms.insert(uniforms.end(), VertexBlock{transform});
@@ -306,7 +304,7 @@ void OpenGLBatch::drawRect(
 	int uniforms_length) {
 
 	auto& gl_shader = static_cast<OpenGLShader&>(shader);
-	if (bound_tex || bound_shader != &gl_shader || idx >= MAX_BATCH_SIZE) {
+	if (bound_tex || bound_shader != &gl_shader || idx >= max_batch_size) {
 		flush();
 	}
 	bound_shader = &gl_shader;
@@ -389,7 +387,7 @@ void OpenGLBatch::drawRect(
 	float x, float y, float width, float height, Color gradient_top_left,
 	Color gradient_top_right, Color gradient_bottom_left,
 	Color gradient_bottom_right, glm::mat4x4 transform) {
-	if (bound_tex || bound_shader != rect_shader || idx >= MAX_BATCH_SIZE) {
+	if (bound_tex || bound_shader != rect_shader || idx >= max_batch_size) {
 		flush();
 	}
 	bound_shader = rect_shader;

@@ -99,6 +99,11 @@ Error OpenGLGraphicsAPI::setWindow(const Config& config) {
 	api.system().log(
 		"OpenGLGraphicsAPI", "Loaded OpenGL version {}.{}", major, minor);
 
+	GLint max_buffer_size = 0;
+	glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &max_buffer_size);
+	max_batch_size = (max_buffer_size - sizeof(FragmentBlock)) /
+					 OpenGLBatch::UNIFORMS_MAX_SIZE_BYTES;
+
 #ifdef GROWL_IMGUI
 	window->initImgui();
 #ifdef GROWL_OPENGL_ES
@@ -110,19 +115,19 @@ Error OpenGLGraphicsAPI::setWindow(const Config& config) {
 
 	default_shader = std::make_unique<OpenGLShader>(
 		OpenGLShader::default_uniforms, OpenGLShader::default_vertex,
-		OpenGLShader::default_fragment);
+		OpenGLShader::default_fragment, max_batch_size);
 	if (auto err = default_shader->compile()) {
 		return err;
 	}
 	sdf_shader = std::make_unique<OpenGLShader>(
 		OpenGLShader::sdf_uniforms, OpenGLShader::default_vertex,
-		OpenGLShader::sdf_fragment);
+		OpenGLShader::sdf_fragment, max_batch_size);
 	if (auto err = sdf_shader->compile()) {
 		return err;
 	}
 	rect_shader = std::make_unique<OpenGLShader>(
 		OpenGLShader::default_uniforms, OpenGLShader::default_vertex,
-		OpenGLShader::rect_fragment);
+		OpenGLShader::rect_fragment, max_batch_size);
 	if (auto err = rect_shader->compile()) {
 		return err;
 	}
@@ -208,7 +213,7 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch() {
 	window->getSize(&w, &h);
 	return std::make_unique<OpenGLBatch>(
 		&api, default_shader.get(), sdf_shader.get(), rect_shader.get(), w, h,
-		window.get(), 0);
+		window.get(), 0, max_batch_size);
 }
 
 std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
@@ -224,14 +229,14 @@ std::unique_ptr<Batch> OpenGLGraphicsAPI::createBatch(const Texture& texture) {
 
 	return std::make_unique<OpenGLBatch>(
 		&api, default_shader.get(), sdf_shader.get(), rect_shader.get(),
-		texture.getWidth(), texture.getHeight(), nullptr, fbo);
+		texture.getWidth(), texture.getHeight(), nullptr, fbo, max_batch_size);
 }
 
 Result<std::unique_ptr<Shader>> OpenGLGraphicsAPI::createShader(
 	const std::string& uniforms_src, const std::string& vert_src,
 	const std::string& fragment_src) {
-	auto shader =
-		std::make_unique<OpenGLShader>(uniforms_src, vert_src, fragment_src);
+	auto shader = std::make_unique<OpenGLShader>(
+		uniforms_src, vert_src, fragment_src, max_batch_size);
 	if (auto err = shader->compile()) {
 		return err;
 	}
