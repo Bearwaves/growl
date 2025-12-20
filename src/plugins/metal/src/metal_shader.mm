@@ -32,8 +32,12 @@ Error MetalShader::compile() {
 		if (compile_error) {
 			return std::make_unique<MetalError>(compile_error);
 		}
-		[vertex_func release];
-		[fragment_func release];
+		if (vertex_func) {
+			[vertex_func release];
+		}
+		if (fragment_func) {
+			[fragment_func release];
+		}
 		fragment_func = [lib newFunctionWithName:@"fragment_func"];
 		vertex_func = [lib newFunctionWithName:@"vertex_func"];
 		if (pipeline_state) {
