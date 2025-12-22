@@ -9,6 +9,7 @@ public:
 		: Widget{std::move(name)} {}
 
 	void layout() override;
+	void onTick(double delta_time) override;
 	void
 	onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) override;
 
@@ -34,6 +35,10 @@ private:
 	float min_y = 0;
 	float max_x = 0;
 	float max_y = 0;
+	float diff_x = 0;
+	float diff_y = 0;
+	double velocity_x = 0;
+	double velocity_y = 0;
 
 	void pan(float x, float y);
 	float clampX(float x);

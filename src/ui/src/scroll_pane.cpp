@@ -8,6 +8,9 @@ using Growl::Batch;
 using Growl::InputMouseEvent;
 using Growl::ScrollPane;
 
+constexpr float DECELERATION = 0.95f;
+constexpr float EPSILON = 0.05f;
+
 void ScrollPane::layout() {
 	int i = 0;
 	for (auto& pack : pack_info) {
@@ -49,6 +52,30 @@ void ScrollPane::layout() {
 		max_y = margin_top;
 		node->setX(clampX(node->getX() + margin_left));
 		node->setY(clampY(node->getY() + margin_top));
+	}
+}
+
+void ScrollPane::onTick(double delta_time) {
+	if (panning) {
+		velocity_x = diff_x / delta_time;
+		velocity_y = diff_y / delta_time;
+	} else {
+		if (velocity_x != 0) {
+			velocity_x *= DECELERATION;
+			if (std::abs(velocity_x) < getWidth() * EPSILON) {
+				velocity_x = 0;
+			}
+		}
+		if (velocity_y != 0) {
+			velocity_y *= DECELERATION;
+			if (std::abs(velocity_y) < getHeight() * EPSILON) {
+				velocity_y = 0;
+			}
+		}
+		for (auto child : getChildren()) {
+			child->setX(clampX(child->getX() + (velocity_x * delta_time)));
+			child->setY(clampY(child->getY() + (velocity_y * delta_time)));
+		}
 	}
 }
 
@@ -105,6 +132,8 @@ bool ScrollPane::onMouseEventPost(
 	case PointerEventType::Down:
 		if (hit(event.mouseX, event.mouseY)) {
 			panning = true;
+			diff_x = 0;
+			diff_y = 0;
 			last_pointer_x = event.mouseX;
 			last_pointer_y = event.mouseY;
 		}
@@ -134,6 +163,8 @@ bool ScrollPane::onTouchEventPost(
 			panning = true;
 			last_pointer_x = event.touchX;
 			last_pointer_y = event.touchY;
+			diff_x = 0;
+			diff_y = 0;
 		}
 		break;
 	case PointerEventType::Move:
@@ -183,8 +214,8 @@ float ScrollPane::getMaxY() {
 
 void ScrollPane::pan(float x, float y) {
 	if (panning) {
-		float diff_x = x - last_pointer_x;
-		float diff_y = y - last_pointer_y;
+		diff_x = x - last_pointer_x;
+		diff_y = y - last_pointer_y;
 		last_pointer_x = x;
 		last_pointer_y = y;
 		for (auto child : getChildren()) {
