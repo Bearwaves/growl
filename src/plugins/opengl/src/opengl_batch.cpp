@@ -247,24 +247,22 @@ void OpenGLBatch::draw(
 					  : default_shader;
 	if (&tex != bound_tex || shader != bound_shader || idx >= max_batch_size) {
 		flush();
+		if (font_texture_atlas.getType() == FontFaceType::MSDF) {
+			SDFUniforms sdf_uniforms{
+				glm::vec2{
+					font_texture_atlas.getTexture().getWidth(),
+					font_texture_atlas.getTexture().getHeight()},
+				font_texture_atlas.getPixelRange()};
+			glBindBuffer(GL_UNIFORM_BUFFER, ubo_f);
+			glBufferSubData(
+				GL_UNIFORM_BUFFER, sizeof(FragmentBlock), sizeof(SDFUniforms),
+				&sdf_uniforms);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		}
 	}
 	uniforms.insert(uniforms.end(), VertexBlock{transform});
 	bound_tex = &tex;
 	bound_shader = shader;
-
-	if (font_texture_atlas.getType() == FontFaceType::MSDF) {
-		SDFUniforms sdf_uniforms{
-			glm::vec2{
-				font_texture_atlas.getTexture().getWidth(),
-				font_texture_atlas.getTexture().getHeight()},
-			font_texture_atlas.getPixelRange()};
-		glBindBuffer(GL_UNIFORM_BUFFER, ubo_f);
-		glBufferSubData(
-			GL_UNIFORM_BUFFER,
-			sizeof(FragmentBlock) + sizeof(SDFUniforms) * idx,
-			sizeof(SDFUniforms), &sdf_uniforms);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	}
 
 	GLuint i = verts;
 	for (auto& glyph : glyph_layout.getLayout()) {

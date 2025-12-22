@@ -168,7 +168,6 @@ struct Uniforms {
 const std::string OpenGLShader::sdf_fragment = R"(
 in vec2 TexCoord;
 in vec4 Color;
-flat in int Idx;
 out vec4 outCol;
 uniform sampler2D texture0;
 
@@ -183,7 +182,7 @@ float screenPxRange(vec2 texCoord, vec2 textureSize, float pxRange) {
 }
 
 void main() {
-	Uniforms u = uniforms[Idx];
+	Uniforms u = uniforms[0];
 	vec3 msd = texture(texture0, TexCoord).rgb;
 	float sd = median(msd.r, msd.g, msd.b);
 	float screenPxDistance = screenPxRange(TexCoord, u.texture_size, u.pixel_range)*(sd - 0.5);
