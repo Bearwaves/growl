@@ -17,34 +17,37 @@ MetalShader::~MetalShader() {
 }
 
 Error MetalShader::compile() {
-	@autoreleasepool {
-		auto compile_options = [[MTLCompileOptions new] autorelease];
-		NSError* compile_error = nil;
-		[compile_error autorelease];
-		std::string src =
-			growl_shader_header + uniforms_src + vertex_src + fragment_src;
-		id<MTLLibrary> lib = [[device
-			newLibraryWithSource:
-				[NSString stringWithCString:src.c_str()
-								   encoding:[NSString defaultCStringEncoding]]
-						 options:compile_options
-						   error:&compile_error] autorelease];
-		if (compile_error) {
-			return std::make_unique<MetalError>(compile_error);
-		}
-		if (vertex_func) {
-			[vertex_func release];
-		}
-		if (fragment_func) {
-			[fragment_func release];
-		}
-		fragment_func = [lib newFunctionWithName:@"fragment_func"];
-		vertex_func = [lib newFunctionWithName:@"vertex_func"];
-		if (pipeline_state) {
-			[pipeline_state release];
-			pipeline_state = nil;
-		}
+	if (pipeline_state) {
+		[pipeline_state release];
+		pipeline_state = nil;
 	}
+	if (vertex_func) {
+		[vertex_func release];
+		vertex_func = nil;
+	}
+	if (fragment_func) {
+		[fragment_func release];
+		fragment_func = nil;
+	}
+	if (library) {
+		[library release];
+		library = nil;
+	}
+	auto compile_options = [MTLCompileOptions new];
+	NSError* compile_error = nil;
+	std::string src =
+		growl_shader_header + uniforms_src + vertex_src + fragment_src;
+	library =
+		[device newLibraryWithSource:[NSString stringWithUTF8String:src.c_str()]
+							 options:compile_options
+							   error:&compile_error];
+	[compile_options release];
+	if (compile_error) {
+		return std::make_unique<MetalError>(compile_error);
+	}
+	fragment_func = [library newFunctionWithName:@"fragment_func"];
+	vertex_func = [library newFunctionWithName:@"vertex_func"];
+
 	return nullptr;
 }
 

@@ -27,9 +27,10 @@ public:
 
 private:
 	id<MTLDevice> device;
-	id<MTLFunction> vertex_func;
-	id<MTLFunction> fragment_func;
-	id<MTLRenderPipelineState> pipeline_state;
+	id<MTLLibrary> library = nil;
+	id<MTLFunction> vertex_func = nil;
+	id<MTLFunction> fragment_func = nil;
+	id<MTLRenderPipelineState> pipeline_state = nil;
 	MTLVertexDescriptor* vertex_descriptor;
 
 	static const std::string growl_shader_header;
