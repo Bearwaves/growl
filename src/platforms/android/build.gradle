@@ -5,18 +5,21 @@ plugins {
     id 'com.android.library' version '8.13.1' apply false
 }
 
+ext {
+    growlProperties = new Properties()
+    growlProjectPath = ""
+}
+
 // Load user's Growl properties if provided
-def growlProperties = new Properties()
-String growlProjectPath = ""
-if (!project.hasProperty('growlProperties')) {
+if (!project.hasProperty('growlPropertiesFile')) {
     throw new GradleException("Growl properties must be provided")
 }
-def growlPropertiesFile = file(project['growlProperties'])
+def growlPropertiesFile = file(project['growlPropertiesFile'])
 if (!growlPropertiesFile.exists()) {
-    throw new GradleException("Growl properties file not found at: ${project['growlProperties']}")
+    throw new GradleException("Growl properties file not found at: ${project['growlPropertiesFile']}")
 }
 growlProperties.load(new FileInputStream(growlPropertiesFile as File))
-growlProjectPath = growlPropertiesFile.parent
+ext.growlProjectPath = growlPropertiesFile.parent
 
 def keystoreProperties = new Properties()
 if (growlProperties['keystore']) {
@@ -33,9 +36,6 @@ dependencies {
     implementation libs.games.controller
     implementation libs.androidx.activity
     implementation libs.libcurl
-    if (growlProperties['playServicesAppId']) {
-        implementation libs.play.games.services
-    }
 }
 
 // Prevent Kotlin library collisions.
@@ -136,4 +136,8 @@ android {
             useLegacyPackaging false
         }
     }
+}
+
+if (growlProperties['additionalModule']) {
+    apply from: file(Paths.get(growlProjectPath, growlProperties['additionalModule'], 'build.gradle'))
 }
