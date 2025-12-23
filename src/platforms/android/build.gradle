@@ -85,6 +85,9 @@ android {
             if (growlProperties['manifest']) {
                 manifest.srcFile Paths.get(growlProjectPath, growlProperties['manifest'] as String) as String
             }
+            if (growlProperties['buildDir']) {
+                buildDir = Paths.get(growlProjectPath, growlProperties['buildDir'] as String) as String
+            }
         }
     }
 
