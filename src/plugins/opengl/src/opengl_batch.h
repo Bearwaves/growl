@@ -27,14 +27,12 @@ struct FragmentBlock {
 	float deltaTime;
 };
 
-namespace {
 struct Vertex {
 	glm::vec2 pos;
 	glm::vec2 tex_pos;
 	glm::vec4 color;
 	GLuint idx;
 };
-} // namespace
 
 class OpenGLBatch : public Batch {
 public:

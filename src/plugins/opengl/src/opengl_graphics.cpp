@@ -6,10 +6,12 @@
 #include "growl/core/error.h"
 #include "growl/core/graphics/shader.h"
 #include "opengl_error.h"
+
 #ifdef GROWL_IMGUI
 #include "growl/core/imgui.h"
 #include "imgui_impl_opengl3.h"
 #endif
+
 #include "opengl.h"
 #include "opengl_batch.h"
 #include "opengl_shader.h"
@@ -101,8 +103,20 @@ Error OpenGLGraphicsAPI::setWindow(const Config& config) {
 
 	GLint max_buffer_size = 0;
 	glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &max_buffer_size);
+	GLint max_vertices = 0;
+	GLint max_indices = 0;
+	glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &max_indices);
+	glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &max_vertices);
 	max_batch_size = (max_buffer_size - sizeof(FragmentBlock)) /
 					 OpenGLBatch::UNIFORMS_MAX_SIZE_BYTES;
+	max_batch_size =
+		std::min(max_batch_size, (GLsizei)(max_indices / (6 * sizeof(GLuint))));
+	max_batch_size = std::min(
+		max_batch_size, (GLsizei)(max_vertices / (6 * sizeof(Vertex))));
+	api.system().log(
+		LogLevel::Debug, "OpenGLGraphicsAPI",
+		"Max buffer size {}, batch size {}, verts {}, indices {}",
+		max_buffer_size, max_batch_size, max_vertices, max_indices);
 
 #ifdef GROWL_IMGUI
 	window->initImgui();
