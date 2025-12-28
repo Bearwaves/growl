@@ -17,7 +17,7 @@ Error NetworkAPIInternal::initCrypto() {
 }
 
 std::vector<unsigned char>
-NetworkAPI::hmac256(std::string& body, std::string& key) {
+NetworkAPI::hmac256(const std::string& body, const std::string& key) {
 	unsigned char out[crypto_auth_hmacsha256_BYTES];
 
 	crypto_auth_hmacsha256_state state;
@@ -42,7 +42,7 @@ std::string NetworkAPI::base64enc(const unsigned char* data, int len) {
 	return std::string(buf.data());
 }
 
-Result<std::string> NetworkAPI::gzip(std::string& data) {
+Result<std::string> NetworkAPI::gzip(const std::string& data) {
 	z_stream zs;
 	memset(&zs, 0, sizeof(zs));
 	if (deflateInit2(
@@ -51,7 +51,8 @@ Result<std::string> NetworkAPI::gzip(std::string& data) {
 		return Error(
 			std::make_unique<GenericError>("Failed to init zlib stream"));
 	}
-	zs.next_in = reinterpret_cast<Bytef*>(data.data());
+	zs.next_in =
+		const_cast<Bytef*>(reinterpret_cast<const Bytef*>(data.data()));
 	zs.avail_in = data.size();
 
 	int ret;
@@ -80,7 +81,7 @@ Result<std::string> NetworkAPI::gzip(std::string& data) {
 	return outstring;
 }
 
-std::string NetworkAPI::sha256(std::string& data) {
+std::string NetworkAPI::sha256(const std::string& data) {
 	unsigned char out[crypto_hash_sha256_BYTES];
 	crypto_hash_sha256(
 		out, reinterpret_cast<const unsigned char*>(data.data()), data.size());
