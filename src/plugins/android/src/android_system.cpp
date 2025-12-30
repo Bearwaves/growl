@@ -110,7 +110,8 @@ void AndroidSystemAPI::tick() {
 	Paddleboat_update(getJNIEnv());
 	int events;
 	struct android_poll_source* source;
-	while ((ALooper_pollOnce(0, nullptr, &events, (void**)&source)) >= 0) {
+	while ((ALooper_pollOnce(
+			   isPaused() ? -1 : 0, nullptr, &events, (void**)&source)) >= 0) {
 		if (source != nullptr) {
 			source->process(android_state, source);
 		}
