@@ -38,7 +38,7 @@ Future<HttpResponse>
 IOSNetworkAPI::doHttpRequest(std::unique_ptr<HttpRequest> request) {
 	auto ios_request = static_cast<IOSHttpRequest&>(*request);
 	__block auto promise = std::promise<Result<HttpResponse>>();
-	auto task = [[[NSURLSession sharedSession]
+	auto task = [[NSURLSession sharedSession]
 		dataTaskWithRequest:ios_request.getNative()
 		  completionHandler:^(
 			  NSData* data, NSURLResponse* response, NSError* error) {
@@ -47,15 +47,17 @@ IOSNetworkAPI::doHttpRequest(std::unique_ptr<HttpRequest> request) {
 				return;
 			}
 			HttpResponse resp;
-			resp.content = std::string([[[NSString alloc]
-				initWithData:data
-					encoding:NSUTF8StringEncoding] UTF8String]);
+			auto resp_content =
+				[[NSString alloc] initWithData:data
+									  encoding:NSUTF8StringEncoding];
+			resp.content = std::string([resp_content UTF8String]);
+			[resp_content release];
 			if ([response respondsToSelector:@selector(statusCode)]) {
 				auto http_response = static_cast<NSHTTPURLResponse*>(response);
 				resp.status_code = static_cast<int>([http_response statusCode]);
 			}
 			promise.set_value(std::move(resp));
-		  }] retain];
+		  }];
 	[task resume];
 
 	auto cancellation_lambda = [task]() {

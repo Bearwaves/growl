@@ -67,7 +67,7 @@
 	metadata.imageProvider = imageProvider;
 	metadata.originalURL = file_url;
 	metadata.URL = file_url;
-
+	[imageProvider release];
 	return metadata;
 }
 

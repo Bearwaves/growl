@@ -144,6 +144,7 @@ Error IOSHapticsDevice::playPattern(
 				"Failed to play pattern: " +
 				std::string([error.description UTF8String])));
 	}
+	[haptic_pattern release];
 
 	return nullptr;
 }
