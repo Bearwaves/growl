@@ -203,6 +203,15 @@ Key SDL3SystemAPI::getKey(SDL_KeyboardEvent& event) {
 	case SDL_SCANCODE_F24:
 		return Key::FunctionF24;
 
+	case SDL_SCANCODE_LSHIFT:
+		return Key::LeftShift;
+	case SDL_SCANCODE_RSHIFT:
+		return Key::RightShift;
+	case SDL_SCANCODE_LCTRL:
+		return Key::LeftControl;
+	case SDL_SCANCODE_RCTRL:
+		return Key::RightControl;
+
 	case SDL_SCANCODE_RETURN:
 		return Key::Return;
 	case SDL_SCANCODE_SPACE:
@@ -353,6 +362,14 @@ SDL_Scancode SDL3SystemAPI::getScancode(Key key) {
 	case Key::FunctionF24:
 		return SDL_SCANCODE_F24;
 
+	case Key::LeftShift:
+		return SDL_SCANCODE_LSHIFT;
+	case Key::RightShift:
+		return SDL_SCANCODE_RSHIFT;
+	case Key::LeftControl:
+		return SDL_SCANCODE_LCTRL;
+	case Key::RightControl:
+		return SDL_SCANCODE_RCTRL;
 	case Key::Return:
 		return SDL_SCANCODE_RETURN;
 	case Key::Space:
