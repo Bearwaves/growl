@@ -83,6 +83,10 @@ enum class Key {
 	FunctionF23,
 	FunctionF24,
 
+	LeftShift,
+	RightShift,
+	LeftControl,
+	RightControl,
 	Return,
 	Space,
 	Escape,
