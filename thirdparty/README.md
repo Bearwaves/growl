@@ -3,6 +3,7 @@
 | Package         | Version          | URL                                     |
 |-----------------|------------------|-----------------------------------------|
 | curl            | `curl-8_13_0`    | https://github.com/curl/curl            |
+| date            | `v3.0.4`         | https://github.com/HowardHinnant/date   |
 | Dear ImGui      | `1.91.7-docking` | https://github.com/ocornut/imgui        |
 | {fmt}           | `11.1.4`         | https://github.com/fmtlib/fmt           |
 | fpng            | `b5267e5`        | https://github.com/richgel999/fpng      |
