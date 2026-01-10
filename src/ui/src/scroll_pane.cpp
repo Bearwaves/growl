@@ -77,6 +77,7 @@ void ScrollPane::onTick(double delta_time) {
 			child->setY(clampY(child->getY() + (velocity_y * delta_time)));
 		}
 	}
+	Widget::onTick(delta_time);
 }
 
 void ScrollPane::onDraw(
