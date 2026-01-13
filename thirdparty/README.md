@@ -9,7 +9,7 @@
 | fpng            | `b5267e5`        | https://github.com/richgel999/fpng      |
 | FreeType        | `2.13.3`         | https://freetype.org/                   |
 | glm             | `2993560`        | https://github.com/g-truc/glm           |
-| HarfBuzz        | `3377ddf`        | https://github.com/harfbuzz/harfbuzz    |
+| HarfBuzz        | `12.3.0`         | https://github.com/harfbuzz/harfbuzz    |
 | json            | `3.11.3`         | https://github.com/nlohmann/json        |
 | libpng          | `v1.6.50`        | http://libpng.org/pub/png/libpng.html   |
 | libsodium       | `1.0.20-RELEASE` | https://github.com/jedisct1/libsodium   |
