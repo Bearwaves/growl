@@ -65,6 +65,9 @@ public:
 		Image& image, std::string title, std::string caption,
 		Rect button) override;
 
+	bool isStatusBarVisible() override;
+	void setStatusBarVisible(bool visible) override;
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;

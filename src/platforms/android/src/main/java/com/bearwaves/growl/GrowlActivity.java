@@ -10,12 +10,17 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.os.VibratorManager;
+import android.view.View;
 import android.view.WindowInsets;
 
 import androidx.activity.EdgeToEdge;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.google.androidgamesdk.GameActivity;
 
@@ -118,6 +123,31 @@ public class GrowlActivity extends GameActivity {
                 Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         shareIntent.setType("image/png");
         startActivity(Intent.createChooser(shareIntent, null));
+    }
+
+    public boolean isStatusBarVisible() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowInsets insets = getWindow().getDecorView().getRootWindowInsets();
+            if (insets == null) {
+                return false;
+            }
+            return insets.isVisible(WindowInsetsCompat.Type.statusBars());
+        }
+        return (getWindow().getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LOW_PROFILE) == 0;
+    }
+
+    public void setStatusBarVisible(boolean visible) {
+        new Handler(getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+                if (visible) {
+                    insetsController.show(WindowInsetsCompat.Type.statusBars());
+                } else {
+                    insetsController.hide(WindowInsetsCompat.Type.statusBars());
+                }
+            }
+        });
     }
 
     private Vibrator getVibrator() {

@@ -58,6 +58,12 @@ public:
 		Image& image, std::string title, std::string message,
 		Rect rect) override;
 
+	virtual void setStatusBarVisible(bool visible) override;
+
+	bool isStatusBarVisible() override {
+		return status_bar_visible;
+	}
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
@@ -80,6 +86,7 @@ private:
 	std::unique_ptr<IOSHapticsDevice> controller_haptics = nullptr;
 	std::unique_ptr<IOSHapticsDevice> device_haptics;
 	bool has_shared_preferences = false;
+	bool status_bar_visible = false;
 };
 
 } // namespace Growl

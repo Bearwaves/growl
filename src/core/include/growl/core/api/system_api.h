@@ -87,6 +87,11 @@ public:
 		Image& image, std::string title, std::string message,
 		Rect button = Rect{}) = 0;
 
+	virtual bool isStatusBarVisible() {
+		return false;
+	}
+	virtual void setStatusBarVisible(bool visible) {}
+
 protected:
 	virtual void
 	logInternal(LogLevel log_level, std::string tag, std::string formatted) = 0;

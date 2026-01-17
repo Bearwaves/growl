@@ -30,6 +30,7 @@ Growl::createSystemAPI(API& api, void* user) {
 }
 
 Error IOSSystemAPI::init(const Config& config) {
+	this->status_bar_visible = config.show_status_bar;
 	for (GCController* controller in [GCController controllers]) {
 		this->controller = controller;
 		break; // Just get the first one, for now.
@@ -148,6 +149,7 @@ void IOSSystemAPI::onEvent(const InputEvent& event) {
 
 Result<std::unique_ptr<Window>>
 IOSSystemAPI::createWindow(const Config& config) {
+	setStatusBarVisible(config.show_status_bar);
 	UIWindow* w = [[[UIApplication sharedApplication] delegate] window];
 	return std::unique_ptr<Window>(std::make_unique<IOSWindow>(w));
 }
@@ -234,6 +236,12 @@ void IOSSystemAPI::shareImage(
 	[root_vc presentViewController:activity_view animated:true completion:nil];
 	[shareable release];
 	[activity_view release];
+}
+
+void IOSSystemAPI::setStatusBarVisible(bool visible) {
+	this->status_bar_visible = visible;
+	[[[[[UIApplication sharedApplication] delegate] window] rootViewController]
+		setNeedsStatusBarAppearanceUpdate];
 }
 
 void IOSSystemAPI::logInternal(

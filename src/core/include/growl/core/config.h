@@ -15,6 +15,7 @@ struct Config {
 	bool window_centered = true;
 	bool fullscreen = false;
 	bool vsync = true;
+	bool show_status_bar = false;
 
 	Key debug_mode_key = Key::FunctionF12;
 };

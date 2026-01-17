@@ -128,6 +128,13 @@ std::unique_ptr<Growl::Game> createGame();
 
 	api->system().log("ViewController", "iOS view controller created");
 
+	if (auto err = game->configure(game->getConfig())) {
+		api->system().log(
+			Growl::LogLevel::Fatal, "GameAdapter",
+			"Failed to configure game: {}", err->message());
+		exit(7);
+	}
+
 	if (auto err = graphicsInternal.setWindow(game->getConfig()); err) {
 		api->system().log(
 			Growl::LogLevel::Fatal, "GameAdapter",
@@ -183,7 +190,7 @@ std::unique_ptr<Growl::Game> createGame();
 }
 
 - (BOOL)prefersStatusBarHidden {
-	return YES;
+	return !api->system().isStatusBarVisible();
 }
 
 - (void)render {

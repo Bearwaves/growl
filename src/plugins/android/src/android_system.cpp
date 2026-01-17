@@ -164,8 +164,15 @@ void AndroidSystemAPI::handleAppCmd(android_app* app, int32_t cmd) {
 		auto& graphics_internal =
 			static_cast<GraphicsAPIInternal&>(api->graphics());
 		if (!graphics_internal.getWindow()) {
-			Config config;
-			if (auto err = graphics_internal.setWindow(config)) {
+			if (auto err = system_internal.game->configure(
+					system_internal.game->getConfig())) {
+				api->system().log(
+					LogLevel::Fatal, "android_main",
+					"Failed to configure game: {}", err.get()->message());
+				break;
+			}
+			if (auto err = graphics_internal.setWindow(
+					system_internal.game->getConfig())) {
 				api->system().log(
 					LogLevel::Fatal, "android_main",
 					"Failed to create window: {}", err.get()->message());
@@ -506,6 +513,7 @@ void AndroidSystemAPI::onEvent(const InputEvent& event) {
 
 Result<std::unique_ptr<Window>>
 AndroidSystemAPI::createWindow(const Config& config) {
+	setStatusBarVisible(config.show_status_bar);
 	return std::unique_ptr<Window>(
 		std::make_unique<AndroidWindow>(android_state->window, android_state));
 }
@@ -605,6 +613,29 @@ void AndroidSystemAPI::shareImage(
 	env->CallVoidMethod(
 		android_state->activity->javaGameActivity, share_image, jpath, jtitle,
 		jcaption);
+}
+
+bool AndroidSystemAPI::isStatusBarVisible() {
+	auto env = getJNIEnv();
+
+	jclass activity_class =
+		env->GetObjectClass(android_state->activity->javaGameActivity);
+	jmethodID is_status_bar_visible =
+		env->GetMethodID(activity_class, "isStatusBarVisible", "()Z");
+	return env->CallBooleanMethod(
+		android_state->activity->javaGameActivity, is_status_bar_visible);
+}
+
+void AndroidSystemAPI::setStatusBarVisible(bool visible) {
+	auto env = getJNIEnv();
+
+	jclass activity_class =
+		env->GetObjectClass(android_state->activity->javaGameActivity);
+	jmethodID set_status_bar_visible =
+		env->GetMethodID(activity_class, "setStatusBarVisible", "(Z)V");
+	return env->CallVoidMethod(
+		android_state->activity->javaGameActivity, set_status_bar_visible,
+		visible);
 }
 
 void AndroidSystemAPI::logInternal(
