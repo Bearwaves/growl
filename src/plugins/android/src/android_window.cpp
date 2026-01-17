@@ -94,6 +94,7 @@ Error AndroidWindow::createGLContext(
 	}
 
 	// todo handle error
+	surface = eglCreateWindowSurface(display, egl_config, app->window, nullptr);
 	const EGLint context_attribs[] = {EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE};
 	context = eglCreateContext(display, egl_config, nullptr, context_attribs);
 
@@ -107,6 +108,9 @@ Error AndroidWindow::createGLContext(
 }
 
 Error AndroidWindow::initSurface() {
+	if (surface != EGL_NO_SURFACE) {
+		return nullptr;
+	}
 	// todo handle error
 	surface = eglCreateWindowSurface(display, egl_config, app->window, nullptr);
 	if (eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {
