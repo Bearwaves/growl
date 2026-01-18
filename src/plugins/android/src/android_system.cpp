@@ -115,6 +115,9 @@ void AndroidSystemAPI::tick() {
 		if (source != nullptr) {
 			source->process(android_state, source);
 		}
+		if (android_state->destroyRequested || !isRunning()) {
+			break;
+		}
 	}
 	handleInput(android_state);
 }
