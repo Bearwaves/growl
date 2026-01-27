@@ -49,7 +49,7 @@ android {
 
     defaultConfig {
         applicationId growlProperties['appId'] as String
-        minSdk 21
+        minSdk 24
         targetSdk 35
         versionCode Integer.parseInt(growlProperties['versionCode'] as String)
         versionName growlProperties['versionName'] as String

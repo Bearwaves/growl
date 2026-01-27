@@ -11,8 +11,8 @@ Out of the box, Growl has support for the following platforms:
 - Windows
 - macOS
 - Linux
-- Android (4.4+)
-- iOS (13.0+)
+- Android (7.0+)
+- iOS (15.6+)
 - Web
 
 Growl's plugin-based architecture should make it easy to port to any platform
