@@ -130,6 +130,11 @@ protected:
 
 	void cancelEvent();
 
+	bool isZOrdered() {
+		return z_ordered;
+	}
+	void reorderZ();
+
 private:
 	API* api;
 	std::unique_ptr<Script> script;
@@ -161,7 +166,6 @@ private:
 	void populateDebugUI(Batch& batch);
 	void setDepth(int depth);
 	bool processClick(float x, float y, PointerEventType type);
-	void reorderZ();
 };
 
 } // namespace Growl

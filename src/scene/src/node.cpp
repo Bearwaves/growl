@@ -167,9 +167,8 @@ void Node::onTick(double delta_time) {
 }
 
 void Node::draw(Batch& batch, float parent_alpha) {
-	if (!z_ordered) {
+	if (!isZOrdered()) {
 		reorderZ();
-		z_ordered = true;
 	}
 	computeLocalTransform();
 	if (!parent) {
@@ -294,6 +293,7 @@ void Node::reorderZ() {
 	std::stable_sort(
 		children_z_order.begin(), children_z_order.end(),
 		[](const Node* a, const Node* b) -> bool { return a->z < b->z; });
+	z_ordered = true;
 }
 
 bool Node::onMouseEvent(const InputMouseEvent& event) {

@@ -72,6 +72,9 @@ void Widget::validate() {
 
 void Widget::onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) {
 	validate();
+	if (!isZOrdered()) {
+		reorderZ();
+	}
 	Node::onDraw(batch, parent_alpha, transform);
 }
 
