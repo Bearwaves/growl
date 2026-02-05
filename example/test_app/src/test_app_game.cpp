@@ -100,18 +100,20 @@ Error TestAppGame::init() {
 		}
 	}
 
+	constexpr int N_CATS = 10;
 	cats = std::make_unique<Node>("Cats");
-	cats->setWidth(500);
-	cats->setHeight(500);
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
+	cats->setWidth(1000);
+	cats->setHeight(1000);
+	for (int i = 0; i < N_CATS; i++) {
+		for (int j = 0; j < N_CATS; j++) {
 			auto cat = cats->addChild(
 				std::make_unique<Cat>(
-					"Cat " + std::to_string(i * 4 + j), texture_atlas.get()));
-			cat->setWidth(125);
-			cat->setHeight(125);
-			cat->setX(125 * i);
-			cat->setY(125 * j);
+					"Cat " + std::to_string(i * N_CATS + j),
+					texture_atlas.get()));
+			cat->setWidth(1000 / N_CATS);
+			cat->setHeight(1000 / N_CATS);
+			cat->setX(cat->getWidth() * i);
+			cat->setY(cat->getHeight() * j);
 		}
 	}
 

@@ -178,13 +178,13 @@ void Node::draw(Batch& batch, float parent_alpha) {
 	if (color) {
 		batch.setColor(*color);
 	}
-	onDraw(batch, parent_alpha, local_transform);
+	onDraw(batch, parent_alpha, world_transform);
 #ifdef GROWL_IMGUI
 	if (debug_rendering == DebugRendering::ON ||
 		(debug_rendering == DebugRendering::MOUSEOVER && debug_mouseover)) {
 		batch.setColor(
 			debug_rendering_colors[depth % DEBUG_RENDERING_COLORS_COUNT]);
-		batch.drawRect(0, 0, getWidth(), getHeight(), local_transform, 5.f);
+		batch.drawRect(0, 0, getWidth(), getHeight(), world_transform, 5.f);
 	}
 #endif
 	batch.setColor(c);
@@ -237,11 +237,11 @@ bool Node::onPostEvent(const InputEvent& event, bool children_handled) {
 }
 
 glm::vec4 Node::worldToLocalCoordinates(float x, float y) {
-	return glm::inverse(local_transform) * glm::vec4(x, y, 0, 1);
+	return glm::inverse(world_transform) * glm::vec4(x, y, 0, 1);
 }
 
 glm::vec4 Node::localToWorldCoordinates(float x, float y) {
-	return local_transform * glm::vec4{x, y, 0, 1};
+	return world_transform * glm::vec4{x, y, 0, 1};
 }
 
 bool Node::hit(float x, float y) {
@@ -276,16 +276,34 @@ Error Node::bindScript(API& api, Script& script) {
 }
 
 void Node::computeLocalTransform() {
-	auto translate =
-		glm::translate(glm::identity<glm::mat4x4>(), {getX(), getY(), 0});
-	auto rotation_origin = glm::translate(
-		glm::identity<glm::mat4x4>(), {getWidth() / 2, getHeight() / 2, 0});
-	auto rotate =
-		glm::rotate(glm::identity<glm::mat4x4>(), getRotation(), {0, 0, 1});
-	local_transform =
-		translate * rotation_origin * rotate * glm::inverse(rotation_origin);
-	if (parent) {
-		local_transform = parent->local_transform * local_transform;
+	if (local_transform_dirty) {
+		auto translate =
+			glm::translate(glm::identity<glm::mat4x4>(), {getX(), getY(), 0});
+		auto rotation_origin = glm::translate(
+			glm::identity<glm::mat4x4>(), {getWidth() / 2, getHeight() / 2, 0});
+		auto rotate =
+			glm::rotate(glm::identity<glm::mat4x4>(), getRotation(), {0, 0, 1});
+		local_transform = translate * rotation_origin * rotate *
+						  glm::inverse(rotation_origin);
+	}
+	if (world_transform_dirty) {
+		if (parent) {
+			world_transform = parent->world_transform * local_transform;
+		} else {
+			world_transform = local_transform;
+		}
+	}
+	local_transform_dirty = false;
+	world_transform_dirty = false;
+}
+
+void Node::invalidateTransform(bool local) {
+	if (local) {
+		local_transform_dirty = true;
+	}
+	world_transform_dirty = true;
+	for (auto& child : children) {
+		child->invalidateTransform(false);
 	}
 }
 

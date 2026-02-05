@@ -152,6 +152,9 @@ private:
 	std::unordered_map<Node*, std::unique_ptr<Node>> owned_children;
 	std::vector<Node*> children_z_order;
 	glm::mat4x4 local_transform;
+	glm::mat4x4 world_transform;
+	bool local_transform_dirty = true;
+	bool world_transform_dirty = true;
 	std::unique_ptr<ScriptingRef> bound_script_obj = nullptr;
 	DebugRendering debug_rendering = DebugRendering::OFF;
 	bool debug_mouseover = false;
@@ -162,6 +165,7 @@ private:
 	bool event_cancelled = false;
 
 	void computeLocalTransform();
+	void invalidateTransform(bool local = true);
 	void drawChildren(Batch& batch, float parent_alpha);
 	void populateDebugUI(Batch& batch);
 	void setDepth(int depth);

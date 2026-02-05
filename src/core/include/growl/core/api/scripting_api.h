@@ -28,7 +28,10 @@
 	} \
 \
 	virtual void set##name##Raw(type var) { \
-		this->var = var; \
+		if (var != this->var) { \
+			this->var = var; \
+			invalidateTransform(); \
+		} \
 	} \
 \
 	virtual void set##name(type var) { \
