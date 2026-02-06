@@ -118,6 +118,7 @@ void GlyphLayout::layout() noexcept {
 
 	for (auto& line : lines) {
 		if (line.empty()) {
+			cursor_y += (face->size->metrics.height >> 6);
 			continue;
 		}
 		hb_buffer_reset(hb_data->buffer_line);
