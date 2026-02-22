@@ -1,6 +1,6 @@
 #pragma once
 
-#include "nlohmann/json.hpp"
+#include "nlohmann/json_fwd.hpp"
 #include <optional>
 #include <string>
 
@@ -29,6 +29,7 @@ struct AssetConfig {
 	std::optional<FontConfig> font;
 	std::optional<ShaderPackConfig> shader_pack;
 	bool text = false;
+	bool json = false;
 };
 
 // Turn off name linting as json library needs these.

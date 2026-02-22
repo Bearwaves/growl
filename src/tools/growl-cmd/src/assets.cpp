@@ -218,6 +218,33 @@ AssetsIncludeError includeText(
 	return AssetsIncludeErrorCode::None;
 }
 
+AssetsIncludeError includeJson(
+	const std::filesystem::directory_entry& entry,
+	std::filesystem::path& resolved_path, AssetsMap& assets_map,
+	std::ofstream& outfile) noexcept {
+	std::ifstream file;
+	file.open(entry.path(), std::ios::in);
+	if (file.fail()) {
+		return AssetsIncludeError(
+			"Failed to open file " + resolved_path.generic_string());
+	}
+
+	auto start = static_cast<unsigned int>(outfile.tellp());
+	json data = json::parse(file);
+	outfile << data.dump();
+
+	AssetInfo info{
+		start, static_cast<unsigned int>(outfile.tellp()) - start,
+		AssetType::Text};
+	std::cout << "Included JSON file " << style::bold
+			  << resolved_path.generic_string() << style::reset << "."
+			  << std::endl;
+
+	assets_map[resolved_path.generic_string()] = info;
+
+	return AssetsIncludeErrorCode::None;
+}
+
 Result<bool> processDirectory(
 	std::string& assets_dir, std::filesystem::path path, AssetsMap& assets_map,
 	std::ofstream& outfile) {
@@ -290,6 +317,18 @@ Result<bool> processDirectory(
 				return Error(
 					std::make_unique<AssetsError>(
 						"Failed to include text file: " + err.message()));
+			}
+			continue;
+		}
+
+		if (asset_config.json) {
+			// Attempt to include file as JSON
+			if (auto err =
+					includeJson(file_entry, resolved_path, assets_map, outfile);
+				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
+				return Error(
+					std::make_unique<AssetsError>(
+						"Failed to include JSON file: " + err.message()));
 			}
 			continue;
 		}

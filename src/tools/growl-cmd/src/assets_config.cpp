@@ -1,4 +1,5 @@
 #include "assets_config.h"
+#include "nlohmann/json.hpp"
 
 void Growl::from_json(const json& j, AssetConfig& s) {
 	if (j.contains("atlas")) {
@@ -11,6 +12,7 @@ void Growl::from_json(const json& j, AssetConfig& s) {
 		s.shader_pack = j.at("shaderPack").get<ShaderPackConfig>();
 	}
 	s.text = j.value("text", s.text);
+	s.json = j.value("json", s.json);
 }
 
 void Growl::from_json(const json& j, AtlasConfig& s) {

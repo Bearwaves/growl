@@ -3,7 +3,7 @@
 #include "atlas.h"
 #include "growl/core/assets/file.h"
 #include "growl/core/error.h"
-#include "nlohmann/json.hpp"
+#include "nlohmann/json_fwd.hpp"
 #include <cstdint>
 #include <map>
 #include <optional>
