@@ -7,6 +7,8 @@ enum class ControllerEventType {
 	ButtonDown,
 	ButtonUp,
 	AxisMoved,
+	Connected,
+	Disconnected,
 };
 
 enum class ControllerButton {

@@ -92,6 +92,10 @@ public:
 	}
 	virtual void setStatusBarVisible(bool visible) {}
 
+	virtual bool isControllerConnected() {
+		return false;
+	}
+
 protected:
 	virtual void
 	logInternal(LogLevel log_level, std::string tag, std::string formatted) = 0;

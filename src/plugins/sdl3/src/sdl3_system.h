@@ -25,13 +25,17 @@ enum class LogLevel;
 
 class SDL3Controller {
 public:
-	SDL3Controller(SystemAPI* system, SDL_Gamepad* controller);
+	SDL3Controller(SystemAPI* system, SDL_Gamepad* controller, int id);
 	~SDL3Controller();
 	HapticsDevice* getHaptics();
+	int getId() {
+		return id;
+	}
 
 private:
 	SystemAPI* system;
 	SDL_Gamepad* controller;
+	int id;
 	std::unique_ptr<SDL3HapticsDevice> haptics;
 };
 
@@ -77,6 +81,8 @@ public:
 		Image& image, std::string title, std::string message,
 		Rect button = Rect{}) override;
 
+	bool isControllerConnected() override;
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
@@ -93,6 +99,7 @@ private:
 	ControllerEventType getControllerEventType(SDL_Event& event);
 	ControllerButton getButton(SDL_Event& event);
 	void openGameController(int id);
+	bool closeGameController(int id);
 
 	Error initPreferences(const Config& config);
 

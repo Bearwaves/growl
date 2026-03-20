@@ -143,12 +143,18 @@ void SDL3SystemAPI::tick() {
 				handleKeyboardEvent(event);
 			}
 			break;
+		case SDL_EVENT_GAMEPAD_ADDED:
+			openGameController(event.cdevice.which);
+			handleControllerEvent(event);
+			break;
+		case SDL_EVENT_GAMEPAD_REMOVED:
+			if (closeGameController(event.cdevice.which)) {
+				handleControllerEvent(event);
+			}
+			break;
 		case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 		case SDL_EVENT_GAMEPAD_BUTTON_UP:
 			handleControllerEvent(event);
-			break;
-		case SDL_EVENT_GAMEPAD_ADDED:
-			openGameController(event.cdevice.which);
 			break;
 		case SDL_EVENT_SYSTEM_THEME_CHANGED:
 			setDarkMode(SDL_GetSystemTheme() == SDL_SYSTEM_THEME_DARK);
@@ -333,6 +339,8 @@ void SDL3SystemAPI::handleMouseEvent(SDL_Event& event) {
 		case SDL_EVENT_MOUSE_WHEEL:
 			event_type = PointerEventType::Scroll;
 			break;
+		default:
+			return;
 		}
 
 		MouseButton mouse_button = MouseButton::Unknown;
@@ -417,6 +425,10 @@ void SDL3SystemAPI::shareImage(
 				image->getHeight(), image->getChannels());
 		},
 		&image, getNativeWindow(), share_filter, 1, filename.c_str());
+}
+
+bool SDL3SystemAPI::isControllerConnected() {
+	return !!controller;
 }
 
 SDL_Window* SDL3SystemAPI::getNativeWindow() {

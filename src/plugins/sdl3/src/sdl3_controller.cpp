@@ -16,7 +16,16 @@ void SDL3SystemAPI::openGameController(int id) {
 	auto sdl_controller = SDL_OpenGamepad(id);
 	log("SDL3SystemAPI", "Got controller: {}",
 		SDL_GetGamepadName(sdl_controller));
-	controller = std::make_unique<SDL3Controller>(this, sdl_controller);
+	controller = std::make_unique<SDL3Controller>(this, sdl_controller, id);
+}
+
+bool SDL3SystemAPI::closeGameController(int id) {
+	if (controller && controller->getId() == id) {
+		controller.reset();
+		controller = nullptr;
+		return true;
+	}
+	return false;
 }
 
 void SDL3SystemAPI::handleControllerEvent(SDL_Event& event) {
@@ -29,9 +38,11 @@ void SDL3SystemAPI::handleControllerEvent(SDL_Event& event) {
 	}
 }
 
-SDL3Controller::SDL3Controller(SystemAPI* system, SDL_Gamepad* controller)
+SDL3Controller::SDL3Controller(
+	SystemAPI* system, SDL_Gamepad* controller, int id)
 	: system{system}
 	, controller{controller}
+	, id{id}
 	, haptics{std::make_unique<SDL3HapticsDevice>(system, controller)} {}
 
 SDL3Controller::~SDL3Controller() {
@@ -51,6 +62,10 @@ ControllerEventType SDL3SystemAPI::getControllerEventType(SDL_Event& event) {
 		return ControllerEventType::ButtonDown;
 	case SDL_EVENT_GAMEPAD_BUTTON_UP:
 		return ControllerEventType::ButtonUp;
+	case SDL_EVENT_GAMEPAD_ADDED:
+		return ControllerEventType::Connected;
+	case SDL_EVENT_GAMEPAD_REMOVED:
+		return ControllerEventType::Disconnected;
 	default:
 		return ControllerEventType::Unknown;
 	}
