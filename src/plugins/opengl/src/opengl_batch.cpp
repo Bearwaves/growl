@@ -24,7 +24,7 @@ using Growl::Shader;
 OpenGLBatch::OpenGLBatch(
 	API* api, OpenGLShader* default_shader, OpenGLShader* sdf_shader,
 	OpenGLShader* rect_shader, int width, int height, Window* window,
-	GLuint fbo, GLsizei max_batch_size)
+	GLuint fbo, GLuint max_batch_size)
 	: api{api}
 	, default_shader{default_shader}
 	, sdf_shader{sdf_shader}

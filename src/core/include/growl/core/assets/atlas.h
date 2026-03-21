@@ -2,7 +2,7 @@
 
 #include "growl/core/assets/image.h"
 #include "growl/core/error.h"
-#include "nlohmann/json.hpp"
+#include "nlohmann/json_fwd.hpp"
 #include <filesystem>
 #include <memory>
 #include <string>
@@ -77,7 +77,7 @@ private:
 };
 
 Result<Atlas> packAtlasFromFiles(
-	std::vector<AtlasImagePackInfo>& images, int padding,
-	int bleed_passes) noexcept;
+	std::vector<AtlasImagePackInfo>& images, int padding, int bleed_passes,
+	std::filesystem::path from) noexcept;
 
 } // namespace Growl

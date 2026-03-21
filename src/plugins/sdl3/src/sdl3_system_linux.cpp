@@ -8,7 +8,7 @@ std::string SDL3SystemAPI::getPlatformOSVersion() {
 	uname(&info);
 
 	std::string version;
-	int len = strlen(info.release);
+	size_t len = strlen(info.release);
 
 	for (size_t i = 0; i < len; ++i) {
 		if (!isdigit(info.release[i]) && info.release[i] != '.') {

@@ -8,6 +8,7 @@
 #include "growl/core/assets/image.h"
 #include "growl/core/assets/shader_pack.h"
 #include "growl/core/error.h"
+#include "nlohmann/json.hpp"
 #include <string>
 #include <vector>
 

@@ -7,6 +7,15 @@
 constexpr const char* SYSTEM_API_WINDOW = "System API";
 constexpr const char* WINDOW_WINDOW = "Window";
 
+static bool game_window_focused;
+static int game_window_x;
+static int game_window_y;
+static int game_window_w = 0;
+static int game_window_h = 0;
+static bool game_window_resized;
+static bool system_api_view = false;
+static bool window_view = false;
+
 namespace Growl {
 void doApiWindows(API& api) {
 	if (system_api_view) {

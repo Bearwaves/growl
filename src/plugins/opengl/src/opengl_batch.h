@@ -39,7 +39,7 @@ public:
 	OpenGLBatch(
 		API* api, OpenGLShader* default_shader, OpenGLShader* sdf_shader,
 		OpenGLShader* rect_shader, int width, int height, Window* window,
-		GLuint fbo, GLsizei max_batch_size);
+		GLuint fbo, GLuint max_batch_size);
 	~OpenGLBatch();
 
 	void clear(float r, float g, float b) override;
@@ -99,10 +99,10 @@ private:
 	GLuint ubo_v = 0;
 	GLuint ubo_f = 0;
 	bool should_clear = false;
-	GLsizei max_batch_size = 0;
+	GLuint max_batch_size = 0;
 
-	unsigned int idx = 0;
-	unsigned int verts = 0;
+	GLuint idx = 0;
+	GLuint verts = 0;
 	const OpenGLTexture* bound_tex = nullptr;
 	OpenGLShader* bound_shader = nullptr;
 	std::vector<Vertex> vertices;

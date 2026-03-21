@@ -1,6 +1,7 @@
 #include "growl/core/assets/atlas.h"
 
 #include "growl/core/assets/error.h"
+#include "nlohmann/json.hpp"
 #include "stb_image.h"
 #include "stb_rect_pack.h"
 #include <algorithm>
