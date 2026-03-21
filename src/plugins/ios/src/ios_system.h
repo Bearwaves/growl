@@ -64,6 +64,8 @@ public:
 		return status_bar_visible;
 	}
 
+	bool isControllerConnected() override;
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;

@@ -641,6 +641,10 @@ void AndroidSystemAPI::setStatusBarVisible(bool visible) {
 		visible);
 }
 
+bool AndroidSystemAPI::isControllerConnected() {
+	return controller_haptics != nullptr;
+}
+
 void AndroidSystemAPI::logInternal(
 	LogLevel log_level, std::string tag, std::string msg) {
 	__android_log_print(
@@ -715,13 +719,22 @@ void AndroidSystemAPI::controllerStatusCallback(
 		api->log(
 			"AndroidSystemAPI", "Connected new controller with device ID {}",
 			info.deviceId);
+		InputEvent e{
+			InputEventType::Controller,
+			InputControllerEvent{ControllerEventType::Connected}};
+		api->onEvent(e);
 		break;
 	}
-	case PADDLEBOAT_CONTROLLER_JUST_DISCONNECTED:
+	case PADDLEBOAT_CONTROLLER_JUST_DISCONNECTED: {
 		api->controller_haptics.reset();
 		api->log(
 			"AndroidSystemAPI", "Controller {} disconnected", controller_index);
+		InputEvent e{
+			InputEventType::Controller,
+			InputControllerEvent{ControllerEventType::Disconnected}};
+		api->onEvent(e);
 		break;
+	}
 	default:
 		break;
 	}

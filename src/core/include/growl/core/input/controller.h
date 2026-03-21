@@ -40,8 +40,8 @@ enum class ControllerButton {
 };
 
 struct InputControllerEvent {
-	ControllerEventType type;
-	ControllerButton button;
+	ControllerEventType type = ControllerEventType::Unknown;
+	ControllerButton button = ControllerButton::Unknown;
 };
 
 } // namespace Growl

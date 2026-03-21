@@ -5,7 +5,13 @@ IndentWidth: 4
 AccessModifierOffset: -4
 BreakBeforeBraces: Attach
 BreakConstructorInitializers: BeforeComma
-AlignAfterOpenBracket: AlwaysBreak
+AlignAfterOpenBracket: true
+BreakAfterOpenBracketBracedList: true
+BreakAfterOpenBracketFunction: true
+BreakAfterOpenBracketIf: false
+BreakBeforeCloseBracketBracedList: false
+BreakBeforeCloseBracketFunction: false
+BreakBeforeCloseBracketIf: false
 AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: false

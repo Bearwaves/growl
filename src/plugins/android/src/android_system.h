@@ -68,6 +68,8 @@ public:
 	bool isStatusBarVisible() override;
 	void setStatusBarVisible(bool visible) override;
 
+	bool isControllerConnected() override;
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;

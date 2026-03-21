@@ -70,9 +70,9 @@ Error IOSSystemAPI::init(const Config& config) {
 						usingBlock:^(NSNotification* note) {
 						  GCController* controller = note.object;
 						  if (controller == this->controller) {
+							  this->controller_haptics.reset();
 							  closeGameController(this->controller);
 							  this->controller = nullptr;
-							  this->controller_haptics.reset();
 						  }
 						}];
 
@@ -244,6 +244,10 @@ void IOSSystemAPI::setStatusBarVisible(bool visible) {
 		setNeedsStatusBarAppearanceUpdate];
 }
 
+bool IOSSystemAPI::isControllerConnected() {
+	return !!controller;
+}
+
 void IOSSystemAPI::logInternal(
 	LogLevel log_level, std::string tag, std::string msg) {
 	os_log_with_type(
@@ -311,12 +315,16 @@ void IOSSystemAPI::openGameController(GCController* controller) {
 				  controllerEventTypeForButtonPressed(pressed));
 			};
 	}
+	dispatchControllerEvent(
+		ControllerButton::Unknown, ControllerEventType::Connected);
 }
 
 void IOSSystemAPI::closeGameController(GCController* controller) {
 	this->log(
 		"IOSSystemAPI", "Disconnected controller: {}",
 		[controller.productCategory UTF8String]);
+	dispatchControllerEvent(
+		ControllerButton::Unknown, ControllerEventType::Disconnected);
 }
 
 void IOSSystemAPI::handleControllerInput(
