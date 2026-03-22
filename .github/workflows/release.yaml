@@ -1,0 +1,102 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+    branches:
+      - release-workflow
+
+permissions:
+  contents: write
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install libgl1-mesa-dev
+      - name: Configure CMake
+        run: cmake -S . -B build -G Ninja
+        working-directory: example/test_app
+      - name: Build
+        run: ninja
+        working-directory: example/test_app/build
+      - name: Upload growl-cmd artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: "growlcmd_linux"
+          path: "example/test_app/build/growl-cmd"
+          overwrite: true
+
+  macOS:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - name: Configure CMake
+        run: cmake -S . -B build -G Ninja
+        working-directory: example/test_app
+      - name: Build
+        run: ninja
+        working-directory: example/test_app/build
+      - name: Upload growl-cmd artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: "growlcmd_macos"
+          path: "example/test_app/build/growl-cmd"
+          overwrite: true
+
+  windows:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - name: Configure CMake
+        run: cmake -S . -B build
+        working-directory: example/test_app
+      - name: Build
+        run: cmake --build . --parallel 4
+        working-directory: example/test_app/build
+      - name: Upload growl-cmd artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: "growlcmd_windows.exe"
+          path: "example/test_app/build/Debug/growl-cmd.exe"
+          overwrite: true
+
+  release:
+    runs-on: ubuntu-24.04
+    name: Create release
+    needs: [linux, macOS, windows]
+    steps:
+      - name: Download growl-cmd Linux
+        uses: actions/download-artifact@v8
+        with:
+          name: growlcmd_linux
+          path: linux
+      - name: Download growl-cmd macOS
+        uses: actions/download-artifact@v8
+        with:
+          name: growlcmd_macos
+          path: macos
+      - name: Download growl-cmd Windows
+        uses: actions/download-artifact@v8
+        with:
+          name: growlcmd_windows.exe
+          path: windows
+      - run: |
+          mv linux/growl-cmd growl-cmd-linux64
+          mv macos/growl-cmd growl-cmd-macos
+          mv windows/growl-cmd.exe growl-cmd-windows.exe
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: growl-cmd-*
+            
