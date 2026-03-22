@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - "*.*.*"
-    branches:
-      - release-workflow
 
 permissions:
   contents: write
@@ -99,4 +97,3 @@ jobs:
         with:
           draft: true
           files: growl-cmd-*
-            
