@@ -4,10 +4,10 @@
 #include "growl/core/assets/shader_pack.h"
 #include "growl/core/error.h"
 #include "growl/core/graphics/shader.h"
-#include "growl/core/imgui.h"
 #include "metal_error.h"
 #include <Metal/Metal.h>
 #ifdef GROWL_IMGUI
+#include "growl/imgui/imgui.h"
 #include "imgui_impl_metal.h"
 #endif
 #include "metal_batch.h"

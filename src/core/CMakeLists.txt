@@ -3,7 +3,6 @@ cmake_minimum_required (VERSION 3.19)
 project(growl-core)
 
 set(SOURCES
-	"src/api/api.cpp"
 	"src/game/game.cpp"
 	"src/input/processor.cpp"
 	"src/graphics/font_texture_atlas.cpp"
@@ -32,24 +31,22 @@ set(INTERFACE_LIBS
 	growl-thirdparty::glm
 )
 
-if(GROWL_IMGUI)
-	set(SOURCES
-		${SOURCES}
-		"src/imgui.cpp"
-	)
-
-	set(INTERFACE_LIBS
-		${INTERFACE_LIBS}
-		growl-thirdparty::imgui
-	)
-endif()
-
 add_library(growl-core ${SOURCES})
 target_include_directories(growl-core PUBLIC "include")
 
 target_link_libraries(growl-core
-	INTERFACE
+	PUBLIC
 	${INTERFACE_LIBS}
 	PRIVATE
-	growl-thirdparty
+	growl-thirdparty::stb
+	growl-thirdparty::freetype
+	growl-thirdparty::harfbuzz
+	growl-thirdparty::sodium
+	growl-thirdparty::msdfgen
+	growl-thirdparty::utf8cpp
+	growl-thirdparty::libunibreak
 )
+
+if (GROWL_IMGUI)
+	target_compile_definitions(growl-core PRIVATE "GROWL_IMGUI")
+endif()

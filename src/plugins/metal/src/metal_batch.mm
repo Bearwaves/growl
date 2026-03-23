@@ -5,7 +5,7 @@
 #include "growl/core/graphics/shader.h"
 #include <Metal/Metal.h>
 #ifdef GROWL_IMGUI
-#include "growl/core/imgui.h"
+#include "growl/imgui/imgui.h"
 #include "imgui.h"
 #endif
 #include "metal_buffer.h"

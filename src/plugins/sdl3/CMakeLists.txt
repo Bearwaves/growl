@@ -66,6 +66,9 @@ target_link_libraries(growl-plugin-sdl3
 	growl-thirdparty::fpng
 	${SDL_LINK_LIBS}
 )
+if (GROWL_IMGUI)
+	target_link_libraries(growl-plugin-sdl3 PUBLIC growl-imgui)
+endif()
 target_compile_definitions(growl-plugin-sdl3
 	INTERFACE "GROWL_SDL3"
 	PRIVATE "SDL_FUNCTION_POINTER_IS_VOID_POINTER"

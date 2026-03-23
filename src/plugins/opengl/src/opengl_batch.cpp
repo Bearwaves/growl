@@ -13,7 +13,7 @@
 #include <cmath>
 #include <vector>
 #ifdef GROWL_IMGUI
-#include "growl/core/imgui.h"
+#include "growl/imgui/imgui.h"
 #include "imgui.h"
 #endif
 

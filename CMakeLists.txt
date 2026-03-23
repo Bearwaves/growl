@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.19)
 
 project(growl)
 
-set (GROWL_VERSION 1.1.0-PREVIEW)
+set (GROWL_VERSION 1.0.0)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
@@ -64,6 +64,15 @@ option(GROWL_TOOLS "Whether to build the tools, e.g. growl-cmd" ${GROWL_DEFAULT_
 option(GROWL_IMGUI "Whether to include Dear ImGui for debug UIs" ${GROWL_DEFAULT_IMGUI})
 option(GROWL_LUA "Whether to include Lua for scripting" ON)
 option(GROWL_CURL "Whether to build the curl library" ${GROWL_DEFAULT_CURL})
+option(GROWL_CMD_ONLY "Whether to build growl-cmd only" OFF)
+
+if (GROWL_TOOLS AND GROWL_CMD_ONLY)
+	set(GROWL_DESKTOP OFF)
+	set(GROWL_SDL3 OFF)
+	set(GROWL_IMGUI OFF)
+	set(GROWL_LUA OFF)
+	set(GROWL_CURL OFF)
+endif()
 
 # Deal with third-party stuff that's in submodules
 find_package(Git QUIET)

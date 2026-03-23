@@ -8,3 +8,7 @@ add_subdirectory(version)
 if (GROWL_TOOLS)
 	add_subdirectory(tools)
 endif()
+
+if (GROWL_IMGUI)
+	add_subdirectory(imgui)
+endif()

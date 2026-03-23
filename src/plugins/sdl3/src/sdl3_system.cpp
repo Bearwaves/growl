@@ -18,7 +18,7 @@
 #include <filesystem>
 #include <fstream>
 #ifdef GROWL_IMGUI
-#include "growl/core/imgui.h"
+#include "growl/imgui/imgui.h"
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #endif

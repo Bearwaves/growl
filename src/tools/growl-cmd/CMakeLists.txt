@@ -23,5 +23,8 @@ target_link_libraries(growl-cmd
 	PRIVATE
 	growl-version
 	growl-core
-	growl-thirdparty
+	growl-thirdparty::fpng
+	growl-thirdparty::utf8cpp
+	growl-thirdparty::soloud
+	growl-thirdparty::stb
 )

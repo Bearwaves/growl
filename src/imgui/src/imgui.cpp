@@ -1,5 +1,5 @@
 #ifdef GROWL_IMGUI
-#include "growl/core/imgui.h"
+#include "growl/imgui/imgui.h"
 #include "growl/core/api/api.h"
 #include "growl/core/graphics/window.h"
 #include "imgui.h"

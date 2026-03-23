@@ -65,5 +65,8 @@ target_link_libraries(
 	growl-thirdparty
 	${OPENGL_LIBRARIES}
 )
+if (GROWL_IMGUI)
+	target_link_libraries(growl-plugin-opengl PRIVATE growl-imgui)
+endif()
 target_compile_definitions(growl-plugin-opengl INTERFACE "GROWL_OPENGL")
 target_include_directories(growl-plugin-opengl PRIVATE ${OPENGL_INCLUDE_DIRS})

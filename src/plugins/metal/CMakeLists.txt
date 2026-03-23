@@ -29,6 +29,10 @@ target_link_libraries(
 	"-framework QuartzCore"
 )
 
+if (GROWL_IMGUI)
+	target_link_libraries(growl-plugin-metal PRIVATE growl-imgui)
+endif()
+
 target_compile_definitions(growl-plugin-metal INTERFACE "GROWL_METAL")
 if (GROWL_IOS)
 	target_compile_definitions(growl-plugin-metal PRIVATE "GROWL_IOS")

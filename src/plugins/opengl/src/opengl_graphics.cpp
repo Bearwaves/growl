@@ -8,7 +8,7 @@
 #include "opengl_error.h"
 
 #ifdef GROWL_IMGUI
-#include "growl/core/imgui.h"
+#include "growl/imgui/imgui.h"
 #include "imgui_impl_opengl3.h"
 #endif
 
