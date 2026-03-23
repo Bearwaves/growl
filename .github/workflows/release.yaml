@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "*.*.*"
+    branches:
+      - release-workflow
 
 permissions:
   contents: write
@@ -19,15 +21,14 @@ jobs:
         run: sudo apt-get update && sudo apt-get install libgl1-mesa-dev
       - name: Configure CMake
         run: cmake -S . -B build -G Ninja -DGROWL_CMD_ONLY=1
-        working-directory: example/test_app
       - name: Build
         run: ninja
-        working-directory: example/test_app/build
+        working-directory: build
       - name: Upload growl-cmd artifact
         uses: actions/upload-artifact@v6
         with:
           name: "growlcmd_linux"
-          path: "example/test_app/build/growl-cmd"
+          path: "build/growl-cmd"
           overwrite: true
 
   macOS:
@@ -40,15 +41,14 @@ jobs:
         run: |
           cmake -S . -B build -G Ninja \
             -DGROWL_CMD_ONLY=1 -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
-        working-directory: example/test_app
       - name: Build
         run: ninja
-        working-directory: example/test_app/build
+        working-directory: build
       - name: Upload growl-cmd artifact
         uses: actions/upload-artifact@v6
         with:
           name: "growlcmd_macos"
-          path: "example/test_app/build/growl-cmd"
+          path: "build/growl-cmd"
           overwrite: true
 
   windows:
@@ -59,15 +59,14 @@ jobs:
           submodules: recursive
       - name: Configure CMake
         run: cmake -S . -B build -DGROWL_CMD_ONLY=1
-        working-directory: example/test_app
       - name: Build
         run: cmake --build . --parallel 4
-        working-directory: example/test_app/build
+        working-directory: build
       - name: Upload growl-cmd artifact
         uses: actions/upload-artifact@v6
         with:
           name: "growlcmd_windows.exe"
-          path: "example/test_app/build/Debug/growl-cmd.exe"
+          path: "build/Debug/growl-cmd.exe"
           overwrite: true
 
   release:

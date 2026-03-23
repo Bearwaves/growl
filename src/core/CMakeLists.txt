@@ -45,6 +45,7 @@ target_link_libraries(growl-core
 	growl-thirdparty::msdfgen
 	growl-thirdparty::utf8cpp
 	growl-thirdparty::libunibreak
+	growl-thirdparty::zlib
 )
 
 if (GROWL_IMGUI)
