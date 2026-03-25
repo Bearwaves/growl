@@ -16,3 +16,7 @@ target_link_libraries(growl-scene
 	PRIVATE
 	growl-core
 )
+
+if (GROWL_IMGUI)
+	target_link_libraries(growl-scene PRIVATE growl-imgui)
+endif()
