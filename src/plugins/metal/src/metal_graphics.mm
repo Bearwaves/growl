@@ -105,6 +105,7 @@ Error MetalGraphicsAPI::setWindow(const Config& config) {
 	}
 	window = std::move(window_result.get());
 	swap_chain = static_cast<CAMetalLayer*>(window->getMetalLayer());
+	swap_chain.displaySyncEnabled = config.vsync;
 	swap_chain.pixelFormat = MTLPixelFormatBGRA8Unorm;
 	device = swap_chain.device;
 #ifdef GROWL_IMGUI

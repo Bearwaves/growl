@@ -95,6 +95,8 @@ Error OpenGLGraphicsAPI::setWindow(const Config& config) {
 	}
 #endif
 
+	window->setVSync(config.vsync);
+
 	GLint major, minor;
 	glGetIntegerv(GL_MAJOR_VERSION, &major);
 	glGetIntegerv(GL_MINOR_VERSION, &minor);
