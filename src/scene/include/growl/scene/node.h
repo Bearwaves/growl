@@ -162,6 +162,8 @@ private:
 	std::optional<Color> color;
 	std::function<bool(float x, float y)> click_listener;
 	bool click_listener_down = false;
+	float click_listener_down_world_x = 0;
+	float click_listener_down_world_y = 0;
 	bool event_cancelled = false;
 
 	void computeLocalTransform();

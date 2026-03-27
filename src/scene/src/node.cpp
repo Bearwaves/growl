@@ -479,8 +479,16 @@ bool Node::processClick(float x, float y, PointerEventType type) {
 			break;
 		case PointerEventType::Down:
 			click_listener_down = true;
+			click_listener_down_world_x = x;
+			click_listener_down_world_y = y;
 			handled = true;
 			break;
+		case PointerEventType::Move:
+			if (click_listener_down &&
+				!hit(
+					click_listener_down_world_x, click_listener_down_world_y)) {
+				click_listener_down = false;
+			}
 		default:
 			return false;
 		}
