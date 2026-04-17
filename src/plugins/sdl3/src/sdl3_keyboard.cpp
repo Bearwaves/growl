@@ -220,6 +220,8 @@ Key SDL3SystemAPI::getKey(SDL_KeyboardEvent& event) {
 		return Key::Escape;
 	case SDL_SCANCODE_BACKSPACE:
 		return Key::Backspace;
+	case SDL_SCANCODE_GRAVE:
+		return Key::Backtick;
 
 	default:
 		return Key::Unknown;
@@ -376,6 +378,8 @@ SDL_Scancode SDL3SystemAPI::getScancode(Key key) {
 		return SDL_SCANCODE_SPACE;
 	case Key::Escape:
 		return SDL_SCANCODE_ESCAPE;
+	case Key::Backtick:
+		return SDL_SCANCODE_GRAVE;
 
 	default:
 		return SDL_SCANCODE_UNKNOWN;

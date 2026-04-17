@@ -91,6 +91,7 @@ enum class Key {
 	Space,
 	Escape,
 	Backspace,
+	Backtick,
 
 	// Platform-specific
 	Back, // Android

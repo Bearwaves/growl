@@ -17,7 +17,7 @@ struct Config {
 	bool vsync = true;
 	bool show_status_bar = false;
 
-	Key debug_mode_key = Key::FunctionF12;
+	Key debug_mode_key = Key::Backtick;
 };
 
 } // namespace Growl
