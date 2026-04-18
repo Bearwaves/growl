@@ -1,14 +1,14 @@
 #include "growl/ui/menu.h"
-#include "growl/ui/menu_item.h"
+#include "growl/ui/widget.h"
 
 using Growl::Menu;
-using Growl::MenuItem;
+using Growl::Widget;
 
-MenuItem* Menu::getSelected() {
+Widget* Menu::getSelection() {
 	return selected;
 }
 
-void Menu::setSelected(MenuItem* selected) {
+void Menu::setSelection(Widget* selected) {
 	deselect();
 	this->selected = selected;
 	if (this->selected) {
@@ -29,16 +29,15 @@ void Menu::clearSelectable() {
 	items.clear();
 }
 
-void Menu::registerSelectable(MenuItem* item) {
+void Menu::registerSelectable(Widget* item) {
 	items.push_back(item);
 }
 
-void Menu::registerSelectable(std::vector<MenuItem*>& items) {
+void Menu::registerSelectable(std::vector<Widget*>& items) {
 	this->items.insert(this->items.end(), items.begin(), items.end());
 }
 
-void Menu::setEdges(
-	MenuItem* top, MenuItem* bottom, MenuItem* left, MenuItem* right) {
+void Menu::setEdges(Widget* top, Widget* bottom, Widget* left, Widget* right) {
 	this->top = top;
 	this->bottom = bottom;
 	this->leftmost = left;
@@ -50,7 +49,7 @@ void Menu::linkSelectableVertically() {
 		return;
 	}
 	for (int i = 0; i < items.size(); i++) {
-		items.at(i)->setDirections(
+		items.at(i)->setNavigationDirections(
 			i == 0 ? items.back() : items.at(i - 1),
 			i == items.size() - 1 ? items.front() : items.at(i + 1));
 	}
@@ -61,7 +60,7 @@ void Menu::linkSelectableHorizontally() {
 		return;
 	}
 	for (int i = 0; i < items.size(); i++) {
-		items.at(i)->setDirections(
+		items.at(i)->setNavigationDirections(
 			nullptr, nullptr, i == 0 ? items.back() : items.at(i - 1),
 			i == items.size() - 1 ? items.front() : items.at(i + 1));
 	}
@@ -74,8 +73,8 @@ void Menu::navigateUp() {
 	if (selected) {
 		selected->setSelected(false);
 	}
-	if (selected && selected->up) {
-		selected = selected->up;
+	if (selected && selected->up_nav) {
+		selected = selected->up_nav;
 	} else if (bottom) {
 		selected = bottom;
 	} else {
@@ -91,8 +90,8 @@ void Menu::navigateDown() {
 	if (selected) {
 		selected->setSelected(false);
 	}
-	if (selected && selected->down) {
-		selected = selected->down;
+	if (selected && selected->down_nav) {
+		selected = selected->down_nav;
 	} else if (top) {
 		selected = top;
 	} else {
@@ -107,8 +106,8 @@ void Menu::navigateLeft() {
 	}
 	if (selected) {
 		selected->setSelected(false);
-		if (selected->left) {
-			selected = selected->left;
+		if (selected->left_nav) {
+			selected = selected->left_nav;
 		}
 	} else if (rightmost) {
 		selected = rightmost;
@@ -124,8 +123,8 @@ void Menu::navigateRight() {
 	}
 	if (selected) {
 		selected->setSelected(false);
-		if (selected && selected->right) {
-			selected = selected->right;
+		if (selected && selected->right_nav) {
+			selected = selected->right_nav;
 		}
 	} else if (leftmost) {
 		selected = leftmost;

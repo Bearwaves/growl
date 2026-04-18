@@ -5,7 +5,12 @@
 
 namespace Growl {
 
+class Menu;
+
 class Widget : public Node {
+
+	friend class Menu;
+
 public:
 	Widget(std::string&& name);
 
@@ -50,14 +55,37 @@ public:
 		return 0;
 	}
 
+	virtual void setNavigationDirections(
+		Widget* up, Widget* down, Widget* left = nullptr,
+		Widget* right = nullptr) {
+		this->up_nav = up;
+		this->down_nav = down;
+		this->left_nav = left;
+		this->right_nav = right;
+	}
+
 protected:
 	virtual void layout() = 0;
 	virtual void
 	onDraw(Batch& batch, float parent_alpha, glm::mat4x4 transform) override;
 	void removeChild(int i) override;
 
+	virtual void setSelected(bool selected) {
+		this->nav_selected = selected;
+	}
+	virtual bool isSelected() {
+		return this->nav_selected;
+	}
+
 	bool invalidated = true;
 	std::vector<PackInfo> pack_info;
+
+private:
+	bool nav_selected = false;
+	Widget* up_nav = nullptr;
+	Widget* down_nav = nullptr;
+	Widget* left_nav = nullptr;
+	Widget* right_nav = nullptr;
 };
 
 Widget* nodeAsWidget(Node* node);

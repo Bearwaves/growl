@@ -4,25 +4,23 @@
 
 namespace Growl {
 
-class MenuItem;
+class Widget;
 
 class Menu {
 
-	friend class MenuItem;
-
 public:
-	MenuItem* getSelected();
-	virtual void setSelected(MenuItem* selected);
+	Widget* getSelection();
+	virtual void setSelection(Widget* selected);
 	virtual void deselect();
 	virtual void clearSelectable();
-	virtual void registerSelectable(MenuItem* item);
-	virtual void registerSelectable(std::vector<MenuItem*>& items);
-	std::vector<MenuItem*>& menuItems() {
+	virtual void registerSelectable(Widget* item);
+	virtual void registerSelectable(std::vector<Widget*>& items);
+	std::vector<Widget*>& menuItems() {
 		return items;
 	}
 	virtual void setEdges(
-		MenuItem* top, MenuItem* bottom, MenuItem* left = nullptr,
-		MenuItem* right = nullptr);
+		Widget* top, Widget* bottom, Widget* left = nullptr,
+		Widget* right = nullptr);
 	virtual void linkSelectableVertically();
 	virtual void linkSelectableHorizontally();
 
@@ -32,12 +30,12 @@ public:
 	virtual void navigateRight();
 
 private:
-	MenuItem* selected = nullptr;
-	MenuItem* top = nullptr;
-	MenuItem* bottom = nullptr;
-	MenuItem* leftmost = nullptr;
-	MenuItem* rightmost = nullptr;
-	std::vector<MenuItem*> items;
+	Widget* selected = nullptr;
+	Widget* top = nullptr;
+	Widget* bottom = nullptr;
+	Widget* leftmost = nullptr;
+	Widget* rightmost = nullptr;
+	std::vector<Widget*> items;
 };
 
 } // namespace Growl
