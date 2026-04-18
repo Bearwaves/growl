@@ -14,22 +14,22 @@ public:
 	MenuItem* getSelected();
 	virtual void setSelected(MenuItem* selected);
 	virtual void deselect();
-	virtual void clearItems();
-	virtual void addItem(MenuItem* item);
-	virtual void addItems(std::vector<MenuItem*>& items);
+	virtual void clearSelectable();
+	virtual void registerSelectable(MenuItem* item);
+	virtual void registerSelectable(std::vector<MenuItem*>& items);
 	std::vector<MenuItem*>& menuItems() {
 		return items;
 	}
 	virtual void setEdges(
 		MenuItem* top, MenuItem* bottom, MenuItem* left = nullptr,
 		MenuItem* right = nullptr);
-	virtual void joinItemsVertically();
-	virtual void joinItemsHorizontally();
+	virtual void linkSelectableVertically();
+	virtual void linkSelectableHorizontally();
 
-	virtual void up();
-	virtual void down();
-	virtual void left();
-	virtual void right();
+	virtual void navigateUp();
+	virtual void navigateDown();
+	virtual void navigateLeft();
+	virtual void navigateRight();
 
 private:
 	MenuItem* selected = nullptr;

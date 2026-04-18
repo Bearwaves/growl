@@ -23,17 +23,17 @@ void Menu::deselect() {
 	this->selected = nullptr;
 }
 
-void Menu::clearItems() {
+void Menu::clearSelectable() {
 	selected = nullptr;
 	setEdges(nullptr, nullptr, nullptr, nullptr);
 	items.clear();
 }
 
-void Menu::addItem(MenuItem* item) {
+void Menu::registerSelectable(MenuItem* item) {
 	items.push_back(item);
 }
 
-void Menu::addItems(std::vector<MenuItem*>& items) {
+void Menu::registerSelectable(std::vector<MenuItem*>& items) {
 	this->items.insert(this->items.end(), items.begin(), items.end());
 }
 
@@ -45,7 +45,7 @@ void Menu::setEdges(
 	this->rightmost = right;
 }
 
-void Menu::joinItemsVertically() {
+void Menu::linkSelectableVertically() {
 	if (items.empty()) {
 		return;
 	}
@@ -56,7 +56,7 @@ void Menu::joinItemsVertically() {
 	}
 }
 
-void Menu::joinItemsHorizontally() {
+void Menu::linkSelectableHorizontally() {
 	if (items.empty()) {
 		return;
 	}
@@ -67,7 +67,7 @@ void Menu::joinItemsHorizontally() {
 	}
 }
 
-void Menu::up() {
+void Menu::navigateUp() {
 	if (items.empty()) {
 		return;
 	}
@@ -84,7 +84,7 @@ void Menu::up() {
 	selected->setSelected(true);
 }
 
-void Menu::down() {
+void Menu::navigateDown() {
 	if (items.empty()) {
 		return;
 	}
@@ -101,7 +101,7 @@ void Menu::down() {
 	selected->setSelected(true);
 }
 
-void Menu::left() {
+void Menu::navigateLeft() {
 	if (items.empty()) {
 		return;
 	}
@@ -118,7 +118,7 @@ void Menu::left() {
 	selected->setSelected(true);
 }
 
-void Menu::right() {
+void Menu::navigateRight() {
 	if (items.empty()) {
 		return;
 	}
