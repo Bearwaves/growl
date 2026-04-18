@@ -24,6 +24,7 @@ public:
 		MenuItem* top, MenuItem* bottom, MenuItem* left = nullptr,
 		MenuItem* right = nullptr);
 	virtual void joinItemsVertically();
+	virtual void joinItemsHorizontally();
 
 	virtual void up();
 	virtual void down();

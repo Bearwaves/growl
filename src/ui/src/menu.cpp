@@ -56,6 +56,17 @@ void Menu::joinItemsVertically() {
 	}
 }
 
+void Menu::joinItemsHorizontally() {
+	if (items.empty()) {
+		return;
+	}
+	for (int i = 0; i < items.size(); i++) {
+		items.at(i)->setDirections(
+			nullptr, nullptr, i == 0 ? items.back() : items.at(i - 1),
+			i == items.size() - 1 ? items.front() : items.at(i + 1));
+	}
+}
+
 void Menu::up() {
 	if (items.empty()) {
 		return;
