@@ -97,6 +97,8 @@ public:
 	// of children.
 	void setZPriority(float z);
 
+	bool isDescendantOf(Node* node);
+
 protected:
 	Node* getParent() {
 		return parent;

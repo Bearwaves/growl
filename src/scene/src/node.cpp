@@ -207,6 +207,20 @@ void Node::setZPriority(float z) {
 	}
 }
 
+bool Node::isDescendantOf(Node* node) {
+	if (!node) {
+		return false;
+	}
+	Node* parent = getParent();
+	while (parent) {
+		if (parent == node) {
+			return true;
+		}
+		parent = parent->getParent();
+	}
+	return false;
+}
+
 void Node::cancelEvent() {
 	event_cancelled = true;
 	if (parent) {
