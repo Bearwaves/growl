@@ -22,9 +22,7 @@ class Node : public InputProcessor, public Entity {
 	friend Error initSceneGraph(API& api);
 
 public:
-	Node(std::string&& label) {
-		this->label = std::move(label);
-	}
+	Node(std::string&& label);
 
 	virtual ~Node() = default;
 	std::string& getLabel();

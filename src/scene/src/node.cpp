@@ -32,6 +32,12 @@ static const Color debug_rendering_colors[]{
 static constexpr int DEBUG_RENDERING_COLORS_COUNT = 5;
 #endif
 
+Node::Node(std::string&& label) {
+	this->label = std::move(label);
+	this->world_transform = glm::identity<glm::mat4x4>();
+	this->local_transform = glm::identity<glm::mat4x4>();
+}
+
 std::string& Node::getLabel() {
 	return label;
 }
