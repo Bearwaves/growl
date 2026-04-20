@@ -48,7 +48,7 @@ void Menu::linkSelectableVertically() {
 	if (items.empty()) {
 		return;
 	}
-	for (int i = 0; i < items.size(); i++) {
+	for (size_t i = 0; i < items.size(); i++) {
 		items.at(i)->setNavigationDirections(
 			i == 0 ? items.back() : items.at(i - 1),
 			i == items.size() - 1 ? items.front() : items.at(i + 1));
@@ -59,7 +59,7 @@ void Menu::linkSelectableHorizontally() {
 	if (items.empty()) {
 		return;
 	}
-	for (int i = 0; i < items.size(); i++) {
+	for (size_t i = 0; i < items.size(); i++) {
 		items.at(i)->setNavigationDirections(
 			nullptr, nullptr, i == 0 ? items.back() : items.at(i - 1),
 			i == items.size() - 1 ? items.front() : items.at(i + 1));
