@@ -42,6 +42,9 @@ void ScrollingMenu::scrollIfNeeded() {
 	}
 
 	Widget* item = getSelection();
+	if (!item->isDescendantOf(this)) {
+		return;
+	}
 	float threshold_v = this->threshold.evaluate(this);
 
 	glm::vec4 world_coords = item->localToWorldCoordinates(0, 0);
