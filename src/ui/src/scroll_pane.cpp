@@ -194,12 +194,16 @@ float ScrollPane::getScrollY() {
 }
 
 void ScrollPane::setScrollX(float x) {
+	panning = false;
+	velocity_x = 0.f;
 	for (auto child : getChildren()) {
 		child->setX(clampX(x));
 	}
 }
 
 void ScrollPane::setScrollY(float y) {
+	panning = false;
+	velocity_y = 0.f;
 	for (auto child : getChildren()) {
 		child->setY(clampY(-y));
 	}
