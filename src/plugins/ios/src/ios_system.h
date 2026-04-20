@@ -73,8 +73,9 @@ private:
 	void closeGameController(GCController* controller);
 	void handleControllerInput(
 		GCExtendedGamepad* gamepad, GCControllerElement* element);
-	void dispatchControllerEvent(
+	void dispatchControllerButtonEvent(
 		ControllerButton button, ControllerEventType event_type);
+	void dispatchControllerAxisEvent(ControllerAxis axis, float value);
 	ControllerEventType controllerEventTypeForButtonPressed(bool pressed);
 
 	API& api;

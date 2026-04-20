@@ -72,6 +72,10 @@ Error AndroidSystemAPI::init(const Config& config) {
 
 	GameActivityPointerAxes_enableAxis(AMOTION_EVENT_AXIS_HAT_X);
 	GameActivityPointerAxes_enableAxis(AMOTION_EVENT_AXIS_HAT_Y);
+	GameActivityPointerAxes_enableAxis(AMOTION_EVENT_AXIS_Z);
+	GameActivityPointerAxes_enableAxis(AMOTION_EVENT_AXIS_RZ);
+	GameActivityPointerAxes_enableAxis(AMOTION_EVENT_AXIS_BRAKE);
+	GameActivityPointerAxes_enableAxis(AMOTION_EVENT_AXIS_GAS);
 
 	if (auto err = Paddleboat_init(
 			getJNIEnv(), android_state->activity->javaGameActivity);
@@ -337,6 +341,96 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 						this_api.onEvent(e);
 					}
 				}
+
+				float lx = GameActivityPointerAxes_getAxisValue(
+					&event->pointers[0], AMOTION_EVENT_AXIS_X);
+				float ly = GameActivityPointerAxes_getAxisValue(
+					&event->pointers[0], AMOTION_EVENT_AXIS_Y);
+				float rx = GameActivityPointerAxes_getAxisValue(
+					&event->pointers[0], AMOTION_EVENT_AXIS_Z);
+				float ry = GameActivityPointerAxes_getAxisValue(
+					&event->pointers[0], AMOTION_EVENT_AXIS_RZ);
+				float lt = GameActivityPointerAxes_getAxisValue(
+					&event->pointers[0], AMOTION_EVENT_AXIS_BRAKE);
+				float rt = GameActivityPointerAxes_getAxisValue(
+					&event->pointers[0], AMOTION_EVENT_AXIS_GAS);
+				// TODO process history events
+				if (std::abs(lx) <
+					this_api.controller_info->leftStickPrecision.stickFlatX) {
+					lx = 0;
+				}
+				if (std::abs(ly) <
+					this_api.controller_info->leftStickPrecision.stickFlatY) {
+					ly = 0;
+				}
+				if (std::abs(rx) <
+					this_api.controller_info->rightStickPrecision.stickFlatX) {
+					rx = 0;
+				}
+				if (std::abs(ry) <
+					this_api.controller_info->rightStickPrecision.stickFlatY) {
+					ry = 0;
+				}
+
+				if (lx != this_api.last_lx) {
+					this_api.last_lx = lx;
+					InputEvent e{
+						InputEventType::Controller,
+						InputControllerEvent{
+							ControllerEventType::AxisMoved,
+							ControllerButton::Unknown, ControllerAxis::LeftX,
+							lx}};
+					this_api.onEvent(e);
+				}
+				if (ly != this_api.last_ly) {
+					this_api.last_ly = ly;
+					InputEvent e{
+						InputEventType::Controller,
+						InputControllerEvent{
+							ControllerEventType::AxisMoved,
+							ControllerButton::Unknown, ControllerAxis::LeftY,
+							ly}};
+					this_api.onEvent(e);
+				}
+				if (rx != this_api.last_rx) {
+					this_api.last_rx = rx;
+					InputEvent e{
+						InputEventType::Controller,
+						InputControllerEvent{
+							ControllerEventType::AxisMoved,
+							ControllerButton::Unknown, ControllerAxis::RightX,
+							rx}};
+					this_api.onEvent(e);
+				}
+				if (ry != this_api.last_ry) {
+					this_api.last_ry = ry;
+					InputEvent e{
+						InputEventType::Controller,
+						InputControllerEvent{
+							ControllerEventType::AxisMoved,
+							ControllerButton::Unknown, ControllerAxis::RightY,
+							ry}};
+					this_api.onEvent(e);
+				}
+				if (lt != this_api.last_lt) {
+					this_api.last_lt = lt;
+					InputEvent e{
+						InputEventType::Controller,
+						InputControllerEvent{
+							ControllerEventType::AxisMoved,
+							ControllerButton::Unknown, ControllerAxis::LT, lt}};
+					this_api.onEvent(e);
+				}
+				if (rt != this_api.last_rt) {
+					this_api.last_rt = rt;
+					InputEvent e{
+						InputEventType::Controller,
+						InputControllerEvent{
+							ControllerEventType::AxisMoved,
+							ControllerButton::Unknown, ControllerAxis::RT, rt}};
+					this_api.onEvent(e);
+				}
+
 				break;
 			}
 			}
@@ -706,19 +800,20 @@ void AndroidSystemAPI::controllerStatusCallback(
 	}
 	switch (controller_status) {
 	case PADDLEBOAT_CONTROLLER_JUST_CONNECTED: {
-		Paddleboat_Controller_Info info;
-		auto err = Paddleboat_getControllerInfo(controller_index, &info);
+		api->controller_info = std::make_unique<Paddleboat_Controller_Info>();
+		auto err = Paddleboat_getControllerInfo(
+			controller_index, api->controller_info.get());
 		if (err) {
 			api->log(
 				LogLevel::Error, "AndroidSystemAPI",
 				"Error getting controller info: {}", static_cast<int>(err));
 			break;
 		}
-		api->controller_haptics =
-			std::make_unique<AndroidHaptics>(api->android_state, &info);
+		api->controller_haptics = std::make_unique<AndroidHaptics>(
+			api->android_state, api->controller_info.get());
 		api->log(
 			"AndroidSystemAPI", "Connected new controller with device ID {}",
-			info.deviceId);
+			api->controller_info->deviceId);
 		InputEvent e{
 			InputEventType::Controller,
 			InputControllerEvent{ControllerEventType::Connected}};

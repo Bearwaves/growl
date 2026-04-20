@@ -98,6 +98,13 @@ private:
 	std::unique_ptr<AndroidPreferences> preferences_local;
 	std::unique_ptr<AndroidPreferences> preferences_shared;
 	int dpad_state = 0;
+	float last_lx = 0;
+	float last_ly = 0;
+	float last_rx = 0;
+	float last_ry = 0;
+	float last_rt = 0;
+	float last_lt = 0;
+	std::unique_ptr<Paddleboat_Controller_Info> controller_info;
 	std::unique_ptr<AndroidHaptics> controller_haptics = nullptr;
 	std::unique_ptr<AndroidHaptics> device_haptics;
 	GameTextInputState text_input_state;

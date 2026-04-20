@@ -1,16 +1,20 @@
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_gamepad.h"
+#include "SDL3/SDL_joystick.h"
 #include "growl/core/haptics.h"
 #include "growl/core/input/controller.h"
 #include "growl/core/input/event.h"
 #include "sdl3_haptics.h"
 #include "sdl3_system.h"
 
+using Growl::ControllerAxis;
 using Growl::ControllerButton;
 using Growl::ControllerEventType;
 using Growl::HapticsDevice;
 using Growl::SDL3Controller;
 using Growl::SDL3SystemAPI;
+
+constexpr int JOYSTICK_DEADZONE = 8000;
 
 void SDL3SystemAPI::openGameController(int id) {
 	auto sdl_controller = SDL_OpenGamepad(id);
@@ -29,13 +33,25 @@ bool SDL3SystemAPI::closeGameController(int id) {
 }
 
 void SDL3SystemAPI::handleControllerEvent(SDL_Event& event) {
-	if (inputProcessor) {
-		InputEvent e{
-			InputEventType::Controller,
-			InputControllerEvent{
-				getControllerEventType(event), getButton(event)}};
-		inputProcessor->onEvent(e);
+	if (!inputProcessor) {
+		return;
 	}
+	InputControllerEvent controller_event;
+	controller_event.type = getControllerEventType(event);
+	if (controller_event.type == ControllerEventType::AxisMoved) {
+		controller_event.axis = getAxis(event);
+		auto value = event.gaxis.value;
+		controller_event.value =
+			value < -JOYSTICK_DEADZONE
+				? -static_cast<float>(value) / SDL_JOYSTICK_AXIS_MIN
+			: value > JOYSTICK_DEADZONE
+				? static_cast<float>(value) / SDL_JOYSTICK_AXIS_MAX
+				: 0.f;
+	} else {
+		controller_event.button = getButton(event);
+	}
+	InputEvent e{InputEventType::Controller, controller_event};
+	inputProcessor->onEvent(e);
 }
 
 SDL3Controller::SDL3Controller(
@@ -66,6 +82,8 @@ ControllerEventType SDL3SystemAPI::getControllerEventType(SDL_Event& event) {
 		return ControllerEventType::Connected;
 	case SDL_EVENT_GAMEPAD_REMOVED:
 		return ControllerEventType::Disconnected;
+	case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+		return ControllerEventType::AxisMoved;
 	default:
 		return ControllerEventType::Unknown;
 	}
@@ -109,5 +127,24 @@ ControllerButton SDL3SystemAPI::getButton(SDL_Event& event) {
 		return ControllerButton::Touchpad;
 	default:
 		return ControllerButton::Unknown;
+	}
+}
+
+ControllerAxis SDL3SystemAPI::getAxis(SDL_Event& event) {
+	switch (event.gaxis.axis) {
+	case SDL_GAMEPAD_AXIS_LEFTX:
+		return ControllerAxis::LeftX;
+	case SDL_GAMEPAD_AXIS_LEFTY:
+		return ControllerAxis::LeftY;
+	case SDL_GAMEPAD_AXIS_RIGHTX:
+		return ControllerAxis::RightX;
+	case SDL_GAMEPAD_AXIS_RIGHTY:
+		return ControllerAxis::RightY;
+	case SDL_GAMEPAD_AXIS_LEFT_TRIGGER:
+		return ControllerAxis::LT;
+	case SDL_GAMEPAD_AXIS_RIGHT_TRIGGER:
+		return ControllerAxis::RT;
+	default:
+		return ControllerAxis::Unknown;
 	}
 }

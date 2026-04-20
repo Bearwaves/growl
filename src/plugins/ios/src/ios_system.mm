@@ -289,33 +289,59 @@ void IOSSystemAPI::openGameController(GCController* controller) {
 		controller.extendedGamepad.dpad.down.valueChangedHandler =
 			^(GCControllerButtonInput* _Nonnull button, float value,
 			  BOOL pressed) {
-			  dispatchControllerEvent(
+			  dispatchControllerButtonEvent(
 				  ControllerButton::DpadDown,
 				  controllerEventTypeForButtonPressed(pressed));
 			};
 		controller.extendedGamepad.dpad.up.valueChangedHandler =
 			^(GCControllerButtonInput* _Nonnull button, float value,
 			  BOOL pressed) {
-			  dispatchControllerEvent(
+			  dispatchControllerButtonEvent(
 				  ControllerButton::DpadUp,
 				  controllerEventTypeForButtonPressed(pressed));
 			};
 		controller.extendedGamepad.dpad.left.valueChangedHandler =
 			^(GCControllerButtonInput* _Nonnull button, float value,
 			  BOOL pressed) {
-			  dispatchControllerEvent(
+			  dispatchControllerButtonEvent(
 				  ControllerButton::DpadLeft,
 				  controllerEventTypeForButtonPressed(pressed));
 			};
 		controller.extendedGamepad.dpad.right.valueChangedHandler =
 			^(GCControllerButtonInput* _Nonnull button, float value,
 			  BOOL pressed) {
-			  dispatchControllerEvent(
+			  dispatchControllerButtonEvent(
 				  ControllerButton::DpadRight,
 				  controllerEventTypeForButtonPressed(pressed));
 			};
+		controller.extendedGamepad.leftThumbstick.xAxis.valueChangedHandler =
+			^(GCControllerAxisInput* _Nonnull axis, float value) {
+			  dispatchControllerAxisEvent(ControllerAxis::LeftX, value);
+			};
+		controller.extendedGamepad.leftThumbstick.yAxis.valueChangedHandler =
+			^(GCControllerAxisInput* _Nonnull axis, float value) {
+			  dispatchControllerAxisEvent(ControllerAxis::LeftY, -value);
+			};
+		controller.extendedGamepad.rightThumbstick.xAxis.valueChangedHandler =
+			^(GCControllerAxisInput* _Nonnull axis, float value) {
+			  dispatchControllerAxisEvent(ControllerAxis::RightX, value);
+			};
+		controller.extendedGamepad.rightThumbstick.yAxis.valueChangedHandler =
+			^(GCControllerAxisInput* _Nonnull axis, float value) {
+			  dispatchControllerAxisEvent(ControllerAxis::RightY, -value);
+			};
+		controller.extendedGamepad.leftTrigger.valueChangedHandler =
+			^(GCControllerButtonInput* _Nonnull button, float value,
+			  BOOL pressed) {
+			  dispatchControllerAxisEvent(ControllerAxis::LT, value);
+			};
+		controller.extendedGamepad.leftTrigger.valueChangedHandler =
+			^(GCControllerButtonInput* _Nonnull button, float value,
+			  BOOL pressed) {
+			  dispatchControllerAxisEvent(ControllerAxis::RT, value);
+			};
 	}
-	dispatchControllerEvent(
+	dispatchControllerButtonEvent(
 		ControllerButton::Unknown, ControllerEventType::Connected);
 }
 
@@ -323,7 +349,7 @@ void IOSSystemAPI::closeGameController(GCController* controller) {
 	this->log(
 		"IOSSystemAPI", "Disconnected controller: {}",
 		[controller.productCategory UTF8String]);
-	dispatchControllerEvent(
+	dispatchControllerButtonEvent(
 		ControllerButton::Unknown, ControllerEventType::Disconnected);
 }
 
@@ -333,75 +359,75 @@ void IOSSystemAPI::handleControllerInput(
 		return;
 	}
 	if (element == gamepad.buttonA) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::A,
 			controllerEventTypeForButtonPressed(gamepad.buttonA.pressed));
 	}
 	if (element == gamepad.buttonB) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::B,
 			controllerEventTypeForButtonPressed(gamepad.buttonB.pressed));
 	}
 	if (element == gamepad.buttonX) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::X,
 			controllerEventTypeForButtonPressed(gamepad.buttonX.pressed));
 	}
 	if (element == gamepad.buttonY) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::Y,
 			controllerEventTypeForButtonPressed(gamepad.buttonY.pressed));
 	}
 	if (element == gamepad.leftShoulder) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::LB,
 			controllerEventTypeForButtonPressed(gamepad.leftShoulder.pressed));
 	}
 	if (element == gamepad.rightShoulder) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::RB,
 			controllerEventTypeForButtonPressed(gamepad.rightShoulder.pressed));
 	}
 	if (element == gamepad.leftTrigger) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::LT,
 			controllerEventTypeForButtonPressed(gamepad.leftTrigger.pressed));
 	}
 	if (element == gamepad.rightTrigger) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::RT,
 			controllerEventTypeForButtonPressed(gamepad.rightTrigger.pressed));
 	}
 	if (element == gamepad.leftThumbstickButton) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::LeftStick,
 			controllerEventTypeForButtonPressed(
 				gamepad.leftThumbstickButton.pressed));
 	}
 	if (element == gamepad.rightThumbstickButton) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::RightStick,
 			controllerEventTypeForButtonPressed(
 				gamepad.rightThumbstickButton.pressed));
 	}
 	if (element == gamepad.buttonMenu) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::Start,
 			controllerEventTypeForButtonPressed(gamepad.buttonMenu.pressed));
 	}
 	if (element == gamepad.buttonOptions) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::Select,
 			controllerEventTypeForButtonPressed(gamepad.buttonOptions.pressed));
 	}
 	if (element == gamepad.buttonHome) {
-		return dispatchControllerEvent(
+		return dispatchControllerButtonEvent(
 			ControllerButton::Home,
 			controllerEventTypeForButtonPressed(gamepad.buttonHome.pressed));
 	}
 }
 
-void IOSSystemAPI::dispatchControllerEvent(
+void IOSSystemAPI::dispatchControllerButtonEvent(
 	ControllerButton button, ControllerEventType event_type) {
 	if (!inputProcessor) {
 		return;
@@ -409,6 +435,19 @@ void IOSSystemAPI::dispatchControllerEvent(
 	auto event = InputEvent{
 		InputEventType::Controller,
 		InputControllerEvent{.button = button, .type = event_type}};
+	inputProcessor->onEvent(event);
+}
+
+void IOSSystemAPI::dispatchControllerAxisEvent(
+	ControllerAxis axis, float value) {
+	if (!inputProcessor) {
+		return;
+	}
+	auto event = InputEvent(
+		InputEventType::Controller, InputControllerEvent{
+										.type = ControllerEventType::AxisMoved,
+										.value = value,
+										.axis = axis});
 	inputProcessor->onEvent(event);
 }
 

@@ -98,6 +98,7 @@ private:
 
 	ControllerEventType getControllerEventType(SDL_Event& event);
 	ControllerButton getButton(SDL_Event& event);
+	ControllerAxis getAxis(SDL_Event& event);
 	void openGameController(int id);
 	bool closeGameController(int id);
 
