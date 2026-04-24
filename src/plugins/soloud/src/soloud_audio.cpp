@@ -100,7 +100,7 @@ SoLoudAudioAPI::createStreamFromBundle(AssetsBundle& bundle, std::string name) {
 	}
 	auto file = std::move(bundle_file_result.get());
 	auto stream = std::make_unique<SoLoud::WavStream>();
-	if (int error = stream->loadFile(file.get())) {
+	if (int error = stream->loadFileToMem(file.get())) {
 		return Error(
 			std::make_unique<AssetsError>(
 				"Failed to load stream: got SoLoud error code " +
