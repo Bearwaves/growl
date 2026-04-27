@@ -10,6 +10,7 @@ set(SOURCES
 	"src/android_window.cpp"
 	"src/android_preferences.cpp"
 	"src/android_haptics.cpp"
+	"src/android_controller.cpp"
 )
 
 set(HEADERS

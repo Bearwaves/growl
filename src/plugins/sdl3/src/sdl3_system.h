@@ -5,6 +5,7 @@
 #include "SDL3/SDL_gamepad.h"
 #include "SDL3/SDL_log.h"
 #include "growl/core/api/api_internal.h"
+#include "growl/core/input/controller.h"
 #include "sdl3_haptics.h"
 #include "sdl3_preferences.h"
 #include <memory>
@@ -23,12 +24,12 @@ enum class Key;
 enum class KeyEventType;
 enum class LogLevel;
 
-class SDL3Controller {
+class SDL3Controller : public Growl::Controller {
 public:
 	SDL3Controller(SystemAPI* system, SDL_Gamepad* controller, int id);
 	~SDL3Controller();
-	HapticsDevice* getHaptics();
-	int getId() {
+	HapticsDevice* getHaptics() override;
+	int getId() override {
 		return id;
 	}
 
@@ -83,6 +84,10 @@ public:
 
 	bool isControllerConnected() override;
 
+	std::map<int, std::unique_ptr<Controller>>& getControllers() override {
+		return controllers;
+	}
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
@@ -109,7 +114,7 @@ private:
 
 	API& api;
 	bool running;
-	std::unique_ptr<SDL3Controller> controller;
+	std::map<int, std::unique_ptr<Controller>> controllers;
 	int resize_width = 0;
 	int resize_height = 0;
 	SDL_Scancode debug_mode_key;

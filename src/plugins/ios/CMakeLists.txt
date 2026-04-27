@@ -10,6 +10,7 @@ set(SOURCES
 	"src/ios_preferences.mm"
 	"src/ios_haptics.mm"
 	"src/ios_shareable_image.mm"
+	"src/ios_controller.mm"
 
 	"src/ios_network.mm"
 	"src/ios_http.mm"

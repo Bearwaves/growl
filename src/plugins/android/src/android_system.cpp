@@ -77,6 +77,7 @@ Error AndroidSystemAPI::init(const Config& config) {
 	GameActivityPointerAxes_enableAxis(AMOTION_EVENT_AXIS_BRAKE);
 	GameActivityPointerAxes_enableAxis(AMOTION_EVENT_AXIS_GAS);
 
+	memset(controller_ids, 0, sizeof(controller_ids));
 	if (auto err = Paddleboat_init(
 			getJNIEnv(), android_state->activity->javaGameActivity);
 		err != PADDLEBOAT_NO_ERROR) {
@@ -277,6 +278,15 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 			}
 
 			case AINPUT_SOURCE_CLASS_JOYSTICK: {
+				if (!this_api.controllers.count(event->deviceId)) {
+					this_api.log(
+						"AndroidSystem",
+						"Got joystick event for unknown controller {}",
+						event->deviceId);
+					break;
+				}
+				AndroidController* controller = static_cast<AndroidController*>(
+					this_api.controllers[event->deviceId].get());
 				int dpad_state = 0;
 				float x = GameActivityPointerAxes_getAxisValue(
 					&event->pointers[0], AMOTION_EVENT_AXIS_HAT_X);
@@ -293,14 +303,15 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 					dpad_state |= DPAD_DOWN_MASK;
 				}
 
-				int dpad_delta = (dpad_state ^ this_api.dpad_state);
+				int dpad_delta = (dpad_state ^ controller->dpad_state);
 				if (dpad_delta) {
-					this_api.dpad_state = dpad_state;
+					controller->dpad_state = dpad_state;
 					if (dpad_delta & DPAD_UP_MASK) {
 						bool down = ((dpad_state & DPAD_UP_MASK) != 0);
 						InputEvent e{
 							InputEventType::Controller,
 							InputControllerEvent{
+								controller->getId(),
 								down ? ControllerEventType::ButtonDown
 									 : ControllerEventType::ButtonUp,
 								ControllerButton::DpadUp,
@@ -312,6 +323,7 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 						InputEvent e{
 							InputEventType::Controller,
 							InputControllerEvent{
+								controller->getId(),
 								down ? ControllerEventType::ButtonDown
 									 : ControllerEventType::ButtonUp,
 								ControllerButton::DpadDown,
@@ -323,6 +335,7 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 						InputEvent e{
 							InputEventType::Controller,
 							InputControllerEvent{
+								controller->getId(),
 								down ? ControllerEventType::ButtonDown
 									 : ControllerEventType::ButtonUp,
 								ControllerButton::DpadLeft,
@@ -334,6 +347,7 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 						InputEvent e{
 							InputEventType::Controller,
 							InputControllerEvent{
+								controller->getId(),
 								down ? ControllerEventType::ButtonDown
 									 : ControllerEventType::ButtonUp,
 								ControllerButton::DpadRight,
@@ -356,77 +370,77 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 					&event->pointers[0], AMOTION_EVENT_AXIS_GAS);
 				// TODO process history events
 				if (std::abs(lx) <
-					this_api.controller_info->leftStickPrecision.stickFlatX) {
+					controller->info->leftStickPrecision.stickFlatX) {
 					lx = 0;
 				}
 				if (std::abs(ly) <
-					this_api.controller_info->leftStickPrecision.stickFlatY) {
+					controller->info->leftStickPrecision.stickFlatY) {
 					ly = 0;
 				}
 				if (std::abs(rx) <
-					this_api.controller_info->rightStickPrecision.stickFlatX) {
+					controller->info->rightStickPrecision.stickFlatX) {
 					rx = 0;
 				}
 				if (std::abs(ry) <
-					this_api.controller_info->rightStickPrecision.stickFlatY) {
+					controller->info->rightStickPrecision.stickFlatY) {
 					ry = 0;
 				}
 
-				if (lx != this_api.last_lx) {
-					this_api.last_lx = lx;
+				if (lx != controller->last_lx) {
+					controller->last_lx = lx;
 					InputEvent e{
 						InputEventType::Controller,
 						InputControllerEvent{
-							ControllerEventType::AxisMoved,
+							controller->getId(), ControllerEventType::AxisMoved,
 							ControllerButton::Unknown, ControllerAxis::LeftX,
 							lx}};
 					this_api.onEvent(e);
 				}
-				if (ly != this_api.last_ly) {
-					this_api.last_ly = ly;
+				if (ly != controller->last_ly) {
+					controller->last_ly = ly;
 					InputEvent e{
 						InputEventType::Controller,
 						InputControllerEvent{
-							ControllerEventType::AxisMoved,
+							controller->getId(), ControllerEventType::AxisMoved,
 							ControllerButton::Unknown, ControllerAxis::LeftY,
 							ly}};
 					this_api.onEvent(e);
 				}
-				if (rx != this_api.last_rx) {
-					this_api.last_rx = rx;
+				if (rx != controller->last_rx) {
+					controller->last_rx = rx;
 					InputEvent e{
 						InputEventType::Controller,
 						InputControllerEvent{
-							ControllerEventType::AxisMoved,
+							controller->getId(), ControllerEventType::AxisMoved,
 							ControllerButton::Unknown, ControllerAxis::RightX,
 							rx}};
 					this_api.onEvent(e);
 				}
-				if (ry != this_api.last_ry) {
-					this_api.last_ry = ry;
+				if (ry != controller->last_ry) {
+					controller->last_ry = ry;
 					InputEvent e{
 						InputEventType::Controller,
 						InputControllerEvent{
-							ControllerEventType::AxisMoved,
+							controller->getId(), ControllerEventType::AxisMoved,
 							ControllerButton::Unknown, ControllerAxis::RightY,
 							ry}};
 					this_api.onEvent(e);
 				}
-				if (lt != this_api.last_lt) {
-					this_api.last_lt = lt;
+				if (lt != controller->last_lt) {
+					controller->last_lt = lt;
 					InputEvent e{
 						InputEventType::Controller,
 						InputControllerEvent{
-							ControllerEventType::AxisMoved,
+							controller->getId(), ControllerEventType::AxisMoved,
 							ControllerButton::Unknown, ControllerAxis::LT, lt}};
 					this_api.onEvent(e);
 				}
-				if (rt != this_api.last_rt) {
-					this_api.last_rt = rt;
+				if (rt != controller->last_rt) {
+					controller->last_rt = rt;
 					InputEvent e{
 						InputEventType::Controller,
 						InputControllerEvent{
-							ControllerEventType::AxisMoved,
+							controller->getId(), ControllerEventType::AxisMoved,
 							ControllerButton::Unknown, ControllerAxis::RT, rt}};
 					this_api.onEvent(e);
 				}
@@ -443,6 +457,15 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 			auto* event = &ib->keyEvents[i];
 			auto button = getControllerButton(event->keyCode);
 			if (button != ControllerButton::Unknown) {
+				if (!this_api.controllers.count(event->deviceId)) {
+					this_api.log(
+						"AndroidSystem",
+						"Got button event for unknown controller {}",
+						event->deviceId);
+					continue;
+				}
+				AndroidController* controller = static_cast<AndroidController*>(
+					this_api.controllers[event->deviceId].get());
 				auto type = getControllerEventType(event->action);
 				if (type != ControllerEventType::ButtonDown &&
 					type != ControllerEventType::ButtonUp) {
@@ -450,7 +473,7 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 				}
 				InputEvent e{
 					InputEventType::Controller,
-					InputControllerEvent{type, button}};
+					InputControllerEvent{controller->getId(), type, button}};
 				this_api.onEvent(e);
 				continue;
 			}
@@ -618,9 +641,6 @@ AndroidSystemAPI::createWindow(const Config& config) {
 void AndroidSystemAPI::setLogLevel(LogLevel log_level) {}
 
 HapticsDevice* AndroidSystemAPI::getHaptics() {
-	if (controller_haptics) {
-		return controller_haptics.get();
-	}
 	return device_haptics.get();
 }
 
@@ -736,7 +756,7 @@ void AndroidSystemAPI::setStatusBarVisible(bool visible) {
 }
 
 bool AndroidSystemAPI::isControllerConnected() {
-	return controller_haptics != nullptr;
+	return !controllers.empty();
 }
 
 void AndroidSystemAPI::logInternal(
@@ -794,40 +814,43 @@ void AndroidSystemAPI::controllerStatusCallback(
 	const int32_t controller_index,
 	const Paddleboat_ControllerStatus controller_status, void* userdata) {
 	AndroidSystemAPI* api = static_cast<AndroidSystemAPI*>(userdata);
-	if (controller_index > 0) {
-		// We don't support multiple controllers yet.
-		return;
-	}
 	switch (controller_status) {
 	case PADDLEBOAT_CONTROLLER_JUST_CONNECTED: {
-		api->controller_info = std::make_unique<Paddleboat_Controller_Info>();
+		auto controller_info = std::make_unique<Paddleboat_Controller_Info>();
 		auto err = Paddleboat_getControllerInfo(
-			controller_index, api->controller_info.get());
+			controller_index, controller_info.get());
 		if (err) {
 			api->log(
 				LogLevel::Error, "AndroidSystemAPI",
 				"Error getting controller info: {}", static_cast<int>(err));
 			break;
 		}
-		api->controller_haptics = std::make_unique<AndroidHaptics>(
-			api->android_state, api->controller_info.get());
+		int new_id = controller_info->deviceId;
+		api->controllers[new_id] = std::make_unique<AndroidController>(
+			api->android_state, new_id, std::move(controller_info));
+		api->controller_ids[controller_index] = new_id;
 		api->log(
 			"AndroidSystemAPI", "Connected new controller with device ID {}",
-			api->controller_info->deviceId);
+			new_id);
 		InputEvent e{
 			InputEventType::Controller,
-			InputControllerEvent{ControllerEventType::Connected}};
+			InputControllerEvent{new_id, ControllerEventType::Connected}};
 		api->onEvent(e);
 		break;
 	}
 	case PADDLEBOAT_CONTROLLER_JUST_DISCONNECTED: {
-		api->controller_haptics.reset();
-		api->log(
-			"AndroidSystemAPI", "Controller {} disconnected", controller_index);
-		InputEvent e{
-			InputEventType::Controller,
-			InputControllerEvent{ControllerEventType::Disconnected}};
-		api->onEvent(e);
+		if (int controller_id = api->controller_ids[controller_index]) {
+			api->controller_ids[controller_index] = 0;
+			api->controllers.erase(controller_id);
+			api->log(
+				"AndroidSystemAPI", "Controller {} disconnected",
+				controller_id);
+			InputEvent e{
+				InputEventType::Controller,
+				InputControllerEvent{
+					controller_id, ControllerEventType::Disconnected}};
+			api->onEvent(e);
+		}
 		break;
 	}
 	default:

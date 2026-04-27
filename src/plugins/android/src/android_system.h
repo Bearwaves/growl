@@ -14,6 +14,29 @@ namespace Growl {
 
 class Game;
 
+class AndroidController : public Controller {
+public:
+	explicit AndroidController(
+		android_app* app, int id,
+		std::unique_ptr<Paddleboat_Controller_Info> info);
+	HapticsDevice* getHaptics() override;
+	int getId() override {
+		return id;
+	}
+
+	int id;
+	std::unique_ptr<AndroidHaptics> haptics;
+	std::unique_ptr<Paddleboat_Controller_Info> info;
+
+	int dpad_state = 0;
+	float last_lx = 0;
+	float last_ly = 0;
+	float last_rx = 0;
+	float last_ry = 0;
+	float last_rt = 0;
+	float last_lt = 0;
+};
+
 class AndroidSystemAPI : public SystemAPIInternal {
 public:
 	explicit AndroidSystemAPI(API& api, android_app* android_state, Game* game)
@@ -70,6 +93,10 @@ public:
 
 	bool isControllerConnected() override;
 
+	std::map<int, std::unique_ptr<Controller>>& getControllers() override {
+		return controllers;
+	}
+
 private:
 	void
 	logInternal(LogLevel log_level, std::string tag, std::string msg) override;
@@ -97,16 +124,9 @@ private:
 	int resize_height = 0;
 	std::unique_ptr<AndroidPreferences> preferences_local;
 	std::unique_ptr<AndroidPreferences> preferences_shared;
-	int dpad_state = 0;
-	float last_lx = 0;
-	float last_ly = 0;
-	float last_rx = 0;
-	float last_ry = 0;
-	float last_rt = 0;
-	float last_lt = 0;
-	std::unique_ptr<Paddleboat_Controller_Info> controller_info;
-	std::unique_ptr<AndroidHaptics> controller_haptics = nullptr;
 	std::unique_ptr<AndroidHaptics> device_haptics;
+	int controller_ids[PADDLEBOAT_MAX_CONTROLLERS];
+	std::map<int, std::unique_ptr<Controller>> controllers;
 	GameTextInputState text_input_state;
 	std::string text_input_current_text;
 };

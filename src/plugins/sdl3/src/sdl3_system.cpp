@@ -202,7 +202,7 @@ void SDL3SystemAPI::stop() {
 }
 
 void SDL3SystemAPI::dispose() {
-	controller = nullptr;
+	controllers.clear();
 	local_preferences = nullptr;
 	shared_preferences = nullptr;
 	SDL_Quit();
@@ -267,11 +267,9 @@ Preferences& SDL3SystemAPI::getSharedPreferences() {
 	return *shared_preferences;
 }
 
+// SDL3 haptics are provided by controllers.
 HapticsDevice* SDL3SystemAPI::getHaptics() {
-	if (!controller) {
-		return nullptr;
-	}
-	return controller->getHaptics();
+	return nullptr;
 }
 
 void SDL3SystemAPI::logInternal(
@@ -429,7 +427,7 @@ void SDL3SystemAPI::shareImage(
 }
 
 bool SDL3SystemAPI::isControllerConnected() {
-	return !!controller;
+	return !controllers.empty();
 }
 
 SDL_Window* SDL3SystemAPI::getNativeWindow() {

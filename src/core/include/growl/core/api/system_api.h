@@ -6,6 +6,7 @@
 #include "growl/core/error.h"
 #include "growl/core/input/processor.h"
 #include "growl/core/rect.h"
+#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -17,6 +18,7 @@ class File;
 class Image;
 class Window;
 class Preferences;
+class Controller;
 class HapticsDevice;
 
 class SystemAPI {
@@ -92,9 +94,9 @@ public:
 	}
 	virtual void setStatusBarVisible(bool visible) {}
 
-	virtual bool isControllerConnected() {
-		return false;
-	}
+	virtual bool isControllerConnected() = 0;
+
+	virtual std::map<int, std::unique_ptr<Controller>>& getControllers() = 0;
 
 protected:
 	virtual void

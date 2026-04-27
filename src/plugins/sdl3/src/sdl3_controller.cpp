@@ -18,18 +18,14 @@ constexpr int JOYSTICK_DEADZONE = 8000;
 
 void SDL3SystemAPI::openGameController(int id) {
 	auto sdl_controller = SDL_OpenGamepad(id);
-	log("SDL3SystemAPI", "Got controller: {}",
+	log("SDL3SystemAPI", "Got controller: [{}] {}", id,
 		SDL_GetGamepadName(sdl_controller));
-	controller = std::make_unique<SDL3Controller>(this, sdl_controller, id);
+	controllers[id] =
+		std::make_unique<SDL3Controller>(this, sdl_controller, id);
 }
 
 bool SDL3SystemAPI::closeGameController(int id) {
-	if (controller && controller->getId() == id) {
-		controller.reset();
-		controller = nullptr;
-		return true;
-	}
-	return false;
+	return controllers.erase(id);
 }
 
 void SDL3SystemAPI::handleControllerEvent(SDL_Event& event) {
@@ -37,6 +33,7 @@ void SDL3SystemAPI::handleControllerEvent(SDL_Event& event) {
 		return;
 	}
 	InputControllerEvent controller_event;
+	controller_event.controller = event.gdevice.which;
 	controller_event.type = getControllerEventType(event);
 	if (controller_event.type == ControllerEventType::AxisMoved) {
 		controller_event.axis = getAxis(event);

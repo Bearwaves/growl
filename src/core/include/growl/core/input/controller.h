@@ -2,6 +2,8 @@
 
 namespace Growl {
 
+class HapticsDevice;
+
 enum class ControllerEventType {
 	Unknown,
 	ButtonDown,
@@ -52,10 +54,18 @@ enum class ControllerAxis {
 };
 
 struct InputControllerEvent {
+	int controller = 0;
 	ControllerEventType type = ControllerEventType::Unknown;
 	ControllerButton button = ControllerButton::Unknown;
 	ControllerAxis axis = ControllerAxis::Unknown;
 	float value = 0;
+};
+
+class Controller {
+public:
+	virtual ~Controller() = default;
+	virtual HapticsDevice* getHaptics() = 0;
+	virtual int getId() = 0;
 };
 
 } // namespace Growl

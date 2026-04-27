@@ -26,19 +26,13 @@ using Growl::Window;
 
 std::unique_ptr<SystemAPIInternal>
 Growl::createSystemAPI(API& api, void* user) {
-	return std::make_unique<IOSSystemAPI>(api, static_cast<UITextField*>(user));
+	return std::make_unique<IOSSystemAPI>(static_cast<UITextField*>(user));
 }
 
 Error IOSSystemAPI::init(const Config& config) {
 	this->status_bar_visible = config.show_status_bar;
 	for (GCController* controller in [GCController controllers]) {
-		this->controller = controller;
-		break; // Just get the first one, for now.
-	}
-	if (this->controller) {
-		openGameController(this->controller);
-		this->controller_haptics =
-			std::make_unique<IOSHapticsDevice>(*this, this->controller);
+		openGameController(controller);
 	}
 	this->device_haptics = std::make_unique<IOSHapticsDevice>(*this);
 
@@ -49,18 +43,7 @@ Error IOSSystemAPI::init(const Config& config) {
 							 queue:nil
 						usingBlock:^(NSNotification* note) {
 						  GCController* controller = note.object;
-						  if (!this->controller) {
-							  this->controller = controller;
-							  openGameController(this->controller);
-							  if (this->controller_haptics) {
-								  this->controller_haptics->setGameController(
-									  this->controller);
-							  } else {
-								  this->controller_haptics =
-									  std::make_unique<IOSHapticsDevice>(
-										  *this, this->controller);
-							  }
-						  }
+						  openGameController(controller);
 						}];
 
 	game_controller_disconnect_observer =
@@ -69,11 +52,7 @@ Error IOSSystemAPI::init(const Config& config) {
 							 queue:nil
 						usingBlock:^(NSNotification* note) {
 						  GCController* controller = note.object;
-						  if (controller == this->controller) {
-							  this->controller_haptics.reset();
-							  closeGameController(this->controller);
-							  this->controller = nullptr;
-						  }
+						  closeGameController(controller);
 						}];
 
 	auto local_prefs_string = [[NSUserDefaults standardUserDefaults]
@@ -121,8 +100,8 @@ void IOSSystemAPI::tick() {}
 
 void IOSSystemAPI::resume() {
 	device_haptics->restart();
-	if (controller_haptics) {
-		controller_haptics->restart();
+	for (auto& [id, controller] : controllers) {
+		static_cast<IOSController*>(controller.get())->resumeHaptics();
 	}
 	SystemAPIInternal::resume();
 }
@@ -175,9 +154,6 @@ std::string IOSSystemAPI::getDeviceModel() {
 void IOSSystemAPI::setLogLevel(LogLevel log_level) {}
 
 HapticsDevice* IOSSystemAPI::getHaptics() {
-	if (this->controller_haptics) {
-		return this->controller_haptics.get();
-	}
 	return this->device_haptics.get();
 }
 
@@ -245,7 +221,7 @@ void IOSSystemAPI::setStatusBarVisible(bool visible) {
 }
 
 bool IOSSystemAPI::isControllerConnected() {
-	return !!controller;
+	return !controllers.empty();
 }
 
 void IOSSystemAPI::logInternal(
@@ -276,14 +252,17 @@ Result<std::unique_ptr<File>> IOSSystemAPI::openFile(std::string path) {
 }
 
 void IOSSystemAPI::openGameController(GCController* controller) {
+	int new_id = ++last_controller_id;
+	controllers[new_id] =
+		std::make_unique<IOSController>(*this, controller, new_id);
 	this->log(
-		"IOSSystemAPI", "Connected controller: {}",
+		"IOSSystemAPI", "Connected controller: [{}] {}", new_id,
 		[controller.productCategory UTF8String]);
 	if (controller.extendedGamepad) {
 		controller.extendedGamepad.valueChangedHandler =
 			^(GCExtendedGamepad* _Nonnull gamepad,
 			  GCControllerElement* _Nonnull element) {
-			  handleControllerInput(gamepad, element);
+			  handleControllerInput(gamepad, element, new_id);
 			};
 		// iOS models dpad as axes, not buttons
 		controller.extendedGamepad.dpad.down.valueChangedHandler =
@@ -291,155 +270,179 @@ void IOSSystemAPI::openGameController(GCController* controller) {
 			  BOOL pressed) {
 			  dispatchControllerButtonEvent(
 				  ControllerButton::DpadDown,
-				  controllerEventTypeForButtonPressed(pressed));
+				  controllerEventTypeForButtonPressed(pressed), new_id);
 			};
 		controller.extendedGamepad.dpad.up.valueChangedHandler =
 			^(GCControllerButtonInput* _Nonnull button, float value,
 			  BOOL pressed) {
 			  dispatchControllerButtonEvent(
 				  ControllerButton::DpadUp,
-				  controllerEventTypeForButtonPressed(pressed));
+				  controllerEventTypeForButtonPressed(pressed), new_id);
 			};
 		controller.extendedGamepad.dpad.left.valueChangedHandler =
 			^(GCControllerButtonInput* _Nonnull button, float value,
 			  BOOL pressed) {
 			  dispatchControllerButtonEvent(
 				  ControllerButton::DpadLeft,
-				  controllerEventTypeForButtonPressed(pressed));
+				  controllerEventTypeForButtonPressed(pressed), new_id);
 			};
 		controller.extendedGamepad.dpad.right.valueChangedHandler =
 			^(GCControllerButtonInput* _Nonnull button, float value,
 			  BOOL pressed) {
 			  dispatchControllerButtonEvent(
 				  ControllerButton::DpadRight,
-				  controllerEventTypeForButtonPressed(pressed));
+				  controllerEventTypeForButtonPressed(pressed), new_id);
 			};
 		controller.extendedGamepad.leftThumbstick.xAxis.valueChangedHandler =
 			^(GCControllerAxisInput* _Nonnull axis, float value) {
-			  dispatchControllerAxisEvent(ControllerAxis::LeftX, value);
+			  dispatchControllerAxisEvent(ControllerAxis::LeftX, value, new_id);
 			};
-		controller.extendedGamepad.leftThumbstick.yAxis.valueChangedHandler =
-			^(GCControllerAxisInput* _Nonnull axis, float value) {
-			  dispatchControllerAxisEvent(ControllerAxis::LeftY, -value);
-			};
+		controller.extendedGamepad.leftThumbstick.yAxis.valueChangedHandler = ^(
+			GCControllerAxisInput* _Nonnull axis, float value) {
+		  dispatchControllerAxisEvent(ControllerAxis::LeftY, -value, new_id);
+		};
 		controller.extendedGamepad.rightThumbstick.xAxis.valueChangedHandler =
 			^(GCControllerAxisInput* _Nonnull axis, float value) {
-			  dispatchControllerAxisEvent(ControllerAxis::RightX, value);
+			  dispatchControllerAxisEvent(
+				  ControllerAxis::RightX, value, new_id);
 			};
 		controller.extendedGamepad.rightThumbstick.yAxis.valueChangedHandler =
 			^(GCControllerAxisInput* _Nonnull axis, float value) {
-			  dispatchControllerAxisEvent(ControllerAxis::RightY, -value);
+			  dispatchControllerAxisEvent(
+				  ControllerAxis::RightY, -value, new_id);
 			};
 		controller.extendedGamepad.leftTrigger.valueChangedHandler =
 			^(GCControllerButtonInput* _Nonnull button, float value,
 			  BOOL pressed) {
-			  dispatchControllerAxisEvent(ControllerAxis::LT, value);
+			  dispatchControllerAxisEvent(ControllerAxis::LT, value, new_id);
 			};
 		controller.extendedGamepad.leftTrigger.valueChangedHandler =
 			^(GCControllerButtonInput* _Nonnull button, float value,
 			  BOOL pressed) {
-			  dispatchControllerAxisEvent(ControllerAxis::RT, value);
+			  dispatchControllerAxisEvent(ControllerAxis::RT, value, new_id);
 			};
 	}
 	dispatchControllerButtonEvent(
-		ControllerButton::Unknown, ControllerEventType::Connected);
+		ControllerButton::Unknown, ControllerEventType::Connected, new_id);
 }
 
 void IOSSystemAPI::closeGameController(GCController* controller) {
-	this->log(
-		"IOSSystemAPI", "Disconnected controller: {}",
-		[controller.productCategory UTF8String]);
-	dispatchControllerButtonEvent(
-		ControllerButton::Unknown, ControllerEventType::Disconnected);
+	int disconnected_id = 0;
+	for (auto& [id, ctrl] : controllers) {
+		if (static_cast<IOSController*>(ctrl.get())->getNative() ==
+			controller) {
+			disconnected_id = id;
+			break;
+		}
+	}
+	if (disconnected_id) {
+		this->log(
+			"IOSSystemAPI", "Disconnected controller: [{}] {}", disconnected_id,
+			[controller.productCategory UTF8String]);
+		controllers.erase(disconnected_id);
+		dispatchControllerButtonEvent(
+			ControllerButton::Unknown, ControllerEventType::Disconnected,
+			disconnected_id);
+	}
 }
 
 void IOSSystemAPI::handleControllerInput(
-	GCExtendedGamepad* gamepad, GCControllerElement* element) {
+	GCExtendedGamepad* gamepad, GCControllerElement* element, int id) {
 	if (!inputProcessor) {
 		return;
 	}
 	if (element == gamepad.buttonA) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::A,
-			controllerEventTypeForButtonPressed(gamepad.buttonA.pressed));
+			controllerEventTypeForButtonPressed(gamepad.buttonA.pressed), id);
 	}
 	if (element == gamepad.buttonB) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::B,
-			controllerEventTypeForButtonPressed(gamepad.buttonB.pressed));
+			controllerEventTypeForButtonPressed(gamepad.buttonB.pressed), id);
 	}
 	if (element == gamepad.buttonX) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::X,
-			controllerEventTypeForButtonPressed(gamepad.buttonX.pressed));
+			controllerEventTypeForButtonPressed(gamepad.buttonX.pressed), id);
 	}
 	if (element == gamepad.buttonY) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::Y,
-			controllerEventTypeForButtonPressed(gamepad.buttonY.pressed));
+			controllerEventTypeForButtonPressed(gamepad.buttonY.pressed), id);
 	}
 	if (element == gamepad.leftShoulder) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::LB,
-			controllerEventTypeForButtonPressed(gamepad.leftShoulder.pressed));
+			controllerEventTypeForButtonPressed(gamepad.leftShoulder.pressed),
+			id);
 	}
 	if (element == gamepad.rightShoulder) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::RB,
-			controllerEventTypeForButtonPressed(gamepad.rightShoulder.pressed));
+			controllerEventTypeForButtonPressed(gamepad.rightShoulder.pressed),
+			id);
 	}
 	if (element == gamepad.leftTrigger) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::LT,
-			controllerEventTypeForButtonPressed(gamepad.leftTrigger.pressed));
+			controllerEventTypeForButtonPressed(gamepad.leftTrigger.pressed),
+			id);
 	}
 	if (element == gamepad.rightTrigger) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::RT,
-			controllerEventTypeForButtonPressed(gamepad.rightTrigger.pressed));
+			controllerEventTypeForButtonPressed(gamepad.rightTrigger.pressed),
+			id);
 	}
 	if (element == gamepad.leftThumbstickButton) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::LeftStick,
 			controllerEventTypeForButtonPressed(
-				gamepad.leftThumbstickButton.pressed));
+				gamepad.leftThumbstickButton.pressed),
+			id);
 	}
 	if (element == gamepad.rightThumbstickButton) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::RightStick,
 			controllerEventTypeForButtonPressed(
-				gamepad.rightThumbstickButton.pressed));
+				gamepad.rightThumbstickButton.pressed),
+			id);
 	}
 	if (element == gamepad.buttonMenu) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::Start,
-			controllerEventTypeForButtonPressed(gamepad.buttonMenu.pressed));
+			controllerEventTypeForButtonPressed(gamepad.buttonMenu.pressed),
+			id);
 	}
 	if (element == gamepad.buttonOptions) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::Select,
-			controllerEventTypeForButtonPressed(gamepad.buttonOptions.pressed));
+			controllerEventTypeForButtonPressed(gamepad.buttonOptions.pressed),
+			id);
 	}
 	if (element == gamepad.buttonHome) {
 		return dispatchControllerButtonEvent(
 			ControllerButton::Home,
-			controllerEventTypeForButtonPressed(gamepad.buttonHome.pressed));
+			controllerEventTypeForButtonPressed(gamepad.buttonHome.pressed),
+			id);
 	}
 }
 
 void IOSSystemAPI::dispatchControllerButtonEvent(
-	ControllerButton button, ControllerEventType event_type) {
+	ControllerButton button, ControllerEventType event_type, int id) {
 	if (!inputProcessor) {
 		return;
 	}
 	auto event = InputEvent{
 		InputEventType::Controller,
-		InputControllerEvent{.button = button, .type = event_type}};
+		InputControllerEvent{
+			.button = button, .type = event_type, .controller = id}};
 	inputProcessor->onEvent(event);
 }
 
 void IOSSystemAPI::dispatchControllerAxisEvent(
-	ControllerAxis axis, float value) {
+	ControllerAxis axis, float value, int id) {
 	if (!inputProcessor) {
 		return;
 	}
@@ -447,7 +450,8 @@ void IOSSystemAPI::dispatchControllerAxisEvent(
 		InputEventType::Controller, InputControllerEvent{
 										.type = ControllerEventType::AxisMoved,
 										.value = value,
-										.axis = axis});
+										.axis = axis,
+										.controller = id});
 	inputProcessor->onEvent(event);
 }
 
