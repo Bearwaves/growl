@@ -4,6 +4,12 @@ namespace Growl {
 
 class HapticsDevice;
 
+enum class ControllerLayout {
+	BAYX, // e.g. Xbox
+	ABXY, // e.g. Switch
+	PS,	  // PlayStation reports buttons in BAYX layout
+};
+
 enum class ControllerEventType {
 	Unknown,
 	ButtonDown,
@@ -66,6 +72,7 @@ public:
 	virtual ~Controller() = default;
 	virtual HapticsDevice* getHaptics() = 0;
 	virtual int getId() = 0;
+	virtual ControllerLayout getLayout() = 0;
 };
 
 } // namespace Growl

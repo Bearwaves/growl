@@ -16,6 +16,9 @@ public:
 	int getId() override {
 		return id;
 	}
+	ControllerLayout getLayout() override {
+		return layout;
+	}
 	void resumeHaptics();
 	GCController* getNative() {
 		return controller;
@@ -25,6 +28,7 @@ private:
 	GCController* controller;
 	int id;
 	std::unique_ptr<IOSHapticsDevice> haptics;
+	ControllerLayout layout;
 };
 
 class IOSSystemAPI : public SystemAPIInternal {

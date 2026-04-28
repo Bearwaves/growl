@@ -11,6 +11,14 @@ IOSController::IOSController(
 	: controller{controller}
 	, id{id} {
 	this->haptics = std::make_unique<IOSHapticsDevice>(system, controller);
+	if ([controller.productCategory containsString:@"Switch"]) {
+		this->layout = ControllerLayout::ABXY;
+	} else if ([controller.productCategory containsString:@"DualSense"] ||
+			   [controller.productCategory containsString:@"DualShock"]) {
+		this->layout = ControllerLayout::PS;
+	} else {
+		this->layout = ControllerLayout::BAYX;
+	}
 }
 
 IOSController::~IOSController() {

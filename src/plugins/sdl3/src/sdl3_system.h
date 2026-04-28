@@ -32,12 +32,16 @@ public:
 	int getId() override {
 		return id;
 	}
+	ControllerLayout getLayout() override {
+		return layout;
+	}
 
 private:
 	SystemAPI* system;
 	SDL_Gamepad* controller;
 	int id;
 	std::unique_ptr<SDL3HapticsDevice> haptics;
+	ControllerLayout layout;
 };
 
 class SDL3SystemAPI : public SystemAPIInternal {
@@ -102,7 +106,7 @@ private:
 	SDL_Scancode getScancode(Key key);
 
 	ControllerEventType getControllerEventType(SDL_Event& event);
-	ControllerButton getButton(SDL_Event& event);
+	ControllerButton getButton(SDL_Event& event, ControllerLayout layout);
 	ControllerAxis getAxis(SDL_Event& event);
 	void openGameController(int id);
 	bool closeGameController(int id);

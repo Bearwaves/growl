@@ -23,8 +23,12 @@ public:
 	int getId() override {
 		return id;
 	}
+	ControllerLayout getLayout() override {
+		return layout;
+	}
 
 	int id;
+	ControllerLayout layout;
 	std::unique_ptr<AndroidHaptics> haptics;
 	std::unique_ptr<Paddleboat_Controller_Info> info;
 
@@ -106,7 +110,8 @@ private:
 	static void handleAppCmd(android_app* app, int32_t cmd);
 	static void handleInput(android_app* app);
 	static PointerEventType getPointerEventType(int32_t action);
-	static ControllerButton getControllerButton(int32_t key_code);
+	static ControllerButton
+	getControllerButton(int32_t key_code, ControllerLayout layout);
 	static ControllerEventType getControllerEventType(int32_t action);
 	static Key getKey(int32_t key_code);
 	static KeyEventType getKeyEventType(int32_t action);

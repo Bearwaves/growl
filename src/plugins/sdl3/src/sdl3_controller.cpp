@@ -10,6 +10,7 @@
 using Growl::ControllerAxis;
 using Growl::ControllerButton;
 using Growl::ControllerEventType;
+using Growl::ControllerLayout;
 using Growl::HapticsDevice;
 using Growl::SDL3Controller;
 using Growl::SDL3SystemAPI;
@@ -45,7 +46,14 @@ void SDL3SystemAPI::handleControllerEvent(SDL_Event& event) {
 				? static_cast<float>(value) / SDL_JOYSTICK_AXIS_MAX
 				: 0.f;
 	} else {
-		controller_event.button = getButton(event);
+		if (!controllers.count(controller_event.controller)) {
+			log(LogLevel::Warn, "SDL3SystemAPI",
+				"Got event for unknown controller {}",
+				controller_event.controller);
+			return;
+		}
+		controller_event.button = getButton(
+			event, controllers[controller_event.controller]->getLayout());
 	}
 	InputEvent e{InputEventType::Controller, controller_event};
 	inputProcessor->onEvent(e);
@@ -56,7 +64,24 @@ SDL3Controller::SDL3Controller(
 	: system{system}
 	, controller{controller}
 	, id{id}
-	, haptics{std::make_unique<SDL3HapticsDevice>(system, controller)} {}
+	, haptics{std::make_unique<SDL3HapticsDevice>(system, controller)} {
+	switch (SDL_GetGamepadType(controller)) {
+	case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
+	case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
+	case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
+	case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
+		this->layout = ControllerLayout::ABXY;
+		break;
+	case SDL_GAMEPAD_TYPE_PS3:
+	case SDL_GAMEPAD_TYPE_PS4:
+	case SDL_GAMEPAD_TYPE_PS5:
+		this->layout = ControllerLayout::PS;
+		break;
+	default:
+		this->layout = ControllerLayout::BAYX;
+		break;
+	}
+}
 
 SDL3Controller::~SDL3Controller() {
 	system->log(
@@ -86,16 +111,21 @@ ControllerEventType SDL3SystemAPI::getControllerEventType(SDL_Event& event) {
 	}
 }
 
-ControllerButton SDL3SystemAPI::getButton(SDL_Event& event) {
+ControllerButton
+SDL3SystemAPI::getButton(SDL_Event& event, ControllerLayout layout) {
 	switch (event.gbutton.button) {
 	case SDL_GAMEPAD_BUTTON_SOUTH:
-		return ControllerButton::A;
+		return layout == ControllerLayout::ABXY ? ControllerButton::B
+												: ControllerButton::A;
 	case SDL_GAMEPAD_BUTTON_EAST:
-		return ControllerButton::B;
+		return layout == ControllerLayout::ABXY ? ControllerButton::A
+												: ControllerButton::B;
 	case SDL_GAMEPAD_BUTTON_WEST:
-		return ControllerButton::X;
+		return layout == ControllerLayout::ABXY ? ControllerButton::Y
+												: ControllerButton::X;
 	case SDL_GAMEPAD_BUTTON_NORTH:
-		return ControllerButton::Y;
+		return layout == ControllerLayout::ABXY ? ControllerButton::X
+												: ControllerButton::Y;
 	case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
 		return ControllerButton::LB;
 	case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:

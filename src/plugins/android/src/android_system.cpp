@@ -455,27 +455,24 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 	if (ib && ib->keyEventsCount) {
 		for (int i = 0; i < ib->keyEventsCount; i++) {
 			auto* event = &ib->keyEvents[i];
-			auto button = getControllerButton(event->keyCode);
-			if (button != ControllerButton::Unknown) {
-				if (!this_api.controllers.count(event->deviceId)) {
-					this_api.log(
-						"AndroidSystem",
-						"Got button event for unknown controller {}",
-						event->deviceId);
-					continue;
-				}
+			if (this_api.controllers.count(event->deviceId)) {
 				AndroidController* controller = static_cast<AndroidController*>(
 					this_api.controllers[event->deviceId].get());
-				auto type = getControllerEventType(event->action);
-				if (type != ControllerEventType::ButtonDown &&
-					type != ControllerEventType::ButtonUp) {
+				auto button =
+					getControllerButton(event->keyCode, controller->layout);
+				if (button != ControllerButton::Unknown) {
+					auto type = getControllerEventType(event->action);
+					if (type != ControllerEventType::ButtonDown &&
+						type != ControllerEventType::ButtonUp) {
+						continue;
+					}
+					InputEvent e{
+						InputEventType::Controller,
+						InputControllerEvent{
+							controller->getId(), type, button}};
+					this_api.onEvent(e);
 					continue;
 				}
-				InputEvent e{
-					InputEventType::Controller,
-					InputControllerEvent{controller->getId(), type, button}};
-				this_api.onEvent(e);
-				continue;
 			}
 			auto key = getKey(event->keyCode);
 			if (key != Key::Unknown) {
@@ -549,16 +546,21 @@ PointerEventType AndroidSystemAPI::getPointerEventType(int32_t action) {
 	return PointerEventType::Unknown;
 }
 
-ControllerButton AndroidSystemAPI::getControllerButton(int32_t key_code) {
+ControllerButton AndroidSystemAPI::getControllerButton(
+	int32_t key_code, ControllerLayout layout) {
 	switch (key_code) {
 	case AKEYCODE_BUTTON_A:
-		return ControllerButton::A;
+		return layout == ControllerLayout::ABXY ? ControllerButton::B
+												: ControllerButton::A;
 	case AKEYCODE_BUTTON_B:
-		return ControllerButton::B;
+		return layout == ControllerLayout::ABXY ? ControllerButton::A
+												: ControllerButton::B;
 	case AKEYCODE_BUTTON_X:
-		return ControllerButton::X;
+		return layout == ControllerLayout::ABXY ? ControllerButton::Y
+												: ControllerButton::X;
 	case AKEYCODE_BUTTON_Y:
-		return ControllerButton::Y;
+		return layout == ControllerLayout::ABXY ? ControllerButton::X
+												: ControllerButton::Y;
 	case AKEYCODE_BUTTON_L1:
 		return ControllerButton::LB;
 	case AKEYCODE_BUTTON_R1:
