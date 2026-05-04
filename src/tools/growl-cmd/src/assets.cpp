@@ -401,8 +401,11 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 		return;
 	}
 	auto iter = std::filesystem::recursive_directory_iterator(assets_dir);
-	for (const auto& dir_entry : iter) {
+	auto end = std::filesystem::recursive_directory_iterator();
+	while (iter != end) {
+		auto dir_entry = *iter;
 		if (!std::filesystem::is_directory(dir_entry)) {
+			iter++;
 			continue;
 		}
 		res =
@@ -416,6 +419,7 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 		if (!*res) {
 			iter.disable_recursion_pending();
 		}
+		iter++;
 	}
 
 	info.position = outfile.tellp();
