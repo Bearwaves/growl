@@ -54,6 +54,7 @@ public:
 	bool isRunning() override {
 		return android_state->destroyRequested == 0;
 	}
+	void pause() override;
 	void stop() override;
 	virtual Result<std::unique_ptr<Window>>
 	createWindow(const Config& config) override;

@@ -84,6 +84,7 @@ public:
 	virtual void tick(double delta_time, InputProcessor* processor);
 	virtual bool
 	onEvent(const InputControllerEvent& event, InputProcessor* processor);
+	virtual void clearHoldData();
 
 protected:
 	float initial_repeat_delay;

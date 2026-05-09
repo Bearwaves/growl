@@ -47,6 +47,11 @@ bool Controller::onEvent(
 	return false;
 }
 
+void Controller::clearHoldData() {
+	hold_times.clear();
+	stick_hold_time = {ControllerButton::Unknown, 0.0};
+}
+
 bool Controller::repeatingButton(ControllerButton button) {
 	switch (button) {
 	case ControllerButton::DpadUp:

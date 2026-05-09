@@ -102,6 +102,13 @@ void IOSSystemAPI::tick(double delta_time) {
 	}
 }
 
+void IOSSystemAPI::pause() {
+	for (auto& [_, controller] : controllers) {
+		controller->clearHoldData();
+	}
+	SystemAPIInternal::pause();
+}
+
 void IOSSystemAPI::resume() {
 	device_haptics->restart();
 	for (auto& [id, controller] : controllers) {

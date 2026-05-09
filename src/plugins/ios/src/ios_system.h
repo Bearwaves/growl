@@ -38,6 +38,7 @@ public:
 	Error init(const Config& config) override;
 	void tick(double delta_time) override;
 	void dispose() override;
+	void pause() override;
 	void resume() override;
 	void onEvent(const InputEvent&) override;
 	bool isRunning() override {

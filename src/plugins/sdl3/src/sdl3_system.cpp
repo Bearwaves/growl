@@ -202,6 +202,13 @@ void SDL3SystemAPI::tick(double delta_time) {
 #endif
 }
 
+void SDL3SystemAPI::pause() {
+	for (auto& [_, controller] : controllers) {
+		controller->clearHoldData();
+	}
+	SystemAPIInternal::pause();
+}
+
 void SDL3SystemAPI::stop() {
 	running = false;
 }

@@ -132,6 +132,13 @@ void AndroidSystemAPI::tick(double delta_time) {
 	}
 }
 
+void AndroidSystemAPI::pause() {
+	for (auto& [_, controller] : controllers) {
+		controller->clearHoldData();
+	}
+	SystemAPIInternal::pause();
+}
+
 void AndroidSystemAPI::stop() {
 	GameActivity_finish(android_state->activity);
 }

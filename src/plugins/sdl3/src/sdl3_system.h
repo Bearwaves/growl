@@ -54,6 +54,7 @@ public:
 	bool isRunning() override {
 		return running;
 	}
+	void pause() override;
 	void stop() override;
 	virtual Result<std::unique_ptr<Window>>
 	createWindow(const Config& config) override;
