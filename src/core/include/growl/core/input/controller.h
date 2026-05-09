@@ -90,8 +90,12 @@ protected:
 	float initial_repeat_delay;
 	float repeat_rate;
 	std::unordered_map<ControllerButton, double> hold_times;
+	std::unordered_map<ControllerButton, double> stick_hold_times;
 
 	bool repeatingButton(ControllerButton button);
+	bool sendButtonEvent(
+		InputProcessor* processor, ControllerButton button,
+		ControllerEventType type = ControllerEventType::ButtonDown);
 };
 
 } // namespace Growl
