@@ -5,6 +5,7 @@ project(growl-core)
 set(SOURCES
 	"src/game/game.cpp"
 	"src/input/processor.cpp"
+	"src/input/controller.cpp"
 	"src/graphics/font_texture_atlas.cpp"
 	"src/scripting/scripting_api.cpp"
 	"src/network/http.cpp"

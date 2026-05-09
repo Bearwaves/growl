@@ -38,6 +38,13 @@ void SDL3SystemAPI::handleControllerEvent(SDL_Event& event) {
 	controller_event.type = getControllerEventType(event);
 	switch (controller_event.type) {
 	case ControllerEventType::AxisMoved: {
+		if (!controllers.count(controller_event.controller)) {
+			log(LogLevel::Warn, "SDL3SystemAPI",
+				"Got event for unknown controller {}",
+				controller_event.controller);
+			return;
+		}
+		auto& controller = controllers[controller_event.controller];
 		controller_event.axis = getAxis(event);
 		auto value = event.gaxis.value;
 		controller_event.value =
@@ -46,18 +53,22 @@ void SDL3SystemAPI::handleControllerEvent(SDL_Event& event) {
 			: value > JOYSTICK_DEADZONE
 				? static_cast<float>(value) / SDL_JOYSTICK_AXIS_MAX
 				: 0.f;
-		break;
+		controller->onEvent(controller_event, inputProcessor);
+		return;
 	}
 	case ControllerEventType::ButtonDown:
-	case ControllerEventType::ButtonUp:
+	case ControllerEventType::ButtonUp: {
 		if (!controllers.count(controller_event.controller)) {
 			log(LogLevel::Warn, "SDL3SystemAPI",
 				"Got event for unknown controller {}",
 				controller_event.controller);
 			return;
 		}
-		controller_event.button = getButton(
-			event, controllers[controller_event.controller]->getLayout());
+		auto& controller = controllers[controller_event.controller];
+		controller_event.button = getButton(event, controller->getLayout());
+		controller->onEvent(controller_event, inputProcessor);
+		return;
+	}
 	default:
 		break;
 	}

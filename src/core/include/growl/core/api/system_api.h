@@ -31,7 +31,7 @@ public:
 		return paused;
 	}
 	virtual void stop() {}
-	virtual void tick() = 0;
+	virtual void tick(double delta_time) = 0;
 	virtual Result<std::unique_ptr<Window>>
 	createWindow(const Config& config) = 0;
 	virtual void setInputProcessor(InputProcessor* processor) {

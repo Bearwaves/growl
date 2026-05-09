@@ -48,7 +48,7 @@ public:
 		, android_state{android_state}
 		, game{game} {}
 	Error init(const Config& config) override;
-	void tick() override;
+	void tick(double delta_time) override;
 	void dispose() override;
 	void onEvent(const InputEvent&) override;
 	bool isRunning() override {

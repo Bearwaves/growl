@@ -49,7 +49,7 @@ public:
 	explicit SDL3SystemAPI(API& api)
 		: api{api} {}
 	Error init(const Config& config) override;
-	void tick() override;
+	void tick(double delta_time) override;
 	void dispose() override;
 	bool isRunning() override {
 		return running;

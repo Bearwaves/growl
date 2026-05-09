@@ -95,7 +95,7 @@ void android_main(struct android_app* state) {
 
 	// Wait for a window; process events.
 	while (!state->window) {
-		api->system().tick();
+		api->system().tick(0);
 	}
 
 	api->system().log("android_main", "Window created");
@@ -110,14 +110,14 @@ void android_main(struct android_app* state) {
 	int resize_width, resize_height;
 	api->system().log("android_main", "Run!");
 	while (static_cast<SystemAPIInternal&>(api->system()).isRunning()) {
-		api->system().tick();
+		double delta_time = api->frameTimer().frame();
+		api->system().tick(delta_time);
 		if (api->system().isPaused()) {
 			continue;
 		}
 		if (api->system().didResize(&resize_width, &resize_height)) {
 			game->resize(resize_width, resize_height);
 		}
-		double delta_time = api->frameTimer().frame();
 		game->tick(delta_time);
 		static_cast<GraphicsAPIInternal&>(api->graphics()).begin();
 		game->render(delta_time);

@@ -122,7 +122,7 @@ void GameAdapter::run() {
 	int resize_width, resize_height;
 	while (static_cast<SystemAPIInternal&>(m_api->system()).isRunning()) {
 		double delta_time = m_api->frameTimer().frame();
-		m_api->system().tick();
+		m_api->system().tick(delta_time);
 		if (m_api->system().didResize(&resize_width, &resize_height)) {
 			m_game->resize(resize_width, resize_height);
 		}

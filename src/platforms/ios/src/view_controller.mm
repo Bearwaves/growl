@@ -195,7 +195,7 @@ std::unique_ptr<Growl::Game> createGame();
 
 - (void)render {
 	double delta_time = api->frameTimer().frame();
-	api->system().tick();
+	api->system().tick(delta_time);
 	if (api->system().isPaused()) {
 		return;
 	}

@@ -109,7 +109,7 @@ SDL3SystemAPI::createWindow(const Config& config) {
 	return std::unique_ptr<Window>(std::make_unique<SDL3Window>(win, *this));
 }
 
-void SDL3SystemAPI::tick() {
+void SDL3SystemAPI::tick(double delta_time) {
 	local_preferences->tick();
 	shared_preferences->tick();
 
@@ -181,6 +181,11 @@ void SDL3SystemAPI::tick() {
 		}
 		}
 	}
+
+	for (auto& [_, controller] : controllers) {
+		controller->tick(delta_time, inputProcessor);
+	}
+
 #ifdef GROWL_IMGUI
 	if (api.imguiVisible()) {
 		if ((imgui_resize_window || imGuiGameWindowResized())) {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_map>
+
 namespace Growl {
 
 class HapticsDevice;
@@ -67,12 +69,28 @@ struct InputControllerEvent {
 	float value = 0;
 };
 
+class InputProcessor;
+
 class Controller {
 public:
+	Controller(float initial_repeat_delay = .2f, float repeat_rate = .1f)
+		: initial_repeat_delay{initial_repeat_delay}
+		, repeat_rate{repeat_rate} {}
 	virtual ~Controller() = default;
 	virtual HapticsDevice* getHaptics() = 0;
 	virtual int getId() = 0;
 	virtual ControllerLayout getLayout() = 0;
+
+	virtual void tick(double delta_time, InputProcessor* processor);
+	virtual bool
+	onEvent(const InputControllerEvent& event, InputProcessor* processor);
+
+protected:
+	float initial_repeat_delay;
+	float repeat_rate;
+	std::unordered_map<ControllerButton, double> hold_times;
+
+	bool repeatingButton(ControllerButton button);
 };
 
 } // namespace Growl

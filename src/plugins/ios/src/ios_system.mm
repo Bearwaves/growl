@@ -96,7 +96,11 @@ Error IOSSystemAPI::init(const Config& config) {
 	return nullptr;
 }
 
-void IOSSystemAPI::tick() {}
+void IOSSystemAPI::tick(double delta_time) {
+	for (auto& [_, controller] : controllers) {
+		controller->tick(delta_time, inputProcessor);
+	}
+}
 
 void IOSSystemAPI::resume() {
 	device_haptics->restart();
@@ -434,11 +438,14 @@ void IOSSystemAPI::dispatchControllerButtonEvent(
 	if (!inputProcessor) {
 		return;
 	}
-	auto event = InputEvent{
-		InputEventType::Controller,
-		InputControllerEvent{
-			.button = button, .type = event_type, .controller = id}};
-	inputProcessor->onEvent(event);
+	if (!controllers.count(id)) {
+		log(LogLevel::Warn, "IOSSystemAPI",
+			"Got button event for unknown controller {}", id);
+		return;
+	}
+	auto event = InputControllerEvent{
+		.button = button, .type = event_type, .controller = id};
+	controllers[id]->onEvent(event, inputProcessor);
 }
 
 void IOSSystemAPI::dispatchControllerAxisEvent(
@@ -446,13 +453,17 @@ void IOSSystemAPI::dispatchControllerAxisEvent(
 	if (!inputProcessor) {
 		return;
 	}
-	auto event = InputEvent(
-		InputEventType::Controller, InputControllerEvent{
-										.type = ControllerEventType::AxisMoved,
-										.value = value,
-										.axis = axis,
-										.controller = id});
-	inputProcessor->onEvent(event);
+	if (!controllers.count(id)) {
+		log(LogLevel::Warn, "IOSSystemAPI",
+			"Got axis event for unknown controller {}", id);
+		return;
+	}
+	auto event = InputControllerEvent{
+		.type = ControllerEventType::AxisMoved,
+		.value = value,
+		.axis = axis,
+		.controller = id};
+	controllers[id]->onEvent(event, inputProcessor);
 }
 
 ControllerEventType

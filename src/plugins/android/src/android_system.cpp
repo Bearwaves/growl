@@ -111,7 +111,7 @@ Error AndroidSystemAPI::init(const Config& config) {
 	return nullptr;
 }
 
-void AndroidSystemAPI::tick() {
+void AndroidSystemAPI::tick(double delta_time) {
 	Paddleboat_update(getJNIEnv());
 	int events;
 	struct android_poll_source* source;
@@ -125,6 +125,11 @@ void AndroidSystemAPI::tick() {
 		}
 	}
 	handleInput(android_state);
+	if (delta_time) {
+		for (auto& [_, controller] : controllers) {
+			controller->tick(delta_time, inputProcessor);
+		}
+	}
 }
 
 void AndroidSystemAPI::stop() {
@@ -308,51 +313,43 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 					controller->dpad_state = dpad_state;
 					if (dpad_delta & DPAD_UP_MASK) {
 						bool down = ((dpad_state & DPAD_UP_MASK) != 0);
-						InputEvent e{
-							InputEventType::Controller,
-							InputControllerEvent{
-								controller->getId(),
-								down ? ControllerEventType::ButtonDown
-									 : ControllerEventType::ButtonUp,
-								ControllerButton::DpadUp,
-							}};
-						this_api.onEvent(e);
+						InputControllerEvent e{
+							controller->getId(),
+							down ? ControllerEventType::ButtonDown
+								 : ControllerEventType::ButtonUp,
+							ControllerButton::DpadUp,
+						};
+						controller->onEvent(e, this_api.inputProcessor);
 					}
 					if (dpad_delta & DPAD_DOWN_MASK) {
 						bool down = ((dpad_state & DPAD_DOWN_MASK) != 0);
-						InputEvent e{
-							InputEventType::Controller,
-							InputControllerEvent{
-								controller->getId(),
-								down ? ControllerEventType::ButtonDown
-									 : ControllerEventType::ButtonUp,
-								ControllerButton::DpadDown,
-							}};
-						this_api.onEvent(e);
+						InputControllerEvent e{
+							controller->getId(),
+							down ? ControllerEventType::ButtonDown
+								 : ControllerEventType::ButtonUp,
+							ControllerButton::DpadDown,
+						};
+						controller->onEvent(e, this_api.inputProcessor);
 					}
 					if (dpad_delta & DPAD_LEFT_MASK) {
 						bool down = ((dpad_state & DPAD_LEFT_MASK) != 0);
-						InputEvent e{
-							InputEventType::Controller,
-							InputControllerEvent{
-								controller->getId(),
-								down ? ControllerEventType::ButtonDown
-									 : ControllerEventType::ButtonUp,
-								ControllerButton::DpadLeft,
-							}};
-						this_api.onEvent(e);
+						InputControllerEvent e{
+							controller->getId(),
+							down ? ControllerEventType::ButtonDown
+								 : ControllerEventType::ButtonUp,
+							ControllerButton::DpadLeft,
+						};
+						controller->onEvent(e, this_api.inputProcessor);
 					}
 					if (dpad_delta & DPAD_RIGHT_MASK) {
 						bool down = ((dpad_state & DPAD_RIGHT_MASK) != 0);
-						InputEvent e{
-							InputEventType::Controller,
-							InputControllerEvent{
-								controller->getId(),
-								down ? ControllerEventType::ButtonDown
-									 : ControllerEventType::ButtonUp,
-								ControllerButton::DpadRight,
-							}};
-						this_api.onEvent(e);
+						InputControllerEvent e{
+							controller->getId(),
+							down ? ControllerEventType::ButtonDown
+								 : ControllerEventType::ButtonUp,
+							ControllerButton::DpadRight,
+						};
+						controller->onEvent(e, this_api.inputProcessor);
 					}
 				}
 
@@ -388,61 +385,45 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 
 				if (lx != controller->last_lx) {
 					controller->last_lx = lx;
-					InputEvent e{
-						InputEventType::Controller,
-						InputControllerEvent{
-							controller->getId(), ControllerEventType::AxisMoved,
-							ControllerButton::Unknown, ControllerAxis::LeftX,
-							lx}};
-					this_api.onEvent(e);
+					InputControllerEvent e{
+						controller->getId(), ControllerEventType::AxisMoved,
+						ControllerButton::Unknown, ControllerAxis::LeftX, lx};
+					controller->onEvent(e, this_api.inputProcessor);
 				}
 				if (ly != controller->last_ly) {
 					controller->last_ly = ly;
-					InputEvent e{
-						InputEventType::Controller,
-						InputControllerEvent{
-							controller->getId(), ControllerEventType::AxisMoved,
-							ControllerButton::Unknown, ControllerAxis::LeftY,
-							ly}};
-					this_api.onEvent(e);
+					InputControllerEvent e{
+						controller->getId(), ControllerEventType::AxisMoved,
+						ControllerButton::Unknown, ControllerAxis::LeftY, ly};
+					controller->onEvent(e, this_api.inputProcessor);
 				}
 				if (rx != controller->last_rx) {
 					controller->last_rx = rx;
-					InputEvent e{
-						InputEventType::Controller,
-						InputControllerEvent{
-							controller->getId(), ControllerEventType::AxisMoved,
-							ControllerButton::Unknown, ControllerAxis::RightX,
-							rx}};
-					this_api.onEvent(e);
+					InputControllerEvent e{
+						controller->getId(), ControllerEventType::AxisMoved,
+						ControllerButton::Unknown, ControllerAxis::RightX, rx};
+					controller->onEvent(e, this_api.inputProcessor);
 				}
 				if (ry != controller->last_ry) {
 					controller->last_ry = ry;
-					InputEvent e{
-						InputEventType::Controller,
-						InputControllerEvent{
-							controller->getId(), ControllerEventType::AxisMoved,
-							ControllerButton::Unknown, ControllerAxis::RightY,
-							ry}};
-					this_api.onEvent(e);
+					InputControllerEvent e{
+						controller->getId(), ControllerEventType::AxisMoved,
+						ControllerButton::Unknown, ControllerAxis::RightY, ry};
+					controller->onEvent(e, this_api.inputProcessor);
 				}
 				if (lt != controller->last_lt) {
 					controller->last_lt = lt;
-					InputEvent e{
-						InputEventType::Controller,
-						InputControllerEvent{
-							controller->getId(), ControllerEventType::AxisMoved,
-							ControllerButton::Unknown, ControllerAxis::LT, lt}};
-					this_api.onEvent(e);
+					InputControllerEvent e{
+						controller->getId(), ControllerEventType::AxisMoved,
+						ControllerButton::Unknown, ControllerAxis::LT, lt};
+					controller->onEvent(e, this_api.inputProcessor);
 				}
 				if (rt != controller->last_rt) {
 					controller->last_rt = rt;
-					InputEvent e{
-						InputEventType::Controller,
-						InputControllerEvent{
-							controller->getId(), ControllerEventType::AxisMoved,
-							ControllerButton::Unknown, ControllerAxis::RT, rt}};
-					this_api.onEvent(e);
+					InputControllerEvent e{
+						controller->getId(), ControllerEventType::AxisMoved,
+						ControllerButton::Unknown, ControllerAxis::RT, rt};
+					controller->onEvent(e, this_api.inputProcessor);
 				}
 
 				break;
@@ -466,11 +447,8 @@ void AndroidSystemAPI::handleInput(android_app* app) {
 						type != ControllerEventType::ButtonUp) {
 						continue;
 					}
-					InputEvent e{
-						InputEventType::Controller,
-						InputControllerEvent{
-							controller->getId(), type, button}};
-					this_api.onEvent(e);
+					InputControllerEvent e{controller->getId(), type, button};
+					controller->onEvent(e, this_api.inputProcessor);
 					continue;
 				}
 			}

@@ -36,7 +36,7 @@ public:
 	explicit IOSSystemAPI(UITextField* text_field)
 		: text_field{text_field} {}
 	Error init(const Config& config) override;
-	void tick() override;
+	void tick(double delta_time) override;
 	void dispose() override;
 	void resume() override;
 	void onEvent(const InputEvent&) override;

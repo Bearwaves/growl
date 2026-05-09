@@ -99,7 +99,7 @@ GameAdapter::~GameAdapter() {
 
 void GameAdapter::doLoopIteration() {
 	double delta_time = g_api->frameTimer().frame();
-	g_api->system().tick();
+	g_api->system().tick(delta_time);
 	g_game->tick(delta_time);
 	static_cast<GraphicsAPIInternal&>(g_api->graphics()).begin();
 	g_game->render(delta_time);
