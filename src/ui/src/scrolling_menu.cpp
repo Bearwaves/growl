@@ -16,24 +16,28 @@ void ScrollingMenu::setSelection(Widget* selection) {
 	scrollIfNeeded();
 }
 
-void ScrollingMenu::navigateUp() {
-	Menu::navigateUp();
+bool ScrollingMenu::navigateUp() {
+	bool r = Menu::navigateUp();
 	scrollIfNeeded();
+	return r;
 }
 
-void ScrollingMenu::navigateDown() {
-	Menu::navigateDown();
+bool ScrollingMenu::navigateDown() {
+	bool r = Menu::navigateDown();
 	scrollIfNeeded();
+	return r;
 }
 
-void ScrollingMenu::navigateLeft() {
-	Menu::navigateLeft();
+bool ScrollingMenu::navigateLeft() {
+	bool r = Menu::navigateLeft();
 	scrollIfNeeded();
+	return r;
 }
 
-void ScrollingMenu::navigateRight() {
-	Menu::navigateRight();
+bool ScrollingMenu::navigateRight() {
+	bool r = Menu::navigateRight();
 	scrollIfNeeded();
+	return r;
 }
 
 void ScrollingMenu::scrollIfNeeded() {

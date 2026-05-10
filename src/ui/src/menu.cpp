@@ -66,9 +66,9 @@ void Menu::linkSelectableHorizontally() {
 	}
 }
 
-void Menu::navigateUp() {
+bool Menu::navigateUp() {
 	if (items.empty()) {
-		return;
+		return false;
 	}
 	if (selected) {
 		selected->setSelected(false);
@@ -81,11 +81,12 @@ void Menu::navigateUp() {
 		selected = items.back();
 	}
 	selected->setSelected(true);
+	return true;
 }
 
-void Menu::navigateDown() {
+bool Menu::navigateDown() {
 	if (items.empty()) {
-		return;
+		return false;
 	}
 	if (selected) {
 		selected->setSelected(false);
@@ -98,38 +99,47 @@ void Menu::navigateDown() {
 		selected = items.front();
 	}
 	selected->setSelected(true);
+	return true;
 }
 
-void Menu::navigateLeft() {
+bool Menu::navigateLeft() {
 	if (items.empty()) {
-		return;
+		return false;
 	}
+	bool did_change = false;
 	if (selected) {
 		selected->setSelected(false);
 		if (selected->left_nav) {
 			selected = selected->left_nav;
+			did_change = true;
 		}
 	} else if (rightmost) {
 		selected = rightmost;
+		did_change = true;
 	} else {
-		return;
+		return false;
 	}
 	selected->setSelected(true);
+	return did_change;
 }
 
-void Menu::navigateRight() {
+bool Menu::navigateRight() {
 	if (items.empty()) {
-		return;
+		return false;
 	}
+	bool did_change = false;
 	if (selected) {
 		selected->setSelected(false);
 		if (selected && selected->right_nav) {
 			selected = selected->right_nav;
+			did_change = true;
 		}
 	} else if (leftmost) {
 		selected = leftmost;
+		did_change = true;
 	} else {
-		return;
+		return false;
 	}
 	selected->setSelected(true);
+	return did_change;
 }

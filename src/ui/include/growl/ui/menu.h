@@ -24,10 +24,10 @@ public:
 	virtual void linkSelectableVertically();
 	virtual void linkSelectableHorizontally();
 
-	virtual void navigateUp();
-	virtual void navigateDown();
-	virtual void navigateLeft();
-	virtual void navigateRight();
+	virtual bool navigateUp();
+	virtual bool navigateDown();
+	virtual bool navigateLeft();
+	virtual bool navigateRight();
 
 private:
 	Widget* selected = nullptr;

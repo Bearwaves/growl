@@ -10,10 +10,10 @@ public:
 	explicit ScrollingMenu(std::string&& name, Growl::Value threshold = 0);
 
 	void setSelection(Widget* selection) override;
-	void navigateUp() override;
-	void navigateDown() override;
-	void navigateLeft() override;
-	void navigateRight() override;
+	bool navigateUp() override;
+	bool navigateDown() override;
+	bool navigateLeft() override;
+	bool navigateRight() override;
 
 private:
 	Growl::Value threshold;
