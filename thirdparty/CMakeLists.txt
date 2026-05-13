@@ -127,11 +127,7 @@ if (GROWL_SDL3)
 	get_target_property(SDL_aliased SDL3::SDL3 ALIASED_TARGET)
 	add_library(growl-thirdparty::sdl ALIAS ${SDL_aliased})
 	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::sdl)
-	set_target_properties(${SDL_aliased}
-		PROPERTIES
-		FOLDER "growl-thirdparty"
-		NO_SONAME 1
-	)
+	set_property(TARGET ${SDL_aliased} PROPERTY FOLDER "growl-thirdparty")
 endif()
 
 if (GROWL_IMGUI)
