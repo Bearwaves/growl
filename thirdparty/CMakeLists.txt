@@ -122,6 +122,8 @@ target_link_libraries(growl-thirdparty
 
 if (GROWL_SDL3)
 	set(SDL_TEST_LIBRARY OFF)
+	set(SDL_STATIC ON)
+	set(SDL_SHARED OFF)
 	message(STATUS "[Growl] --- SDL")
 	add_subdirectory(SDL)
 	get_target_property(SDL_aliased SDL3::SDL3 ALIASED_TARGET)
