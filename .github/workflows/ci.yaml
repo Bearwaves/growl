@@ -19,7 +19,7 @@ jobs:
         with:
           submodules: recursive
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install libgl1-mesa-dev
+        run: sudo apt-get update && sudo apt-get install libwayland-dev libgl1-mesa-dev
       - name: Configure CMake
         run: cmake -S . -B build
         working-directory: example/test_app
