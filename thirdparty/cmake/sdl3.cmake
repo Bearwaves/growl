@@ -1,0 +1,16 @@
+set(SOURCE_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/SDL)
+
+if (GROWL_SDL3_FIND)
+	find_package(SDL3 REQUIRED CONFIG)
+	get_target_property(SDL_aliased SDL3::SDL3 ALIASED_TARGET)
+	set_property(TARGET ${SDL_aliased} PROPERTY IMPORTED_GLOBAL TRUE)
+else()
+	set(SDL_TEST_LIBRARY OFF)
+	set(SDL_STATIC ON)
+	set(SDL_SHARED OFF)
+	add_subdirectory(${SOURCE_PREFIX})
+	get_target_property(SDL_aliased SDL3::SDL3 ALIASED_TARGET)
+	set_property(TARGET ${SDL_aliased} PROPERTY FOLDER "growl-thirdparty")
+endif()
+
+add_library(growl-thirdparty::sdl ALIAS ${SDL_aliased})
