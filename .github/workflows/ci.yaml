@@ -27,6 +27,7 @@ jobs:
           libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
           libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev \
           libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev libusb-1.0-0-dev
+          sudo ln -s /usr/lib/x86_64-linux-gnu/pkgconfig/liburing.pc /usr/lib/x86_64-linux-gnu/pkgconfig/liburing-ffi.pc
       - name: Configure CMake
         run: cmake -S . -B build -DGROWL_THIRDPARTY_LOGGING=1
         working-directory: example/test_app
