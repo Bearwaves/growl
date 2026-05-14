@@ -13,22 +13,18 @@ permissions:
 
 jobs:
   linux:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
-      - name: Install dependencies
-        run: |
-          sudo apt-get update && sudo apt-get install \
-          libasound2-dev libpulse-dev \
-          libaudio-dev libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
-          libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
-          libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
-          libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev \
-          libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev libusb-1.0-0-dev
+      - uses: libsdl-org/setup-sdl@main
+        id: sdl
+        with:
+          install-linux-dependencies: true
+          version: 3-latest
       - name: Configure CMake
-        run: cmake -S . -B build -DGROWL_THIRDPARTY_LOGGING=1
+        run: cmake -S . -B build -DGROWL_SDL3_FIND=1 -DGROWL_THIRDPARTY_LOGGING=1
         working-directory: example/test_app
       - name: Build
         run: make -j 4
@@ -46,7 +42,7 @@ jobs:
 
 
   web:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v3
         with:
@@ -103,7 +99,7 @@ jobs:
         working-directory: example/test_app/build
 
   android:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false

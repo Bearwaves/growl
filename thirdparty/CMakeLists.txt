@@ -121,15 +121,9 @@ target_link_libraries(growl-thirdparty
 )
 
 if (GROWL_SDL3)
-	set(SDL_TEST_LIBRARY OFF)
-	set(SDL_STATIC ON)
-	set(SDL_SHARED OFF)
 	message(STATUS "[Growl] --- SDL")
-	add_subdirectory(SDL)
-	get_target_property(SDL_aliased SDL3::SDL3 ALIASED_TARGET)
-	add_library(growl-thirdparty::sdl ALIAS ${SDL_aliased})
+	include(cmake/sdl3.cmake)
 	target_link_libraries(growl-thirdparty INTERFACE growl-thirdparty::sdl)
-	set_property(TARGET ${SDL_aliased} PROPERTY FOLDER "growl-thirdparty")
 endif()
 
 if (GROWL_IMGUI)
