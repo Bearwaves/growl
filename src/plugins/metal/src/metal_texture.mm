@@ -16,7 +16,7 @@ void MetalTexture::bind(id<MTLRenderCommandEncoder> encoder) const {
 	[encoder setFragmentSamplerState:sampler atIndex:0];
 }
 
-Result<std::unique_ptr<Image>> MetalTexture::toImage() {
+Result<std::unique_ptr<Image>> MetalTexture::toImage(int channels) {
 	int bytes_per_row = 4 * width;
 	int bytes_total = bytes_per_row * height;
 	std::vector<unsigned char> data(bytes_total, 0);
@@ -27,6 +27,17 @@ Result<std::unique_ptr<Image>> MetalTexture::toImage() {
 
 	for (int i = 0; i < width * height; i++) {
 		std::swap(data[i * 4], data[i * 4 + 2]);
+	}
+
+	if (channels == 3) {
+		std::vector<unsigned char> rgb_data(3 * width * height, 0);
+		int j = 0;
+		for (int i = 0; i < bytes_total; i++) {
+			rgb_data[j++] = data[i++];
+			rgb_data[j++] = data[i++];
+			rgb_data[j++] = data[i++];
+		}
+		return std::make_unique<Image>(width, height, 3, std::move(rgb_data));
 	}
 
 	return std::make_unique<Image>(width, height, 4, std::move(data));

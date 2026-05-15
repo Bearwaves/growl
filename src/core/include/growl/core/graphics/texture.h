@@ -38,7 +38,7 @@ public:
 
 	// Note: on some platforms like Metal this won't work on the same
 	// frame as the render is done.
-	virtual Result<std::unique_ptr<Image>> toImage() = 0;
+	virtual Result<std::unique_ptr<Image>> toImage(int channels = 4) = 0;
 
 #ifdef GROWL_IMGUI
 	virtual ImTextureID getImguiTextureID() = 0;
