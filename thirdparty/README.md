@@ -18,7 +18,7 @@
 | mbedtls         | `mbedtls-3.6.4`  | https://github.com/Mbed-TLS/mbedtls     |
 | msdfgen         | `v1.12`          | https://github.com/Chlumsky/msdfgen/    |
 | SDL             | `release-3.4.8`  | https://github.com/libsdl-org/SDL       |
-| SoLoud          | `8d9c832`        | https://github.com/Bearwaves/soloud     |
+| SoLoud          | `7948e57`        | https://github.com/Bearwaves/soloud     |
 | stb_image       | `v2.27`          | https://github.com/nothings/stb         |
 | stb_image_write | `v1.16`          | https://github.com/nothings/stb         |
 | stb_rect_pack   | `v1.0.1`         | https://github.com/nothings/stb         |
