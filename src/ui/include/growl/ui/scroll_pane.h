@@ -5,8 +5,9 @@ namespace Growl {
 
 class ScrollPane : public Widget {
 public:
-	ScrollPane(std::string&& name)
-		: Widget{std::move(name)} {}
+	ScrollPane(std::string&& name, float multiplier = 40.f)
+		: Widget{std::move(name)}
+		, multiplier{multiplier} {}
 
 	void layout() override;
 	void onTick(double delta_time) override;
@@ -28,6 +29,7 @@ public:
 	float getMaxY();
 
 private:
+	float multiplier;
 	bool panning = false;
 	float last_pointer_x = 0;
 	float last_pointer_y = 0;

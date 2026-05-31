@@ -125,8 +125,8 @@ bool ScrollPane::onMouseEventPost(
 	case PointerEventType::Scroll:
 		if (!panning) {
 			for (auto child : getChildren()) {
-				child->setX(clampX(child->getX() + 20 * event.scrollX));
-				child->setY(clampY(child->getY() + 20 * event.scrollY));
+				child->setX(clampX(child->getX() + multiplier * event.scrollX));
+				child->setY(clampY(child->getY() + multiplier * event.scrollY));
 			}
 		}
 		break;
