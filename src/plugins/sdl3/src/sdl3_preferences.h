@@ -20,8 +20,10 @@ public:
 private:
 	SDL3SystemAPI& api;
 	std::filesystem::path prefs_file;
+	std::filesystem::path prefs_file_tmp;
 	SDL_AsyncIOQueue* queue;
 	uint64_t writes = 0;
+	bool dirty = false;
 	std::unordered_map<uint64_t, std::string> strings;
 };
 

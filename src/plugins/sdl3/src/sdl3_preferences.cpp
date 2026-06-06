@@ -4,6 +4,7 @@
 #include "growl/core/log.h"
 #include "growl/core/system/preferences.h"
 #include "sdl3_system.h"
+#include <SDL3/SDL_timer.h>
 
 using Growl::Error;
 using Growl::SDL3Preferences;
@@ -15,17 +16,28 @@ SDL3Preferences::SDL3Preferences(
 	: Preferences{shared, std::move(j)}
 	, api{api}
 	, prefs_file{prefs_file} {
+	prefs_file_tmp = prefs_file;
+	prefs_file_tmp.replace_extension(".json.tmp");
 	queue = SDL_CreateAsyncIOQueue();
 }
 
 SDL3Preferences::~SDL3Preferences() {
 	store();
-	tick();
+	int count = 0;
+	while (!strings.empty() && count++ < 500) {
+		tick();
+		SDL_Delay(1);
+	}
 	SDL_DestroyAsyncIOQueue(queue);
 }
 
 void SDL3Preferences::store() {
-	auto file = SDL_AsyncIOFromFile(prefs_file.generic_u8string().c_str(), "w");
+	dirty = true;
+	if (!strings.empty()) {
+		return;
+	}
+	auto file =
+		SDL_AsyncIOFromFile(prefs_file_tmp.generic_u8string().c_str(), "w");
 	if (!file) {
 		api.log(
 			LogLevel::Error, "SDL3Preferences", "Failed to open file at {}: {}",
@@ -45,8 +57,9 @@ void SDL3Preferences::store() {
 		strings.erase(writes);
 		return;
 	}
+	dirty = false;
 
-	if (!SDL_CloseAsyncIO(file, true, queue, nullptr)) {
+	if (!SDL_CloseAsyncIO(file, true, queue, reinterpret_cast<void*>(writes))) {
 		api.log(
 			LogLevel::Error, "SDL3Preferences",
 			"Failed to close preferences: {}", SDL_GetError());
@@ -56,6 +69,28 @@ void SDL3Preferences::store() {
 void SDL3Preferences::tick() {
 	SDL_AsyncIOOutcome outcome;
 	while (SDL_GetAsyncIOResult(queue, &outcome)) {
-		strings.erase(reinterpret_cast<uint64_t>(outcome.userdata));
+		std::uint64_t write_id = reinterpret_cast<uint64_t>(outcome.userdata);
+		if (outcome.result == SDL_ASYNCIO_FAILURE && strings.count(write_id)) {
+			// Remove from map, don't process this one any further
+			strings.erase(write_id);
+			continue;
+		}
+		if (outcome.result == SDL_ASYNCIO_COMPLETE &&
+			outcome.type == SDL_ASYNCIO_TASK_CLOSE && strings.count(write_id)) {
+			std::error_code ec;
+			std::filesystem::rename(prefs_file_tmp, prefs_file, ec);
+			if (ec) {
+				api.log(
+					LogLevel::Warn, "SDL3Preferences",
+					"Error renaming file: {}", ec.message());
+			}
+		}
+		if (outcome.type == SDL_ASYNCIO_TASK_CLOSE && strings.count(write_id)) {
+			strings.clear();
+		}
+	}
+
+	if (dirty) {
+		store();
 	}
 }
