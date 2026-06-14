@@ -64,6 +64,10 @@ public:
 		this->right_nav = right;
 	}
 
+	virtual void replaceNavigationDirections(
+		Widget* up, Widget* down, Widget* left = nullptr,
+		Widget* right = nullptr);
+
 protected:
 	virtual void layout() = 0;
 	virtual void

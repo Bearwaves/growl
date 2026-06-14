@@ -89,3 +89,19 @@ void Widget::removeChild(int i) {
 	Node::removeChild(i);
 	pack_info.erase(std::next(pack_info.begin(), i));
 }
+
+void Widget::replaceNavigationDirections(
+	Widget* up, Widget* down, Widget* left, Widget* right) {
+	if (up) {
+		this->up_nav = up;
+	}
+	if (down) {
+		this->down_nav = down;
+	}
+	if (left) {
+		this->left_nav = left;
+	}
+	if (right) {
+		this->right_nav = right;
+	}
+}
