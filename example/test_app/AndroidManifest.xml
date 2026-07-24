@@ -8,7 +8,8 @@
 
     <activity android:name="com.bearwaves.growl.GrowlActivity"
               android:exported="true"
-              android:configChanges="orientation|screenSize|keyboardHidden">
+              android:configChanges="orientation|screenSize|keyboardHidden"
+              android:enableOnBackInvokedCallback="false">
       <meta-data android:name="android.app.lib_name"
                  android:value="growl-test-app" />
       <intent-filter>

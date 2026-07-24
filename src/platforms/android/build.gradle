@@ -45,12 +45,12 @@ configurations.implementation {
 
 android {
     namespace growlProperties['appId'] as String
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId growlProperties['appId'] as String
         minSdk 24
-        targetSdk 35
+        targetSdk 36
         versionCode Integer.parseInt(growlProperties['versionCode'] as String)
         versionName growlProperties['versionName'] as String
 
