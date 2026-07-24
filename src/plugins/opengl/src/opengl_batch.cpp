@@ -196,10 +196,10 @@ void OpenGLBatch::draw(
 	bound_shader = default_shader;
 	float right = x + width;
 	float bottom = y + height;
-	addVertex(x, y, 0.0f, 0.0f);
-	addVertex(right, y, 1.0f, 0.0f);
-	addVertex(right, bottom, 1.0f, 1.0f);
-	addVertex(x, bottom, 0.0f, 1.0f);
+	addVertex(x, y, 0.0f, 0.0f, width, height);
+	addVertex(right, y, 1.0f, 0.0f, width, height);
+	addVertex(right, bottom, 1.0f, 1.0f, width, height);
+	addVertex(x, bottom, 0.0f, 1.0f, width, height);
 	elements.insert(
 		elements.end(),
 		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
@@ -220,10 +220,10 @@ void OpenGLBatch::draw(
 	bound_shader = default_shader;
 	float right = x + width;
 	float bottom = y + height;
-	addVertex(x, y, region.region.u0, region.region.v0);
-	addVertex(right, y, region.region.u1, region.region.v0);
-	addVertex(right, bottom, region.region.u1, region.region.v1);
-	addVertex(x, bottom, region.region.u0, region.region.v1);
+	addVertex(x, y, region.region.u0, region.region.v0, width, height);
+	addVertex(right, y, region.region.u1, region.region.v0, width, height);
+	addVertex(right, bottom, region.region.u1, region.region.v1, width, height);
+	addVertex(x, bottom, region.region.u0, region.region.v1, width, height);
 	elements.insert(
 		elements.end(),
 		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
@@ -279,10 +279,10 @@ void OpenGLBatch::draw(
 		}
 		auto& region = region_result.get();
 
-		addVertex(gx, gy, region.u0, region.v0);
-		addVertex(right, gy, region.u1, region.v0);
-		addVertex(right, bottom, region.u1, region.v1);
-		addVertex(gx, bottom, region.u0, region.v1);
+		addVertex(gx, gy, region.u0, region.v0, width, height);
+		addVertex(right, gy, region.u1, region.v0, width, height);
+		addVertex(right, bottom, region.u1, region.v1, width, height);
+		addVertex(gx, bottom, region.u0, region.v1, width, height);
 		elements.insert(elements.end(), {i, i + 1, i + 2, i + 2, i + 3, i});
 		i += 4;
 		verts = i;
@@ -323,10 +323,10 @@ void OpenGLBatch::drawRect(
 	float bottom = y + height;
 
 	if (border_width == 0) {
-		addVertex(x, y, 0.0f, 1.0f);
-		addVertex(right, y, 1.0f, 1.0f);
-		addVertex(right, bottom, 1.0f, 0.0f);
-		addVertex(x, bottom, 0.0f, 0.0f);
+		addVertex(x, y, 0.0f, 1.0f, width, height);
+		addVertex(right, y, 1.0f, 1.0f, width, height);
+		addVertex(right, bottom, 1.0f, 0.0f, width, height);
+		addVertex(x, bottom, 0.0f, 0.0f, width, height);
 		elements.insert(
 			elements.end(),
 			{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
@@ -336,10 +336,10 @@ void OpenGLBatch::drawRect(
 
 		// Top
 		float top_inner = y + border_width;
-		addVertex(x, y, 0.0f, 1.0f);
-		addVertex(right, y, 1.0f, 1.0f);
-		addVertex(right, top_inner, 1.0f, 0.0f);
-		addVertex(x, top_inner, 0.0f, 0.0f);
+		addVertex(x, y, 0.0f, 1.0f, width, height);
+		addVertex(right, y, 1.0f, 1.0f, width, height);
+		addVertex(right, top_inner, 1.0f, 0.0f, width, height);
+		addVertex(x, top_inner, 0.0f, 0.0f, width, height);
 		elements.insert(
 			elements.end(),
 			{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
@@ -347,10 +347,10 @@ void OpenGLBatch::drawRect(
 
 		// Bottom
 		float bottom_inner = y + height - border_width;
-		addVertex(x, bottom_inner, 0.0f, 1.0f);
-		addVertex(right, bottom_inner, 1.0f, 1.0f);
-		addVertex(right, bottom, 1.0f, 0.0f);
-		addVertex(x, bottom, 0.0f, 0.0f);
+		addVertex(x, bottom_inner, 0.0f, 1.0f, width, height);
+		addVertex(right, bottom_inner, 1.0f, 1.0f, width, height);
+		addVertex(right, bottom, 1.0f, 0.0f, width, height);
+		addVertex(x, bottom, 0.0f, 0.0f, width, height);
 		elements.insert(
 			elements.end(),
 			{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
@@ -358,10 +358,10 @@ void OpenGLBatch::drawRect(
 
 		// Left
 		float left_inner = x + border_width;
-		addVertex(x, y, 0.0f, 1.0f);
-		addVertex(left_inner, y, 1.0f, 1.0f);
-		addVertex(left_inner, bottom, 1.0f, 0.0f);
-		addVertex(x, bottom, 0.0f, 0.0f);
+		addVertex(x, y, 0.0f, 1.0f, width, height);
+		addVertex(left_inner, y, 1.0f, 1.0f, width, height);
+		addVertex(left_inner, bottom, 1.0f, 0.0f, width, height);
+		addVertex(x, bottom, 0.0f, 0.0f, width, height);
 		elements.insert(
 			elements.end(),
 			{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
@@ -369,10 +369,10 @@ void OpenGLBatch::drawRect(
 
 		// Right
 		float right_inner = x + width - border_width;
-		addVertex(right_inner, y, 0.0f, 1.0f);
-		addVertex(right, y, 1.0f, 1.0f);
-		addVertex(right, bottom, 1.0f, 0.0f);
-		addVertex(right_inner, bottom, 0.0f, 0.0f);
+		addVertex(right_inner, y, 0.0f, 1.0f, width, height);
+		addVertex(right, y, 1.0f, 1.0f, width, height);
+		addVertex(right, bottom, 1.0f, 0.0f, width, height);
+		addVertex(right_inner, bottom, 0.0f, 0.0f, width, height);
 		elements.insert(
 			elements.end(),
 			{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
@@ -396,10 +396,10 @@ void OpenGLBatch::drawRect(
 	float right = x + width;
 	float bottom = y + height;
 
-	addVertex(x, y, 0.0f, 1.0f, gradient_top_left);
-	addVertex(right, y, 1.0f, 1.0f, gradient_top_right);
-	addVertex(right, bottom, 1.0f, 0.0f, gradient_bottom_right);
-	addVertex(x, bottom, 0.0f, 0.0f, gradient_bottom_left);
+	addVertex(x, y, 0.0f, 1.0f, width, height, gradient_top_left);
+	addVertex(right, y, 1.0f, 1.0f, width, height, gradient_top_right);
+	addVertex(right, bottom, 1.0f, 0.0f, width, height, gradient_bottom_right);
+	addVertex(x, bottom, 0.0f, 0.0f, width, height, gradient_bottom_left);
 	elements.insert(
 		elements.end(),
 		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
@@ -469,14 +469,18 @@ void OpenGLBatch::flush() {
 	bound_shader = nullptr;
 }
 
-void OpenGLBatch::addVertex(float x, float y, float tex_x, float tex_y) {
-	addVertex(x, y, tex_x, tex_y, this->color);
+void OpenGLBatch::addVertex(
+	float x, float y, float tex_x, float tex_y, float w, float h) {
+	addVertex(x, y, tex_x, tex_y, w, h, this->color);
 }
 
 void OpenGLBatch::addVertex(
-	float x, float y, float tex_x, float tex_y, Color color) {
+	float x, float y, float tex_x, float tex_y, float w, float h, Color color) {
 	vertices.insert(
-		vertices.end(),
-		Vertex{
-			{x, y}, {tex_x, tex_y}, {color.r, color.g, color.b, color.a}, idx});
+		vertices.end(), Vertex{
+							{x, y},
+							{tex_x, tex_y},
+							{w, h},
+							{color.r, color.g, color.b, color.a},
+							idx});
 }

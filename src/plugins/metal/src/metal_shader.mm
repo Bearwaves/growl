@@ -103,11 +103,13 @@ struct ConstantBlock {
 struct VertexIn {
 	float2 position;
 	float2 vertPos;
+	float2 dimensions;
 	float4 color;
 };
 
 struct VertexOut {
 	float2 texCoord0;
+	float2 dimensions;
 	float4 position [[ position ]];
 	float4 color;
 };
@@ -128,6 +130,7 @@ vertex VertexOut vertex_func (
 
 	VertexOut outVertex = VertexOut();
 	outVertex.texCoord0 = v.vertPos;
+	outVertex.dimensions = v.dimensions;
 	outVertex.position = constant_block.projection * transform * float4(v.position, 0, 1);
 	outVertex.color = v.color;
 

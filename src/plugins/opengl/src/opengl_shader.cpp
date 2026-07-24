@@ -14,7 +14,7 @@ OpenGLShader::~OpenGLShader() {
 	}
 }
 
-constexpr GLsizei VERTEX_ATTRIB_STRIDE = 8 * sizeof(GLfloat) + sizeof(GLuint);
+constexpr GLsizei VERTEX_ATTRIB_STRIDE = 10 * sizeof(GLfloat) + sizeof(GLuint);
 
 void OpenGLShader::bind() {
 	glUseProgram(program);
@@ -29,19 +29,26 @@ void OpenGLShader::bind() {
 			tex_attrib, 2, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE,
 			(void*)(2 * sizeof(GLfloat)));
 	}
+	GLuint dimensions_attrib = glGetAttribLocation(program, "dimensions");
+	if (dimensions_attrib >= 0) {
+		glEnableVertexAttribArray(dimensions_attrib);
+		glVertexAttribPointer(
+			dimensions_attrib, 2, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE,
+			(void*)(4 * sizeof(GLfloat)));
+	}
 	GLuint color_attrib = glGetAttribLocation(program, "color");
 	if (color_attrib >= 0) {
 		glEnableVertexAttribArray(color_attrib);
 		glVertexAttribPointer(
 			color_attrib, 4, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE,
-			(void*)(4 * sizeof(GLfloat)));
+			(void*)(6 * sizeof(GLfloat)));
 	}
 	GLuint index_attrib = glGetAttribLocation(program, "idx");
 	if (index_attrib >= 0) {
 		glEnableVertexAttribArray(index_attrib);
 		glVertexAttribIPointer(
 			index_attrib, 1, GL_UNSIGNED_INT, VERTEX_ATTRIB_STRIDE,
-			(void*)(8 * sizeof(GLfloat)));
+			(void*)(10 * sizeof(GLfloat)));
 	}
 }
 
@@ -115,10 +122,12 @@ const std::string OpenGLShader::default_uniforms = R"(
 const std::string OpenGLShader::vertex_block = R"(
 in vec2 position;
 in vec2 texCoord;
+in vec2 dimensions;
 in vec4 color;
 in int idx;
 
 out vec2 TexCoord;
+out vec2 Dimensions;
 out vec4 Color;
 flat out int Idx;
 
@@ -140,6 +149,7 @@ layout (std140) uniform FragmentBlock {
 const std::string OpenGLShader::default_vertex = R"(
 void main() {
 	TexCoord = texCoord;
+	Dimensions = dimensions;
 	Color = color;
 	Idx = idx;
 	gl_Position = projection * transforms[idx] * vec4(position, 0, 1);

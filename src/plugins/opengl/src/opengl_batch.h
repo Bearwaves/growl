@@ -30,6 +30,7 @@ struct FragmentBlock {
 struct Vertex {
 	glm::vec2 pos;
 	glm::vec2 tex_pos;
+	glm::vec2 dimensions;
 	glm::vec4 color;
 	GLuint idx;
 };
@@ -117,8 +118,11 @@ private:
 #endif
 
 	void flush();
-	void addVertex(float x, float y, float tex_x, float tex_y);
-	void addVertex(float x, float y, float tex_x, float tex_y, Color color);
+	void
+	addVertex(float x, float y, float tex_x, float tex_y, float w, float h);
+	void addVertex(
+		float x, float y, float tex_x, float tex_y, float w, float h,
+		Color color);
 };
 
 } // namespace Growl
