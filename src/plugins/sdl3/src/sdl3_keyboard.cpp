@@ -7,6 +7,9 @@
 #include "growl/core/input/processor.h"
 #include "sdl3_system.h"
 #include "sdl3_window.h"
+#ifdef GROWL_IMGUI
+#include "growl/imgui/imgui.h"
+#endif
 
 using Growl::Key;
 using Growl::KeyEventType;
@@ -30,6 +33,9 @@ void SDL3SystemAPI::handleKeyboardEvent(SDL_Event& event) {
 	if (event.type == SDL_EVENT_KEY_UP &&
 		event.key.scancode == debug_mode_key) {
 		api.setImguiVisible(!api.imguiVisible());
+		if (api.imguiVisible()) {
+			imGuiFocusGameWindow();
+		}
 		imgui_resize_window = event.window.windowID;
 	}
 #endif

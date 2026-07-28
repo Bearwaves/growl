@@ -4,6 +4,7 @@
 #include "growl/core/scripting/class.h"
 #include "growl/scene/node.h"
 #ifdef GROWL_IMGUI
+#include "growl/imgui/imgui.h"
 #include "imgui.h"
 #endif
 
@@ -406,5 +407,6 @@ void Growl::imGuiBeginSceneWindow() {
 
 void Growl::imGuiEndSceneWindow() {
 	ImGui::End();
+	imGuiDockLeft("Scene");
 }
 #endif

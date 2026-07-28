@@ -76,7 +76,7 @@ locate the `growl-test-app.sln` that CMake just generated in your `build` folder
 ![testapp](_media/testapp.png)
 
 The test app demonstrates asset loading, rendering, audio, input, text
-rendering and the debug menu (try pressing **F12**).
+rendering and the debug menu (try pressing the key to the left of your **1** key).
 
 ## Next steps 
 

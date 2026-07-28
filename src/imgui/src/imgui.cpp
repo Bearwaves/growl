@@ -3,6 +3,7 @@
 #include "growl/core/api/api.h"
 #include "growl/core/graphics/window.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 
 constexpr const char* SYSTEM_API_WINDOW = "System API";
 constexpr const char* WINDOW_WINDOW = "Window";
@@ -15,6 +16,12 @@ static int game_window_h = 0;
 static bool game_window_resized;
 static bool system_api_view = false;
 static bool window_view = false;
+static bool needs_setup = true;
+static bool first_render = true;
+static ImGuiID dockspace_id = 0;
+static ImGuiID dockspace_left = 0;
+static ImGuiID dockspace_right = 0;
+static ImGuiID dockspace_bottom = 0;
 
 namespace Growl {
 void doApiWindows(API& api) {
@@ -22,6 +29,9 @@ void doApiWindows(API& api) {
 		ImGui::Begin(SYSTEM_API_WINDOW, &system_api_view);
 		static_cast<SystemAPIInternal&>(api.system()).populateDebugMenu();
 		ImGui::End();
+		if (needs_setup) {
+			ImGui::DockBuilderDockWindow(SYSTEM_API_WINDOW, dockspace_right);
+		}
 	}
 	if (window_view) {
 		ImGui::Begin(WINDOW_WINDOW, &window_view);
@@ -29,6 +39,9 @@ void doApiWindows(API& api) {
 			.getWindow()
 			->populateDebugMenu();
 		ImGui::End();
+		if (needs_setup) {
+			ImGui::DockBuilderDockWindow(WINDOW_WINDOW, dockspace_bottom);
+		}
 	}
 }
 } // namespace Growl
@@ -53,15 +66,30 @@ void Growl::imGuiBegin(API& api) {
 		ImGui::GetIO().Framerate);
 	ImGui::SetCursorPosX(cursor);
 	ImGui::EndMainMenuBar();
-	ImGuiID dockspace_id = ImGui::GetID("DockSpace");
-	ImGui::DockSpaceOverViewport(dockspace_id);
+	dockspace_id = ImGui::GetID("DockSpace");
+	if (needs_setup) {
+		needs_setup = !ImGui::DockBuilderGetNode(dockspace_id);
+		ImGui::DockSpaceOverViewport(dockspace_id);
+		if (needs_setup) {
+			api.system().log("ImGui", "Dock space needs first time setup");
+			ImGui::DockBuilderDockWindow("Game", dockspace_id);
+			ImGuiID main;
+			dockspace_left = ImGui::DockBuilderSplitNode(
+				dockspace_id, ImGuiDir_Left, 0.2f, nullptr, &main);
+			dockspace_right = ImGui::DockBuilderSplitNode(
+				dockspace_id, ImGuiDir_Right, 0.2f, nullptr, nullptr);
+			dockspace_bottom = ImGui::DockBuilderSplitNode(
+				main, ImGuiDir_Down, 0.2f, nullptr, nullptr);
+			ImGui::DockBuilderFinish(dockspace_id);
+		}
+	} else {
+		ImGui::DockSpaceOverViewport(dockspace_id);
+	}
 	doApiWindows(api);
 }
 
 void Growl::imGuiBeginGameWindow() {
 	ImGui::Begin("Game", nullptr, ImGuiWindowFlags_NoCollapse);
-	ImGui::BeginChild(
-		"GameContent", ImVec2{0, 0}, false, ImGuiWindowFlags_NoMove);
 	game_window_focused = ImGui::IsWindowFocused();
 	auto pos = ImGui::GetCursorScreenPos();
 	game_window_x = pos.x * ImGui::GetIO().DisplayFramebufferScale.x;
@@ -80,12 +108,20 @@ void Growl::imGuiBeginGameWindow() {
 }
 
 void Growl::imGuiEndGameWindow() {
-	ImGui::EndChild();
 	ImGui::End();
+	if (first_render) {
+		ImGui::SetWindowFocus("Game");
+		first_render = false;
+	}
 }
 
 bool Growl::imGuiGameWindowFocused() {
 	return game_window_focused;
+}
+
+void Growl::imGuiFocusGameWindow() {
+	ImGui::SetWindowFocus("Game");
+	game_window_focused = true;
 }
 
 void Growl::imGuiGameWindowSize(int* w, int* h) {
@@ -107,6 +143,27 @@ bool Growl::imGuiGameWindowResized() {
 
 void Growl::imGuiEnd() {
 	ImGui::Render();
+	if (needs_setup) {
+		needs_setup = false;
+	}
+}
+
+void Growl::imGuiDockLeft(const char* name) {
+	if (needs_setup) {
+		ImGui::DockBuilderDockWindow(name, dockspace_left);
+	}
+}
+
+void Growl::imGuiDockRight(const char* name) {
+	if (needs_setup) {
+		ImGui::DockBuilderDockWindow(name, dockspace_right);
+	}
+}
+
+void Growl::imGuiDockBottom(const char* name) {
+	if (needs_setup) {
+		ImGui::DockBuilderDockWindow(name, dockspace_bottom);
+	}
 }
 
 #endif

@@ -17,6 +17,7 @@ GameAdapter::GameAdapter(std::unique_ptr<Game> game)
 	: m_api(std::make_unique<API>())
 	, m_game(std::move(game)) {
 
+	m_api->setImguiVisible(m_game->getConfig().debug_mode_default_open);
 	m_api->setSystemAPI(createSystemAPI(*m_api));
 	m_api->setGraphicsAPI(createGraphicsAPI(*m_api));
 	m_api->setAudioAPI(createAudioAPI(*m_api));
