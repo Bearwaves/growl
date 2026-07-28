@@ -69,7 +69,8 @@ void Growl::imGuiBegin(API& api) {
 	dockspace_id = ImGui::GetID("DockSpace");
 	if (needs_setup) {
 		needs_setup = !ImGui::DockBuilderGetNode(dockspace_id);
-		ImGui::DockSpaceOverViewport(dockspace_id);
+		ImGui::DockSpaceOverViewport(
+			dockspace_id, nullptr, ImGuiDockNodeFlags_HiddenTabBar);
 		if (needs_setup) {
 			api.system().log("ImGui", "Dock space needs first time setup");
 			ImGui::DockBuilderDockWindow("Game", dockspace_id);
@@ -83,7 +84,8 @@ void Growl::imGuiBegin(API& api) {
 			ImGui::DockBuilderFinish(dockspace_id);
 		}
 	} else {
-		ImGui::DockSpaceOverViewport(dockspace_id);
+		ImGui::DockSpaceOverViewport(
+			dockspace_id, nullptr, ImGuiDockNodeFlags_HiddenTabBar);
 	}
 	doApiWindows(api);
 }
