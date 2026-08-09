@@ -29,21 +29,21 @@ void OpenGLShader::bind() {
 			tex_attrib, 2, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE,
 			(void*)(2 * sizeof(GLfloat)));
 	}
-	GLuint dimensions_attrib = glGetAttribLocation(program, "dimensions");
+	GLint dimensions_attrib = glGetAttribLocation(program, "dimensions");
 	if (dimensions_attrib >= 0) {
 		glEnableVertexAttribArray(dimensions_attrib);
 		glVertexAttribPointer(
 			dimensions_attrib, 2, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE,
 			(void*)(4 * sizeof(GLfloat)));
 	}
-	GLuint color_attrib = glGetAttribLocation(program, "color");
+	GLint color_attrib = glGetAttribLocation(program, "color");
 	if (color_attrib >= 0) {
 		glEnableVertexAttribArray(color_attrib);
 		glVertexAttribPointer(
 			color_attrib, 4, GL_FLOAT, GL_FALSE, VERTEX_ATTRIB_STRIDE,
 			(void*)(6 * sizeof(GLfloat)));
 	}
-	GLuint index_attrib = glGetAttribLocation(program, "idx");
+	GLint index_attrib = glGetAttribLocation(program, "idx");
 	if (index_attrib >= 0) {
 		glEnableVertexAttribArray(index_attrib);
 		glVertexAttribIPointer(
