@@ -54,6 +54,10 @@ void Growl::imGuiBegin(API& api) {
 		ImGui::SeparatorText("Growl APIs");
 		ImGui::MenuItem("System API", nullptr, &system_api_view);
 		ImGui::MenuItem("Window", nullptr, &window_view);
+		if (ImGui::MenuItem("Reset debug UI")) {
+			needs_setup = true;
+			ImGui::DockBuilderRemoveNode(dockspace_id);
+		}
 		ImGui::EndMenu();
 	}
 	auto size = ImGui::CalcTextSize("0.00 ms/frame (000.0 FPS)");
