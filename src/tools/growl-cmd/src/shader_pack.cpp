@@ -3,7 +3,10 @@
 #include "assets_config.h"
 #include "error.h"
 #include "growl/core/assets/bundle.h"
+#include "growl/core/assets/error.h"
 #include "growl/core/error.h"
+#include "nlohmann/json.hpp"
+#include "shader_defaults.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -13,11 +16,14 @@
 using Growl::AssetInfo;
 using Growl::AssetsBundleShaderPackInfo;
 using Growl::AssetsBundleShaderSourceInfo;
+using Growl::AssetsError;
 using Growl::AssetsIncludeError;
 using Growl::AssetsIncludeErrorCode;
 using Growl::AssetsMap;
 using Growl::AssetType;
+using Growl::Error;
 using Growl::Result;
+using Growl::ShaderDefaults;
 using Growl::ShaderPackConfig;
 using Growl::ShaderSource;
 using Growl::ShaderType;
@@ -127,4 +133,54 @@ AssetsIncludeError includeShaderPack(
 	assets_map[resolved_path.generic_string()] = info;
 
 	return AssetsIncludeErrorCode::None;
+}
+
+Error createShader(
+	std::string name, std::string assets_dir, bool fragment, bool vertex,
+	bool uniforms) {
+	if (!(fragment || vertex)) {
+		return std::make_unique<AssetsError>(
+			"Either fragment or vertex must be created");
+	}
+
+	auto path = std::filesystem::path{assets_dir}.append(name);
+	if (std::filesystem::exists(path)) {
+		return std::make_unique<AssetsError>(
+			std::string{"Path "} + path.string() + std::string{" exists."});
+	}
+
+	std::filesystem::create_directory(path);
+
+	if (fragment) {
+		std::ofstream glsl(path / "fragment.glsl", std::ios::out);
+		glsl << ShaderDefaults::fragment_glsl;
+		glsl.close();
+
+		std::ofstream metal(path / "fragment.metal", std::ios::out);
+		metal << ShaderDefaults::fragment_metal;
+		metal.close();
+
+		std::cout << "Created fragment shader." << std::endl;
+	}
+
+	if (vertex) {
+		std::ofstream glsl(path / "vertex.glsl", std::ios::out);
+		glsl << ShaderDefaults::vertex_glsl;
+		glsl.close();
+
+		std::ofstream metal(path / "vertex.metal", std::ios::out);
+		metal << ShaderDefaults::vertex_metal;
+		metal.close();
+
+		std::cout << "Created vertex shader." << std::endl;
+	}
+
+	nlohmann::json j = {{".", {{"shaderPack", {{"name", name}}}}}};
+	std::ofstream manifest(path / "assets.json", std::ios::out);
+	manifest << j.dump(2, ' ');
+	manifest.close();
+
+	std::cout << "New shader created at " << path.string() << std::endl;
+
+	return nullptr;
 }

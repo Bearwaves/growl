@@ -9,6 +9,7 @@ set(SOURCES
 	"src/atlas.cpp"
 	"src/shader_pack.cpp"
 	"src/assets_config.cpp"
+	"src/shader_defaults.cpp"
 )
 
 set(HEADERS
