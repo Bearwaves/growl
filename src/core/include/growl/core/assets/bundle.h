@@ -100,10 +100,20 @@ public:
 		AssetsMap& assets_map) noexcept
 		: file{std::move(file)}
 		, path{path}
-		, assetsMap{std::move(assets_map)} {}
+		, assets_map{std::move(assets_map)} {}
+
+#ifdef GROWL_IMGUI
+	explicit AssetsBundle(
+		std::unique_ptr<File> file, std::string path, AssetsMap& assets_map,
+		std::map<AssetType, AssetsMap>& assets_by_type) noexcept
+		: file{std::move(file)}
+		, path{path}
+		, assets_map{std::move(assets_map)}
+		, assets_by_type{std::move(assets_by_type)} {}
+#endif
 
 	AssetsMap& getAssetsMap() {
-		return assetsMap;
+		return assets_map;
 	}
 
 	Result<Image> getImage(std::string name) noexcept;
@@ -118,10 +128,18 @@ public:
 	// Returns a File pointer to a specific asset.
 	Result<std::unique_ptr<File>> getAssetAsFile(std::string name) noexcept;
 
+#ifdef GROWL_IMGUI
+	void populateDebugMenu();
+#endif
+
 private:
 	std::unique_ptr<File> file;
 	std::string path;
-	AssetsMap assetsMap;
+	AssetsMap assets_map;
+
+#ifdef GROWL_IMGUI
+	std::map<AssetType, AssetsMap> assets_by_type;
+#endif
 };
 
 Result<AssetsBundle>

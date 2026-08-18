@@ -11,6 +11,9 @@
 #include "nlohmann/json.hpp"
 #include <string>
 #include <vector>
+#ifdef GROWL_IMGUI
+#include "imgui.h"
+#endif
 
 using Growl::AssetInfo;
 using Growl::AssetsBundle;
@@ -57,7 +60,21 @@ Result<AssetsBundle> Growl::loadAssetsBundle(
 				"Failed to load assets map JSON: " + std::string(e.what())));
 	}
 
+#ifdef GROWL_IMGUI
+	std::map<AssetType, AssetsMap> assets_by_type;
+	for (auto& [path, info] : resource_map) {
+		if (assets_by_type.find(info.type) == assets_by_type.end()) {
+			assets_by_type[info.type] = AssetsMap{{path, info}};
+		} else {
+			assets_by_type[info.type][path] = info;
+		}
+	}
+	return AssetsBundle(
+		std::move(file), file_path, resource_map, assets_by_type);
+#else
+
 	return AssetsBundle(std::move(file), file_path, resource_map);
+#endif
 }
 
 void Growl::to_json(json& j, const AssetInfo& r) {
@@ -156,8 +173,8 @@ std::string Growl::getAssetTypeName(AssetType type) {
 }
 
 Result<Image> AssetsBundle::getImage(std::string name) noexcept {
-	auto info_find = assetsMap.find(name);
-	if (info_find == assetsMap.end()) {
+	auto info_find = assets_map.find(name);
+	if (info_find == assets_map.end()) {
 		return Error(
 			std::make_unique<AssetsError>(
 				"Failed to load image " + name + "; not found in asset map."));
@@ -181,8 +198,8 @@ Result<Image> AssetsBundle::getImage(std::string name) noexcept {
 }
 
 Result<Atlas> AssetsBundle::getAtlas(std::string name) noexcept {
-	auto info_find = assetsMap.find(name);
-	if (info_find == assetsMap.end()) {
+	auto info_find = assets_map.find(name);
+	if (info_find == assets_map.end()) {
 		return Error(
 			std::make_unique<AssetsError>(
 				"Failed to load atlas " + name + "; not found in asset map."));
@@ -225,8 +242,8 @@ Result<Atlas> AssetsBundle::getAtlas(std::string name) noexcept {
 
 Result<FontFace> AssetsBundle::getBitmapFont(
 	std::string name, int size, std::string characters) noexcept {
-	auto info_find = assetsMap.find(name);
-	if (info_find == assetsMap.end()) {
+	auto info_find = assets_map.find(name);
+	if (info_find == assets_map.end()) {
 		return Error(
 			std::make_unique<AssetsError>(
 				"Failed to load font " + name + "; not found in asset map."));
@@ -251,8 +268,8 @@ Result<FontFace> AssetsBundle::getBitmapFont(
 }
 
 Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
-	auto info_find = assetsMap.find(name);
-	if (info_find == assetsMap.end()) {
+	auto info_find = assets_map.find(name);
+	if (info_find == assets_map.end()) {
 		return Error(
 			std::make_unique<AssetsError>(
 				"Failed to load font " + name + "; not found in asset map."));
@@ -299,8 +316,8 @@ Result<FontFace> AssetsBundle::getDistanceFieldFont(std::string name) noexcept {
 }
 
 Result<ShaderPack> AssetsBundle::getShaderPack(std::string name) noexcept {
-	auto info_find = assetsMap.find(name);
-	if (info_find == assetsMap.end()) {
+	auto info_find = assets_map.find(name);
+	if (info_find == assets_map.end()) {
 		return Error(
 			std::make_unique<AssetsError>(
 				"Failed to load shader pack " + name +
@@ -351,8 +368,8 @@ Result<ShaderPack> AssetsBundle::getShaderPack(std::string name) noexcept {
 
 Result<std::string>
 AssetsBundle::getTextFileAsString(std::string name) noexcept {
-	auto info_find = assetsMap.find(name);
-	if (info_find == assetsMap.end()) {
+	auto info_find = assets_map.find(name);
+	if (info_find == assets_map.end()) {
 		return Error(
 			std::make_unique<AssetsError>(
 				"Failed to load text file " + name +
@@ -377,8 +394,8 @@ AssetsBundle::getTextFileAsString(std::string name) noexcept {
 
 Result<std::vector<unsigned char>>
 AssetsBundle::getRawData(std::string name) noexcept {
-	auto info_find = assetsMap.find(name);
-	if (info_find == assetsMap.end()) {
+	auto info_find = assets_map.find(name);
+	if (info_find == assets_map.end()) {
 		return Error(
 			std::make_unique<AssetsError>(
 				"Failed to load asset " + name + "; not found in asset map."));
@@ -395,8 +412,8 @@ AssetsBundle::getRawData(std::string name) noexcept {
 
 Result<std::unique_ptr<File>>
 AssetsBundle::getAssetAsFile(std::string name) noexcept {
-	auto info_find = assetsMap.find(name);
-	if (info_find == assetsMap.end()) {
+	auto info_find = assets_map.find(name);
+	if (info_find == assets_map.end()) {
 		return Error(
 			std::make_unique<AssetsError>(
 				"Failed to load asset " + name +
@@ -413,3 +430,27 @@ AssetsBundle::getAssetAsFile(std::string name) noexcept {
 	}
 	return std::move(file_result.get());
 }
+
+#ifdef GROWL_IMGUI
+void AssetsBundle::populateDebugMenu() {
+	if (ImGui::TreeNodeEx(
+			path.c_str(),
+			ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed)) {
+		for (auto& [asset_type, assets] : assets_by_type) {
+			ImGui::SeparatorText(getAssetTypeName(asset_type).c_str());
+			for (auto& [path, info] : assets) {
+				if (ImGui::TreeNode(path.c_str())) {
+					ImGui::Text("Size: %.3f KiB", info.size / 1024.f);
+					if (!info.developer_relative_path.empty()) {
+						ImGui::TextLinkOpenURL(
+							"Source file",
+							info.developer_relative_path.c_str());
+					}
+					ImGui::TreePop();
+				}
+			}
+		}
+		ImGui::TreePop();
+	}
+}
+#endif
