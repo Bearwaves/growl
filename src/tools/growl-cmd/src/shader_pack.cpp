@@ -55,7 +55,7 @@ std::string shaderFormat(ShaderType type) {
 AssetsIncludeError includeShaderPack(
 	const ShaderPackConfig& config, const std::filesystem::path& path,
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
-	std::ofstream& outfile) noexcept {
+	std::ofstream& outfile, bool dev_info) noexcept {
 	std::unordered_map<ShaderType, ShaderSource> sources;
 	for (auto& entry : std::filesystem::directory_iterator(path)) {
 		ShaderType shader_type;
@@ -98,7 +98,9 @@ AssetsIncludeError includeShaderPack(
 	}
 
 	auto start = static_cast<uint64_t>(outfile.tellp());
-	AssetInfo info{start, 0, AssetType::ShaderPack};
+	AssetInfo info{
+		start, 0, AssetType::ShaderPack,
+		dev_info ? path.relative_path().generic_string() : ""};
 	AssetsBundleShaderPackInfo pack_info;
 	pack_info.name = config.name;
 	for (auto& entry : sources) {
@@ -137,7 +139,7 @@ AssetsIncludeError includeShaderPack(
 
 Error createShader(
 	std::string name, std::string assets_dir, bool fragment, bool vertex,
-	bool uniforms) {
+	bool uniforms) noexcept {
 	if (!(fragment || vertex)) {
 		return std::make_unique<AssetsError>(
 			"Either fragment or vertex must be created");

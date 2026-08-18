@@ -10,7 +10,7 @@ using rang::style;
 using std::cout;
 using std::endl;
 
-void bundleAssets(std::string directory, std::string output);
+void bundleAssets(std::string directory, std::string output, bool no_dev);
 void listAssets(std::string assets_bundle);
 Growl::Error createShader(
 	std::string shader_name, std::string assets_dir, bool fragment, bool vertex,
@@ -33,9 +33,10 @@ int main(int argc, char** argv) {
 		->add_option("directory", assets_dir, "The assets directory to bundle")
 		->required()
 		->check(CLI::ExistingDirectory);
-	bundle->add_option("output", "The output file for the bundled assets");
-	bundle->callback([&assets_dir, &assets_bundle] {
-		bundleAssets(assets_dir, assets_bundle);
+	bool no_dev;
+	bundle->add_flag("--no-dev", no_dev, "Disable developer debug info");
+	bundle->callback([&assets_dir, &assets_bundle, &no_dev] {
+		bundleAssets(assets_dir, assets_bundle, no_dev);
 	});
 
 	CLI::App* list_assets =

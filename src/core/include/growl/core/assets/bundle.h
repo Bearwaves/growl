@@ -67,6 +67,7 @@ struct AssetInfo {
 	uint64_t position;
 	uint64_t size;
 	AssetType type;
+	std::string developer_relative_path;
 	std::optional<std::unordered_map<std::string, AtlasRegion>> atlas_regions;
 	std::optional<AssetsBundleMSDFFontInfo> font;
 	std::optional<AssetsBundleShaderPackInfo> shader_pack;

@@ -56,19 +56,19 @@ bool isValidAudio(std::string path) {
 AssetsIncludeError includeAtlas(
 	const AtlasConfig& config, const std::filesystem::path& path,
 	const std::filesystem::path& resolved_path, AssetsMap& assets_map,
-	std::ofstream& outfile) noexcept;
+	std::ofstream& outfile, bool dev_info) noexcept;
 
 AssetsIncludeError includeShaderPack(
 	const ShaderPackConfig& config, const std::filesystem::path& path,
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
-	std::ofstream& outfile) noexcept;
+	std::ofstream& outfile, bool dev_info) noexcept;
 
 std::string shaderFormat(ShaderType type);
 
 AssetsIncludeError includeImage(
 	const std::filesystem::directory_entry& entry,
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
-	std::ofstream& outfile) noexcept {
+	std::ofstream& outfile, bool dev_info) noexcept {
 	if (!entry.is_regular_file()) {
 		return AssetsIncludeErrorCode::None;
 	}
@@ -87,7 +87,8 @@ AssetsIncludeError includeImage(
 	}
 	auto ptr = static_cast<unsigned int>(outfile.tellp());
 	assets_map[resolved_path.generic_string()] = {
-		ptr, out_buf.size(), AssetType::Image};
+		ptr, out_buf.size(), AssetType::Image,
+		dev_info ? entry.path().relative_path().generic_string() : ""};
 	outfile.write(
 		reinterpret_cast<const char*>(out_buf.data()), out_buf.size());
 
@@ -99,7 +100,7 @@ AssetsIncludeError includeImage(
 AssetsIncludeError includeFont(
 	const std::filesystem::directory_entry& entry, const FontConfig& config,
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
-	std::ofstream& outfile) noexcept {
+	std::ofstream& outfile, bool dev_info) noexcept {
 	// Try to create a font
 	if (!Growl::isValidFont(entry.path().string())) {
 		return AssetsIncludeErrorCode::WrongType;
@@ -116,7 +117,9 @@ AssetsIncludeError includeFont(
 	file.read(reinterpret_cast<char*>(data.data()), size);
 
 	auto ptr = static_cast<unsigned int>(outfile.tellp());
-	AssetInfo info{ptr, size, AssetType::Font};
+	AssetInfo info{
+		ptr, size, AssetType::Font,
+		dev_info ? entry.path().relative_path().generic_string() : ""};
 	outfile.write(reinterpret_cast<const char*>(data.data()), size);
 
 	std::cout << "Included font " << style::bold
@@ -155,7 +158,7 @@ AssetsIncludeError includeFont(
 AssetsIncludeError includeAudio(
 	const std::filesystem::directory_entry& entry,
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
-	std::ofstream& outfile) noexcept {
+	std::ofstream& outfile, bool dev_info) noexcept {
 	if (!isValidAudio(entry.path().string())) {
 		return AssetsIncludeErrorCode::WrongType;
 	}
@@ -171,7 +174,9 @@ AssetsIncludeError includeAudio(
 	file.read(reinterpret_cast<char*>(data.data()), size);
 
 	auto ptr = static_cast<unsigned int>(outfile.tellp());
-	AssetInfo info{ptr, size, AssetType::Audio};
+	AssetInfo info{
+		ptr, size, AssetType::Audio,
+		dev_info ? entry.path().relative_path().generic_string() : ""};
 	outfile.write(reinterpret_cast<const char*>(data.data()), size);
 
 	std::cout << "Included audio " << style::bold
@@ -186,7 +191,7 @@ AssetsIncludeError includeAudio(
 AssetsIncludeError includeText(
 	const std::filesystem::directory_entry& entry,
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
-	std::ofstream& outfile) noexcept {
+	std::ofstream& outfile, bool dev_info) noexcept {
 	std::ifstream file;
 	file.open(entry.path(), std::ios::in);
 	if (file.fail()) {
@@ -208,7 +213,8 @@ AssetsIncludeError includeText(
 
 	AssetInfo info{
 		start, static_cast<unsigned int>(outfile.tellp()) - start,
-		AssetType::Text};
+		AssetType::Text,
+		dev_info ? entry.path().relative_path().generic_string() : ""};
 	std::cout << "Included text file " << style::bold
 			  << resolved_path.generic_string() << style::reset << "."
 			  << std::endl;
@@ -221,7 +227,7 @@ AssetsIncludeError includeText(
 AssetsIncludeError includeJson(
 	const std::filesystem::directory_entry& entry,
 	std::filesystem::path& resolved_path, AssetsMap& assets_map,
-	std::ofstream& outfile) noexcept {
+	std::ofstream& outfile, bool dev_info) noexcept {
 	std::ifstream file;
 	file.open(entry.path(), std::ios::in);
 	if (file.fail()) {
@@ -235,7 +241,7 @@ AssetsIncludeError includeJson(
 
 	AssetInfo info{
 		start, static_cast<unsigned int>(outfile.tellp()) - start,
-		AssetType::Text};
+		AssetType::Text, dev_info ? entry.path().generic_string() : ""};
 	std::cout << "Included JSON file " << style::bold
 			  << resolved_path.generic_string() << style::reset << "."
 			  << std::endl;
@@ -247,7 +253,7 @@ AssetsIncludeError includeJson(
 
 Result<bool> processDirectory(
 	std::string& assets_dir, std::filesystem::path path, AssetsMap& assets_map,
-	std::ofstream& outfile) {
+	std::ofstream& outfile, bool dev_info) {
 	std::filesystem::path dir_resolved_path =
 		std::filesystem::relative(path, assets_dir);
 	std::unordered_map<std::string, AssetConfig> config;
@@ -268,7 +274,7 @@ Result<bool> processDirectory(
 				 << endl;
 			if (auto err = includeAtlas(
 					it->second.atlas.value(), path, dir_resolved_path,
-					assets_map, outfile);
+					assets_map, outfile, dev_info);
 				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
 				return Error(
 					std::make_unique<AssetsError>(
@@ -284,7 +290,7 @@ Result<bool> processDirectory(
 				 << endl;
 			if (auto err = includeShaderPack(
 					it->second.shader_pack.value(), path, dir_resolved_path,
-					assets_map, outfile);
+					assets_map, outfile, dev_info);
 				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
 				return Error(
 					std::make_unique<AssetsError>(
@@ -311,8 +317,8 @@ Result<bool> processDirectory(
 
 		if (asset_config.text) {
 			// Attempt to include file as plain text
-			if (auto err =
-					includeText(file_entry, resolved_path, assets_map, outfile);
+			if (auto err = includeText(
+					file_entry, resolved_path, assets_map, outfile, dev_info);
 				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
 				return Error(
 					std::make_unique<AssetsError>(
@@ -323,8 +329,8 @@ Result<bool> processDirectory(
 
 		if (asset_config.json) {
 			// Attempt to include file as JSON
-			if (auto err =
-					includeJson(file_entry, resolved_path, assets_map, outfile);
+			if (auto err = includeJson(
+					file_entry, resolved_path, assets_map, outfile, dev_info);
 				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
 				return Error(
 					std::make_unique<AssetsError>(
@@ -334,8 +340,8 @@ Result<bool> processDirectory(
 		}
 
 		// Try to import things as different asset types
-		auto img_err =
-			includeImage(file_entry, resolved_path, assets_map, outfile);
+		auto img_err = includeImage(
+			file_entry, resolved_path, assets_map, outfile, dev_info);
 		if (img_err.getCode() == AssetsIncludeErrorCode::None) {
 			continue;
 		}
@@ -350,7 +356,8 @@ Result<bool> processDirectory(
 			font_config = asset_config.font.value();
 		}
 		auto font_err = includeFont(
-			file_entry, font_config, resolved_path, assets_map, outfile);
+			file_entry, font_config, resolved_path, assets_map, outfile,
+			dev_info);
 		if (font_err.getCode() == AssetsIncludeErrorCode::None) {
 			continue;
 		}
@@ -360,8 +367,8 @@ Result<bool> processDirectory(
 					"Failed to include font: " + font_err.message()));
 		}
 
-		auto sound_err =
-			includeAudio(file_entry, resolved_path, assets_map, outfile);
+		auto sound_err = includeAudio(
+			file_entry, resolved_path, assets_map, outfile, dev_info);
 		if (sound_err.getCode() == AssetsIncludeErrorCode::None) {
 			continue;
 		}
@@ -374,11 +381,15 @@ Result<bool> processDirectory(
 	return true;
 }
 
-void bundleAssets(std::string assets_dir, std::string output) noexcept {
+void bundleAssets(
+	std::string assets_dir, std::string output, bool no_dev) noexcept {
 	fpng::fpng_init();
 
 	cout << "Building assets in " << style::bold << assets_dir << style::reset
 		 << " to " << style::bold << output << style::reset << "." << endl;
+	if (!no_dev) {
+		std::cout << "Including dev info." << std::endl;
+	}
 
 	AssetsMap assets_map;
 
@@ -390,7 +401,8 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 	outfile.write(reinterpret_cast<const char*>(&info), sizeof(info));
 
 	std::filesystem::path assets_path(assets_dir);
-	auto res = processDirectory(assets_dir, assets_path, assets_map, outfile);
+	auto res =
+		processDirectory(assets_dir, assets_path, assets_map, outfile, !no_dev);
 	if (res.hasError()) {
 		cout << fg::red
 			 << "Failed to build asset bundle: " << res.error()->message()
@@ -408,8 +420,8 @@ void bundleAssets(std::string assets_dir, std::string output) noexcept {
 			iter++;
 			continue;
 		}
-		res =
-			processDirectory(assets_dir, dir_entry.path(), assets_map, outfile);
+		res = processDirectory(
+			assets_dir, dir_entry.path(), assets_map, outfile, !no_dev);
 		if (res.hasError()) {
 			cout << fg::red
 				 << "Failed to build asset bundle: " << res.error()->message()
@@ -468,7 +480,11 @@ void listAssets(std::string assets_bundle) {
 		 << " assets." << endl;
 	for (auto& [asset, info] : assets_map) {
 		cout << " • [" << style::bold << Growl::getAssetTypeName(info.type)
-			 << style::reset << "] " << asset << endl;
+			 << style::reset << "] " << asset;
+		if (!info.developer_relative_path.empty()) {
+			cout << " [" << info.developer_relative_path << "]";
+		}
+		cout << endl;
 		if (info.type == AssetType::Atlas && info.atlas_regions.has_value()) {
 			cout << "   Atlas contains " << style::bold
 				 << info.atlas_regions.value().size() << style::reset

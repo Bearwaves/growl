@@ -71,6 +71,9 @@ void Growl::to_json(json& j, const AssetInfo& r) {
 	if (r.shader_pack.has_value()) {
 		j["shaderPack"] = r.shader_pack.value();
 	}
+	if (!r.developer_relative_path.empty()) {
+		j["devPath"] = r.developer_relative_path;
+	}
 }
 
 void Growl::from_json(const json& j, AssetInfo& r) {
@@ -86,6 +89,9 @@ void Growl::from_json(const json& j, AssetInfo& r) {
 	}
 	if (j.contains("shaderPack")) {
 		r.shader_pack = j.at("shaderPack").get<AssetsBundleShaderPackInfo>();
+	}
+	if (j.contains("devPath")) {
+		j.at("devPath").get_to(r.developer_relative_path);
 	}
 }
 

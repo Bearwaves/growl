@@ -29,7 +29,7 @@ class AssetsError;
 AssetsIncludeError includeAtlas(
 	const AtlasConfig& config, const std::filesystem::path& path,
 	const std::filesystem::path& resolved_path, AssetsMap& assets_map,
-	std::ofstream& outfile) noexcept {
+	std::ofstream& outfile, bool dev_info) noexcept {
 
 	std::vector<Growl::AtlasImagePackInfo> images;
 	if (config.recursive) {
@@ -85,7 +85,9 @@ AssetsIncludeError includeAtlas(
 	}
 	auto ptr = static_cast<unsigned int>(outfile.tellp());
 	assets_map[resolved_path.generic_string()] = {
-		ptr, out_buf.size(), AssetType::Atlas, atlas.getMappings()};
+		ptr, out_buf.size(), AssetType::Atlas,
+		dev_info ? path.relative_path().generic_string() : "",
+		atlas.getMappings()};
 	outfile.write(
 		reinterpret_cast<const char*>(out_buf.data()), out_buf.size());
 
