@@ -177,6 +177,18 @@ Error createShader(
 		std::cout << "Created vertex shader." << std::endl;
 	}
 
+	if (uniforms) {
+		std::ofstream glsl(path / "uniforms.glsl", std::ios::out);
+		glsl << ShaderDefaults::uniforms_glsl;
+		glsl.close();
+
+		std::ofstream metal(path / "uniforms.metal", std::ios::out);
+		metal << ShaderDefaults::uniforms_metal;
+		metal.close();
+
+		std::cout << "Created uniforms." << std::endl;
+	}
+
 	nlohmann::json j = {{".", {{"shaderPack", {{"name", name}}}}}};
 	std::ofstream manifest(path / "assets.json", std::ios::out);
 	manifest << j.dump(2, ' ');

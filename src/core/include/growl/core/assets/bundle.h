@@ -96,21 +96,12 @@ using AssetsMap = std::map<std::string, AssetInfo>;
 class AssetsBundle {
 public:
 	explicit AssetsBundle(
-		std::unique_ptr<File> file, std::string path,
-		AssetsMap& assets_map) noexcept
-		: file{std::move(file)}
-		, path{path}
-		, assets_map{std::move(assets_map)} {}
-
-#ifdef GROWL_IMGUI
-	explicit AssetsBundle(
 		std::unique_ptr<File> file, std::string path, AssetsMap& assets_map,
 		std::map<AssetType, AssetsMap>& assets_by_type) noexcept
 		: file{std::move(file)}
 		, path{path}
 		, assets_map{std::move(assets_map)}
 		, assets_by_type{std::move(assets_by_type)} {}
-#endif
 
 	AssetsMap& getAssetsMap() {
 		return assets_map;
@@ -137,9 +128,7 @@ private:
 	std::string path;
 	AssetsMap assets_map;
 
-#ifdef GROWL_IMGUI
 	std::map<AssetType, AssetsMap> assets_by_type;
-#endif
 };
 
 Result<AssetsBundle>

@@ -504,15 +504,24 @@ void listAssets(std::string assets_bundle) {
 				 << " source formats." << endl;
 			for (auto& [type, sources] : info.shader_pack.value().sources) {
 				cout << "    • " << shaderFormat(type) << style::reset << ": ";
-				if (sources.vertex_size && sources.fragment_size) {
-					cout << "[vertex, fragment]" << endl;
-				} else if (sources.fragment_size) {
-					cout << "[fragment]" << endl;
-				} else if (sources.vertex_size) {
-					cout << "[vertex]" << endl;
-				} else {
-					cout << "[]" << endl;
+				std::vector<std::string> types;
+				if (sources.vertex_size) {
+					types.push_back("vertex");
 				}
+				if (sources.fragment_size) {
+					types.push_back("fragment");
+				}
+				if (sources.uniforms_size) {
+					types.push_back("uniforms");
+				}
+				cout << "[";
+				for (size_t i = 0; i < types.size(); i++) {
+					cout << types[i];
+					if (i < types.size() - 1) {
+						cout << ", ";
+					}
+				}
+				cout << "]" << endl;
 			}
 		}
 	}

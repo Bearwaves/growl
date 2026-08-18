@@ -60,7 +60,6 @@ Result<AssetsBundle> Growl::loadAssetsBundle(
 				"Failed to load assets map JSON: " + std::string(e.what())));
 	}
 
-#ifdef GROWL_IMGUI
 	std::map<AssetType, AssetsMap> assets_by_type;
 	for (auto& [path, info] : resource_map) {
 		if (assets_by_type.find(info.type) == assets_by_type.end()) {
@@ -71,10 +70,6 @@ Result<AssetsBundle> Growl::loadAssetsBundle(
 	}
 	return AssetsBundle(
 		std::move(file), file_path, resource_map, assets_by_type);
-#else
-
-	return AssetsBundle(std::move(file), file_path, resource_map);
-#endif
 }
 
 void Growl::to_json(json& j, const AssetInfo& r) {
