@@ -18,7 +18,7 @@ void imGuiGameWindowSize(int* w, int* h);
 void imGuiGameWindowPos(int* x, int* y);
 bool imGuiGameWindowResized();
 void imGuiEnd();
-void imGuiWindow(
+bool imGuiWindow(
 	const char* name, bool default_open,
 	ImGuiDockDirection default_dock_direction = ImGuiDockDirection::None);
 void imGuiDockLeft(const char* name);

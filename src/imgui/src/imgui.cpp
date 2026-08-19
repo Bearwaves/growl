@@ -170,10 +170,11 @@ void Growl::imGuiEnd() {
 	}
 }
 
-void Growl::imGuiWindow(
+bool Growl::imGuiWindow(
 	const char* name, bool default_open,
 	ImGuiDockDirection default_dock_direction) {
-	ImGui::Begin(name);
+	bool open =
+		ImGui::Begin(name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
 	if (needs_setup) {
 		switch (default_dock_direction) {
 		case ImGuiDockDirection::Left:
@@ -189,6 +190,7 @@ void Growl::imGuiWindow(
 			break;
 		}
 	}
+	return open;
 }
 
 void Growl::imGuiDockLeft(const char* name) {
