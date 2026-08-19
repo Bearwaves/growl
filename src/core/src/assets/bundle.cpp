@@ -439,7 +439,15 @@ void AssetsBundle::populateDebugMenu() {
 					if (!info.developer_relative_path.empty()) {
 						ImGui::TextLinkOpenURL(
 							"Source file",
+#ifdef __APPLE__ // macOS doesn't like relative paths
+							(std::string("file://") +
+							 std::filesystem::canonical(
+								 info.developer_relative_path)
+								 .string())
+								.c_str());
+#else
 							info.developer_relative_path.c_str());
+#endif
 					}
 					ImGui::TreePop();
 				}
