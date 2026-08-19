@@ -62,6 +62,7 @@ Error SDL3SystemAPI::init(const Config& config) {
 #ifdef GROWL_IMGUI
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+	imGuiSetup();
 	ImGui::StyleColorsDark();
 	imgui_io = &ImGui::GetIO();
 	imgui_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;

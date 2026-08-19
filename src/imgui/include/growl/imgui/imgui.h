@@ -6,6 +6,7 @@ namespace Growl {
 
 class API;
 
+void imGuiSetup();
 void imGuiBegin(API& api);
 void imGuiBeginGameWindow();
 void imGuiEndGameWindow();

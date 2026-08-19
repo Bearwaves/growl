@@ -4,6 +4,7 @@
 #include "growl/core/graphics/window.h"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include <set>
 
 constexpr const char* SYSTEM_API_WINDOW = "System API";
 constexpr const char* WINDOW_WINDOW = "Window";
@@ -23,6 +24,9 @@ static ImGuiID dockspace_left = 0;
 static ImGuiID dockspace_right = 0;
 static ImGuiID dockspace_bottom = 0;
 
+static std::set<std::string> open_windows;
+static ImGuiSettingsHandler handler;
+
 namespace Growl {
 void doApiWindows(API& api) {
 	if (system_api_view) {
@@ -32,6 +36,9 @@ void doApiWindows(API& api) {
 		if (needs_setup) {
 			ImGui::DockBuilderDockWindow(SYSTEM_API_WINDOW, dockspace_right);
 		}
+		open_windows.insert(SYSTEM_API_WINDOW);
+	} else {
+		open_windows.erase(SYSTEM_API_WINDOW);
 	}
 	if (window_view) {
 		ImGui::Begin(WINDOW_WINDOW, &window_view);
@@ -42,22 +49,33 @@ void doApiWindows(API& api) {
 		if (needs_setup) {
 			ImGui::DockBuilderDockWindow(WINDOW_WINDOW, dockspace_bottom);
 		}
+		open_windows.insert(WINDOW_WINDOW);
+	} else {
+		open_windows.erase(WINDOW_WINDOW);
 	}
 }
 } // namespace Growl
 
+void imGuiSetupIni();
+
+void Growl::imGuiSetup() {
+	imGuiSetupIni();
+}
+
 void Growl::imGuiBegin(API& api) {
 	ImGui::NewFrame();
 	ImGui::BeginMainMenuBar();
-	ImGui::Text("Growl");
-	if (ImGui::BeginMenu("Views")) {
-		ImGui::SeparatorText("Growl APIs");
-		ImGui::MenuItem("System API", nullptr, &system_api_view);
-		ImGui::MenuItem("Window", nullptr, &window_view);
+	if (ImGui::BeginMenu("Growl")) {
 		if (ImGui::MenuItem("Reset debug UI")) {
 			needs_setup = true;
 			ImGui::DockBuilderRemoveNode(dockspace_id);
 		}
+		ImGui::EndMenu();
+	}
+	if (ImGui::BeginMenu("Views")) {
+		ImGui::SeparatorText("Growl APIs");
+		ImGui::MenuItem("System API", nullptr, &system_api_view);
+		ImGui::MenuItem("Window", nullptr, &window_view);
 		ImGui::EndMenu();
 	}
 	auto size = ImGui::CalcTextSize("0.00 ms/frame (000.0 FPS)");
@@ -168,6 +186,52 @@ void Growl::imGuiDockBottom(const char* name) {
 	if (needs_setup) {
 		ImGui::DockBuilderDockWindow(name, dockspace_bottom);
 	}
+}
+
+void imGuiSetupIni() {
+	handler.TypeName = "Growl";
+	handler.TypeHash = ImHashStr(handler.TypeName);
+
+	auto clear_all = [](ImGuiContext*, ImGuiSettingsHandler*) -> void {
+		open_windows.clear();
+	};
+	handler.ClearAllFn = clear_all;
+	handler.ReadInitFn = clear_all;
+
+	handler.ReadOpenFn = [](ImGuiContext*, ImGuiSettingsHandler*,
+							const char* name) -> void* {
+		if (std::string(name) != "Windows") {
+			return nullptr;
+		}
+		return (void*)1;
+	};
+
+	handler.ReadLineFn = [](ImGuiContext*, ImGuiSettingsHandler*, void* entry,
+							const char* line) -> void {
+		auto l = std::string(ImStrSkipBlank(line));
+		size_t pos = l.find('=');
+		if (pos == std::string::npos) {
+			// No =
+			return;
+		}
+		auto window = l.substr(0, pos);
+		open_windows.insert(window);
+		if (window == SYSTEM_API_WINDOW) {
+			system_api_view = true;
+		} else if (window == WINDOW_WINDOW) {
+			window_view = true;
+		}
+	};
+
+	handler.WriteAllFn = [](ImGuiContext*, ImGuiSettingsHandler*,
+							ImGuiTextBuffer* buf) -> void {
+		buf->appendf("[%s][Windows]\n", handler.TypeName);
+		for (auto& window : open_windows) {
+			buf->appendf("%s=1\n", window.c_str());
+		}
+	};
+
+	ImGui::AddSettingsHandler(&handler);
 }
 
 #endif
