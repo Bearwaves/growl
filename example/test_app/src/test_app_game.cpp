@@ -9,6 +9,7 @@
 #include "growl/core/text/glyph_layout.h"
 #include "growl/core/util/timer.h"
 #ifdef GROWL_IMGUI
+#include "growl/imgui/imgui.h"
 #include "imgui.h"
 #endif
 #include <memory>
@@ -164,11 +165,6 @@ void TestAppGame::tick(double delta_time) {
 }
 
 void TestAppGame::render(double delta_time) {
-#ifdef GROWL_IMGUI
-	ImGui::Begin("Growl Test App");
-	ImGui::SliderInt("Font size", &font_size, 1, 150);
-#endif
-
 	if (!grass_tiled) {
 		auto grass_region = texture_atlas->getRegion("grass.png").get();
 		// Pre-tile some grass to demo render-to-texture.
@@ -218,6 +214,8 @@ void TestAppGame::render(double delta_time) {
 	}
 
 #ifdef GROWL_IMGUI
+	Growl::imGuiWindow("Growl Test App", true, ImGuiDockDirection::Left);
+	ImGui::SliderInt("Font size", &font_size, 1, 150);
 	ImGui::End();
 #endif
 }

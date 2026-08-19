@@ -399,14 +399,3 @@ Error Growl::initSceneGraph(API& api) {
 
 	return nullptr;
 }
-
-#ifdef GROWL_IMGUI
-void Growl::imGuiBeginSceneWindow() {
-	ImGui::Begin("Scene");
-}
-
-void Growl::imGuiEndSceneWindow() {
-	ImGui::End();
-	imGuiDockLeft("Scene");
-}
-#endif

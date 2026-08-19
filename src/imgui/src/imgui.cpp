@@ -170,6 +170,27 @@ void Growl::imGuiEnd() {
 	}
 }
 
+void Growl::imGuiWindow(
+	const char* name, bool default_open,
+	ImGuiDockDirection default_dock_direction) {
+	ImGui::Begin(name);
+	if (needs_setup) {
+		switch (default_dock_direction) {
+		case ImGuiDockDirection::Left:
+			imGuiDockLeft(name);
+			break;
+		case ImGuiDockDirection::Right:
+			imGuiDockRight(name);
+			break;
+		case ImGuiDockDirection::Bottom:
+			imGuiDockBottom(name);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
 void Growl::imGuiDockLeft(const char* name) {
 	if (needs_setup) {
 		ImGui::DockBuilderDockWindow(name, dockspace_left);

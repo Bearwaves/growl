@@ -6,7 +6,7 @@
 #include "growl/core/graphics/color.h"
 #include "growl/core/input/event.h"
 #include "growl/core/scripting/script.h"
-#include "growl/scene/scene.h"
+#include "growl/imgui/imgui.h"
 #include <algorithm>
 #include <string>
 #ifdef GROWL_IMGUI
@@ -87,7 +87,7 @@ void Node::setDepth(int depth) {
 
 void Node::populateDebugUI(Batch& batch) {
 #ifdef GROWL_IMGUI
-	imGuiBeginSceneWindow();
+	Growl::imGuiWindow("Scene", true, ImGuiDockDirection::Left);
 	if (ImGui::TreeNodeEx(getLabel().c_str(), ImGuiTreeNodeFlags_Framed)) {
 		if (ImGui::TreeNodeEx("Node", ImGuiTreeNodeFlags_DefaultOpen)) {
 			ImGui::SliderFloat(
@@ -139,7 +139,7 @@ void Node::populateDebugUI(Batch& batch) {
 
 		ImGui::TreePop();
 	}
-	imGuiEndSceneWindow();
+	ImGui::End();
 #endif
 }
 
