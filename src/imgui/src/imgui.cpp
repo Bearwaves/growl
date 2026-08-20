@@ -1,7 +1,8 @@
+#include <iostream>
 #ifdef GROWL_IMGUI
-#include "growl/imgui/imgui.h"
 #include "growl/core/api/api.h"
 #include "growl/core/graphics/window.h"
+#include "growl/imgui/imgui.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include <set>
@@ -24,6 +25,7 @@ static ImGuiID dockspace_left = 0;
 static ImGuiID dockspace_right = 0;
 static ImGuiID dockspace_bottom = 0;
 
+static std::map<std::string, bool> registered_windows;
 static std::set<std::string> open_windows;
 static ImGuiSettingsHandler handler;
 
@@ -76,6 +78,9 @@ void Growl::imGuiBegin(API& api) {
 		ImGui::SeparatorText("Growl APIs");
 		ImGui::MenuItem("System API", nullptr, &system_api_view);
 		ImGui::MenuItem("Window", nullptr, &window_view);
+		for (auto& [name, open] : registered_windows) {
+			ImGui::MenuItem(name.c_str(), nullptr, &open);
+		}
 		ImGui::EndMenu();
 	}
 	auto size = ImGui::CalcTextSize("0.00 ms/frame (000.0 FPS)");
@@ -173,8 +178,15 @@ void Growl::imGuiEnd() {
 bool Growl::imGuiWindow(
 	const char* name, bool default_open,
 	ImGuiDockDirection default_dock_direction) {
-	bool open =
-		ImGui::Begin(name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
+	if (registered_windows.find(name) == registered_windows.end()) {
+		registered_windows[name] = default_open;
+	}
+	bool open = false;
+	if (registered_windows[name]) {
+		open = ImGui::Begin(
+			name, &(registered_windows[name]),
+			ImGuiWindowFlags_NoFocusOnAppearing);
+	}
 	if (needs_setup) {
 		switch (default_dock_direction) {
 		case ImGuiDockDirection::Left:
