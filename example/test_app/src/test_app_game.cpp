@@ -214,9 +214,10 @@ void TestAppGame::render(double delta_time) {
 	}
 
 #ifdef GROWL_IMGUI
-	Growl::imGuiWindow("Growl Test App", true, ImGuiDockDirection::Left);
-	ImGui::SliderInt("Font size", &font_size, 1, 150);
-	ImGui::End();
+	Growl::imGuiWindow(
+		"Growl Test App",
+		[&]() -> void { ImGui::SliderInt("Font size", &font_size, 1, 150); },
+		true, ImGuiDockDirection::Left);
 #endif
 }
 
