@@ -4,6 +4,7 @@
 #include "growl/core/graphics/window.h"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include <functional>
 
 constexpr const char* SYSTEM_API_WINDOW = "System API";
 constexpr const char* WINDOW_WINDOW = "Window";
@@ -26,24 +27,20 @@ static ImGuiSettingsHandler handler;
 
 namespace Growl {
 void doApiWindows(API& api) {
-	if (auto window_state =
-			imGuiWindow(SYSTEM_API_WINDOW, false, ImGuiDockDirection::Right);
-		window_state != ImGuiWindowState::Closed) {
-		if (window_state == ImGuiWindowState::Open) {
+	imGuiWindow(
+		SYSTEM_API_WINDOW,
+		[&]() -> void {
 			static_cast<SystemAPIInternal&>(api.system()).populateDebugMenu();
-		}
-		ImGui::End();
-	}
-	if (auto window_state =
-			imGuiWindow(WINDOW_WINDOW, false, ImGuiDockDirection::Bottom);
-		window_state != ImGuiWindowState::Closed) {
-		if (window_state == ImGuiWindowState::Open) {
+		},
+		false, ImGuiDockDirection::Right);
+	imGuiWindow(
+		WINDOW_WINDOW,
+		[&]() -> void {
 			static_cast<GraphicsAPIInternal&>(api.graphics())
 				.getWindow()
 				->populateDebugMenu();
-		}
-		ImGui::End();
-	}
+		},
+		false, ImGuiDockDirection::Right);
 }
 } // namespace Growl
 
@@ -161,19 +158,19 @@ void Growl::imGuiEnd() {
 	}
 }
 
-Growl::ImGuiWindowState Growl::imGuiWindow(
-	const char* name, bool default_open,
+void Growl::imGuiWindow(
+	const char* name, std::function<void()> f, bool default_open,
 	ImGuiDockDirection default_dock_direction) {
 	if (registered_windows.find(name) == registered_windows.end()) {
 		registered_windows[name] = default_open;
 	}
-	ImGuiWindowState state = ImGuiWindowState::Closed;
 	if (registered_windows[name]) {
-		state = ImGui::Begin(
-					name, &(registered_windows[name]),
-					ImGuiWindowFlags_NoFocusOnAppearing)
-					? ImGuiWindowState::Open
-					: ImGuiWindowState::Hidden;
+		if (ImGui::Begin(
+				name, &(registered_windows[name]),
+				ImGuiWindowFlags_NoFocusOnAppearing)) {
+			f();
+		}
+		ImGui::End();
 	}
 	if (needs_setup) {
 		switch (default_dock_direction) {
@@ -190,7 +187,6 @@ Growl::ImGuiWindowState Growl::imGuiWindow(
 			break;
 		}
 	}
-	return state;
 }
 
 void Growl::imGuiDockLeft(const char* name) {

@@ -2,12 +2,13 @@
 
 #pragma once
 
+#include <functional>
+
 namespace Growl {
 
 class API;
 
 enum class ImGuiDockDirection { None, Left, Right, Bottom };
-enum class ImGuiWindowState { Closed, Hidden, Open };
 
 void imGuiSetup();
 void imGuiBegin(API& api);
@@ -19,8 +20,8 @@ void imGuiGameWindowSize(int* w, int* h);
 void imGuiGameWindowPos(int* x, int* y);
 bool imGuiGameWindowResized();
 void imGuiEnd();
-ImGuiWindowState imGuiWindow(
-	const char* name, bool default_open,
+void imGuiWindow(
+	const char* name, std::function<void()> f, bool default_open = false,
 	ImGuiDockDirection default_dock_direction = ImGuiDockDirection::None);
 void imGuiDockLeft(const char* name);
 void imGuiDockRight(const char* name);

@@ -87,10 +87,9 @@ void Node::setDepth(int depth) {
 
 void Node::populateDebugUI(Batch& batch) {
 #ifdef GROWL_IMGUI
-	if (auto window_state =
-			Growl::imGuiWindow("Scene", true, ImGuiDockDirection::Left);
-		window_state != Growl::ImGuiWindowState::Closed) {
-		if (window_state == Growl::ImGuiWindowState::Open) {
+	Growl::imGuiWindow(
+		"Scene",
+		[&]() -> void {
 			if (ImGui::TreeNodeEx(
 					getLabel().c_str(), ImGuiTreeNodeFlags_Framed)) {
 				if (ImGui::TreeNodeEx("Node", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -149,9 +148,8 @@ void Node::populateDebugUI(Batch& batch) {
 
 				ImGui::TreePop();
 			}
-		}
-		ImGui::End();
-	}
+		},
+		true, ImGuiDockDirection::Left);
 #endif
 }
 
