@@ -4,7 +4,6 @@
 #include "growl/core/graphics/window.h"
 #include "imgui.h"
 #include "imgui_internal.h"
-#include <set>
 
 constexpr const char* SYSTEM_API_WINDOW = "System API";
 constexpr const char* WINDOW_WINDOW = "Window";
@@ -15,8 +14,6 @@ static int game_window_y;
 static int game_window_w = 0;
 static int game_window_h = 0;
 static bool game_window_resized;
-static bool system_api_view = false;
-static bool window_view = false;
 static bool needs_setup = true;
 static bool first_render = true;
 static ImGuiID dockspace_id = 0;
@@ -24,34 +21,28 @@ static ImGuiID dockspace_left = 0;
 static ImGuiID dockspace_right = 0;
 static ImGuiID dockspace_bottom = 0;
 
-static std::set<std::string> open_windows;
+static std::map<std::string, bool> registered_windows;
 static ImGuiSettingsHandler handler;
 
 namespace Growl {
 void doApiWindows(API& api) {
-	if (system_api_view) {
-		ImGui::Begin(SYSTEM_API_WINDOW, &system_api_view);
-		static_cast<SystemAPIInternal&>(api.system()).populateDebugMenu();
-		ImGui::End();
-		if (needs_setup) {
-			ImGui::DockBuilderDockWindow(SYSTEM_API_WINDOW, dockspace_right);
+	if (auto window_state =
+			imGuiWindow(SYSTEM_API_WINDOW, false, ImGuiDockDirection::Right);
+		window_state != ImGuiWindowState::Closed) {
+		if (window_state == ImGuiWindowState::Open) {
+			static_cast<SystemAPIInternal&>(api.system()).populateDebugMenu();
 		}
-		open_windows.insert(SYSTEM_API_WINDOW);
-	} else {
-		open_windows.erase(SYSTEM_API_WINDOW);
+		ImGui::End();
 	}
-	if (window_view) {
-		ImGui::Begin(WINDOW_WINDOW, &window_view);
-		static_cast<GraphicsAPIInternal&>(api.graphics())
-			.getWindow()
-			->populateDebugMenu();
-		ImGui::End();
-		if (needs_setup) {
-			ImGui::DockBuilderDockWindow(WINDOW_WINDOW, dockspace_bottom);
+	if (auto window_state =
+			imGuiWindow(WINDOW_WINDOW, false, ImGuiDockDirection::Bottom);
+		window_state != ImGuiWindowState::Closed) {
+		if (window_state == ImGuiWindowState::Open) {
+			static_cast<GraphicsAPIInternal&>(api.graphics())
+				.getWindow()
+				->populateDebugMenu();
 		}
-		open_windows.insert(WINDOW_WINDOW);
-	} else {
-		open_windows.erase(WINDOW_WINDOW);
+		ImGui::End();
 	}
 }
 } // namespace Growl
@@ -73,9 +64,9 @@ void Growl::imGuiBegin(API& api) {
 		ImGui::EndMenu();
 	}
 	if (ImGui::BeginMenu("Views")) {
-		ImGui::SeparatorText("Growl APIs");
-		ImGui::MenuItem("System API", nullptr, &system_api_view);
-		ImGui::MenuItem("Window", nullptr, &window_view);
+		for (auto& [name, open] : registered_windows) {
+			ImGui::MenuItem(name.c_str(), nullptr, &open);
+		}
 		ImGui::EndMenu();
 	}
 	auto size = ImGui::CalcTextSize("0.00 ms/frame (000.0 FPS)");
@@ -170,11 +161,20 @@ void Growl::imGuiEnd() {
 	}
 }
 
-bool Growl::imGuiWindow(
+Growl::ImGuiWindowState Growl::imGuiWindow(
 	const char* name, bool default_open,
 	ImGuiDockDirection default_dock_direction) {
-	bool open =
-		ImGui::Begin(name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
+	if (registered_windows.find(name) == registered_windows.end()) {
+		registered_windows[name] = default_open;
+	}
+	ImGuiWindowState state = ImGuiWindowState::Closed;
+	if (registered_windows[name]) {
+		state = ImGui::Begin(
+					name, &(registered_windows[name]),
+					ImGuiWindowFlags_NoFocusOnAppearing)
+					? ImGuiWindowState::Open
+					: ImGuiWindowState::Hidden;
+	}
 	if (needs_setup) {
 		switch (default_dock_direction) {
 		case ImGuiDockDirection::Left:
@@ -190,7 +190,7 @@ bool Growl::imGuiWindow(
 			break;
 		}
 	}
-	return open;
+	return state;
 }
 
 void Growl::imGuiDockLeft(const char* name) {
@@ -216,7 +216,7 @@ void imGuiSetupIni() {
 	handler.TypeHash = ImHashStr(handler.TypeName);
 
 	auto clear_all = [](ImGuiContext*, ImGuiSettingsHandler*) -> void {
-		open_windows.clear();
+		registered_windows.clear();
 	};
 	handler.ClearAllFn = clear_all;
 	handler.ReadInitFn = clear_all;
@@ -238,19 +238,18 @@ void imGuiSetupIni() {
 			return;
 		}
 		auto window = l.substr(0, pos);
-		open_windows.insert(window);
-		if (window == SYSTEM_API_WINDOW) {
-			system_api_view = true;
-		} else if (window == WINDOW_WINDOW) {
-			window_view = true;
+		if (l.size() < pos + 3) {
+			// Nothing after =
+			return;
 		}
+		registered_windows[window] = l.at(pos + 2) == '1';
 	};
 
 	handler.WriteAllFn = [](ImGuiContext*, ImGuiSettingsHandler*,
 							ImGuiTextBuffer* buf) -> void {
 		buf->appendf("[%s][Windows]\n", handler.TypeName);
-		for (auto& window : open_windows) {
-			buf->appendf("%s=1\n", window.c_str());
+		for (auto& [window, open] : registered_windows) {
+			buf->appendf("%s=%d\n", window.c_str(), open ? 1 : 0);
 		}
 	};
 

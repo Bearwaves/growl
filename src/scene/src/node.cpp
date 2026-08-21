@@ -87,59 +87,71 @@ void Node::setDepth(int depth) {
 
 void Node::populateDebugUI(Batch& batch) {
 #ifdef GROWL_IMGUI
-	Growl::imGuiWindow("Scene", true, ImGuiDockDirection::Left);
-	if (ImGui::TreeNodeEx(getLabel().c_str(), ImGuiTreeNodeFlags_Framed)) {
-		if (ImGui::TreeNodeEx("Node", ImGuiTreeNodeFlags_DefaultOpen)) {
-			ImGui::SliderFloat(
-				"X", &x, 0.0f,
-				parent ? parent->getWidth() : batch.getTargetWidth(), "%.2f");
-			ImGui::SliderFloat(
-				"Y", &y, 0.0f,
-				parent ? parent->getHeight() : batch.getTargetHeight(), "%.2f");
-			ImGui::SliderFloat(
-				"Width", &w, 0.0f,
-				parent ? parent->getWidth() : batch.getTargetWidth(), "%.2f");
-			ImGui::SliderFloat(
-				"Height", &h, 0.0f,
-				parent ? parent->getHeight() : batch.getTargetHeight(), "%.2f");
-			ImGui::SliderFloat(
-				"Rotation", &rotation, 0.0f, 2 * glm::pi<float>(), "%.2f");
-			int selected_item = (int)debug_rendering;
-			if (ImGui::Combo(
-					"Debug rendering", &selected_item, debug_rendering_options,
-					IM_ARRAYSIZE(debug_rendering_options))) {
-				setDebugRendering((DebugRendering)selected_item);
-			}
+	if (auto window_state =
+			Growl::imGuiWindow("Scene", true, ImGuiDockDirection::Left);
+		window_state != Growl::ImGuiWindowState::Closed) {
+		if (window_state == Growl::ImGuiWindowState::Open) {
+			if (ImGui::TreeNodeEx(
+					getLabel().c_str(), ImGuiTreeNodeFlags_Framed)) {
+				if (ImGui::TreeNodeEx("Node", ImGuiTreeNodeFlags_DefaultOpen)) {
+					ImGui::SliderFloat(
+						"X", &x, 0.0f,
+						parent ? parent->getWidth() : batch.getTargetWidth(),
+						"%.2f");
+					ImGui::SliderFloat(
+						"Y", &y, 0.0f,
+						parent ? parent->getHeight() : batch.getTargetHeight(),
+						"%.2f");
+					ImGui::SliderFloat(
+						"Width", &w, 0.0f,
+						parent ? parent->getWidth() : batch.getTargetWidth(),
+						"%.2f");
+					ImGui::SliderFloat(
+						"Height", &h, 0.0f,
+						parent ? parent->getHeight() : batch.getTargetHeight(),
+						"%.2f");
+					ImGui::SliderFloat(
+						"Rotation", &rotation, 0.0f, 2 * glm::pi<float>(),
+						"%.2f");
+					int selected_item = (int)debug_rendering;
+					if (ImGui::Combo(
+							"Debug rendering", &selected_item,
+							debug_rendering_options,
+							IM_ARRAYSIZE(debug_rendering_options))) {
+						setDebugRendering((DebugRendering)selected_item);
+					}
 
-			onPopulateDebugUI(batch);
-			ImGui::TreePop();
-		}
-
-		if (script && ImGui::TreeNode("Script")) {
-			ImGui::InputTextMultiline(
-				"##source", &(script->getSource()),
-				ImVec2(-1, ImGui::GetTextLineHeight() * 16),
-				ImGuiInputTextFlags_AllowTabInput);
-			if (ImGui::Button("Save")) {
-				if (auto err = bindScript(*api, *script)) {
-					api->system().log(
-						"Node::ImGui", "Failed to rebind script: {}",
-						err->message());
+					onPopulateDebugUI(batch);
+					ImGui::TreePop();
 				}
-			}
-			ImGui::TreePop();
-		}
 
-		if (!children.empty() && ImGui::TreeNode("Children")) {
-			for (auto& child : children) {
-				child->populateDebugUI(batch);
-			}
-			ImGui::TreePop();
-		}
+				if (script && ImGui::TreeNode("Script")) {
+					ImGui::InputTextMultiline(
+						"##source", &(script->getSource()),
+						ImVec2(-1, ImGui::GetTextLineHeight() * 16),
+						ImGuiInputTextFlags_AllowTabInput);
+					if (ImGui::Button("Save")) {
+						if (auto err = bindScript(*api, *script)) {
+							api->system().log(
+								"Node::ImGui", "Failed to rebind script: {}",
+								err->message());
+						}
+					}
+					ImGui::TreePop();
+				}
 
-		ImGui::TreePop();
+				if (!children.empty() && ImGui::TreeNode("Children")) {
+					for (auto& child : children) {
+						child->populateDebugUI(batch);
+					}
+					ImGui::TreePop();
+				}
+
+				ImGui::TreePop();
+			}
+		}
+		ImGui::End();
 	}
-	ImGui::End();
 #endif
 }
 
