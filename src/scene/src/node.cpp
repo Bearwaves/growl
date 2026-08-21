@@ -6,11 +6,11 @@
 #include "growl/core/graphics/color.h"
 #include "growl/core/input/event.h"
 #include "growl/core/scripting/script.h"
-#include "growl/imgui/imgui.h"
 #include <algorithm>
 #include <string>
 #ifdef GROWL_IMGUI
 #include "glm/ext/scalar_constants.hpp"
+#include "growl/imgui/imgui.h"
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #endif
