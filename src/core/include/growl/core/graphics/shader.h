@@ -45,10 +45,19 @@ public:
 		fragment_src = src;
 	}
 
+#ifdef GROWL_IMGUI
+	void populateDebugUI();
+#endif
+
 protected:
 	std::string uniforms_src;
 	std::string vertex_src;
 	std::string fragment_src;
+
+private:
+#ifdef GROWL_IMGUI
+	std::string compile_error;
+#endif
 };
 
 } // namespace Growl

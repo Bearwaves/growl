@@ -50,6 +50,9 @@ target_link_libraries(growl-core
 )
 
 if (GROWL_IMGUI)
+	target_sources(growl-core PRIVATE
+		"src/graphics/shader.cpp"
+	)
 	target_link_libraries(growl-core PRIVATE growl-imgui)
 	target_compile_definitions(growl-core PRIVATE "GROWL_IMGUI")
 endif()
