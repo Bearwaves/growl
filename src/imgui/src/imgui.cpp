@@ -234,11 +234,11 @@ void imGuiSetupIni() {
 			return;
 		}
 		auto window = l.substr(0, pos);
-		if (l.size() < pos + 3) {
+		if (l.size() < pos + 2) {
 			// Nothing after =
 			return;
 		}
-		registered_windows[window] = l.at(pos + 2) == '1';
+		registered_windows[window] = l.at(pos + 1) == '1';
 	};
 
 	handler.WriteAllFn = [](ImGuiContext*, ImGuiSettingsHandler*,
