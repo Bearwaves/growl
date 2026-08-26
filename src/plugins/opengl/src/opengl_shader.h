@@ -1,5 +1,6 @@
 #pragma once
 #include "growl/core/graphics/shader.h"
+#include "growl/core/graphics/shader_type.h"
 #include "opengl.h"
 #include <string>
 
@@ -18,6 +19,10 @@ public:
 	~OpenGLShader();
 
 	Error compile() override;
+
+	ShaderType getType() override {
+		return ShaderType::GLSL;
+	}
 
 	void bind();
 

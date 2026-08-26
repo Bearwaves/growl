@@ -1,7 +1,11 @@
 #pragma once
 
 #include "growl/core/error.h"
+
 namespace Growl {
+
+class ShaderPack;
+enum class ShaderType;
 
 class Shader {
 public:
@@ -20,6 +24,8 @@ public:
 	Shader& operator=(Shader&&) = default;
 
 	virtual Error compile() = 0;
+
+	virtual ShaderType getType() = 0;
 
 	virtual std::string& getUniformsSource() {
 		return uniforms_src;
@@ -47,6 +53,7 @@ public:
 
 #ifdef GROWL_IMGUI
 	void populateDebugUI();
+	void populateDebugUI(Growl::ShaderPack& pack);
 #endif
 
 protected:

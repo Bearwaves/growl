@@ -1,6 +1,7 @@
 #pragma once
 
 #include "growl/core/graphics/shader.h"
+#include "growl/core/graphics/shader_type.h"
 #include <Metal/Metal.h>
 #include <string>
 
@@ -17,6 +18,10 @@ public:
 	void bind(id<MTLTexture> dst_texture, id<MTLRenderCommandEncoder> encoder);
 
 	Error compile() override;
+
+	ShaderType getType() override {
+		return ShaderType::Metal;
+	}
 
 	static const std::string default_uniforms;
 	static const std::string default_vertex;

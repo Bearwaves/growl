@@ -358,7 +358,9 @@ Result<ShaderPack> AssetsBundle::getShaderPack(std::string name) noexcept {
 		sources[type] = source;
 	}
 
-	return ShaderPack{info.shader_pack->name, std::move(sources)};
+	return ShaderPack{
+		info.shader_pack->name, info.developer_relative_path,
+		std::move(sources)};
 }
 
 Result<std::string>

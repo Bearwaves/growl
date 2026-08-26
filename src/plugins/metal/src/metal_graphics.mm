@@ -4,6 +4,7 @@
 #include "growl/core/assets/shader_pack.h"
 #include "growl/core/error.h"
 #include "growl/core/graphics/shader.h"
+#include "growl/core/graphics/shader_type.h"
 #include "metal_error.h"
 #include <Metal/Metal.h>
 #ifdef GROWL_IMGUI
@@ -25,6 +26,7 @@ using Growl::MetalGraphicsAPI;
 using Growl::Result;
 using Growl::Shader;
 using Growl::ShaderPack;
+using Growl::ShaderType;
 using Growl::Texture;
 using Growl::TextureAtlas;
 using Growl::TextureOptions;
