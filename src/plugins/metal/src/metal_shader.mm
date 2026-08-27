@@ -17,6 +17,18 @@ MetalShader::~MetalShader() {
 }
 
 Error MetalShader::compile() {
+	auto compile_options = [MTLCompileOptions new];
+	NSError* compile_error = nil;
+	std::string src =
+		growl_shader_header + uniforms_src + vertex_src + fragment_src;
+	auto new_library =
+		[device newLibraryWithSource:[NSString stringWithUTF8String:src.c_str()]
+							 options:compile_options
+							   error:&compile_error];
+	[compile_options release];
+	if (compile_error) {
+		return std::make_unique<MetalError>(compile_error);
+	}
 	if (pipeline_state) {
 		[pipeline_state release];
 		pipeline_state = nil;
@@ -33,18 +45,7 @@ Error MetalShader::compile() {
 		[library release];
 		library = nil;
 	}
-	auto compile_options = [MTLCompileOptions new];
-	NSError* compile_error = nil;
-	std::string src =
-		growl_shader_header + uniforms_src + vertex_src + fragment_src;
-	library =
-		[device newLibraryWithSource:[NSString stringWithUTF8String:src.c_str()]
-							 options:compile_options
-							   error:&compile_error];
-	[compile_options release];
-	if (compile_error) {
-		return std::make_unique<MetalError>(compile_error);
-	}
+	library = new_library;
 	fragment_func = [library newFunctionWithName:@"fragment_func"];
 	vertex_func = [library newFunctionWithName:@"vertex_func"];
 
@@ -83,6 +84,7 @@ void MetalShader::bind(
 										   error:&error] retain];
 		assert(!error);
 		[error release];
+		[vertex_descriptor release];
 		[descriptor release];
 	}
 
