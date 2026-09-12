@@ -143,10 +143,22 @@ void MetalBatch::resetScissor() {
 void MetalBatch::draw(
 	const Texture& texture, float x, float y, float width, float height,
 	glm::mat4x4 transform) {
+	draw(texture, x, y, width, height, *default_shader, transform);
+}
+
+void MetalBatch::draw(
+	const Texture& texture, float x, float y, float width, float height,
+	Shader& shader, glm::mat4x4 transform, void* uniform_data,
+	size_t uniforms_length) {
 	auto& tex = static_cast<const MetalTexture&>(texture);
 	tex.bind(encoder);
-	default_shader->bind(surface, encoder);
+	static_cast<MetalShader&>(shader).bind(surface, encoder);
 	constant_buffer->writeAndBind(encoder, 2, &transform, sizeof(transform));
+
+	if (uniform_data) {
+		constant_buffer->writeAndBind(
+			encoder, 2, uniform_data, uniforms_length, BufferBinding::Fragment);
+	}
 
 	float right = std::round(x + width);
 	float bottom = std::round(y + height);

@@ -185,15 +185,26 @@ void OpenGLBatch::resetScissor() {
 
 void OpenGLBatch::draw(
 	const Texture& texture, float x, float y, float width, float height,
-	glm::mat4x4 transform) {
+	Shader& shader, glm::mat4x4 transform, void* uniform_data,
+	size_t uniforms_length) {
+	auto& gl_shader = static_cast<OpenGLShader&>(shader);
 	auto& tex = static_cast<const OpenGLTexture&>(texture);
-	if (&tex != bound_tex || default_shader != bound_shader ||
+	if (&tex != bound_tex || &gl_shader != bound_shader ||
 		idx >= max_batch_size) {
 		flush();
 	}
 	uniforms.insert(uniforms.end(), VertexBlock{transform});
+
+	if (uniform_data) {
+		glBindBuffer(GL_UNIFORM_BUFFER, ubo_f);
+		glBufferSubData(
+			GL_UNIFORM_BUFFER, sizeof(FragmentBlock) + uniforms_length * idx,
+			uniforms_length, uniform_data);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
+
 	bound_tex = &tex;
-	bound_shader = default_shader;
+	bound_shader = &gl_shader;
 	float right = x + width;
 	float bottom = y + height;
 	addVertex(x, y, 0.0f, 0.0f, width, height);
@@ -205,6 +216,12 @@ void OpenGLBatch::draw(
 		{verts, verts + 1, verts + 2, verts + 2, verts + 3, verts});
 	idx++;
 	verts += 4;
+}
+
+void OpenGLBatch::draw(
+	const Texture& texture, float x, float y, float width, float height,
+	glm::mat4x4 transform) {
+	draw(texture, x, y, width, height, *default_shader, transform);
 }
 
 void OpenGLBatch::draw(

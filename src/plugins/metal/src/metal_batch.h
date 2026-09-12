@@ -43,6 +43,10 @@ public:
 	void draw(
 		const Texture& texture, float x, float y, float width, float height,
 		glm::mat4x4 transform = glm::identity<glm::mat4x4>()) override;
+	virtual void draw(
+		const Texture& texture, float x, float y, float width, float height,
+		Shader& shader, glm::mat4x4 transform, void* uniform_data = nullptr,
+		size_t uniforms_length = 0) override;
 	void draw(
 		const TextureAtlasRegion& texture, float x, float y, float width,
 		float height, glm::mat4x4 transform) override;

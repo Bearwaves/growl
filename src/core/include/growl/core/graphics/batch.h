@@ -44,6 +44,10 @@ public:
 		const Texture& texture, float x, float y, float width, float height,
 		glm::mat4x4 transform = glm::identity<glm::mat4x4>()) = 0;
 	virtual void draw(
+		const Texture& texture, float x, float y, float width, float height,
+		Shader& shader, glm::mat4x4 transform = glm::identity<glm::mat4x4>(),
+		void* uniforms = nullptr, size_t uniforms_length = 0) = 0;
+	virtual void draw(
 		const TextureAtlasRegion& texture, float x, float y, float width,
 		float height, glm::mat4x4 transform = glm::identity<glm::mat4x4>()) = 0;
 	virtual void draw(
