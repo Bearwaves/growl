@@ -67,7 +67,7 @@ struct AssetInfo {
 	uint64_t position;
 	uint64_t size;
 	AssetType type;
-	std::string developer_relative_path;
+	std::string developer_relative_path = "";
 	std::optional<std::unordered_map<std::string, AtlasRegion>> atlas_regions;
 	std::optional<AssetsBundleMSDFFontInfo> font;
 	std::optional<AssetsBundleShaderPackInfo> shader_pack;
@@ -115,6 +115,7 @@ public:
 	Result<ShaderPack> getShaderPack(std::string name) noexcept;
 	Result<std::string> getTextFileAsString(std::string name) noexcept;
 	Result<std::vector<unsigned char>> getRawData(std::string name) noexcept;
+	Result<std::string> getDeveloperPath(std::string name) noexcept;
 
 	// Returns a File pointer to a specific asset.
 	Result<std::unique_ptr<File>> getAssetAsFile(std::string name) noexcept;

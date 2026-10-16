@@ -407,6 +407,16 @@ AssetsBundle::getRawData(std::string name) noexcept {
 	return std::move(data);
 }
 
+Result<std::string> AssetsBundle::getDeveloperPath(std::string name) noexcept {
+	auto info_find = assets_map.find(name);
+	if (info_find == assets_map.end()) {
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to find asset " + name + "; not found in asset map."));
+	}
+	return info_find->second.developer_relative_path;
+}
+
 Result<std::unique_ptr<File>>
 AssetsBundle::getAssetAsFile(std::string name) noexcept {
 	auto info_find = assets_map.find(name);
