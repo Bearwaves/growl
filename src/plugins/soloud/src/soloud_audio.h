@@ -82,6 +82,7 @@ public:
 	void stop() override;
 	float getVolume() override;
 	void setVolume(float volume) override;
+	void setLoopPoint(float time_s) override;
 
 private:
 	SoLoudAudioAPI& api;

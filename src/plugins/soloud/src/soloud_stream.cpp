@@ -46,3 +46,11 @@ void SoLoudAudioStream::setVolume(float volume) {
 		stream->setVolume(volume);
 	}
 }
+
+void SoLoudAudioStream::setLoopPoint(float time_s) {
+	if (api.getSoloud()->isValidVoiceHandle(handle)) {
+		api.getSoloud()->setLoopPoint(handle, time_s);
+	} else {
+		stream->setLoopPoint(time_s);
+	}
+}

@@ -39,6 +39,7 @@ public:
 	virtual void stop() = 0;
 	virtual float getVolume() = 0;
 	virtual void setVolume(float volume) = 0;
+	virtual void setLoopPoint(float time_s) = 0;
 
 private:
 	std::string name;
