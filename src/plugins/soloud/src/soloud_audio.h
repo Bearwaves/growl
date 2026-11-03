@@ -78,17 +78,22 @@ public:
 	~SoLoudAudioStream();
 
 	void prepare() override;
-	void play(bool loop) override;
+	void play(bool loop, double delay_s = 0) override;
 	void stop() override;
 	float getVolume() override;
 	void setVolume(float volume) override;
-	void setLoopPoint(float time_s) override;
+	void setLoopPoint(double time_s) override;
+	double getPosition() override;
+	double getLength() override;
+	double getPlaytime() override;
+	int getLoopCount() override;
 
 private:
 	SoLoudAudioAPI& api;
 	std::unique_ptr<SoLoud::WavStream> stream;
 	std::unique_ptr<SoLoud::File> file;
 	int handle = 0;
+	double play_delay = 0;
 };
 
 }; // namespace Growl
