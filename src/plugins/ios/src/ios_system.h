@@ -104,6 +104,7 @@ private:
 		ControllerButton button, ControllerEventType event_type, int id);
 	void dispatchControllerAxisEvent(ControllerAxis axis, float value, int id);
 	ControllerEventType controllerEventTypeForButtonPressed(bool pressed);
+	UIViewController* getRootViewController();
 
 	UITextField* text_field;
 	bool running;

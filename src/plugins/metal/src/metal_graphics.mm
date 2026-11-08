@@ -162,8 +162,8 @@ Error MetalGraphicsAPI::setWindow(const Config& config) {
 
 void MetalGraphicsAPI::onWindowResize(int width, int height) {
 	[swap_chain setDrawableSize:CGSize{
-									.width = static_cast<CGFloat>(width),
-									.height = static_cast<CGFloat>(height)}];
+									static_cast<CGFloat>(width),
+									static_cast<CGFloat>(height)}];
 }
 
 std::unique_ptr<Texture> MetalGraphicsAPI::createTexture(

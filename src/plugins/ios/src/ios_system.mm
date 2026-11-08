@@ -24,6 +24,10 @@ using Growl::Result;
 using Growl::SystemAPIInternal;
 using Growl::Window;
 
+@interface GrowlSceneDelegate : UIResponder <UISceneDelegate>
+@property(strong, nonatomic) UIWindow* window;
+@end
+
 std::unique_ptr<SystemAPIInternal>
 Growl::createSystemAPI(API& api, void* user) {
 	return std::make_unique<IOSSystemAPI>(static_cast<UITextField*>(user));
@@ -140,7 +144,8 @@ void IOSSystemAPI::onEvent(const InputEvent& event) {
 Result<std::unique_ptr<Window>>
 IOSSystemAPI::createWindow(const Config& config) {
 	setStatusBarVisible(config.show_status_bar);
-	UIWindow* w = [[[UIApplication sharedApplication] delegate] window];
+	UIWindow* w = [(GrowlSceneDelegate*)[[[[UIApplication sharedApplication]
+		connectedScenes] anyObject] delegate] window];
 	return std::unique_ptr<Window>(std::make_unique<IOSWindow>(w));
 }
 
@@ -209,8 +214,7 @@ void IOSSystemAPI::shareImage(
 			[NSString stringWithUTF8String:message.c_str()], shareable
 		]
 										  applicationActivities:nil];
-	auto root_vc = [[[[UIApplication sharedApplication] delegate] window]
-		rootViewController];
+	auto root_vc = getRootViewController();
 	activity_view.popoverPresentationController.sourceView = [root_vc view];
 	float scale = [UIScreen mainScreen].nativeScale;
 	activity_view.popoverPresentationController.sourceRect = CGRectMake(
@@ -227,8 +231,7 @@ void IOSSystemAPI::shareImage(
 
 void IOSSystemAPI::setStatusBarVisible(bool visible) {
 	this->status_bar_visible = visible;
-	[[[[[UIApplication sharedApplication] delegate] window] rootViewController]
-		setNeedsStatusBarAppearanceUpdate];
+	[getRootViewController() setNeedsStatusBarAppearanceUpdate];
 }
 
 bool IOSSystemAPI::isControllerConnected() {
@@ -450,8 +453,7 @@ void IOSSystemAPI::dispatchControllerButtonEvent(
 			"Got button event for unknown controller {}", id);
 		return;
 	}
-	auto event = InputControllerEvent{
-		.button = button, .type = event_type, .controller = id};
+	auto event = InputControllerEvent{id, event_type, button};
 	controllers[id]->onEvent(event, inputProcessor);
 }
 
@@ -466,10 +468,8 @@ void IOSSystemAPI::dispatchControllerAxisEvent(
 		return;
 	}
 	auto event = InputControllerEvent{
-		.type = ControllerEventType::AxisMoved,
-		.value = value,
-		.axis = axis,
-		.controller = id};
+		id, ControllerEventType::AxisMoved, ControllerButton::Unknown, axis,
+		value};
 	controllers[id]->onEvent(event, inputProcessor);
 }
 
@@ -477,4 +477,9 @@ ControllerEventType
 IOSSystemAPI::controllerEventTypeForButtonPressed(bool pressed) {
 	return pressed ? ControllerEventType::ButtonDown
 				   : ControllerEventType::ButtonUp;
+}
+
+UIViewController* IOSSystemAPI::getRootViewController() {
+	return [[(GrowlSceneDelegate*)[[[[UIApplication sharedApplication]
+		connectedScenes] anyObject] delegate] window] rootViewController];
 }

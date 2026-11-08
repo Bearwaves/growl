@@ -6,12 +6,14 @@ message(STATUS "[Growl] Enabled iOS platform.")
 
 set(SOURCES
 	"src/app_delegate.mm"
+	"src/scene_delegate.mm"
 	"src/view_controller.mm"
 	"src/metal_view.mm"
 )
 
 set (HEADERS
 	"include/growl/platforms/ios/app_delegate.h"
+	"include/growl/platforms/ios/scene_delegate.h"
 	"include/growl/platforms/ios/metal_view.h"
 	"include/growl/platforms/ios/view_controller.h"
 )
