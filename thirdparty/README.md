@@ -22,7 +22,7 @@
 | stb_image       | `v2.27`          | https://github.com/nothings/stb         |
 | stb_image_write | `v1.16`          | https://github.com/nothings/stb         |
 | stb_rect_pack   | `v1.0.1`         | https://github.com/nothings/stb         |
-| UTF8-CPP        | `4.0.4`          | https://github.com/nemtrif/utfcpp       |
+| UTF8-CPP        | `v4.2.1`         | https://github.com/nemtrif/utfcpp       |
 | zlib            | `v1.3.1`         | https://www.zlib.net/                   |
 
 Dependencies are submodules, except in cases where that doesn't make sense.
