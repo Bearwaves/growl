@@ -32,7 +32,12 @@ public:
 			binding == BufferBinding::Both) {
 			[encoder setFragmentBuffer:buffer offset:*offset atIndex:index];
 		}
+#if TARGET_OS_SIMULATOR
+		// iOS Simulator requires 256B alignment
+		*offset += 256 * (length / 256 + 1);
+#else
 		*offset += length;
+#endif
 	}
 
 	id<MTLBuffer> getBuffer() {

@@ -16,6 +16,7 @@ set(HEADERS
 	"src/metal_texture.h"
 	"src/metal_batch.h"
 	"src/metal_shader.h"
+	"src/metal_buffer.h"
 )
 
 add_library(growl-plugin-metal ${SOURCES} ${HEADERS})
