@@ -64,3 +64,6 @@
 [submodule "mbedtls"]
 	path = thirdparty/mbedtls
 	url = git@github.com:Mbed-TLS/mbedtls.git
+[submodule "thirdparty/rapidcsv"]
+	path = thirdparty/rapidcsv
+	url = git@github.com:d99kris/rapidcsv.git

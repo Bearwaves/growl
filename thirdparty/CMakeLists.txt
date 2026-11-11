@@ -101,6 +101,8 @@ message(STATUS "[Growl] --- date")
 include(cmake/date.cmake)
 message(STATUS "[Growl] --- libsodium")
 include(cmake/libsodium.cmake)
+message(STATUS "[Growl] --- rapidcsv")
+include(cmake/rapidcsv.cmake)
 
 add_library(growl-thirdparty INTERFACE)
 target_link_libraries(growl-thirdparty

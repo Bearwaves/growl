@@ -17,6 +17,7 @@
 | lua             | `v5.4.6`         | https://github.com/lua/lua              |
 | mbedtls         | `mbedtls-3.6.4`  | https://github.com/Mbed-TLS/mbedtls     |
 | msdfgen         | `v1.12`          | https://github.com/Chlumsky/msdfgen/    |
+| rapidcsv        | `v9.07`          | https://github.com/d99kris/rapidcsv     |
 | SDL             | `release-3.4.8`  | https://github.com/libsdl-org/SDL       |
 | SoLoud          | `7948e57`        | https://github.com/Bearwaves/soloud     |
 | stb_image       | `v2.27`          | https://github.com/nothings/stb         |
