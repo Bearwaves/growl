@@ -91,7 +91,9 @@ void Node::populateDebugUI(Batch& batch) {
 		"Scene",
 		[&]() -> void {
 			if (ImGui::TreeNodeEx(
-					getLabel().c_str(), ImGuiTreeNodeFlags_Framed)) {
+					getLabel().c_str(),
+					ImGuiTreeNodeFlags_Framed |
+						(parent ? 0 : ImGuiTreeNodeFlags_DefaultOpen))) {
 				if (ImGui::TreeNodeEx("Node", ImGuiTreeNodeFlags_DefaultOpen)) {
 					ImGui::SliderFloat(
 						"X", &x, 0.0f,
