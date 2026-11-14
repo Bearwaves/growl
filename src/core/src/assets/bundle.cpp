@@ -8,7 +8,11 @@
 #include "growl/core/assets/image.h"
 #include "growl/core/assets/shader_pack.h"
 #include "growl/core/error.h"
+#include "growl/core/i18n/i18n.h"
+#include "growl/core/i18n/i18n_csv_bundle.h"
 #include "nlohmann/json.hpp"
+#include "rapidcsv.h"
+#include <sstream>
 #include <string>
 #include <vector>
 #ifdef GROWL_IMGUI
@@ -25,6 +29,7 @@ using Growl::Atlas;
 using Growl::Error;
 using Growl::File;
 using Growl::FontFace;
+using Growl::I18nBundle;
 using Growl::Image;
 using Growl::Result;
 using Growl::ShaderPack;
@@ -438,8 +443,52 @@ AssetsBundle::getAssetAsFile(std::string name) noexcept {
 	return std::move(file_result.get());
 }
 
+Result<std::unique_ptr<I18nBundle>>
+AssetsBundle::getI18nBundle(std::string name) noexcept {
+	auto info_find = assets_map.find(name);
+	if (info_find == assets_map.end()) {
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load i18n bundle " + name +
+				"; not found in asset map."));
+	}
+	auto& info = info_find->second;
+	if (info.type != AssetType::Text) {
+		auto type_name = getAssetTypeName(info.type);
+		return Error(
+			std::make_unique<AssetsError>(
+				"Failed to load i18n bundle " + name +
+				"; expected Text type but was " + type_name + "."));
+	}
+
+	std::string data(info.size, 0);
+	file->seek(static_cast<int>(info.position));
+	file->read(reinterpret_cast<unsigned char*>(data.data()), info.size);
+
+	std::stringstream ss(data);
+
+	std::unique_ptr<I18nCSVBundle> csv_bundle = nullptr;
+	try {
+		auto doc = rapidcsv::Document(
+			ss, rapidcsv::LabelParams(),
+			rapidcsv::SeparatorParams(',', false, false));
+		csv_bundle = std::make_unique<I18nCSVBundle>(
+			std::move(doc), info.developer_relative_path);
+	} catch (std::exception& e) {
+		return Error(
+			std::make_unique<AssetsError>(
+				std::string("Failed to load CSV document: ") + e.what()));
+	}
+
+	if (auto err = csv_bundle->reload()) {
+		return std::move(err);
+	}
+
+	return Result(std::unique_ptr<I18nBundle>(std::move(csv_bundle)));
+}
+
 #ifdef GROWL_IMGUI
-void AssetsBundle::populateDebugMenu() {
+void AssetsBundle::populateDebugUI() {
 	if (ImGui::TreeNodeEx(
 			path.c_str(),
 			ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed)) {

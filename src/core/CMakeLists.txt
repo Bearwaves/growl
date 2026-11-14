@@ -24,6 +24,9 @@ set(SOURCES
 	"src/util/timer.cpp"
 	"src/util/uuid.cpp"
 	"src/interpolation.cpp"
+
+	"src/i18n/bundle.cpp"
+	"src/i18n/csv_bundle.cpp"
 )
 
 set(INTERFACE_LIBS
@@ -47,6 +50,7 @@ target_link_libraries(growl-core
 	growl-thirdparty::utf8cpp
 	growl-thirdparty::libunibreak
 	growl-thirdparty::zlib
+	growl-thirdparty::rapidcsv
 )
 
 if (GROWL_IMGUI)

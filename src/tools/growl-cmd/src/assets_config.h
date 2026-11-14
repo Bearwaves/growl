@@ -28,8 +28,7 @@ struct AssetConfig {
 	std::optional<AtlasConfig> atlas;
 	std::optional<FontConfig> font;
 	std::optional<ShaderPackConfig> shader_pack;
-	bool text = false;
-	bool json = false;
+	std::string format = "";
 };
 
 // Turn off name linting as json library needs these.

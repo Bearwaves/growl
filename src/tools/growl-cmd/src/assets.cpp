@@ -9,6 +9,7 @@
 #include "growl/core/assets/local_file.h"
 #include "growl/core/assets/shader_pack.h"
 #include "nlohmann/json.hpp"
+#include "rapidcsv.h"
 #include "soloud_wavstream.h"
 #include "stb_image.h"
 #include "utf8/core.h"
@@ -251,6 +252,47 @@ AssetsIncludeError includeJson(
 	return AssetsIncludeErrorCode::None;
 }
 
+AssetsIncludeError includeI18nCSV(
+	const std::filesystem::directory_entry& entry,
+	std::filesystem::path& resolved_path, AssetsMap& assets_map,
+	std::ofstream& outfile, bool dev_info) noexcept {
+	std::ifstream file;
+	file.open(entry.path(), std::ios::binary | std::ios::in);
+	if (file.fail()) {
+		return AssetsIncludeError(
+			"Failed to open file " + resolved_path.generic_string());
+	}
+
+	auto start = static_cast<unsigned int>(outfile.tellp());
+
+	rapidcsv::Document doc;
+	try {
+		doc = rapidcsv::Document(
+			file, rapidcsv::LabelParams(),
+			rapidcsv::SeparatorParams(',', false, false));
+	} catch (std::exception& e) {
+		return AssetsIncludeError(
+			std::string("Failed to parse i18n CSV: ") + e.what());
+	}
+	if (doc.GetColumnIdx("key") == -1 || doc.GetColumnIdx("source") == -1) {
+		return AssetsIncludeError(
+			"i18n CSV " + resolved_path.generic_string() +
+			" must contain at least 'key' and 'source' columns");
+	}
+	doc.Save(outfile);
+
+	AssetInfo info{
+		start, static_cast<unsigned int>(outfile.tellp()) - start,
+		AssetType::Text, dev_info ? entry.path().generic_string() : ""};
+	std::cout << "Included CSV file " << style::bold
+			  << resolved_path.generic_string() << style::reset << "."
+			  << std::endl;
+
+	assets_map[resolved_path.generic_string()] = info;
+
+	return AssetsIncludeErrorCode::None;
+}
+
 Result<bool> processDirectory(
 	std::string& assets_dir, std::filesystem::path path, AssetsMap& assets_map,
 	std::ofstream& outfile, bool dev_info) {
@@ -315,7 +357,7 @@ Result<bool> processDirectory(
 			asset_config = it->second;
 		}
 
-		if (asset_config.text) {
+		if (asset_config.format == "text") {
 			// Attempt to include file as plain text
 			if (auto err = includeText(
 					file_entry, resolved_path, assets_map, outfile, dev_info);
@@ -325,9 +367,7 @@ Result<bool> processDirectory(
 						"Failed to include text file: " + err.message()));
 			}
 			continue;
-		}
-
-		if (asset_config.json) {
+		} else if (asset_config.format == "json") {
 			// Attempt to include file as JSON
 			if (auto err = includeJson(
 					file_entry, resolved_path, assets_map, outfile, dev_info);
@@ -335,6 +375,16 @@ Result<bool> processDirectory(
 				return Error(
 					std::make_unique<AssetsError>(
 						"Failed to include JSON file: " + err.message()));
+			}
+			continue;
+		} else if (asset_config.format == "i18n_csv") {
+			// Attempt to include file as i18n CSV
+			if (auto err = includeI18nCSV(
+					file_entry, resolved_path, assets_map, outfile, dev_info);
+				err.getCode() == AssetsIncludeErrorCode::LoadFailed) {
+				return Error(
+					std::make_unique<AssetsError>(
+						"Failed to include i18n CSV file: " + err.message()));
 			}
 			continue;
 		}

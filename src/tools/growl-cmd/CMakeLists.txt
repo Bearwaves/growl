@@ -28,4 +28,5 @@ target_link_libraries(growl-cmd
 	growl-thirdparty::utf8cpp
 	growl-thirdparty::soloud
 	growl-thirdparty::stb
+	growl-thirdparty::rapidcsv
 )

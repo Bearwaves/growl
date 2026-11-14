@@ -11,8 +11,7 @@ void Growl::from_json(const json& j, AssetConfig& s) {
 	if (j.contains("shaderPack")) {
 		s.shader_pack = j.at("shaderPack").get<ShaderPackConfig>();
 	}
-	s.text = j.value("text", s.text);
-	s.json = j.value("json", s.json);
+	s.format = j.value("format", s.format);
 }
 
 void Growl::from_json(const json& j, AtlasConfig& s) {

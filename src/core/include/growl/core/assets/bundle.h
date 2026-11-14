@@ -20,6 +20,7 @@ class Image;
 class SystemAPI;
 class ShaderPack;
 enum class ShaderType;
+class I18nBundle;
 
 typedef uint64_t AssetsBundleVersion;
 
@@ -116,12 +117,14 @@ public:
 	Result<std::string> getTextFileAsString(std::string name) noexcept;
 	Result<std::vector<unsigned char>> getRawData(std::string name) noexcept;
 	Result<std::string> getDeveloperPath(std::string name) noexcept;
+	Result<std::unique_ptr<I18nBundle>>
+	getI18nBundle(std::string name) noexcept;
 
 	// Returns a File pointer to a specific asset.
 	Result<std::unique_ptr<File>> getAssetAsFile(std::string name) noexcept;
 
 #ifdef GROWL_IMGUI
-	void populateDebugMenu();
+	void populateDebugUI();
 #endif
 
 private:
