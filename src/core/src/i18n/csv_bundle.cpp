@@ -83,7 +83,6 @@ Error I18nCSVBundle::save() {
 
 #ifdef GROWL_IMGUI
 void I18nCSVBundle::populateDebugUI() {
-	ImGui::ShowDemoWindow();
 	if (!developer_relative_path.empty()) {
 		if (ImGui::Button("Reload from file")) {
 			error_str = "";
