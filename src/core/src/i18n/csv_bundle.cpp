@@ -4,7 +4,6 @@
 #include "growl/core/error.h"
 #include "growl/core/i18n/i18n.h"
 #include "rapidcsv.h"
-#include <vector>
 #ifdef GROWL_IMGUI
 #include "imgui.h"
 #endif

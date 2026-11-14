@@ -4,6 +4,7 @@
 #include "growl/core/error.h"
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Growl {
 
