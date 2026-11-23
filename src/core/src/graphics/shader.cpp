@@ -82,7 +82,7 @@ void Shader::populateDebugUI(ShaderPack& pack) {
 						pack.getDeveloperRelativePath(), "vertex.", getType());
 				}
 				if (source.uniforms_src.has_value()) {
-					getFragmentSource() = reloadFromFile(
+					getUniformsSource() = reloadFromFile(
 						pack.getDeveloperRelativePath(), "uniforms.",
 						getType());
 				}
