@@ -110,6 +110,7 @@ void SDL3Window::newImguiFrame() {
 void SDL3Window::populateDebugMenu() {
 	int w, h;
 	getSize(&w, &h);
+	ImGui::Text("%d x %d", w, h);
 	ImGui::SeparatorText("Insets");
 	ImGui::SliderFloat("Top", &insets.top, 0, h);
 	ImGui::SliderFloat("Bottom", &insets.bottom, 0, h);
