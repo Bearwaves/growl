@@ -6,11 +6,17 @@ SoLoudAudioClip::~SoLoudAudioClip() {
 	stop();
 }
 
-void SoLoudAudioClip::play(bool loop) {
+void SoLoudAudioClip::play(bool loop, float pan, float playback_speed) {
 	if (handle && loop) {
 		api.getSoloud()->setPause(handle, false);
 	} else {
 		handle = api.getSoloud()->play(*sample);
+		if (playback_speed != 1.f) {
+			api.getSoloud()->setRelativePlaySpeed(handle, playback_speed);
+		}
+		if (pan) {
+			api.getSoloud()->setPan(handle, pan);
+		}
 		api.getSoloud()->setLooping(handle, loop);
 	}
 }

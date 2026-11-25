@@ -52,7 +52,7 @@ public:
 		, raw{std::move(raw)} {}
 	~SoLoudAudioClip();
 
-	void play(bool loop) override;
+	void play(bool loop, float pan, float playback_speed) override;
 	void stop() override;
 	float getVolume() override;
 	void setVolume(float volume) override;
